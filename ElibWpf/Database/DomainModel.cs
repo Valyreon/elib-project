@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ElibWpf.DomainModel
 {
+    [Table("Autor")]
     public class Autor
     {
         public long id { get; set; }
@@ -21,6 +24,7 @@ namespace ElibWpf.DomainModel
         }
     }
 
+    [Table("Citat")]
     public class Citat
     {
         public long id { get; set; }
@@ -29,13 +33,17 @@ namespace ElibWpf.DomainModel
         public long knjigaId { get; set; }
     }
 
+    [Table("Fajl")]
     public class Fajl
     {
+        [Key, Column(Order = 0)]
         public long knjigaId { get; set; }
+        [Key, Column(Order = 1)]
         public string format { get; set; }
         public byte[] fajl { get; set; }
     }
 
+    [Table("Knjiga")]
     public class Knjiga
     {
         public long id { get; set; }
@@ -59,6 +67,7 @@ namespace ElibWpf.DomainModel
         }
     }
 
+    [Table("Kolekcija")]
     public class Kolekcija
     {
         public long id { get; set; }
@@ -71,6 +80,7 @@ namespace ElibWpf.DomainModel
         }
     }
 
+    [Table("Serijal")]
     public class Serijal
     {
         public long id { get; set; }
@@ -87,15 +97,21 @@ namespace ElibWpf.DomainModel
 
     }
 
+    [Table("knjiga_autor")]
     public class knjiga_autor
     {
+        [Key, Column(Order = 0)]
         public long knjiga_id { get; set; }
+        [Key, Column(Order = 1)]
         public long autor_id { get; set; }
     }
 
+    [Table("kolekcija_knjiga")]
     public class kolekcija_knjiga
     {
+        [Key, Column(Order = 0)]
         public long kolekcija_id { get; set; }
+        [Key, Column(Order = 1)]
         public long knjiga_id { get; set; }
     }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ElibWpf.Database;
 
 namespace ElibWpf
 {
@@ -16,6 +17,8 @@ namespace ElibWpf
         [System.CodeDom.Compiler.GeneratedCodeAttribute("PresentationBuildTasks", "4.0.0.0")]
         public static void Main()
         {
+            Console.WriteLine("Initializing local DB");
+            DatabaseContext database = new DatabaseContext();
             Console.WriteLine("Checking arguments");
             //check if app is being run in CLI mode
             string[] args = Environment.GetCommandLineArgs();
@@ -33,6 +36,24 @@ namespace ElibWpf
                 {
                     Console.Write(">> ");
                     consoleInput = Console.ReadLine();
+                    consoleInput = consoleInput.Trim();
+                    string[] consoleInputArray = consoleInput.Split(' ');
+                    if (consoleInputArray.Length > 0)
+                    {
+                        switch (consoleInputArray[0].ToLower())
+                        {
+                            case "add":
+                                database.AddBook(consoleInput.Substring(3, consoleInput.Length - 3));
+                                break;
+                            case "listall":
+                                database.ListAllBooks();
+                                break;
+                            default:
+                                Console.WriteLine("Unknown command");
+                                break;
+                        }
+                    }
+
                 } while (consoleInput.ToLower() != "exit");
                 if (consoleInput.ToLower() == "exit")
                     Console.WriteLine("Exiting...");
