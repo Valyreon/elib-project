@@ -48,6 +48,13 @@ namespace ElibWpf
                             case "listall":
                                 database.ListAllBooks();
                                 break;
+                            case "import":
+                                database.ImportBook(consoleInput.Substring(6, consoleInput.Length - 6).Trim());
+                                break;
+                            case "metadata":
+                                database.BookMetadata(Int64.Parse(consoleInput.Substring(8, consoleInput.Length - 8)));//TODO: Error handle
+                                break;
+                                
                             default:
                                 Console.WriteLine("Unknown command");
                                 break;

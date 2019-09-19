@@ -14,6 +14,7 @@ namespace ElibWpf.DomainModel
         public long id { get; set; }
         public string ime { get; set; }
         public string opis { get; set; }
+        public string metadata { get; set; }
 
         public virtual ICollection<knjiga_autor> knjiga_autorValues { get; set; }
         public virtual ICollection<Serijal> SerijalValues { get; set; }
@@ -53,6 +54,7 @@ namespace ElibWpf.DomainModel
         public bool procitana { get; set; }
         public DateTime datProcitana { get; set; }
         public long serijalId { get; set; }
+        public string metadata { get; set; }
 
         public virtual ICollection<Citat> CitatValues { get; set; }
         public virtual ICollection<Fajl> FajlValues { get; set; }
@@ -86,6 +88,7 @@ namespace ElibWpf.DomainModel
         public long id { get; set; }
         public string naziv { get; set; }
         public long autorId { get; set; }
+        public string metadata { get; set; }
         public virtual ICollection<Knjiga> KnjigaValues { get; set; }
         public virtual ICollection<Autor> AutorValues { get; set; }
         public Serijal()
