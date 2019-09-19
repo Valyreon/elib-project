@@ -32,6 +32,8 @@ namespace ElibWpf.DomainModel
         public string tekst { get; set; }
         public string nota { get; set; }
         public long knjigaId { get; set; }
+        [ForeignKey("knjigaId")]
+        public virtual Knjiga knjiga { get; set; }
     }
 
     [Table("Fajl")]
@@ -42,6 +44,8 @@ namespace ElibWpf.DomainModel
         [Key, Column(Order = 1)]
         public string format { get; set; }
         public byte[] fajl { get; set; }
+        [ForeignKey("knjigaId")]
+        public virtual Knjiga knjiga { get; set; }
     }
 
     [Table("Knjiga")]
@@ -67,6 +71,8 @@ namespace ElibWpf.DomainModel
             knjiga_autorValues = new List<knjiga_autor>();
             kolekcija_knjigaValues = new List<kolekcija_knjiga>();
         }
+        [ForeignKey("serijalId")]
+        public virtual Serijal serijal { get; set; }
     }
 
     [Table("Kolekcija")]
@@ -87,15 +93,17 @@ namespace ElibWpf.DomainModel
     {
         public long id { get; set; }
         public string naziv { get; set; }
+        
         public long autorId { get; set; }
         public string metadata { get; set; }
         public virtual ICollection<Knjiga> KnjigaValues { get; set; }
-        public virtual ICollection<Autor> AutorValues { get; set; }
         public Serijal()
         {
             KnjigaValues = new List<Knjiga>();
-            AutorValues = new List<Autor>();
         }
+
+        [ForeignKey("autorId")]
+        public virtual Autor autor { get; set; }
 
 
     }
@@ -107,15 +115,24 @@ namespace ElibWpf.DomainModel
         public long knjiga_id { get; set; }
         [Key, Column(Order = 1)]
         public long autor_id { get; set; }
+
+        [ForeignKey("autor_id")]
+        public virtual Autor autor { get; set; }
+        [ForeignKey("knjiga_id")]
+        public virtual Knjiga knjiga { get; set; }
     }
 
     [Table("kolekcija_knjiga")]
     public class kolekcija_knjiga
     {
         [Key, Column(Order = 0)]
-        public long kolekcija_id { get; set; }
+        public virtual long kolekcija_id { get; set; }
         [Key, Column(Order = 1)]
-        public long knjiga_id { get; set; }
+        public virtual long knjiga_id { get; set; }
+        [ForeignKey("kolekcija_id")]
+        public virtual Kolekcija kolekcija { get; set; }
+        [ForeignKey("knjiga_id")]
+        public virtual Knjiga knjiga { get; set; }
     }
 
 }

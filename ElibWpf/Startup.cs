@@ -42,11 +42,11 @@ namespace ElibWpf
                     {
                         switch (consoleInputArray[0].ToLower())
                         {
-                            case "add":
-                                database.AddBook(consoleInput.Substring(3, consoleInput.Length - 3));
-                                break;
                             case "listall":
                                 database.ListAllBooks();
+                                break;
+                            case "listallauthors":
+                                database.ListAllAuthors();
                                 break;
                             case "import":
                                 database.ImportBook(consoleInput.Substring(6, consoleInput.Length - 6).Trim());
