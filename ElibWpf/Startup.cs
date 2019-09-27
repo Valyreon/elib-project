@@ -21,13 +21,13 @@ namespace ElibWpf
             Console.WriteLine("Initializing local DB");
             DatabaseContext database = new DatabaseContext();
             Console.WriteLine("Checking arguments");
-            //check if app is being run in CLI mode
+            // Check if app is being run in CLI mode
             string[] args = Environment.GetCommandLineArgs();
-            foreach (var x in args)
+            foreach (string x in args)
             {
                 Console.WriteLine(x);
             }
-            if (args.Contains("-cli")) // don't show the UI
+            if (args.Contains("-cli")) // Don't show the GUI
             {
                 Console.WriteLine("Starting eLIB in CLI mode.\nWELCOME TO ELIB COMMAND LINE.\n");
                 string command;
