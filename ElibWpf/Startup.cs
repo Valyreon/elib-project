@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ElibWpf.Database;
+using ElibWpf.Helpers;
 
 namespace ElibWpf
 {
@@ -26,44 +27,38 @@ namespace ElibWpf
             {
                 Console.WriteLine(x);
             }
-            if (args.Contains("-cli"))
+            if (args.Contains("-cli")) // don't show the UI
             {
-                Console.WriteLine("Starting eLIB in CLI mode.");
-                // don't show the UI
-                String consoleInput;
-                Console.WriteLine("\nWELCOME TO ELIB COMMAND LINE.\n");
+                Console.WriteLine("Starting eLIB in CLI mode.\nWELCOME TO ELIB COMMAND LINE.\n");
+                string command;
                 do
                 {
                     Console.Write(">> ");
-                    consoleInput = Console.ReadLine();
-                    consoleInput = consoleInput.Trim();
-                    string[] consoleInputArray = consoleInput.Split(' ');
-                    if (consoleInputArray.Length > 0)
+                    Tuple<string, string> consoleInput = Console.ReadLine().Trim().SplitOnFirstBlank();
+                    command = consoleInput.Item1.ToLower();
+                    switch (command)
                     {
-                        switch (consoleInputArray[0].ToLower())
-                        {
-                            case "listall":
-                                database.ListAllBooks();
-                                break;
-                            case "listallauthors":
-                                database.ListAllAuthors();
-                                break;
-                            case "import":
-                                database.ImportBook(consoleInput.Substring(6, consoleInput.Length - 6).Trim());
-                                break;
-                            case "metadata":
-                                database.BookMetadata(Int64.Parse(consoleInput.Substring(8, consoleInput.Length - 8)));//TODO: Error handle
-                                break;
+                        case "listall":
+                            database.ListAllBooks();
+                            break;
+                        case "listallauthors":
+                            database.ListAllAuthors();
+                            break;
+                        case "import":
+                            database.ImportBook(consoleInput.Item2);
+                            break;
+                        case "metadata":
+                            database.BookMetadata(Int64.Parse(consoleInput.Item2)); // TODO: Error handling
+                            break;
                                 
-                            default:
-                                Console.WriteLine("Unknown command");
-                                break;
-                        }
+                        default:
+                            Console.WriteLine("Unknown command");
+                            break;
                     }
 
-                } while (consoleInput.ToLower() != "exit");
-                if (consoleInput.ToLower() == "exit")
-                    Console.WriteLine("Exiting...");
+                } while (command != "exit");
+
+                Console.WriteLine("Exiting...");
             }
             else
             {

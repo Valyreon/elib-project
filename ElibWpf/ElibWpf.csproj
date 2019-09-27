@@ -219,6 +219,7 @@
     <Compile Include="Database\Extensions.cs" />
     <Compile Include="Database\MetadataModels\BookMetadata.cs" />
     <Compile Include="Database\SQLiteConfig.cs" />
+    <Compile Include="Helpers\StringHelpers.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
