@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ElibWpf.Database;
+using ElibWpf.DomainModel;
 using ElibWpf.Helpers;
 
 namespace ElibWpf
@@ -50,7 +51,32 @@ namespace ElibWpf
                         case "metadata":
                             database.BookMetadata(Int64.Parse(consoleInput.Item2)); // TODO: Error handling
                             break;
-                                
+                        case "find":
+                            Tuple<string, string> findInput = consoleInput.Item2.ToLower().Trim().SplitOnFirstBlank();
+
+                            string findType = findInput.Item1.ToLower();
+                            string findWhat = findInput.Item2;
+                            switch(findType)
+                            {
+                                case "book":
+                                    Book[] books = database.FindBooks(findWhat);
+                                    foreach (Book book in books)
+                                    {
+                                        Console.WriteLine("Book: " + book.name);
+                                        Console.WriteLine("Authors:");
+                                        foreach (Author author in database.GetBookAuthors(book))
+                                            Console.WriteLine("    " + author.name);
+                                        Console.WriteLine();
+                                    }
+                                    break;
+
+                                default:
+                                    Console.WriteLine("Find command was incorrect");
+                                    break;
+
+                            }
+                            break;
+
                         default:
                             Console.WriteLine("Unknown command");
                             break;

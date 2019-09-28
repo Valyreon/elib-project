@@ -9,6 +9,7 @@ using System.Drawing;
 using Newtonsoft.Json;
 using EbookTools.Mobi;
 using System.Linq;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace ElibWpf.Database
 {
@@ -95,6 +96,11 @@ namespace ElibWpf.Database
             
         }
 
+        public Author[] GetBookAuthors(Book book)
+        {
+            return book_author.Where(x => x.book_id == book.id).Select(i => i.author).ToArray();
+        }
+
         
 
         public void ImportBook(string path)
@@ -155,6 +161,7 @@ namespace ElibWpf.Database
 
         public Book GetBookFromID(long id) => Books.Find(id);
         public Author FindAuthor(string author) => Authors.FirstOrDefault(x => x.name == author);
+        public Book[] FindBooks(string bookName) => Books.Where(x => x.name.ToLower().Contains(bookName)).ToArray();
 
         public void BookMetadata(long id)
         {
