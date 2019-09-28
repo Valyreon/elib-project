@@ -70,6 +70,18 @@ namespace ElibWpf
                                     }
                                     break;
 
+                                case "author":
+                                    Author[] authors = database.FindAuthors(findWhat);
+                                    foreach (Author author in authors)
+                                    {
+                                        Console.WriteLine("Author: " + author.name);
+                                        Console.WriteLine("Books: ");
+                                        foreach (Book book in database.GetAuthorBooks(author))
+                                            Console.WriteLine("    " + book.name);
+                                        Console.WriteLine();
+                                    }
+                                    break;
+
                                 default:
                                     Console.WriteLine("Find command was incorrect");
                                     break;

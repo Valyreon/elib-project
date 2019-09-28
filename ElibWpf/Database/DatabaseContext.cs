@@ -100,6 +100,10 @@ namespace ElibWpf.Database
         {
             return book_author.Where(x => x.book_id == book.id).Select(i => i.author).ToArray();
         }
+        public Book[] GetAuthorBooks(Author author)
+        {
+            return book_author.Where(x => x.author_id == author.id).Select(i => i.book).ToArray();
+        }
 
         
 
@@ -162,6 +166,7 @@ namespace ElibWpf.Database
         public Book GetBookFromID(long id) => Books.Find(id);
         public Author FindAuthor(string author) => Authors.FirstOrDefault(x => x.name == author);
         public Book[] FindBooks(string bookName) => Books.Where(x => x.name.ToLower().Contains(bookName)).ToArray();
+        public Author[] FindAuthors(string authorName) => Authors.Where(x => x.name.ToLower().Contains(authorName)).ToArray();
 
         public void BookMetadata(long id)
         {
