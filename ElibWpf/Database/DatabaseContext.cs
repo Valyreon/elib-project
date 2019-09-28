@@ -30,62 +30,62 @@ namespace ElibWpf.Database
             DbConfiguration.SetConfiguration(new SQLiteConfig());
         }
 
-        public DbSet<Autor> Autor { get; set; }
-        public DbSet<Citat> Citat { get; set; }
-        public DbSet<Fajl> Fajl { get; set; }
-        public DbSet<Knjiga> Knjiga { get; set; }
-        public DbSet<Kolekcija> Kolekcija { get; set; }
-        public DbSet<Serijal> Serijal { get; set; }
-        public DbSet<knjiga_autor> knjiga_autor { get; set; }
-        public DbSet<kolekcija_knjiga> kolekcija_knjiga { get; set; }
+        public DbSet<Author> Authors { get; set; }
+        public DbSet<Quote> Quotes { get; set; }
+        public DbSet<DomainModel.File> Files { get; set; }
+        public DbSet<Book> Books { get; set; }
+        public DbSet<Collection> Collections { get; set; }
+        public DbSet<Series> Series { get; set; }
+        public DbSet<book_author> book_author { get; set; }
+        public DbSet<collection_book> collection_book { get; set; }
 
         public void AddBookDB(String name)
         {
-            Knjiga.Add(new Knjiga
+            Books.Add(new Book
             {
-                naziv = name.Trim(),
+                name = name.Trim(),
             });
             this.SaveChangesAsync();
         }
 
-        public Knjiga AddBookDB(Knjiga book)
+        public Book AddBookDB(Book book)
         {
-            Knjiga result = Knjiga.Add(book);
+            Book result = Books.Add(book);
             this.SaveChangesAsync();
             return result;
         }
 
-        public Autor AddAuthorDB(Autor author)
+        public Author AddAuthorDB(Author author)
         {
-            Autor result = Autor.Add(author);
+            Author result = Authors.Add(author);
             this.SaveChangesAsync();
             return result;
         }
 
         public void ListAllBooks()
         {
-            foreach(var x in Knjiga)
+            foreach(var x in Books)
             {
-                Console.WriteLine(x.id + " : " + x.naziv);
+                Console.WriteLine(x.id + " : " + x.name);
             }
         }
 
         public void ListAllAuthors()
         {
-            foreach(var x in Autor)
+            foreach(var x in Authors)
             {
-                Console.WriteLine(x.ime);
+                Console.WriteLine(x.name);
             }
         }
 
-        public knjiga_autor AddBookAuthorLink(Knjiga book, Autor autor)
+        public book_author AddBookAuthorLink(Book book, Author author)
         {
-            knjiga_autor newBookAuthorLink = new knjiga_autor
+            book_author newBookAuthorLink = new book_author
             {
-                knjiga_id = book.id,
-                autor_id = autor.id
+                book_id = book.id,
+                author_id = author.id
             };
-            knjiga_autor result = knjiga_autor.Add(newBookAuthorLink);
+            book_author result = book_author.Add(newBookAuthorLink);
             this.SaveChangesAsync();
             return result;
         }
@@ -99,9 +99,9 @@ namespace ElibWpf.Database
 
         public void ImportBook(string path)
         {
-            if (File.Exists(path))
+            if (System.IO.File.Exists(path))
             {
-                byte[] fileBinary = File.ReadAllBytes(path);
+                byte[] fileBinary = System.IO.File.ReadAllBytes(path);
                 EbookParser ebookParser;
                 switch(Path.GetExtension(path).ToLower())
                 {
@@ -117,33 +117,33 @@ namespace ElibWpf.Database
                         
                 }
                 ParsedBook parsedBook = ebookParser.Parse();
-                Knjiga newBook = Knjiga.Add(parsedBook.GetBook());//Add parsed book data to book table
+                Book newBook = Books.Add(parsedBook.GetBook());//Add parsed book data to book table
 
                 //Check if author exists in table
-                Autor tempAuthor = FindAuthor(parsedBook.Author);
+                Author tempAuthor = FindAuthor(parsedBook.Author);
                 if (tempAuthor == null)
                 {
                     //Add to author table
-                    Autor newAuthor = new Autor
+                    Author newAuthor = new Author
                     {
-                        ime = parsedBook.Author
+                        name = parsedBook.Author
                     };
-                    Autor.Add(newAuthor);
+                    Authors.Add(newAuthor);
                     //Add to link table
-                    knjiga_autor newBookAuthorLink = AddBookAuthorLink(newBook, newAuthor);
-                    newAuthor.knjiga_autorValues.Add(newBookAuthorLink);
+                    book_author newBookAuthorLink = AddBookAuthorLink(newBook, newAuthor);
+                    newAuthor.book_authorValues.Add(newBookAuthorLink);
                 }
                 else
                 {
                     //Update the link table
-                    knjiga_autor newBookAuthorLink = AddBookAuthorLink(newBook, tempAuthor);
-                    tempAuthor.knjiga_autorValues.Add(newBookAuthorLink); 
+                    book_author newBookAuthorLink = AddBookAuthorLink(newBook, tempAuthor);
+                    tempAuthor.book_authorValues.Add(newBookAuthorLink); 
                 }
                 //Add file to the file table
-                Fajl.Add(new Fajl
+                Files.Add(new DomainModel.File
                 {
-                    knjigaId = newBook.id,
-                    fajl = fileBinary,
+                    bookId = newBook.id,
+                    fileBlob = fileBinary,
                     format = Path.GetExtension(path)
                 });
                 this.SaveChanges();
@@ -153,12 +153,12 @@ namespace ElibWpf.Database
                 Console.WriteLine("System cannot load file " + path);
         }
 
-        public Knjiga GetBookFromID(long id) => Knjiga.Find(id);
-        public Autor FindAuthor(string author) => Autor.FirstOrDefault(x => x.ime == author);
+        public Book GetBookFromID(long id) => Books.Find(id);
+        public Author FindAuthor(string author) => Authors.FirstOrDefault(x => x.name == author);
 
         public void BookMetadata(long id)
         {
-            Knjiga book = GetBookFromID(id);
+            Book book = GetBookFromID(id);
             if(book != null)
             {
                 Console.WriteLine(book.metadata);

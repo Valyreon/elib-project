@@ -8,131 +8,131 @@ using System.Threading.Tasks;
 
 namespace ElibWpf.DomainModel
 {
-    [Table("Autor")]
-    public class Autor
+    [Table("Author")]
+    public class Author
     {
         public long id { get; set; }
-        public string ime { get; set; }
-        public string opis { get; set; }
+        public string name { get; set; }
+        public string description { get; set; }
         public string metadata { get; set; }
 
-        public virtual ICollection<knjiga_autor> knjiga_autorValues { get; set; }
-        public virtual ICollection<Serijal> SerijalValues { get; set; }
-        public Autor()
+        public virtual ICollection<book_author> book_authorValues { get; set; }
+        public virtual ICollection<Series> SeriesValues { get; set; }
+        public Author()
         {
-            knjiga_autorValues = new List<knjiga_autor>();
-            SerijalValues = new List<Serijal>();
+            book_authorValues = new List<book_author>();
+            SeriesValues = new List<Series>();
         }
     }
 
-    [Table("Citat")]
-    public class Citat
+    [Table("Quote")]
+    public class Quote
     {
         public long id { get; set; }
-        public string tekst { get; set; }
-        public string nota { get; set; }
-        public long knjigaId { get; set; }
-        [ForeignKey("knjigaId")]
-        public virtual Knjiga knjiga { get; set; }
+        public string text { get; set; }
+        public string note { get; set; }
+        public long bookId { get; set; }
+        [ForeignKey("bookId")]
+        public virtual Book book { get; set; }
     }
 
-    [Table("Fajl")]
-    public class Fajl
+    [Table("File")]
+    public class File
     {
         [Key, Column(Order = 0)]
-        public long knjigaId { get; set; }
+        public long bookId { get; set; }
         [Key, Column(Order = 1)]
         public string format { get; set; }
-        public byte[] fajl { get; set; }
-        [ForeignKey("knjigaId")]
-        public virtual Knjiga knjiga { get; set; }
+        public byte[] fileBlob { get; set; }
+        [ForeignKey("bookId")]
+        public virtual Book book { get; set; }
     }
 
-    [Table("Knjiga")]
-    public class Knjiga
+    [Table("Book")]
+    public class Book
     {
         public long id { get; set; }
-        public string naziv { get; set; }
-        public int serijalBr { get; set; }
+        public string name { get; set; }
+        public int seriesNumber { get; set; }
         public byte[] cover { get; set; }
-        public bool procitana { get; set; }
-        public DateTime datProcitana { get; set; }
-        public long serijalId { get; set; }
+        public bool isRead { get; set; }
+        public DateTime dateRead { get; set; }
+        public long seriesId { get; set; }
         public string metadata { get; set; }
 
-        public virtual ICollection<Citat> CitatValues { get; set; }
-        public virtual ICollection<Fajl> FajlValues { get; set; }
-        public virtual ICollection<knjiga_autor> knjiga_autorValues { get; set; }
-        public virtual ICollection<kolekcija_knjiga> kolekcija_knjigaValues { get; set; }
-        public Knjiga()
+        public virtual ICollection<Quote> QuoteValues { get; set; }
+        public virtual ICollection<File> FileValues { get; set; }
+        public virtual ICollection<book_author> book_authorValues { get; set; }
+        public virtual ICollection<collection_book> collection_bookValues { get; set; }
+        public Book()
         {
-            CitatValues = new List<Citat>();
-            FajlValues = new List<Fajl>();
-            knjiga_autorValues = new List<knjiga_autor>();
-            kolekcija_knjigaValues = new List<kolekcija_knjiga>();
+            QuoteValues = new List<Quote>();
+            FileValues = new List<File>();
+            book_authorValues = new List<book_author>();
+            collection_bookValues = new List<collection_book>();
         }
-        [ForeignKey("serijalId")]
-        public virtual Serijal serijal { get; set; }
+        [ForeignKey("seriesId")]
+        public virtual Series series { get; set; }
     }
 
-    [Table("Kolekcija")]
-    public class Kolekcija
+    [Table("Collection")]
+    public class Collection
     {
         public long id { get; set; }
-        public string tag_naziv { get; set; }
+        public string name { get; set; }
 
-        public virtual ICollection<kolekcija_knjiga> kolekcija_knjigaValues { get; set; }
-        public Kolekcija()
+        public virtual ICollection<collection_book> collection_bookValues { get; set; }
+        public Collection()
         {
-            kolekcija_knjigaValues = new List<kolekcija_knjiga>();
+            collection_bookValues = new List<collection_book>();
         }
     }
 
-    [Table("Serijal")]
-    public class Serijal
+    [Table("Series")]
+    public class Series
     {
         public long id { get; set; }
-        public string naziv { get; set; }
+        public string name { get; set; }
         
-        public long autorId { get; set; }
+        public long authorId { get; set; }
         public string metadata { get; set; }
-        public virtual ICollection<Knjiga> KnjigaValues { get; set; }
-        public Serijal()
+        public virtual ICollection<Book> BookValues { get; set; }
+        public Series()
         {
-            KnjigaValues = new List<Knjiga>();
+            BookValues = new List<Book>();
         }
 
-        [ForeignKey("autorId")]
-        public virtual Autor autor { get; set; }
+        [ForeignKey("authorId")]
+        public virtual Author author { get; set; }
 
 
     }
 
-    [Table("knjiga_autor")]
-    public class knjiga_autor
+    [Table("book_author")]
+    public class book_author
     {
         [Key, Column(Order = 0)]
-        public long knjiga_id { get; set; }
+        public long book_id { get; set; }
         [Key, Column(Order = 1)]
-        public long autor_id { get; set; }
+        public long author_id { get; set; }
 
-        [ForeignKey("autor_id")]
-        public virtual Autor autor { get; set; }
-        [ForeignKey("knjiga_id")]
-        public virtual Knjiga knjiga { get; set; }
+        [ForeignKey("author_id")]
+        public virtual Author author { get; set; }
+        [ForeignKey("book_id")]
+        public virtual Book book { get; set; }
     }
 
-    [Table("kolekcija_knjiga")]
-    public class kolekcija_knjiga
+    [Table("collection_book")]
+    public class collection_book
     {
         [Key, Column(Order = 0)]
-        public virtual long kolekcija_id { get; set; }
+        public virtual long collection_id { get; set; }
         [Key, Column(Order = 1)]
-        public virtual long knjiga_id { get; set; }
-        [ForeignKey("kolekcija_id")]
-        public virtual Kolekcija kolekcija { get; set; }
-        [ForeignKey("knjiga_id")]
-        public virtual Knjiga knjiga { get; set; }
+        public virtual long book_id { get; set; }
+        [ForeignKey("collection_id")]
+        public virtual Collection collection { get; set; }
+        [ForeignKey("book_id")]
+        public virtual Book book { get; set; }
     }
 
 }

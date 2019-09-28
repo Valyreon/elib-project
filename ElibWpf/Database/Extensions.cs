@@ -12,7 +12,7 @@ namespace ElibWpf.Database
 {
     public static class Extensions
     {
-        public static Knjiga GetBook(this ParsedBook parsedBook)
+        public static Book GetBook(this ParsedBook parsedBook)
         {
             //Convert Image to bytearray to keep in the database
             byte[] coverBinary;
@@ -30,9 +30,9 @@ namespace ElibWpf.Database
 
 
 
-            return new Knjiga
+            return new Book
             {
-                naziv = parsedBook.Title,
+                name = parsedBook.Title,
                 cover = coverBinary,
                 metadata = JsonConvert.SerializeObject(bookMetadata)
             };
