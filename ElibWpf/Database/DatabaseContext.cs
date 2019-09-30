@@ -10,12 +10,13 @@ using Newtonsoft.Json;
 using EbookTools.Mobi;
 using System.Linq;
 using Microsoft.EntityFrameworkCore.Internal;
+using System.Collections.Generic;
 
 namespace ElibWpf.Database
 {
     public class DatabaseContext : DbContext
     {
-        public DatabaseContext() :
+        private DatabaseContext() :
             base(
                 new SQLiteConnection()
                 {
@@ -165,8 +166,8 @@ namespace ElibWpf.Database
 
         public Book GetBookFromID(long id) => Books.Find(id);
         public Author FindAuthor(string author) => Authors.FirstOrDefault(x => x.name == author);
-        public Book[] FindBooks(string bookName) => Books.Where(x => x.name.ToLower().Contains(bookName)).ToArray();
-        public Author[] FindAuthors(string authorName) => Authors.Where(x => x.name.ToLower().Contains(authorName)).ToArray();
+        public IList<Book> FindBooks(string bookName) => Books.Where(x => x.name.ToLower().Contains(bookName)).ToList();
+        public IList<Author> FindAuthors(string authorName) => Authors.Where(x => x.name.ToLower().Contains(authorName)).ToList();
 
         public void BookMetadata(long id)
         {
@@ -179,6 +180,15 @@ namespace ElibWpf.Database
             {
                 Console.WriteLine("Book was not found");
             }
+        }
+
+
+        private static DatabaseContext instance = null;
+        public static DatabaseContext GetInstance()
+        {
+            if (instance == null)
+                instance = new DatabaseContext();
+            return instance;
         }
 }
 }
