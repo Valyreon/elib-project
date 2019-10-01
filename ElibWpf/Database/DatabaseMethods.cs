@@ -84,6 +84,10 @@ namespace ElibWpf.Database
         {
             return book_author.Where(x => x.author_id == author.id).Select(i => i.book).ToList();
         }
+        public IList<Collection> GetBookCollections(Book book)
+        {
+            return collection_book.Where(x => x.book_id == book.id).Select(i => i.collection).ToList();
+        }
 
 
         /// <summary>  

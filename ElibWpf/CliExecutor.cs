@@ -37,18 +37,12 @@ namespace ElibWpf
                 {
                     case "":
                         break;
-                    case "listall":
-                        foreach(Book book in database.Books)
-                            Console.WriteLine(book);
-                        break;
-                    case "listallauthors":
-                        foreach (Author author in database.Authors)
-                            Console.WriteLine(author);
-                        break;
                     case "import":
+                    case "i":
                         database.ImportBook(consoleInput.Item2);
                         break;
                     case "metadata":
+                    case "m":
                         try
                         {
                             Console.WriteLine(database.GetBookMetadata(Int64.Parse(consoleInput.Item2)).GetJson());
@@ -59,6 +53,7 @@ namespace ElibWpf
                         }
                         break;
                     case "find":
+                    case "f":
                         Tuple<string, string> findInput = consoleInput.Item2.ToLower().Trim().SplitOnFirstBlank();
 
                         string findType = findInput.Item1.ToLower();
@@ -66,6 +61,7 @@ namespace ElibWpf
                         switch (findType)
                         {
                             case "book":
+                            case "b":
                                 IList<Book> books = database.FindBooks(findWhat);
                                 foreach (Book book in books)
                                 {
@@ -78,6 +74,7 @@ namespace ElibWpf
                                 break;
 
                             case "author":
+                            case "a":
                                 IList<Author> authors = database.FindAuthors(findWhat);
                                 foreach (Author author in authors)
                                 {
@@ -94,6 +91,31 @@ namespace ElibWpf
                                 break;
 
                         }
+                        break;
+                    case "view":
+                    case "v":
+                        Tuple<string, string> viewInput = consoleInput.Item2.ToLower().Trim().SplitOnFirstBlank();
+                        switch(viewInput.Item1)
+                        {
+                            case "details":
+                            case "d":
+                                Console.Write(database.GetBookFromID(Int64.Parse(viewInput.Item2)).GetDetails()); // TODO: Error handling
+                                break;
+                            case "all":
+                            case "a":
+                                foreach (Book book in database.Books)
+                                    Console.WriteLine(book);
+                                break;
+                            case "author":
+                            case "au":
+                                foreach (Author author in database.Authors)
+                                    Console.WriteLine(author);
+                                break;
+                            default:
+                                Console.WriteLine("View command was incorrect");
+                                break;
+                        }
+
                         break;
 
                     default:
