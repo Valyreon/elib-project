@@ -8,7 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ElibWpf
+
 {
+    /// <summary>  
+    ///  This class is used for CLI functionality.  
+    /// </summary>  
     class CliExecutor
     {
         private DatabaseContext database;
@@ -18,6 +22,9 @@ namespace ElibWpf
             Console.WriteLine("Starting eLIB in CLI mode.\nWELCOME TO ELIB COMMAND LINE.\n");
         }
 
+        /// <summary>  
+        ///  Starts the CLI loop until the keyword 'exit' is inputted.  
+        /// </summary>  
         public void Execute()
         {
             string command;
@@ -28,17 +35,28 @@ namespace ElibWpf
                 command = consoleInput.Item1.ToLower();
                 switch (command)
                 {
+                    case "":
+                        break;
                     case "listall":
-                        database.ListAllBooks();
+                        foreach(Book book in database.Books)
+                            Console.WriteLine(book);
                         break;
                     case "listallauthors":
-                        database.ListAllAuthors();
+                        foreach (Author author in database.Authors)
+                            Console.WriteLine(author);
                         break;
                     case "import":
                         database.ImportBook(consoleInput.Item2);
                         break;
                     case "metadata":
-                        database.BookMetadata(Int64.Parse(consoleInput.Item2)); // TODO: Error handling
+                        try
+                        {
+                            Console.WriteLine(database.GetBookMetadata(Int64.Parse(consoleInput.Item2)).GetJson());
+                        }
+                        catch(Exception e)
+                        {
+                            Console.WriteLine("Invalid format");
+                        }
                         break;
                     case "find":
                         Tuple<string, string> findInput = consoleInput.Item2.ToLower().Trim().SplitOnFirstBlank();
