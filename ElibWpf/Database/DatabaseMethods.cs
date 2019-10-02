@@ -151,6 +151,7 @@ namespace ElibWpf.Database
         }
 
         public Book GetBookFromID(long id) => Books.Find(id);
+        public Collection GetCollectionFromID(long id) => Collections.Find(id);
         public Author FindAuthor(string author) => Authors.FirstOrDefault(x => x.name == author);
         public IList<Book> FindBooks(string bookName) => Books.Where(x => x.name.ToLower().Contains(bookName)).ToList();
         public IList<Author> FindAuthors(string authorName) => Authors.Where(x => x.name.ToLower().Contains(authorName)).ToList();

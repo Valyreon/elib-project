@@ -85,7 +85,7 @@ namespace ElibWpf
                                     Console.WriteLine();*/
                                 }
                                 break;
-
+                            
                             default:
                                 Console.WriteLine("Find command was incorrect");
                                 break;
@@ -110,6 +110,25 @@ namespace ElibWpf
                             case "au":
                                 foreach (Author author in database.Authors)
                                     Console.WriteLine(author);
+                                break;
+                            case "collection":
+                            case "c":
+                                if(viewInput.Item2 == "")
+                                    foreach (Collection collection in database.Collections)
+                                        Console.WriteLine(collection);
+                                else
+                                    try
+                                    {
+                                        Collection collection = database.GetCollectionFromID(Int64.Parse(viewInput.Item2));
+                                        if(collection != null)
+                                            Console.WriteLine(collection);
+                                        else
+                                            Console.WriteLine("Collection does not exit");
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Console.WriteLine("Invalid collection id");
+                                    }
                                 break;
                             default:
                                 Console.WriteLine("View command was incorrect");
