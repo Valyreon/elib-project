@@ -17,23 +17,35 @@ namespace ElibWpf.DomainModel
 
         public string GetDetails()
         {
+            const string formatString = "{0, -12} {1}\n";
+
             StringBuilder stringBuilder = new StringBuilder(String.Format("\n{0, -12} {1}\n", "Title:", name));
             IList<Author> authors = database.GetBookAuthors(this);
             IList<Collection> collections = database.GetBookCollections(this);
+
             if(authors != null)
-                stringBuilder.Append(String.Format("{0, -12} {1}\n", authors.Count > 1 ? "Authors:" : "Author:", string.Join(", ", authors.Select(x => x.name))));
+                stringBuilder.Append(String.Format(formatString, authors.Count > 1 ? "Authors:" : "Author:", string.Join(", ", authors.Select(x => x.name))));
             if (series != null)
-                stringBuilder.Append(String.Format("{0, -12} {1}\n", "Series:", series.name));
+                stringBuilder.Append(String.Format(formatString, "Series:", series.name));
             if (series != null)
-                stringBuilder.Append(String.Format("{0, -12} {1}\n", "Number:", seriesNumber));
-
-                stringBuilder.Append(String.Format("{0, -12} {1}\n", "Read:", isRead ? "Yes" : "No"));
-
+                stringBuilder.Append(String.Format(formatString, "Number:", seriesNumber));
+            stringBuilder.Append(String.Format(formatString, "Read:", isRead ? "Yes" : "No"));
             if (collections != null)
-                stringBuilder.Append(String.Format("{0, -12} {1}\n\n", collections.Count > 1 ? "Collections:" : "Collection:", string.Join(", ", collections)));
+                stringBuilder.Append(String.Format(formatString, collections.Count > 1 ? "Collections:" : "Collection:", string.Join(", ", collections)));
+            stringBuilder.Append("\n");
 
             return stringBuilder.ToString();
         }
+        public override bool Equals(object obj)
+        {
+            Book book = obj as Book;
+
+            if (book == null)
+                return false;
+
+            return book.id == this.id;
+        }
+        public override int GetHashCode() => id.GetHashCode();
     }
 
     public partial class Author
@@ -43,7 +55,19 @@ namespace ElibWpf.DomainModel
         {
             return $"ID: {id}  Name: {name} Books: {string.Join(", ", database.GetAuthorBooks(this).Select(x => x.name))}";
         }
-    }
 
+        public override bool Equals(object obj)
+        {
+            Author author = obj as Author;
+
+            if (author == null)
+                return false;
+
+            return author.id == this.id;
+        }
+
+        public override int GetHashCode() => id.GetHashCode();
+
+    }
 
 }

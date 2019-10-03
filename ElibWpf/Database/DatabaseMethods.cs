@@ -39,6 +39,20 @@ namespace ElibWpf.Database
             return result;
         }
 
+        public Series AddSeriesDB(Series series)
+        {
+            Series result = Series.Add(series);
+            this.SaveChanges();
+            return result;
+        }
+
+        public DomainModel.File AddFileDB(DomainModel.File file)
+        {
+            DomainModel.File result = Files.Add(file);
+            this.SaveChanges();
+            return result;
+        }
+
         /// <summary>  
         ///  Adds the author passed as the argument to the local database.
         ///  <param name="author">Author object</param>
@@ -71,23 +85,13 @@ namespace ElibWpf.Database
             return result;
         }
 
-        public void Info()
-        {
-
-        }
 
         public IList<Author> GetBookAuthors(Book book)
-        {
-            return book_author.Where(x => x.book_id == book.id).Select(i => i.author).ToList();
-        }
+            => book_author.Where(x => x.book_id == book.id).Select(i => i.author).ToList();
         public IList<Book> GetAuthorBooks(Author author)
-        {
-            return book_author.Where(x => x.author_id == author.id).Select(i => i.book).ToList();
-        }
+           => book_author.Where(x => x.author_id == author.id).Select(i => i.book).ToList();
         public IList<Collection> GetBookCollections(Book book)
-        {
-            return collection_book.Where(x => x.book_id == book.id).Select(i => i.collection).ToList();
-        }
+            => collection_book.Where(x => x.book_id == book.id).Select(i => i.collection).ToList();
 
 
         /// <summary>  
@@ -152,7 +156,9 @@ namespace ElibWpf.Database
 
         public Book GetBookFromID(long id) => Books.Find(id);
         public Collection GetCollectionFromID(long id) => Collections.Find(id);
+        public Series GetSeriesFromID(long id) => Series.Find(id);
         public Author FindAuthor(string author) => Authors.FirstOrDefault(x => x.name == author);
+        public Series FindSeries(string series) => Series.FirstOrDefault(x => x.name == series);
         public IList<Book> FindBooks(string bookName) => Books.Where(x => x.name.ToLower().Contains(bookName)).ToList();
         public IList<Author> FindAuthors(string authorName) => Authors.Where(x => x.name.ToLower().Contains(authorName)).ToList();
 
@@ -179,6 +185,13 @@ namespace ElibWpf.Database
             Books.AddOrUpdate(book);
             this.SaveChanges();
             return GetBookFromID(book.id);
+        }
+
+        public Series AddOrUpdateSeries(Series series)
+        {
+            Series.AddOrUpdate(series);
+            this.SaveChanges();
+            return series;
         }
     }
 }

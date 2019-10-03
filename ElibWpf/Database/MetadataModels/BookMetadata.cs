@@ -12,14 +12,7 @@ namespace ElibWpf.Database.MetadataModels
         public string ISBN { get; set; }
         public string Publisher { get; set; }
 
-        public static BookMetadata GetBookMetadataFromJson(string json)
-        {
-            return (BookMetadata)JsonConvert.DeserializeObject(json);
-        }
-
-        public string GetJson()
-        {
-            return JsonConvert.SerializeObject(this);
-        }
+        public static BookMetadata GetBookMetadataFromJson(string json) => (BookMetadata) JsonConvert.DeserializeObject(json);
+        public string GetJson() => JsonConvert.SerializeObject(this);
     }
 }

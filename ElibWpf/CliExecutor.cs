@@ -1,11 +1,16 @@
-﻿using ElibWpf.Database;
+﻿using EbookTools;
+using EbookTools.Epub;
+using EbookTools.Mobi;
+using ElibWpf.Database;
 using ElibWpf.DomainModel;
 using ElibWpf.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace ElibWpf
 
@@ -22,9 +27,34 @@ namespace ElibWpf
             Console.WriteLine("Starting eLIB in CLI mode.\nWELCOME TO ELIB COMMAND LINE.\n");
         }
 
+        private bool ConsoleQuestion(string question, bool inverted)
+        {
+            ConsoleKey consoleKey;
+
+            do
+            {
+                Console.Write("\n" + question + " " + (inverted ? "[y/N]" : "[Y/n]") + " ");
+                consoleKey = Console.ReadKey(false).Key;
+            } while (consoleKey != ConsoleKey.Y && consoleKey != ConsoleKey.N && consoleKey != ConsoleKey.Enter);
+
+            Console.Write("\n");
+
+            return consoleKey == ConsoleKey.Y  ||  consoleKey == ConsoleKey.Enter && !inverted;
+        }
+        private string GetNewOrDefaultInput(string def)
+        {
+            string newString = Console.ReadLine().Trim();
+
+            if (newString == "")
+                return def;
+
+            return newString;
+        }
+
         /// <summary>  
         ///  Starts the CLI loop until the keyword 'exit' is inputted.  
-        /// </summary>  
+        /// </summary>
+        /// 
         public void Execute()
         {
             string command;
@@ -39,7 +69,106 @@ namespace ElibWpf
                         break;
                     case "import":
                     case "i":
-                        database.ImportBook(consoleInput.Item2);
+                        // TODO: Check if book exists
+                        Regex splitRegex = new Regex("(?<=\")[^\"]*(?=\")|[^\" ]+");
+                        List<string> fileList = splitRegex.Matches(consoleInput.Item2).Cast<Match>().Select(x => x.Value).ToList();
+
+                        List<ParsedBook> foundBooks = new List<ParsedBook>();
+                        foreach(string filePath in fileList)
+                        {
+                            if(System.IO.File.Exists(filePath))
+                            {
+                                StreamReader bookStream = new StreamReader(filePath);
+                                switch (Path.GetExtension(filePath))
+                                {
+                                    case ".mobi":
+                                        foundBooks.Add(new MobiParser(bookStream.BaseStream).Parse());
+                                        break;
+                                    case ".epub":
+                                        foundBooks.Add(new EpubParser(bookStream.BaseStream).Parse());
+                                        break;
+                                    default:
+                                        Console.WriteLine($"File {filePath} has an unsupported extension.");
+                                        break;
+                                }
+                            }
+                            else
+                                Console.WriteLine($"File {filePath} does not exist.");
+                        }
+
+                        if (foundBooks.Count == 0)
+                        {
+                            Console.WriteLine("No books were found.");
+                            break;
+                        }
+
+                        Console.WriteLine("Found books:");
+                        for (int i = 1; i <= foundBooks.Count; i++)
+                            Console.WriteLine($"{i}. {foundBooks[i - 1].Title}");
+
+                        if (!ConsoleQuestion("Do you want to continue?", false))
+                            break;
+
+                        for (int i = 0; i < foundBooks.Count; i++)
+                        {
+                            Book book = new Book();
+                            ParsedBook newBook = foundBooks[i];
+
+                            Console.WriteLine($"{i+1}. {newBook.Title}");
+                            Console.Write($"Title[{newBook.Title}]*: ");
+
+                            book.name = GetNewOrDefaultInput(newBook.Title);
+                            
+
+                            Console.Write($"Author[{newBook.Author}]*: ");
+                            string authorName = GetNewOrDefaultInput(newBook.Author);
+
+                            Author author = database.FindAuthor(authorName);
+                            if (author == null)
+                                author = database.AddAuthorDB(new Author() { name = authorName }) ;
+
+                            Console.Write("Series: ");
+                            string seriesName = Console.ReadLine().Trim();
+                            if (seriesName != "")
+                            {
+                                int seriesNumber;
+                                do
+                                {
+                                    Console.Write("Series number: ");
+                                } while (!Int32.TryParse(Console.ReadLine().Trim(), out seriesNumber));
+
+                                book.seriesNumber = seriesNumber;
+                            }
+
+                            Console.WriteLine("Cover image: " + (newBook.Cover == null ? "[not found]" : "[found]") + " ");
+
+                            book.isRead = ConsoleQuestion("Read", true);
+
+                            Console.WriteLine($"Publisher: {newBook.Publisher}");
+
+                            book = database.AddBookDB(book);
+
+                            if (seriesName != "")
+                            {
+                                Series series = database.FindSeries(seriesName);
+
+                                if (series == null)
+                                    series = new Series() { name = seriesName, author = author };
+
+                                series.BookValues.Add(book);
+
+                                database.AddOrUpdateSeries(series);
+                                book.series = series; 
+                                database.AddOrUpdateBook(book);
+                            }
+                            book.FileValues.Add(database.AddFileDB(new DomainModel.File() { book = book, fileBlob = System.IO.File.ReadAllBytes(fileList[i]), format = Path.GetExtension(fileList[i]) }));
+                            database.AddOrUpdateBook(book);
+                            
+
+                            database.AddBookAuthorLink(book, author);
+                        }
+
+
                         break;
                     case "metadata":
                     case "m":
@@ -130,12 +259,32 @@ namespace ElibWpf
                                         Console.WriteLine("Invalid collection id");
                                     }
                                 break;
+                            case "series":
+                            case "s":
+                                if (viewInput.Item2 == "")
+                                    foreach (Series series in database.Series)
+                                        Console.WriteLine(series.name);
+                                else
+                                    try
+                                    {
+                                        Series series = database.GetSeriesFromID(Int64.Parse(viewInput.Item2));
+                                        if (series != null)
+                                            Console.WriteLine(series);
+                                        else
+                                            Console.WriteLine("Series does not exit");
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Console.WriteLine("Invalid series id");
+                                    }
+                                break;
                             default:
                                 Console.WriteLine("View command was incorrect");
                                 break;
                         }
 
                         break;
+                    
 
                     default:
                         Console.WriteLine("Unknown command");
