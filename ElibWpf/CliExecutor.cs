@@ -146,7 +146,7 @@ namespace ElibWpf
 
                             Console.WriteLine($"Publisher: {newBook.Publisher}");
 
-                            book = database.AddBookDB(book);
+                            book = database.AddOrUpdateBook(book);
 
                             if (seriesName != "")
                             {
@@ -165,7 +165,7 @@ namespace ElibWpf
                             database.AddOrUpdateBook(book);
                             
 
-                            database.AddBookAuthorLink(book, author);
+                            database.AddBookAuthorLink(book, author);// TODO: Remove save changes
                         }
 
 

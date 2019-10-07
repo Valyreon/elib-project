@@ -18,59 +18,10 @@ namespace ElibWpf.Database
     /// </summary> 
     public partial class DatabaseContext
     {
-        public void AddBookDB(String name)
-        {
-            Books.Add(new Book
-            {
-                name = name.Trim(),
-            });
-            this.SaveChanges();
-        }
-
-        /// <summary>  
-        ///  Adds the book passed as the argument to the local database.
-        ///  <param name="book">Book object</param>
-        ///  <returns>The Book object with filled id property</returns>
-        /// </summary>
-        public Book AddBookDB(Book book)
-        {
-            Book result = Books.Add(book);
-            this.SaveChanges();
-            return result;
-        }
-
-        public Series AddSeriesDB(Series series)
-        {
-            Series result = Series.Add(series);
-            this.SaveChanges();
-            return result;
-        }
-
-        public DomainModel.File AddFileDB(DomainModel.File file)
-        {
-            DomainModel.File result = Files.Add(file);
-            this.SaveChanges();
-            return result;
-        }
-
-        /// <summary>  
-        ///  Adds the author passed as the argument to the local database.
-        ///  <param name="author">Author object</param>
-        ///  <returns>The Author object with filled id property</returns>
-        /// </summary>
-        public Author AddAuthorDB(Author author)
-        {
-            Author result = Authors.Add(author);
-            this.SaveChanges();
-            return result;
-        }
-
-        /// <summary>  
-        ///  Adds the passed Author as the author of the passed Book to the local database.
-        ///  <param name="book">Book object</param>
-        ///  <param name="author">Author object</param>
-        ///  <returns>The book_author object linking the passed Book and Authors</returns>
-        /// </summary>
+        public Book AddBookDB(Book book) => Books.Add(book);
+        public Series AddSeriesDB(Series series) => Series.Add(series);
+        public DomainModel.File AddFileDB(DomainModel.File file) => Files.Add(file);
+        public Author AddAuthorDB(Author author) => Authors.Add(author);
         public book_author AddBookAuthorLink(Book book, Author author)
         {
             book_author newBookAuthorLink = new book_author
@@ -81,7 +32,6 @@ namespace ElibWpf.Database
                 author = author
             };
             book_author result = book_author.Add(newBookAuthorLink);
-            this.SaveChangesAsync();
             return result;
         }
 
@@ -156,7 +106,9 @@ namespace ElibWpf.Database
 
         public Book GetBookFromID(long id) => Books.Find(id);
         public Collection GetCollectionFromID(long id) => Collections.Find(id);
+        public Author GetAuthorFromID(long id) => Authors.Find(id);
         public Series GetSeriesFromID(long id) => Series.Find(id);
+        public Book FindBookByName(string name) => Books.Where(x => x.name == name).FirstOrDefault();
         public Author FindAuthor(string author) => Authors.FirstOrDefault(x => x.name == author);
         public Series FindSeries(string series) => Series.FirstOrDefault(x => x.name == series);
         public IList<Book> FindBooks(string bookName) => Books.Where(x => x.name.ToLower().Contains(bookName)).ToList();
@@ -183,15 +135,19 @@ namespace ElibWpf.Database
         public Book AddOrUpdateBook(Book book)
         {
             Books.AddOrUpdate(book);
-            this.SaveChanges();
             return GetBookFromID(book.id);
         }
 
         public Series AddOrUpdateSeries(Series series)
         {
             Series.AddOrUpdate(series);
-            this.SaveChanges();
-            return series;
+            return GetSeriesFromID(series.id);
+        }
+
+        public Author AddOrUpdateAuthor(Author author)
+        {
+            Authors.AddOrUpdate(author);
+            return GetAuthorFromID(author.id);
         }
     }
 }

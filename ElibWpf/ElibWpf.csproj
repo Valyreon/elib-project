@@ -215,6 +215,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CliExecutor.cs" />
+    <Compile Include="Database\BookImport.cs" />
     <Compile Include="Database\DatabaseContext.cs" />
     <Compile Include="Database\DatabaseMethods.cs" />
     <Compile Include="Database\DomainModel.cs" />
