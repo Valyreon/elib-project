@@ -1,24 +1,24 @@
 ﻿using System.Collections.Generic;
 
-namespace FileEncryptorWpf.Views
+namespace ElibWpf.ViewModels
 {
     /// <summary>
-    /// Defines the <see cref="ViewModelHistory" /> interface. This interface should be implemented by every window which can change content to some <see cref="UserControl"/>.
+    /// Defines the <see cref="WindowControlHistory" /> interface. This interface should be implemented by every window which can change content to some <see cref="UserControl"/>.
     /// </summary>
-    public abstract class ViewModelHistory
+    public abstract class WindowControlHistory
     {
         protected readonly Stack<object> viewModelHistory = new Stack<object>();
 
         protected abstract void SetCurrentControl(object obj);
 
-        public void GoToPreviousViewModel()
+        public void GoToPreviousControl()
         {
-            if(viewModelHistory.Count>1)
+            if (viewModelHistory.Count > 1)
                 viewModelHistory.Pop();
             SetCurrentControl(viewModelHistory.Peek());
         }
 
-        public void GoToViewModel(object x)
+        public void GoToControl(object x)
         {
             viewModelHistory.Push(x);
             SetCurrentControl(x);
