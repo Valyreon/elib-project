@@ -16,7 +16,7 @@ namespace Cli
     /// <summary>  
     ///  This class is used for CLI functionality.  
     /// </summary>  
-    class CliExecutor
+    public class CliExecutor
     {
         private DatabaseContext database;
         public CliExecutor()
