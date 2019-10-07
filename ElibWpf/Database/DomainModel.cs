@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace ElibWpf.DomainModel
 {
     [Table("Author")]
-    public class Author
+    public partial class Author
     {
         public long id { get; set; }
         public string name { get; set; }
@@ -26,7 +26,7 @@ namespace ElibWpf.DomainModel
     }
 
     [Table("Quote")]
-    public class Quote
+    public partial class Quote
     {
         public long id { get; set; }
         public string text { get; set; }
@@ -37,7 +37,7 @@ namespace ElibWpf.DomainModel
     }
 
     [Table("File")]
-    public class File
+    public partial class File
     {
         [Key, Column(Order = 0)]
         public long bookId { get; set; }
@@ -49,7 +49,7 @@ namespace ElibWpf.DomainModel
     }
 
     [Table("Book")]
-    public class Book
+    public partial class Book
     {
         public long id { get; set; }
         public string name { get; set; }
@@ -76,7 +76,7 @@ namespace ElibWpf.DomainModel
     }
 
     [Table("Collection")]
-    public class Collection
+    public partial class Collection
     {
         public long id { get; set; }
         public string name { get; set; }
@@ -89,7 +89,7 @@ namespace ElibWpf.DomainModel
     }
 
     [Table("Series")]
-    public class Series
+    public partial class Series
     {
         public long id { get; set; }
         public string name { get; set; }
@@ -109,7 +109,7 @@ namespace ElibWpf.DomainModel
     }
 
     [Table("book_author")]
-    public class book_author
+    public partial class book_author
     {
         [Key, Column(Order = 0)]
         public long book_id { get; set; }
@@ -123,7 +123,7 @@ namespace ElibWpf.DomainModel
     }
 
     [Table("collection_book")]
-    public class collection_book
+    public partial class collection_book
     {
         [Key, Column(Order = 0)]
         public virtual long collection_id { get; set; }
