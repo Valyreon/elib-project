@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ElibWpf.Database.MetadataModels
+namespace Data.MetadataModels
 {
     public class BookMetadata
     {

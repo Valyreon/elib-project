@@ -1,18 +1,9 @@
-﻿using System;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Data.SQLite;
-using ElibWpf.DomainModel;
-using System.IO;
-using EbookTools.Epub;
-using EbookTools;
-using System.Drawing;
-using Newtonsoft.Json;
-using EbookTools.Mobi;
-using System.Linq;
-using Microsoft.EntityFrameworkCore.Internal;
-using System.Collections.Generic;
+using Data.DomainModel;
+using Data;
 
-namespace ElibWpf.Database
+namespace Data
 {
     /// <summary>  
     ///  This class provides SQLite database interaction.  
@@ -37,7 +28,7 @@ namespace ElibWpf.Database
 
         public DbSet<Author> Authors { get; set; }
         public DbSet<Quote> Quotes { get; set; }
-        public DbSet<DomainModel.File> Files { get; set; }
+        public DbSet<Data.DomainModel.File> Files { get; set; }
         public DbSet<Book> Books { get; set; }
         public DbSet<Collection> Collections { get; set; }
         public DbSet<Series> Series { get; set; }

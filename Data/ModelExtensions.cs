@@ -1,11 +1,10 @@
-﻿using ElibWpf.Database;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ElibWpf.DomainModel
+namespace Data.DomainModel
 {
     public partial class Book
     {

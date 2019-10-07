@@ -1,18 +1,16 @@
-﻿using EbookTools;
-using EbookTools.Epub;
-using EbookTools.Mobi;
-using ElibWpf.Database;
-using ElibWpf.DomainModel;
-using ElibWpf.Helpers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.IO;
+using Models.Helpers;
+using EbookTools;
+using EbookTools.Mobi;
+using EbookTools.Epub;
+using Data.DomainModel;
+using Data;
 
-namespace ElibWpf
+namespace Cli
 
 {
     /// <summary>  
@@ -161,7 +159,7 @@ namespace ElibWpf
                                 book.series = series; 
                                 database.AddOrUpdateBook(book);
                             }
-                            book.FileValues.Add(database.AddFileDB(new DomainModel.File() { book = book, fileBlob = System.IO.File.ReadAllBytes(fileList[i]), format = Path.GetExtension(fileList[i]) }));
+                            book.FileValues.Add(database.AddFileDB(new Data.DomainModel.File() { book = book, fileBlob = System.IO.File.ReadAllBytes(fileList[i]), format = Path.GetExtension(fileList[i]) }));
                             database.AddOrUpdateBook(book);
                             
 

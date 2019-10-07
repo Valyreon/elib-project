@@ -1,7 +1,7 @@
-﻿using EbookTools;
+﻿using Data.DomainModel;
+using EbookTools;
 using EbookTools.Epub;
 using EbookTools.Mobi;
-using ElibWpf.DomainModel;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ElibWpf.Database
+namespace Data
 {
     public class BookImport
     {

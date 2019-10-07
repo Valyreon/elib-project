@@ -1,8 +1,8 @@
 ﻿using EbookTools;
 using EbookTools.Epub;
 using EbookTools.Mobi;
-using ElibWpf.Database.MetadataModels;
-using ElibWpf.DomainModel;
+using Data.MetadataModels;
+using Data.DomainModel;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Migrations;
@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ElibWpf.Database
+namespace Data
 {
     /// <summary>  
     ///  This partial class provides methods for database interaction.  

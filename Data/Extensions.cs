@@ -1,14 +1,9 @@
 ﻿using EbookTools;
-using ElibWpf.DomainModel;
+using Data.DomainModel;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ElibWpf.Database
+namespace Data
 {
     public static class Extensions
     {
