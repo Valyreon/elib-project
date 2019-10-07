@@ -13,7 +13,8 @@ namespace FileEncryptorWpf.Views
 
         public void GoToPreviousViewModel()
         {
-            viewModelHistory.Pop();
+            if(viewModelHistory.Count>1)
+                viewModelHistory.Pop();
             SetCurrentControl(viewModelHistory.Peek());
         }
 
