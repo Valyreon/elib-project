@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-namespace FileEncryptorWpf.ViewModels
+namespace ElibWpf.ViewModels
 {
     /// <summary>
     /// Defines the abstract class that every ViewModel in MVVM architecture must implement.
