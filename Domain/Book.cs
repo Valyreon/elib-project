@@ -21,5 +21,9 @@ namespace Domain
         public byte[] Cover { get; set; }
         public bool? IsRead { get; set; }
         public int? WhenRead { get; set; }
+        public ICollection<Author> Authors { get; set; }
+        public ICollection<EFile> Files { get; set; }
+        public ICollection<Quote> Quotes { get; set; }
+        public ICollection<UserCollection> UserCollections { get; set; }
     }
 }

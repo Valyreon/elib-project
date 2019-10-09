@@ -56,9 +56,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Data\Data.csproj">
-      <Project>{52DDF025-3111-48E5-94E1-CC4EE0003C56}</Project>
-      <Name>Data</Name>
+    <ProjectReference Include="..\DataLayer\DataLayer.csproj">
+      <Project>{A8EE62FD-FDCA-4911-B607-394DBFEC8AA8}</Project>
+      <Name>DataLayer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Domain\Domain.csproj">
+      <Project>{1A7E4187-0A14-4B7F-BA7E-A5E618C0BFC8}</Project>
+      <Name>Domain</Name>
     </ProjectReference>
     <ProjectReference Include="..\EbookTools\EbookTools.csproj">
       <Project>{E3621A3E-7F43-4150-9689-9B7C43040688}</Project>

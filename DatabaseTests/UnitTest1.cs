@@ -11,9 +11,15 @@ namespace DatabaseTests
         [TestMethod]
         public void TestMethod1()
         {
-            var context = new ElibContext(@"C:\Users\luka.budrak\Desktop\new_elib.db");
-            Author first = context.Authors.Where(x => true).FirstOrDefault();
-            Book mybook = context.Books.Include("Series").Where(x => true).FirstOrDefault();
+            ElibContext context = new ElibContext(@"C:\Users\luka.budrak\Desktop\new_elib-test.db");
+            Author first = context.Authors.Include("Books").FirstOrDefault();
+            UserCollection collection = context.UserCollections.Include("Books").FirstOrDefault();
+            Book mybook = context.Books
+                .Include("Series")
+                .Include("Authors")
+                .Include("Files")
+                .Include("Quotes")
+                .FirstOrDefault();
         }
     }
 }

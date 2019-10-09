@@ -7,8 +7,8 @@ using Models.Helpers;
 using EbookTools;
 using EbookTools.Mobi;
 using EbookTools.Epub;
-using Data.DomainModel;
-using Data;
+using DataLayer;
+using Domain;
 
 namespace Cli
 
@@ -18,10 +18,10 @@ namespace Cli
     /// </summary>  
     public class CliExecutor
     {
-        private DatabaseContext database;
+        private ElibContext database;
         public CliExecutor()
         {
-            database = DatabaseContext.GetInstance();
+            database = new ElibContext(@"C:\Users\luka.budrak\Desktop\new_elib-test.db"); //have to specify path now
             Console.WriteLine("Starting eLIB in CLI mode.\nWELCOME TO ELIB COMMAND LINE.\n");
         }
 

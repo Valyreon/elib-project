@@ -194,10 +194,6 @@
       <Project>{EE523085-2B37-423B-8D05-86374FE87301}</Project>
       <Name>CommandLineInterface</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Data\Data.csproj">
-      <Project>{52DDF025-3111-48E5-94E1-CC4EE0003C56}</Project>
-      <Name>Data</Name>
-    </ProjectReference>
     <ProjectReference Include="..\EbookTools\EbookTools.csproj">
       <Project>{e3621a3e-7f43-4150-9689-9b7c43040688}</Project>
       <Name>EbookTools</Name>
