@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using DataLayer;
 using Domain;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Models;
 
 namespace DatabaseTests
 {
@@ -13,7 +15,7 @@ namespace DatabaseTests
         [TestMethod]
         public void TestRetrieval()
         {
-            ElibContext context = new ElibContext(@"F:\Documents\Visual Studio 2019\Projects\ElibApplication\database.sqlite");
+            ElibContext context = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
 
             // EntityFramework WILL NOT get items from other tables if not specifically asked to do so
             // If you want it to pull something as a graph, you need to use Include("NameOfPropertyToInclude");
@@ -50,7 +52,7 @@ namespace DatabaseTests
                 "adventure"
             };
 
-            ElibContext context = new ElibContext(@"F:\Documents\Visual Studio 2019\Projects\ElibApplication\database.sqlite");
+            using ElibContext context = new ElibContext(@"F:\Documents\Visual Studio 2019\Projects\ElibApplication\database.sqlite");
 
             // Create new book object
             Book newBook = new Book

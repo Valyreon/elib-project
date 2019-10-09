@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Cli;
-using Data;
 
 namespace ElibWpf
 {
@@ -10,14 +8,14 @@ namespace ElibWpf
         /// <summary>
         /// Application Entry Point.
         /// </summary>
-        /// 
+        ///
         [System.STAThreadAttribute()]
         [System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [System.CodeDom.Compiler.GeneratedCodeAttribute("PresentationBuildTasks", "4.0.0.0")]
         public static void Main()
         {
             Console.WriteLine("Initializing local DB");
-            DatabaseContext database = DatabaseContext.GetInstance();
+            //DatabaseContext database = DatabaseContext.GetInstance();
             Console.WriteLine("Checking arguments");
             // Check if app is being run in CLI mode
             string[] args = Environment.GetCommandLineArgs();
@@ -27,8 +25,8 @@ namespace ElibWpf
             }
             if (args.Contains("-cli")) // Don't show the GUI
             {
-                CliExecutor cliExecutor = new CliExecutor();
-                cliExecutor.Execute();
+                //CliExecutor cliExecutor = new CliExecutor();
+                //cliExecutor.Execute();
             }
             else
             {

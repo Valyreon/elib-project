@@ -9,13 +9,13 @@ using EbookTools.Mobi;
 using EbookTools.Epub;
 using DataLayer;
 using Domain;
-
+/*
 namespace Cli
 
 {
-    /// <summary>  
-    ///  This class is used for CLI functionality.  
-    /// </summary>  
+    /// <summary>
+    ///  This class is used for CLI functionality.
+    /// </summary>
     public class CliExecutor
     {
         private ElibContext database;
@@ -49,10 +49,10 @@ namespace Cli
             return newString;
         }
 
-        /// <summary>  
-        ///  Starts the CLI loop until the keyword 'exit' is inputted.  
+        /// <summary>
+        ///  Starts the CLI loop until the keyword 'exit' is inputted.
         /// </summary>
-        /// 
+        ///
         public void Execute()
         {
             string command;
@@ -116,7 +116,7 @@ namespace Cli
                             Console.Write($"Title[{newBook.Title}]*: ");
 
                             book.name = GetNewOrDefaultInput(newBook.Title);
-                            
+
 
                             Console.Write($"Author[{newBook.Author}]*: ");
                             string authorName = GetNewOrDefaultInput(newBook.Author);
@@ -156,12 +156,12 @@ namespace Cli
                                 series.BookValues.Add(book);
 
                                 database.AddOrUpdateSeries(series);
-                                book.series = series; 
+                                book.series = series;
                                 database.AddOrUpdateBook(book);
                             }
                             book.FileValues.Add(database.AddFileDB(new Data.DomainModel.File() { book = book, fileBlob = System.IO.File.ReadAllBytes(fileList[i]), format = Path.GetExtension(fileList[i]) }));
                             database.AddOrUpdateBook(book);
-                            
+
 
                             database.AddBookAuthorLink(book, author);// TODO: Remove save changes
                         }
@@ -209,10 +209,9 @@ namespace Cli
                                     /*Console.WriteLine("Books: ");
                                     foreach (Book book in database.GetAuthorBooks(author))
                                         Console.WriteLine("    " + book.name);
-                                    Console.WriteLine();*/
+                                    Console.WriteLine();
                                 }
                                 break;
-                            
                             default:
                                 Console.WriteLine("Find command was incorrect");
                                 break;
@@ -282,7 +281,7 @@ namespace Cli
                         }
 
                         break;
-                    
+
 
                     default:
                         Console.WriteLine("Unknown command");
@@ -295,3 +294,4 @@ namespace Cli
         }
     }
 }
+    */
