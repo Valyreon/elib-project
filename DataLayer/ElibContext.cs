@@ -32,6 +32,7 @@ namespace DataLayer
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            // Here we do schema building with Fluent API
             modelBuilder.Entity<Book>().HasMany(x => x.Authors);
             modelBuilder.Entity<Book>().HasMany(x => x.Files);
             modelBuilder.Entity<Book>().HasMany(x => x.Quotes);
@@ -41,6 +42,8 @@ namespace DataLayer
 
             modelBuilder.Entity<Author>().HasMany(x => x.Books);
             modelBuilder.Entity<BookSeries>().HasMany(x => x.Books);
+
+            modelBuilder.Entity<UserCollection>().HasIndex(x => x.Tag).IsUnique();
         }
     }
 }
