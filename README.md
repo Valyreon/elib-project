@@ -1,8 +1,8 @@
 # elib-project
 
----
+##**NOTE: Database included in the repository needs to stay EMPTY. Copy the database to another place, setup the properties file like below and use that database while developing.**
 
-**Database included in the repository needs to be empty. Copy the database to another place, setup the properties file like below and use that database while developing.**
+---
 
 ### Making *properties.json* file for database path
 
