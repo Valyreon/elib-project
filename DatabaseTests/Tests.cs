@@ -15,7 +15,7 @@ namespace DatabaseTests
         [TestMethod]
         public void TestRetrieval()
         {
-            ElibContext context = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
+            using ElibContext context = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
 
             // EntityFramework WILL NOT get items from other tables if not specifically asked to do so
             // If you want it to pull something as a graph, you need to use Include("NameOfPropertyToInclude");
@@ -28,7 +28,7 @@ namespace DatabaseTests
                 .Include("Files")
                 .Include("Quotes")
                 .FirstOrDefault();
-            Assert.IsNotNull(first.Books);
+            Assert.IsNotNull(first.Books); 
             Assert.IsNotNull(collection.Books);
             Assert.IsNotNull(mybook.Series);
             Assert.IsNotNull(mybook.Authors);
