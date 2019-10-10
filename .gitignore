@@ -260,5 +260,5 @@ paket-files/
 __pycache__/
 *.pyc
 
-ElibWpf/properties.json
-DatabaseTests/properties.json
+*/properties.json
+*/properties.json
