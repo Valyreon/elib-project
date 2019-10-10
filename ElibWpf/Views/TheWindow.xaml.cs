@@ -1,12 +1,12 @@
 ﻿using ElibWpf.ViewModels;
-using System.Windows;
+using MahApps.Metro.Controls;
 
 namespace ElibWpf.Views
 {
     /// <summary>
     /// Interaction logic for TheWindow.xaml
     /// </summary>
-    public partial class TheWindow : Window
+    public partial class TheWindow : MetroWindow
     {
         public TheWindow()
         {
