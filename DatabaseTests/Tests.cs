@@ -55,7 +55,7 @@ namespace DatabaseTests
                 "adventure"
             };
 
-            using ElibContext context = new ElibContext(@"F:\Documents\Visual Studio 2019\Projects\ElibApplication\database.sqlite");
+            using ElibContext context = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
 
             // Create new book object
             Book newBook = new Book
@@ -98,7 +98,7 @@ namespace DatabaseTests
                     {
                         new EFile {
                             RawContent = File.ReadAllBytes(filePath),
-                            Format = "epub"
+                            Format = Path.GetExtension(filePath)
                         }
                     };
                 }
