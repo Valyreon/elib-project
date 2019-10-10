@@ -206,7 +206,7 @@ namespace Cli
                                 foreach (Author author in authors)
                                 {
                                     Console.WriteLine(author);
-                                    /*Console.WriteLine("Books: ");
+                                    Console.WriteLine("Books: ");
                                     foreach (Book book in database.GetAuthorBooks(author))
                                         Console.WriteLine("    " + book.name);
                                     Console.WriteLine();

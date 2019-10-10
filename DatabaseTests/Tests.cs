@@ -39,16 +39,19 @@ namespace DatabaseTests
         [TestMethod]
         public void TestAddingToDatabase()
         {
-            string[] bookFilePaths = new string[] {
+            string[] bookFilePaths = new string[] 
+            {
                 @"F:\Documents\Ebooks\Miscellaneous\Read\Papillon by Henri Charriere.epub"
             };
             string coverPicturePath = @"C:\Users\Luka\Desktop\9139723842_25ef6557c3_b.jpg";
-            string[] authorNames = new string[] {
+            string[] authorNames = new string[] 
+            {
                 "Henri Charriere"
             };
             string bookName = "Papillon";
             string seriesName = "Papillon";
-            string[] collectionTags = new string[] {
+            string[] collectionTags = new string[] 
+            {
                 "adventure"
             };
 
