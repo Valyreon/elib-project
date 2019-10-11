@@ -58,7 +58,8 @@
     <StartupObject>ElibWpf.App</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>elib_icon.ico</ApplicationIcon>
+    <ApplicationIcon>
+    </ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CommonServiceLocator, Version=2.0.2.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
@@ -200,9 +201,6 @@
       <Project>{A35ECB0D-7185-4C6B-82A4-F2A70258F0B5}</Project>
       <Name>Models</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="elib_icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
