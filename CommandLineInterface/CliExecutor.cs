@@ -9,19 +9,27 @@ using EbookTools.Mobi;
 using EbookTools.Epub;
 using DataLayer;
 using Domain;
-/*
-namespace Cli
+using Models;
+using Models.Utilities;
 
+namespace Cli
 {
     /// <summary>
     ///  This class is used for CLI functionality.
     /// </summary>
     public class CliExecutor
     {
+        public static void Main(string[] args)
+        {
+            CliExecutor cliExecutor = new CliExecutor();
+            cliExecutor.Execute();
+        }
+
+
         private ElibContext database;
         public CliExecutor()
         {
-            database = new ElibContext(@"C:\Users\luka.budrak\Desktop\new_elib-test.db"); //have to specify path now
+            database = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
             Console.WriteLine("Starting eLIB in CLI mode.\nWELCOME TO ELIB COMMAND LINE.\n");
         }
 
@@ -68,44 +76,31 @@ namespace Cli
                     case "import":
                     case "i":
                         // TODO: Check if book exists
-                        Regex splitRegex = new Regex("(?<=\")[^\"]*(?=\")|[^\" ]+");
-                        List<string> fileList = splitRegex.Matches(consoleInput.Item2).Cast<Match>().Select(x => x.Value).ToList();
+                        IEnumerable<string> fileList = consoleInput.Item2.GetFilePathsFromString();
+                        IEnumerable<string> validFileList = ImportUtils.GetValidBookPaths(fileList);
+                        IEnumerable<string> invalidFileList = ImportUtils.GetInvalidBookPaths(fileList);
 
-                        List<ParsedBook> foundBooks = new List<ParsedBook>();
-                        foreach(string filePath in fileList)
-                        {
-                            if(System.IO.File.Exists(filePath))
-                            {
-                                StreamReader bookStream = new StreamReader(filePath);
-                                switch (Path.GetExtension(filePath))
-                                {
-                                    case ".mobi":
-                                        foundBooks.Add(new MobiParser(bookStream.BaseStream).Parse());
-                                        break;
-                                    case ".epub":
-                                        foundBooks.Add(new EpubParser(bookStream.BaseStream).Parse());
-                                        break;
-                                    default:
-                                        Console.WriteLine($"File {filePath} has an unsupported extension.");
-                                        break;
-                                }
-                            }
-                            else
-                                Console.WriteLine($"File {filePath} does not exist.");
-                        }
+                        foreach (string invalidFilePath in invalidFileList)
+                            Console.WriteLine($"File {invalidFilePath} is not valid or does not exist.");
 
-                        if (foundBooks.Count == 0)
-                        {
-                            Console.WriteLine("No books were found.");
-                            break;
-                        }
+                        int validFileCount = validFileList.Count();
+                        Console.WriteLine($"Found {validFileCount} book{(validFileCount == 1 ? "s" : "")}");
 
-                        Console.WriteLine("Found books:");
-                        for (int i = 1; i <= foundBooks.Count; i++)
-                            Console.WriteLine($"{i}. {foundBooks[i - 1].Title}");
+
+                        Console.WriteLine("\nFound books:");
+                        for (int i = 1; i <= validFileCount; i++)
+                            Console.WriteLine($"{i}. {Path.GetFileName(validFileList.ElementAt(i - 1))}");
 
                         if (!ConsoleQuestion("Do you want to continue?", false))
                             break;
+
+                        //Construct book list
+                        IEnumerable<ParsedBook> parsedBookList = ImportUtils.GetParsedBooksFromPaths(validFileList);
+
+                        foreach (ParsedBook parsed in parsedBookList)
+                            Console.WriteLine(parsed.Title);
+
+                        /*
 
                         for (int i = 0; i < foundBooks.Count; i++)
                         {
@@ -166,13 +161,13 @@ namespace Cli
                             database.AddBookAuthorLink(book, author);// TODO: Remove save changes
                         }
 
-
+                        
                         break;
                     case "metadata":
                     case "m":
                         try
                         {
-                            Console.WriteLine(database.GetBookMetadata(Int64.Parse(consoleInput.Item2)).GetJson());
+                            //Console.WriteLine(database.GetBookMetadata(Int64.Parse(consoleInput.Item2)).GetJson());
                         }
                         catch(Exception e)
                         {
@@ -279,9 +274,8 @@ namespace Cli
                                 Console.WriteLine("View command was incorrect");
                                 break;
                         }
-
+                        */
                         break;
-
 
                     default:
                         Console.WriteLine("Unknown command");
@@ -294,4 +288,3 @@ namespace Cli
         }
     }
 }
-    */

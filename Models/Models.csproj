@@ -48,12 +48,21 @@
   <ItemGroup>
     <Compile Include="ApplicationSettings.cs" />
     <Compile Include="Exporter.cs" />
-    <Compile Include="Helpers\StringHelpers.cs" />
+    <Compile Include="Utilities\ImportUtils.cs" />
     <Compile Include="Importer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="properties.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EbookTools\EbookTools.csproj">
+      <Project>{E3621A3E-7F43-4150-9689-9B7C43040688}</Project>
+      <Name>EbookTools</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

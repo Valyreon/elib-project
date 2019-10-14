@@ -1,8 +1,10 @@
-﻿namespace EbookTools
+﻿using System.Collections.Generic;
+
+namespace EbookTools
 {
-	public abstract class EbookParser
-	{
-		public StyleSettings StyleSettings { get; set; }
+    public abstract class EbookParser
+    {
+        public StyleSettings StyleSettings { get; set; }
 
 		abstract public ParsedBook Parse();
 
