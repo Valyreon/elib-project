@@ -27,6 +27,7 @@ namespace DatabaseTests
                 .Include("Authors")
                 .Include("Files")
                 .Include("Quotes")
+                .Where(x => x.Name.Contains("Conversation"))
                 .FirstOrDefault();
             Assert.IsNotNull(first.Books); 
             Assert.IsNotNull(collection.Books);
@@ -41,17 +42,18 @@ namespace DatabaseTests
         {
             string[] bookFilePaths = new string[] 
             {
-                @"F:\Documents\Ebooks\Miscellaneous\Read\Papillon by Henri Charriere.epub"
+                @"C:\Users\luka.budrak\Downloads\[Reynolds_Alastair]_Revelation_Space(z-lib.org).mobi"
             };
-            string coverPicturePath = @"C:\Users\Luka\Desktop\9139723842_25ef6557c3_b.jpg";
+            string coverPicturePath = null;
             string[] authorNames = new string[] 
             {
-                "Henri Charriere"
+                "Alastair Reynolds"
             };
-            string bookName = "Papillon";
-            string seriesName = "Papillon";
+            string bookName = "Revelation Space";
+            string seriesName = "Revelation Space";
             string[] collectionTags = new string[] 
             {
+                "scifi",
                 "adventure"
             };
 
@@ -61,12 +63,13 @@ namespace DatabaseTests
             Book newBook = new Book
             {
                 Name = bookName,
-                Series = new BookSeries
+                Series = seriesName != null ? new BookSeries
                 {
                     Name = seriesName,
-                },
+                } : null,
+                NumberInSeries = 1,
                 IsRead = true,
-                Cover = File.ReadAllBytes(coverPicturePath)
+                Cover = coverPicturePath == null ? null : File.ReadAllBytes(coverPicturePath)
             };
 
             // Add authors, but first check if each exists in database

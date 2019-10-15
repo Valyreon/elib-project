@@ -9,7 +9,7 @@ namespace Domain
         public int Id { get; set; }
         [Required]
         public string Text { get; set; }
-        public int BookId { get; set; }
+        public int? BookId { get; set; }
         [ForeignKey("BookId")]
         public Book Book { get; set; }
         public string Note { get; set; }

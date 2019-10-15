@@ -15,9 +15,10 @@ namespace Domain
         [Required]
         [StringLength(100)]
         public string Name { get; set; }
-        public int SeriesId { get; set; }
+        public int? SeriesId { get; set; }
         [ForeignKey("SeriesId")]
         public BookSeries Series { get; set; }
+        public decimal? NumberInSeries { get; set; }
         public byte[] Cover { get; set; }
         public bool? IsRead { get; set; }
         public int? WhenRead { get; set; }
