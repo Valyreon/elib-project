@@ -1,5 +1,5 @@
 --
--- File generated with SQLiteStudio v3.2.1 on Wed Oct 9 22:27:50 2019
+-- File generated with SQLiteStudio v3.2.1 on Tue Oct 15 10:54:05 2019
 --
 -- Text encoding used: System
 --
@@ -36,12 +36,13 @@ CREATE TABLE BookFiles (
 
 -- Table: Books
 CREATE TABLE Books (
-    Id       INTEGER       PRIMARY KEY AUTOINCREMENT,
-    Name     VARCHAR (100) NOT NULL,
-    SeriesId INTEGER       REFERENCES Series (Id),
-    IsRead   BOOL,
-    Cover    BLOB,
-    WhenRead INT
+    Id             INTEGER       PRIMARY KEY AUTOINCREMENT,
+    Name           VARCHAR (100) NOT NULL,
+    SeriesId       INTEGER       REFERENCES Series (Id),
+    IsRead         BOOL,
+    Cover          BLOB,
+    WhenRead       INT,
+    NumberInSeries DECIMAL
 );
 
 
