@@ -18,9 +18,9 @@ namespace EbookTools
             switch(Path.GetExtension(path))
             {
                 case ".epub":
-                    return new EpubParser(File.OpenRead(path));
+                    return new EpubParser(File.ReadAllBytes(path));
                 case ".mobi":
-                    return new MobiParser(File.OpenRead(path));
+                    return new MobiParser(File.ReadAllBytes(path));
                 default:
                     throw new ArgumentException($"{path} has an unkown extension.");
             }

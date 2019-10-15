@@ -25,7 +25,7 @@ namespace Models.Helpers
         /// Input example: \path\fileA \path\fileB "\path\file C\"
         /// </summary>
         /// <param name="str">String containing one or more paths</param>
-        /// <returns>IEnumberable of paths</returns>
+        /// <returns>IEnumerable of paths</returns>
         public static IEnumerable<string> GetFilePathsFromString(this string str)
         {
             Regex splitRegex = new Regex("(?<=\")[^\"]*(?=\")|[^\" ]+");

@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.IO;
-using Models.Helpers;
-using EbookTools;
-using EbookTools.Mobi;
-using EbookTools.Epub;
+﻿using CommandLineInterface.Utilities;
 using DataLayer;
 using Domain;
+using EbookTools;
 using Models;
+using Models.Helpers;
 using Models.Utilities;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace Cli
 {
@@ -45,7 +43,7 @@ namespace Cli
 
             Console.Write("\n");
 
-            return consoleKey == ConsoleKey.Y  ||  consoleKey == ConsoleKey.Enter && !inverted;
+            return consoleKey == ConsoleKey.Y || consoleKey == ConsoleKey.Enter && !inverted;
         }
         private string GetNewOrDefaultInput(string def)
         {
@@ -96,9 +94,41 @@ namespace Cli
 
                         //Construct book list
                         IEnumerable<ParsedBook> parsedBookList = ImportUtils.GetParsedBooksFromPaths(validFileList);
+                        IList<Book> newBookList = new List<Book>();
 
-                        foreach (ParsedBook parsed in parsedBookList)
-                            Console.WriteLine(parsed.Title);
+                        foreach (ParsedBook parsedBook in parsedBookList)
+                        {
+                            Book newBook = new Book();
+
+                            Console.WriteLine($"{newBookList.Count() + 1}. {parsedBook.Title}");
+                            Console.Write($"Title[{parsedBook.Title}]*: ");
+
+                            newBook.Name = GetNewOrDefaultInput(parsedBook.Title);
+
+                            Console.Write($"Author[{parsedBook.Author}]*: ");
+                            string newAuthorName = GetNewOrDefaultInput(parsedBook.Author);
+
+                            Author newAuthor = database.Authors.FirstOrDefault(x => StringUtils.EqualsIgnoreCase(x.Name, newAuthorName));
+                            newAuthor ??= new Author() { Name = newAuthorName };
+
+                            Console.Write("Series: ");
+                            string newSeriesName = Console.ReadLine().Trim();
+
+                            if (newSeriesName != "")
+                            {
+                                BookSeries newBookSeries = database.Series.FirstOrDefault(x => StringUtils.EqualsIgnoreCase(x.Name, newSeriesName));
+                                newBookSeries ??= new BookSeries() { Name = newSeriesName };
+
+                                int seriesNumber;
+                                do
+                                {
+                                    Console.Write("Series number: ");
+                                } while (!Int32.TryParse(Console.ReadLine().Trim(), out seriesNumber));
+
+
+                                
+                            }
+                        }
 
                         /*
 
