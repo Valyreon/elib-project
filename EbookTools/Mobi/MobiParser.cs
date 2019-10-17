@@ -9,7 +9,7 @@ namespace EbookTools.Mobi
 	{
 		private readonly byte[] _rawFile;
 
-		public MobiParser(byte[] file, StyleSettings settings)
+        public MobiParser(byte[] file, StyleSettings settings)
 		{
 			this.StyleSettings = settings;
 			this._rawFile = file;
@@ -53,7 +53,7 @@ namespace EbookTools.Mobi
 
 			build.Append(bodyContent.InnerHtml);
 			build.Append("</body>");
-			return new ParsedBook(mf.Name, null, null, null, build.ToString(), null, _rawFile);
+			return new ParsedBook(mf.Name, null, null, null, build.ToString(), null, ".mobi", _rawFile);
 		}
 	}
 }

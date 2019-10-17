@@ -16,7 +16,7 @@ namespace EbookTools.Epub
 	{
 		private readonly byte[] _rawFile;
 
-		public EpubParser(byte[] file)
+        public EpubParser(byte[] file)
 		{
 			this.StyleSettings = StyleSettings.Default;
 			this._rawFile = file;
@@ -73,7 +73,7 @@ namespace EbookTools.Epub
 				htmlBook = this.GenerateHtml(doc, zip);
 				cover = GetCover(zip);
 			}
-			return new ParsedBook(title, author, isbn, publisher, htmlBook, cover, _rawFile);
+			return new ParsedBook(title, author, isbn, publisher, htmlBook, cover, ".epub", _rawFile);
 		}
 
 		public Image GetCover(ZipArchive zip)

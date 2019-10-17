@@ -133,23 +133,82 @@ namespace Cli
                                 newBookSeries.Books.Add(newBook);
                             }
 
-                            //EFile newEFile = new EFile() { RawContent = parsedBook.}
+                            EFile newEFile = new EFile() { RawContent = parsedBook.RawData, Format = parsedBook.Format, Book = newBook };
 
                             database.Books.Add(newBook);
                             database.Authors.AddOrUpdate(newAuthor);
                             database.Series.AddOrUpdate(newBookSeries);
+                            database.BookFiles.AddOrUpdate(newEFile);
 
                             database.SaveChanges();
                         }
                         break;
                     case "view":
                     case "v":
-                        foreach (Author author in database.Authors)
-                            Console.WriteLine(author);
-                        foreach (Book book in database.Books)
-                            Console.WriteLine(book);
-                        foreach (BookSeries series in database.Series)
-                            Console.WriteLine(series.Name);
+                        Tuple<string, string> viewInput = consoleInput.Item2.ToLower().Trim().SplitOnFirstBlank();
+                        switch (viewInput.Item1)
+                        {
+                            case "details":
+                            case "d":
+                                {
+                                    Book book = database.Books.Find(Int64.Parse(viewInput.Item2));
+                                    Console.Write(BookUtils.GetDetails(book)); // TODO: Error handling
+                                }
+                                break;
+                            case "all":
+                            case "a":
+                                foreach (Book book in database.Books)
+                                    Console.WriteLine(BookUtils.GetDetails(book));
+                                break;
+                            case "author":
+                            case "au":
+                                foreach (Author author in database.Authors)
+                                    Console.WriteLine(AuthorUtils.GetDetails(author));
+                                break;
+                                /*
+                            case "collection":
+                            case "c":
+                                if (viewInput.Item2 == "")
+                                    foreach (Collection collection in database.Collections)
+                                        Console.WriteLine(collection);
+                                else
+                                    try
+                                    {
+                                        Collection collection = database.GetCollectionFromID(Int64.Parse(viewInput.Item2));
+                                        if (collection != null)
+                                            Console.WriteLine(collection);
+                                        else
+                                            Console.WriteLine("Collection does not exit");
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Console.WriteLine("Invalid collection id");
+                                    }
+                                break;
+                            case "series":
+                            case "s":
+                                if (viewInput.Item2 == "")
+                                    foreach (Series series in database.Series)
+                                        Console.WriteLine(series.name);
+                                else
+                                    try
+                                    {
+                                        Series series = database.GetSeriesFromID(Int64.Parse(viewInput.Item2));
+                                        if (series != null)
+                                            Console.WriteLine(series);
+                                        else
+                                            Console.WriteLine("Series does not exit");
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Console.WriteLine("Invalid series id");
+                                    }
+                                break;
+                                */
+                            default:
+                                Console.WriteLine("View command was incorrect");
+                                break;
+                        }
                         break;
 
                     /*
