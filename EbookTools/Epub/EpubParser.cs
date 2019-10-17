@@ -73,7 +73,7 @@ namespace EbookTools.Epub
 				htmlBook = this.GenerateHtml(doc, zip);
 				cover = GetCover(zip);
 			}
-			return new ParsedBook(title, author, isbn, publisher, htmlBook, cover);
+			return new ParsedBook(title, author, isbn, publisher, htmlBook, cover, _rawFile);
 		}
 
 		public Image GetCover(ZipArchive zip)

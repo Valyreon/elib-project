@@ -133,6 +133,8 @@ namespace Cli
                                 newBookSeries.Books.Add(newBook);
                             }
 
+                            //EFile newEFile = new EFile() { RawContent = parsedBook.}
+
                             database.Books.Add(newBook);
                             database.Authors.AddOrUpdate(newAuthor);
                             database.Series.AddOrUpdate(newBookSeries);
