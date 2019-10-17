@@ -26,5 +26,13 @@ namespace Domain
         public ICollection<EFile> Files { get; set; }
         public ICollection<Quote> Quotes { get; set; }
         public ICollection<UserCollection> UserCollections { get; set; }
+
+        public Book()
+        {
+            this.Authors = new List<Author>();
+            this.Files = new List<EFile>();
+            this.Quotes = new List<Quote>();
+            this.UserCollections = new List<UserCollection>();
+        }
     }
 }

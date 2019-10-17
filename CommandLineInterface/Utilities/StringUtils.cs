@@ -10,7 +10,7 @@ namespace CommandLineInterface.Utilities
     {
         public static bool EqualsIgnoreCase(string a, string b)
         {
-            return string.Equals(a, b, StringComparison.CurrentCultureIgnoreCase);
+            return string.Equals(a, b, StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }
