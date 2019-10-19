@@ -22,43 +22,20 @@ namespace Models
             database = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
         }
 
-        public Book ImportBook(Book book, Author author, EFile eFile, BookSeries bookSeries)
+        public Book ImportBook(ParsedBook parsedBook, string bookName, string authorName, string seriesName = null, Decimal? seriesNumber = null)
         {
-            book.Authors.Add(author);
-            book.Files.Add(eFile);
-
-            if (bookSeries != null)
-                book.Series = bookSeries;
+            Book book = new Book()
+            {
+                Name = bookName,
+                Authors = new List<Author> { database.Authors.Where(x => x.Name == authorName).FirstOrDefault() ?? new Author { Name = authorName } },
+                Files = new List<EFile> { parsedBook.GetEFile() },
+                Series = seriesName == null ? null : (database.Series.Where(x => x.Name == seriesName).FirstOrDefault() ?? new BookSeries { Name = seriesName }),
+                NumberInSeries = seriesNumber
+            };
 
             Book result = database.Books.Add(book);
-
             database.SaveChanges();
-
             return result;
-        }
-
-        public Book ImportBook(ParsedBook parsedBook, string bookName, string authorName, string seriesName, Decimal? seriesNumber)
-        {
-            Book book = parsedBook.GetBook();
-            book.Name = bookName;
-
-            EFile eFile = parsedBook.GetEFile();
-
-            Author author = database.Authors.FirstOrDefault(x => x.Name == authorName);
-            author ??= new Author { Name = authorName };
-
-            BookSeries bookSeries = null;
-
-            if(seriesNumber != null)
-            {
-                bookSeries = database.Series.FirstOrDefault(x => x.Name == seriesName);
-                bookSeries ??= new BookSeries { Name = seriesName };
-
-                book.NumberInSeries = seriesNumber;
-            }
-
-
-            return ImportBook(book, author, eFile, bookSeries);
         }
 
         public Task CommitChangesAsync()
