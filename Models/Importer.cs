@@ -38,6 +38,13 @@ namespace Models
             return result;
         }
 
+        public ICollection<Book> ImportBooksFromDirectory(string path)
+        {
+            ICollection<Book> result = new List<Book>();
+
+            return result;
+        }
+
         public Task CommitChangesAsync()
         {
             return database.SaveChangesAsync();
