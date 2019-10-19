@@ -16,10 +16,5 @@ namespace Domain
         [StringLength(100)]
         public string Name { get; set; }
         public ICollection<Book> Books { get; set; }
-
-        public BookSeries()
-        {
-            this.Books = new List<Book>();
-        }
     }
 }

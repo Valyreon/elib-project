@@ -26,9 +26,12 @@ namespace Cli
 
 
         private ElibContext database;
+        private Importer importer;
+
         public CliExecutor()
         {
             database = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
+            importer = new Importer();
             Console.WriteLine("Starting eLIB in CLI mode.\nWELCOME TO ELIB COMMAND LINE.\n");
         }
 
@@ -60,7 +63,7 @@ namespace Cli
         ///  Starts the CLI loop until the keyword 'exit' is inputted.
         /// </summary>
         ///
-        public void Execute()
+        public async void Execute()
         {
             string command;
             do
@@ -99,49 +102,34 @@ namespace Cli
 
                         foreach (ParsedBook parsedBook in parsedBookList)
                         {
-                            Book newBook = new Book();
-
                             Console.WriteLine($"{newBookList.Count() + 1}. {parsedBook.Title}");
-                            Console.Write($"Title[{parsedBook.Title}]*: ");
 
-                            newBook.Name = GetNewOrDefaultInput(parsedBook.Title);
+                            Console.Write($"Title[{parsedBook.Title}]*: ");
+                            string bookName = GetNewOrDefaultInput(parsedBook.Title);
 
                             Console.Write($"Author[{parsedBook.Author}]*: ");
-                            string newAuthorName = GetNewOrDefaultInput(parsedBook.Author);
-
-                            Author newAuthor = database.Authors.FirstOrDefault(x => x.Name == newAuthorName);
-                            newAuthor ??= new Author() { Name = newAuthorName };
-                            newBook.Authors.Add(newAuthor);
+                            string authorName = GetNewOrDefaultInput(parsedBook.Author);
 
                             Console.Write("Series: ");
-                            string newSeriesName = Console.ReadLine().Trim();
+                            string seriesName = Console.ReadLine().Trim();
+                            Decimal? seriesNumber = null;
 
-                            BookSeries newBookSeries = null;
-
-                            if (newSeriesName != "")
+                            if (seriesName != "")
                             {
-                                newBookSeries = database.Series.FirstOrDefault(x => x.Name == newSeriesName);
-                                newBookSeries ??= new BookSeries() { Name = newSeriesName };
-
-                                int seriesNumber;
+                                Decimal newNumber;
                                 do
                                 {
                                     Console.Write("Series number: ");
-                                } while (!Int32.TryParse(Console.ReadLine().Trim(), out seriesNumber));
+                                } while (!Decimal.TryParse(Console.ReadLine().Trim(), out newNumber));
 
-                                newBook.NumberInSeries = seriesNumber;
-                                newBookSeries.Books.Add(newBook);
+                                seriesNumber = (Decimal)newNumber;
                             }
 
-                            EFile newEFile = new EFile() { RawContent = parsedBook.RawData, Format = parsedBook.Format, Book = newBook };
-
-                            database.Books.Add(newBook);
-                            database.Authors.AddOrUpdate(newAuthor);
-                            database.Series.AddOrUpdate(newBookSeries);
-                            database.BookFiles.AddOrUpdate(newEFile);
-
-                            database.SaveChanges();
+                            importer.ImportBook(parsedBook, bookName, authorName, seriesName, seriesNumber);
                         }
+                        break;
+                    case "truncate":
+                        database.TruncateDatabase();
                         break;
                     case "view":
                     case "v":
@@ -151,8 +139,18 @@ namespace Cli
                             case "details":
                             case "d":
                                 {
-                                    Book book = database.Books.Find(Int64.Parse(viewInput.Item2));
-                                    Console.Write(BookUtils.GetDetails(book)); // TODO: Error handling
+                                    try
+                                    {
+                                        Book book = database.Books.Find(Int64.Parse(viewInput.Item2));
+                                        if (book != null)
+                                            Console.Write(BookUtils.GetDetails(book)); // TODO: Error handling
+                                        else
+                                            Console.WriteLine("Book does not exist.");
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Console.WriteLine("Invalid book ID.");
+                                    }
                                 }
                                 break;
                             case "all":
@@ -396,6 +394,7 @@ namespace Cli
             } while (command != "exit");
 
             Console.WriteLine("Exiting...");
+            await importer.CommitChangesAsync();
         }
     }
 }

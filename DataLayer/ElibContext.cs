@@ -45,5 +45,17 @@ namespace DataLayer
 
             modelBuilder.Entity<UserCollection>().HasIndex(x => x.Tag).IsUnique();
         }
+
+        public void TruncateDatabase()
+        {
+            this.Database.ExecuteSqlCommand("DELETE FROM [AuthorBooks]");
+            this.Database.ExecuteSqlCommand("DELETE FROM [Authors]");
+            this.Database.ExecuteSqlCommand("DELETE FROM [BookFiles]");
+            this.Database.ExecuteSqlCommand("DELETE FROM [Books]");
+            this.Database.ExecuteSqlCommand("DELETE FROM [Quotes]");
+            this.Database.ExecuteSqlCommand("DELETE FROM [Series]");
+            this.Database.ExecuteSqlCommand("DELETE FROM [UserCollectionBooks]");
+            this.Database.ExecuteSqlCommand("DELETE FROM [UserCollections]");
+        }
     }
 }
