@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,6 +36,35 @@ namespace Models
 
             Book result = database.Books.Add(book);
             database.SaveChanges();
+            return result;
+        }
+
+        public Book ImportBook(ParsedBook parsedBook)
+        {
+            Book book = new Book()
+            {
+                Name = parsedBook.Title,
+                Authors = new List<Author> { database.Authors.Where(x => x.Name == parsedBook.Author).FirstOrDefault() ?? new Author { Name = parsedBook.Author } },
+                Files = new List<EFile> { parsedBook.GetEFile() },
+            };
+
+            book = database.Books.Add(book);
+            database.SaveChanges();
+            return book;
+        }
+
+        public ICollection<Book> ImportBooksFromDirectory(string path)
+        {
+            ICollection<Book> result = new List<Book>();
+
+            if (!Directory.Exists(path))
+                return result;
+
+            IEnumerable<string> validFileList = ImportUtils.GetValidBookPaths(Directory.GetFiles(path));
+
+            foreach(string filePath in validFileList)
+                result.Add(ImportBook(EbookParserFactory.Create(filePath).Parse()));
+
             return result;
         }
 

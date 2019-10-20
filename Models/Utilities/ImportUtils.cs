@@ -22,13 +22,14 @@ namespace Models.Utilities
 
         public static IEnumerable<string> GetValidBookPaths(IEnumerable<string> fileList)
         {
-            return fileList.Where(filePath => IsValidBookExtension(filePath));
+            return fileList.Where(filePath => IsValidBookExtension(filePath) && File.Exists(filePath));
         }
 
         public static IEnumerable<string> GetInvalidBookPaths(IEnumerable<string> fileList)
         {
-            return fileList.Where(filePath => !IsValidBookExtension(filePath));
+            return fileList.Where(filePath => !IsValidBookExtension(filePath) || !File.Exists(filePath));
         }
+
 
         public static IEnumerable<ParsedBook> GetParsedBooksFromPaths(IEnumerable<string> fileList)
         {
