@@ -18,6 +18,7 @@ namespace Models
         public Selector(DbSet<T> dbSet)
         {
             this._dbSet = dbSet;
+            SelectedItems = new List<T>();
         }
 
         public void AddId(int id)
