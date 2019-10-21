@@ -18,6 +18,7 @@ namespace Models.Utilities
                 Quotes = new List<Quote>(),
                 UserCollections = new List<UserCollection>()
             };
+
         }
 
         public static Author EmptyAuthor()
