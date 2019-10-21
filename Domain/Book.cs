@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Domain
 {
     [Table("Books")]
-    public class Book
+    public class Book : Entity
     {
         public int Id { get; set; }
         [Required]

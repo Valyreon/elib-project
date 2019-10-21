@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="ApplicationSettings.cs" />
     <Compile Include="Helpers\ParsedBookHelper.cs" />
+    <Compile Include="Selector.cs" />
     <Compile Include="Utilities\DomainInitializer.cs" />
     <Compile Include="Exporter.cs" />
     <Compile Include="Utilities\DomainUtils.cs" />
