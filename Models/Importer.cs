@@ -68,6 +68,21 @@ namespace Models
             return result;
         }
 
+        public ICollection<Book> ImportBooksFromDirectoryRecursively(string path)
+        {
+            ICollection<Book> result = new List<Book>();
+
+            if (!Directory.Exists(path))
+                return result;
+
+            result.Concat(ImportBooksFromDirectory(path));
+
+            foreach (string directoryPath in Directory.EnumerateDirectories(path, "*", SearchOption.AllDirectories))
+                result.Concat(ImportBooksFromDirectory(directoryPath));
+
+            return result;
+        }
+
         public Task CommitChangesAsync()
         {
             return database.SaveChangesAsync();
