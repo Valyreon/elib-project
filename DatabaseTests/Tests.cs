@@ -2,6 +2,7 @@
 using Domain;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Models;
+using Models.Options;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -26,7 +27,6 @@ namespace DatabaseTests
                 .Include("Authors")
                 .Include("Files")
                 .Include("Quotes")
-                .Where(x => x.Name.Contains("Conversation"))
                 .FirstOrDefault();
             Assert.IsNotNull(first.Books);
             Assert.IsNotNull(collection.Books);
@@ -41,7 +41,7 @@ namespace DatabaseTests
         {
             string[] bookFilePaths = new string[]
             {
-                @"C:\Users\luka.budrak\Downloads\[Reynolds_Alastair]_Revelation_Space(z-lib.org).mobi"
+                @"F:\Documents\Ebooks\Miscellaneous\To-Read\Revelation Space by Alastair Reynolds.epub"
             };
             string coverPicturePath = null;
             string[] authorNames = new string[]
@@ -57,6 +57,7 @@ namespace DatabaseTests
             };
 
             using ElibContext context = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
+            context.TruncateDatabase();
 
             // Create new book object
             Book newBook = new Book
@@ -111,6 +112,24 @@ namespace DatabaseTests
             context.SaveChanges();
 
             // That is it, Entity Framework will take care of all the mapping and many to many relationships.
+        }
+
+        [TestMethod]
+        public void ExporterTest()
+        {
+            using ElibContext context = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
+            Exporter exp = new Exporter(context);
+
+            ExporterOptions options = new ExporterOptions
+            {
+                GroupByAuthor = true,
+                GroupBySeries = false,
+                CreateNewDirectory = true,
+                NewDirectoryName = "TESTEXPORTFOLDER",
+                DestinationDirectory = @"C:\Users\Luka\Desktop"
+            };
+
+            exp.ExportBooks(context.BookFiles.ToList(), options);
         }
     }
 }

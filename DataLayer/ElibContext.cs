@@ -55,7 +55,7 @@ namespace DataLayer
             this.Database.ExecuteSqlCommand("DELETE FROM [Series]");
             this.Database.ExecuteSqlCommand("DELETE FROM [UserCollectionBooks]");
             this.Database.ExecuteSqlCommand("DELETE FROM [UserCollections]");
-            this.Database.ExecuteSqlCommand("VACUUM"); // this solves the db size problem
+            this.Database.ExecuteSqlCommand(TransactionalBehavior.DoNotEnsureTransaction, "VACUUM;"); // this solves the db size problem
         }
     }
 }
