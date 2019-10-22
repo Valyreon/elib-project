@@ -21,7 +21,7 @@ namespace Models
 
         public void ExportBook(Book book, string path, ExporterOptions.Format format)
         {
-            byte[] binaryData = book.Files.Where(x => x.Format == ExporterOptions.GetFormat(format)).FirstOrDefault().RawContent;
+            byte[] binaryData = book.Files.Where(x => x.Format == ExporterOptions.GetFormat(format)).FirstOrDefault()?.RawContent;
 
             if (binaryData == null)
                 throw new FileNotFoundException();
