@@ -45,19 +45,48 @@ namespace Models
             fs.Write(eFile.RawContent, 0, eFile.RawContent.Length);
         }
 
-        public void ExportBooks(IEnumerable<EFile> files, ExporterOptions options)
+        public void ExportBookFiles(IEnumerable<EFile> files, ExporterOptions options)
         {
+            void ExportAllInList(IEnumerable<EFile> list, string outPath) { foreach (var file in list) ExportFile(file, outPath); };
+            void ProcessBySeries(IEnumerable<EFile> list, string outPath)
+            {
+                var groups = files.GroupBy(f => f.Book.Series?.Name);
+                foreach (var group in groups)
+                {
+                    // create directory for this series
+                    string thisGroupsDestPath = null;
+                    if (group.Key != null) // only put books that have series in a separate folder
+                    {
+                        thisGroupsDestPath = Path.Combine(outPath, $"{group.Key} Series");
+                        Directory.CreateDirectory(thisGroupsDestPath);
+                    }
+                    else
+                    {
+                        thisGroupsDestPath = outPath;
+                    }
+
+                    ExportAllInList(group, thisGroupsDestPath);
+                }
+            }
+
+            if (files == null)
+                throw new ArgumentNullException();
+            else if (files.Count() == 0)
+                return;
+
             // Load everything needed
             foreach (EFile file in files)
             {
                 database.Entry(file).Reference(f => f.Book).Load();
-                database.Entry(file.Book).Reference("Series").Load();
-                database.Entry(file.Book).Collection("Authors").Load();
+                database.Entry(file.Book).Reference(b => b.Series).Load();
+                database.Entry(file.Book).Collection(b => b.Authors).Load();
             }
 
             string destFolder = null;
-            if (options.CreateNewDirectory && options.NewDirectoryName == null)
-                throw new ArgumentException("If CreateNewDirectory option is true, NewDirectoryName can't be null.");
+            if (options.CreateNewDirectory && string.IsNullOrWhiteSpace(options.NewDirectoryName))
+                throw new ArgumentException("If CreateNewDirectory option is true, NewDirectoryName can't be empty.");
+
+            // create the directory if needed
             if (options.CreateNewDirectory)
                 destFolder = Path.Combine(options.DestinationDirectory, options.NewDirectoryName);
             else
@@ -65,38 +94,14 @@ namespace Models
 
             Directory.CreateDirectory(destFolder);
 
-            // Split in group according to options
+            // Split in groups according to options
             if (!options.GroupByAuthor && !options.GroupBySeries)
             {
-                foreach (var file in files)
-                {
-                    ExportFile(file, destFolder);
-                }
+                ExportAllInList(files, destFolder);
             }
             else if(!options.GroupByAuthor && options.GroupBySeries)
             {
-                var groups = files.GroupBy(f => f.Book.Series?.Name);
-
-                foreach(var group in groups)
-                {
-                    // create directory for this series
-                    var list = group.ToList();
-                    string thisGroupsDestPath = null;
-                    if(group.Key != null) // only put books that have series in a separate folder
-                    {
-                        thisGroupsDestPath = Path.Combine(destFolder, $"{group.Key} Series");
-                        Directory.CreateDirectory(thisGroupsDestPath);
-                    }
-                    else
-                    {
-                        thisGroupsDestPath = destFolder;
-                    }
-
-                    foreach (var file in list)
-                    {
-                        ExportFile(file, thisGroupsDestPath);
-                    }
-                }
+                ProcessBySeries(files, destFolder);
             }
             else if(options.GroupByAuthor && !options.GroupBySeries)
             {
@@ -105,14 +110,9 @@ namespace Models
                 foreach (var group in groups)
                 {
                     // create directory for this author
-                    var list = group.ToList();
                     string thisGroupsDestPath = Path.Combine(destFolder, $"{group.Key}");
                     Directory.CreateDirectory(thisGroupsDestPath);
-
-                    foreach (var file in list)
-                    {
-                        ExportFile(file, thisGroupsDestPath);
-                    }
+                    ExportAllInList(group, thisGroupsDestPath);
                 }
             }
             else // both must be true
@@ -126,27 +126,7 @@ namespace Models
                     Directory.CreateDirectory(thisAuthorsDestPath);
 
                     // then we group one authors(that is combination of authors) by series
-                    var seriesGroups = authorGroup.GroupBy(f => f.Book.Series?.Name);
-                    foreach(var seriesGroup in seriesGroups)
-                    {
-                        var seriesList = seriesGroup.ToList();
-                        string thisSeriesDestPath = Path.Combine(thisAuthorsDestPath, $"{seriesGroup.Key}");
-
-                        if (seriesGroup.Key != null) // only put books in series in a separate folder
-                        {
-                            thisSeriesDestPath = Path.Combine(thisAuthorsDestPath, $"{seriesGroup.Key} Series");
-                            Directory.CreateDirectory(thisSeriesDestPath);
-                        }
-                        else
-                        {
-                            thisSeriesDestPath = thisAuthorsDestPath;
-                        }
-
-                        foreach (var file in seriesList)
-                        {
-                            ExportFile(file, thisSeriesDestPath);
-                        }
-                    }
+                    ProcessBySeries(authorGroup, thisAuthorsDestPath);
                 }
             }
         }

@@ -123,13 +123,13 @@ namespace DatabaseTests
             ExporterOptions options = new ExporterOptions
             {
                 GroupByAuthor = true,
-                GroupBySeries = false,
+                GroupBySeries = true,
                 CreateNewDirectory = true,
                 NewDirectoryName = "TESTEXPORTFOLDER",
                 DestinationDirectory = @"C:\Users\Luka\Desktop"
             };
 
-            exp.ExportBooks(context.BookFiles.ToList(), options);
+            exp.ExportBookFiles(context.BookFiles.ToList(), options);
         }
     }
 }
