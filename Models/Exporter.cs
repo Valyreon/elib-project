@@ -19,12 +19,9 @@ namespace Models
             database = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
         }
 
-        public void ExportBook(Book book, string path, ExporterOptions.Format format)
+        public void ExportBook(EFile eFile, string path)
         {
-            byte[] binaryData = book.Files.Where(x => x.Format == ExporterOptions.GetFormat(format)).FirstOrDefault()?.RawContent;
-
-            if (binaryData == null)
-                throw new FileNotFoundException();
+            byte[] binaryData = eFile.RawContent;
 
             using(FileStream fs = File.Create(path))
             {
