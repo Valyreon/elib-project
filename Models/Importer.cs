@@ -58,7 +58,7 @@ namespace Models
             ICollection<Book> result = new List<Book>();
 
             if (!Directory.Exists(path))
-                return result;
+                throw new DirectoryNotFoundException();
 
             IEnumerable<string> validFileList = ImportUtils.GetValidBookPaths(Directory.GetFiles(path));
 
@@ -66,16 +66,6 @@ namespace Models
                 result.Add(ImportBook(EbookParserFactory.Create(filePath).Parse()));
 
             return result;
-        }
-
-        public Task CommitChangesAsync()
-        {
-            return database.SaveChangesAsync();
-        }
-
-        public void CommitChanges()
-        {
-            database.SaveChanges();
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Domain;
 using System.Data.Entity;
-using System.Data.Entity.Migrations;
 using System.Data.SQLite;
 
 namespace DataLayer
@@ -56,6 +55,7 @@ namespace DataLayer
             this.Database.ExecuteSqlCommand("DELETE FROM [Series]");
             this.Database.ExecuteSqlCommand("DELETE FROM [UserCollectionBooks]");
             this.Database.ExecuteSqlCommand("DELETE FROM [UserCollections]");
+            this.Database.ExecuteSqlCommand("VACUUM"); // this solves the db size problem
         }
     }
 }

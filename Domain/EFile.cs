@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Domain
 {
     [Table("BookFiles")]
-    public class EFile : Entity
+    public class EFile : DomainEntity
     {
         public int Id { get; set; }
         [Required]

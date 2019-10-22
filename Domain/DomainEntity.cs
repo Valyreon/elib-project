@@ -7,9 +7,7 @@ using System.Threading.Tasks;
 
 namespace Domain
 {
-    public abstract class Entity
+    public abstract class DomainEntity
     {
-        [Key]
-        public int Id { get; set; }
     }
 }

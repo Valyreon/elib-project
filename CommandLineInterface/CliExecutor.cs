@@ -394,7 +394,6 @@ namespace Cli
             } while (command != "exit");
 
             Console.WriteLine("Exiting...");
-            await importer.CommitChangesAsync();
         }
     }
 }

@@ -1,12 +1,8 @@
 ﻿using DataLayer;
 using Domain;
-using Models.Options;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Linq;
 
 namespace Models
 {
@@ -14,19 +10,51 @@ namespace Models
     {
         private readonly ElibContext database;
 
-        public Exporter()
+        public Exporter(ElibContext db)
         {
-            database = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
+            this.database = db;
         }
 
-        public void ExportBook(EFile eFile, string path)
+        public void ExportBook(Book book, EFile eFile, string destinationFolder)
         {
             byte[] binaryData = eFile.RawContent;
+            StringBuilder fileNameBuilder = new StringBuilder();
+            fileNameBuilder.Append(book.Name);
 
-            using(FileStream fs = File.Create(path))
+            if (book.SeriesId != null && book.Series == null) // If series was not included
             {
-                fs.Write(binaryData, 0, binaryData.Length);
+                database.Entry(book).Reference(b => b.Series).Load();
             }
+
+            if (book.Authors == null) // if authors were not included
+            {
+                database.Entry(book).Reference(b => b.Authors).Load();
+            }
+
+            if (book.SeriesId != null)
+            {
+                fileNameBuilder.Append($" ({book.Series} #{book.NumberInSeries})");
+            }
+
+            // there can be more than one author
+            int index = 1;
+            fileNameBuilder.Append($" by {book.Authors.ElementAt(0).Name}");
+            while (index < book.Authors.Count)
+            {
+                if (index == book.Authors.Count - 1)
+                {
+                    fileNameBuilder.Append(" and");
+                }
+                else
+                {
+                    fileNameBuilder.Append(",");
+                }
+                fileNameBuilder.Append($" {book.Authors.ElementAt(index).Name}");
+                ++index;
+            }
+
+            using FileStream fs = File.Create(Path.Combine(destinationFolder, fileNameBuilder.ToString()));
+            fs.Write(binaryData, 0, binaryData.Length);
         }
     }
 }

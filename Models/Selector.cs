@@ -1,29 +1,24 @@
-﻿using DataLayer;
-using Domain;
-using System;
+﻿using Domain;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Models
 {
     public class Selector<T>
-        where T : Entity
+        where T : DomainEntity
     {
-        private readonly DbSet<T> _dbSet;
+        private readonly DbSet<T> dbSet;
         public ICollection<T> SelectedItems { get; private set; }
 
         public Selector(DbSet<T> dbSet)
         {
-            this._dbSet = dbSet;
+            this.dbSet = dbSet;
             SelectedItems = new List<T>();
         }
 
         public void AddId(int id)
         {
-            SelectedItems.Add(_dbSet.Find(id));
+            SelectedItems.Add(dbSet.Find(id));
         }
 
         public void Add(T item)
