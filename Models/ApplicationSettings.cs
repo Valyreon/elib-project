@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.IO;
 
 namespace Models
@@ -10,7 +9,6 @@ namespace Models
 
         public static ApplicationSettings GetInstance()
         {
-            var x = AppDomain.CurrentDomain.BaseDirectory;
             if (_instance == null)
             {
                 if (!File.Exists(@"./properties.json"))

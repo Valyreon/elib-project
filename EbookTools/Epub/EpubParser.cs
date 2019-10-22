@@ -52,7 +52,7 @@ namespace EbookTools.Epub
 			MemoryStream ms = new MemoryStream(this._rawFile);
 			string title, author, publisher, isbn = null, htmlBook;
 			XmlDocument doc = null;
-			Image cover;
+			byte[] cover;
 			using (var zip = new ZipArchive(ms, ZipArchiveMode.Read))
 			{
 				doc = GetRootfileDocument(zip);
@@ -76,7 +76,7 @@ namespace EbookTools.Epub
 			return new ParsedBook(title, author, isbn, publisher, htmlBook, cover, ".epub", _rawFile);
 		}
 
-		public Image GetCover(ZipArchive zip)
+		public byte[] GetCover(ZipArchive zip)
 		{
 			foreach (var entry in zip.Entries)
 			{
@@ -84,7 +84,7 @@ namespace EbookTools.Epub
 				{
 					MemoryStream ms = new MemoryStream();
 					entry.Open().CopyTo(ms);
-					return new Bitmap(ms);
+                    return ms.ToArray();
 				}
 			}
 			return null;

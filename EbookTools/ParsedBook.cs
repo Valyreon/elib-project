@@ -1,27 +1,25 @@
-﻿using System.Drawing;
-
-namespace EbookTools
+﻿namespace EbookTools
 {
-	public class ParsedBook
-	{
-		public string Title { get; private set; } = null;
+    public class ParsedBook
+    {
+        public string Title { get; private set; } = null;
 
-		public string Author { get; private set; } = null;
+        public string Author { get; private set; } = null;
 
-		public string ISBN { get; private set; } = null;
+        public string ISBN { get; private set; } = null;
 
-		public string Publisher { get; private set; } = null;
+        public string Publisher { get; private set; } = null;
 
-		public string ContentHtml { get; private set; } = null;
+        public string ContentHtml { get; private set; } = null;
 
         public string Format { get; private set; } = null;
 
         public byte[] RawData { get; private set; } = null;
 
-		public Image Cover { get; private set; }
+        public byte[] Cover { get; private set; }
 
-		public ParsedBook(string title, string author, string isbn, string publisher, string content, Image cover, string format, byte[] rawData)
-		{
+        public ParsedBook(string title, string author, string isbn, string publisher, string content, byte[] cover, string format, byte[] rawData)
+        {
             this.Title = title;
             this.Author = author;
             this.ISBN = isbn;
@@ -30,11 +28,6 @@ namespace EbookTools
             this.Cover = cover;
             this.Format = format;
             this.RawData = rawData;
-		}
-
-		public ParsedBook(string content)
-		{
-            this.ContentHtml = content;
-		}
-	}
+        }
+    }
 }

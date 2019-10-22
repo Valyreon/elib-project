@@ -20,17 +20,17 @@ namespace CommandLineInterface.Utilities
             BookSeries series = book.Series;
 
             if (authors != null)
-                stringBuilder.Append(String.Format(formatString, authors.Count > 1 ? "Authors:" : "Author:", string.Join(", ", authors.Select(x => x.Name))));
+                stringBuilder.Append(string.Format(formatString, authors.Count > 1 ? "Authors:" : "Author:", string.Join(", ", authors.Select(x => x.Name))));
 
             if (series != null)
-                stringBuilder.Append(String.Format(formatString, "Series:", series.Name))
-                    .Append(String.Format(formatString, "Number:", book.NumberInSeries));
+                stringBuilder.Append(string.Format(formatString, "Series:", series.Name))
+                    .Append(string.Format(formatString, "Number:", book.NumberInSeries));
 
             if(book.IsRead != null)
-                stringBuilder.Append(String.Format(formatString, "Read:", (bool)book.IsRead ? "Yes" : "No"));
+                stringBuilder.Append(string.Format(formatString, "Read:", (bool)book.IsRead ? "Yes" : "No"));
 
             if (collections != null)
-                stringBuilder.Append(String.Format(formatString, collections.Count > 1 ? "Collections:" : "Collection:", string.Join(", ", collections)));
+                stringBuilder.Append(string.Format(formatString, collections.Count > 1 ? "Collections:" : "Collection:", string.Join(", ", collections)));
 
             stringBuilder.Append("\n\n");
 

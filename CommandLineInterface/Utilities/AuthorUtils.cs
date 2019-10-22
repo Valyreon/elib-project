@@ -15,10 +15,10 @@ namespace CommandLineInterface.Utilities
 
             ICollection<Book> books = author.Books;
 
-            StringBuilder stringBuilder = new StringBuilder(String.Format(formatString, "Name:", author.Name));
+            StringBuilder stringBuilder = new StringBuilder(string.Format(formatString, "Name:", author.Name));
 
             if (books != null)
-                stringBuilder.Append(String.Format(formatString, books.Count > 1 ? "Books:" : "Book:", string.Join(", ", books.Select(x => x.Name))));
+                stringBuilder.Append(string.Format(formatString, books.Count > 1 ? "Books:" : "Book:", string.Join(", ", books.Select(x => x.Name))));
 
             return stringBuilder.ToString();
         }

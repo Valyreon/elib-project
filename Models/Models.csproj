@@ -59,13 +59,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationSettings.cs" />
-    <Compile Include="Helpers\ParsedBookHelper.cs" />
     <Compile Include="Options\ExporterOptions.cs" />
     <Compile Include="Selector.cs" />
-    <Compile Include="Utilities\DomainInitializer.cs" />
     <Compile Include="Exporter.cs" />
-    <Compile Include="Utilities\DomainUtils.cs" />
-    <Compile Include="Utilities\ImportUtils.cs" />
     <Compile Include="Importer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -15,15 +15,12 @@ namespace EbookTools
 
         public static EbookParser Create(string path)
         {
-            switch(Path.GetExtension(path))
+            return (Path.GetExtension(path)) switch
             {
-                case ".epub":
-                    return new EpubParser(File.ReadAllBytes(path));
-                case ".mobi":
-                    return new MobiParser(File.ReadAllBytes(path));
-                default:
-                    throw new ArgumentException($"{path} has an unkown extension.");
-            }
+                ".epub" => new EpubParser(File.ReadAllBytes(path)),
+                ".mobi" => new MobiParser(File.ReadAllBytes(path)),
+                _ => throw new ArgumentException($"{path} has an unkown extension."),
+            };
         }
     }
 }

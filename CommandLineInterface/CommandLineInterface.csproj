@@ -67,6 +67,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\AuthorUtils.cs" />
     <Compile Include="Utilities\BookUtils.cs" />
+    <Compile Include="Utilities\ImportUtils.cs" />
     <Compile Include="Utilities\StringUtils.cs" />
   </ItemGroup>
   <ItemGroup>

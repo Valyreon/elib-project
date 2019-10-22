@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
-using System.Data.Entity.Migrations;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DataLayer;
 using Domain;
 using EbookTools;
-using Models.Helpers;
-using Models.Utilities;
 
 namespace Models
 {
@@ -18,18 +12,21 @@ namespace Models
     {
         private readonly ElibContext database;
 
-        public Importer()
+        public Importer(ElibContext db)
         {
-            database = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
+            this.database = db;
         }
 
-        public Book ImportBook(ParsedBook parsedBook, string bookName, string authorName, string seriesName = null, Decimal? seriesNumber = null)
+        public Book ImportBook(ParsedBook parsedBook, string bookName, string authorName, string seriesName = null, decimal? seriesNumber = null)
         {
             Book book = new Book()
             {
                 Name = bookName,
                 Authors = new List<Author> { database.Authors.Where(x => x.Name == authorName).FirstOrDefault() ?? new Author { Name = authorName } },
-                Files = new List<EFile> { parsedBook.GetEFile() },
+                Files = new List<EFile>
+                {
+                    new EFile { Format = parsedBook.Format, RawContent = parsedBook.RawData }
+                },
                 Series = seriesName == null ? null : (database.Series.Where(x => x.Name == seriesName).FirstOrDefault() ?? new BookSeries { Name = seriesName }),
                 NumberInSeries = seriesNumber
             };
@@ -45,7 +42,10 @@ namespace Models
             {
                 Name = parsedBook.Title,
                 Authors = new List<Author> { database.Authors.Where(x => x.Name == parsedBook.Author).FirstOrDefault() ?? new Author { Name = parsedBook.Author } },
-                Files = new List<EFile> { parsedBook.GetEFile() },
+                Files = new List<EFile>
+                {
+                    new EFile { Format = parsedBook.Format, RawContent = parsedBook.RawData}
+                }
             };
 
             book = database.Books.Add(book);
@@ -60,9 +60,13 @@ namespace Models
             if (!Directory.Exists(path))
                 throw new DirectoryNotFoundException();
 
-            IEnumerable<string> validFileList = ImportUtils.GetValidBookPaths(Directory.GetFiles(path));
+            List<string> validFileList = new List<string>();
+            foreach (string ext in EbookParserFactory.SupportedExtensions)
+            {
+                validFileList.AddRange(Directory.GetFiles(path, "*" + ext));
+            }
 
-            foreach(string filePath in validFileList)
+            foreach (string filePath in validFileList)
                 result.Add(ImportBook(EbookParserFactory.Create(filePath).Parse()));
 
             return result;

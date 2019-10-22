@@ -7,7 +7,6 @@ using Models.Helpers;
 using Models.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity.Migrations;
 using System.IO;
 using System.Linq;
 
@@ -16,22 +15,21 @@ namespace Cli
     /// <summary>
     ///  This class is used for CLI functionality.
     /// </summary>
-    public class CliExecutor
+    public class CliExecutor : IDisposable
     {
-        public static void Main(string[] args)
-        {
-            CliExecutor cliExecutor = new CliExecutor();
-            cliExecutor.Execute();
-        }
-
-
         private ElibContext database;
         private Importer importer;
+
+        public static void Main(string[] args)
+        {
+            using CliExecutor cliExecutor = new CliExecutor();
+            cliExecutor.Execute();
+        }
 
         public CliExecutor()
         {
             database = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
-            importer = new Importer();
+            importer = new Importer(database);
             Console.WriteLine("Starting eLIB in CLI mode.\nWELCOME TO ELIB COMMAND LINE.\n");
         }
 
@@ -49,11 +47,12 @@ namespace Cli
 
             return consoleKey == ConsoleKey.Y || consoleKey == ConsoleKey.Enter && !inverted;
         }
+
         private string GetNewOrDefaultInput(string def)
         {
             string newString = Console.ReadLine().Trim();
 
-            if (newString == "")
+            if (string.IsNullOrEmpty(newString))
                 return def;
 
             return newString;
@@ -63,7 +62,7 @@ namespace Cli
         ///  Starts the CLI loop until the keyword 'exit' is inputted.
         /// </summary>
         ///
-        public async void Execute()
+        public void Execute()
         {
             string command;
             do
@@ -112,17 +111,17 @@ namespace Cli
 
                             Console.Write("Series: ");
                             string seriesName = Console.ReadLine().Trim();
-                            Decimal? seriesNumber = null;
+                            decimal? seriesNumber = null;
 
-                            if (seriesName != "")
+                            if (!string.IsNullOrEmpty(seriesName))
                             {
-                                Decimal newNumber;
+                                decimal newNumber;
                                 do
                                 {
                                     Console.Write("Series number: ");
-                                } while (!Decimal.TryParse(Console.ReadLine().Trim(), out newNumber));
+                                } while (!decimal.TryParse(Console.ReadLine().Trim(), out newNumber));
 
-                                seriesNumber = (Decimal)newNumber;
+                                seriesNumber = newNumber;
                             }
 
                             importer.ImportBook(parsedBook, bookName, authorName, seriesName, seriesNumber);
@@ -141,13 +140,13 @@ namespace Cli
                                 {
                                     try
                                     {
-                                        Book book = database.Books.Find(Int64.Parse(viewInput.Item2));
+                                        Book book = database.Books.Find(long.Parse(viewInput.Item2));
                                         if (book != null)
                                             Console.Write(BookUtils.GetDetails(book)); // TODO: Error handling
                                         else
                                             Console.WriteLine("Book does not exist.");
                                     }
-                                    catch (Exception e)
+                                    catch (Exception)
                                     {
                                         Console.WriteLine("Invalid book ID.");
                                     }
@@ -394,6 +393,11 @@ namespace Cli
             } while (command != "exit");
 
             Console.WriteLine("Exiting...");
+        }
+
+        public void Dispose()
+        {
+            database.Dispose();
         }
     }
 }

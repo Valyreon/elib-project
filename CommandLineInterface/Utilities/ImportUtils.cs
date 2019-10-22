@@ -30,7 +30,6 @@ namespace Models.Utilities
             return fileList.Where(filePath => !IsValidBookExtension(filePath) || !File.Exists(filePath));
         }
 
-
         public static IEnumerable<ParsedBook> GetParsedBooksFromPaths(IEnumerable<string> fileList)
         {
             IList<ParsedBook> result = new List<ParsedBook>();
