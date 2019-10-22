@@ -1,10 +1,7 @@
 ﻿using EbookTools;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Models.Utilities
 {
@@ -33,7 +30,7 @@ namespace Models.Utilities
         public static IEnumerable<ParsedBook> GetParsedBooksFromPaths(IEnumerable<string> fileList)
         {
             IList<ParsedBook> result = new List<ParsedBook>();
-            foreach(string file in fileList)
+            foreach (string file in fileList)
                 result.Add(EbookParserFactory.Create(file).Parse());
 
             return result;

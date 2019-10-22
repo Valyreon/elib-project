@@ -74,6 +74,7 @@ namespace Cli
                 {
                     case "":
                         break;
+
                     case "import":
                     case "i":
                         // TODO: Check if book exists
@@ -86,7 +87,6 @@ namespace Cli
 
                         int validFileCount = validFileList.Count();
                         Console.WriteLine($"Found {validFileCount} book{(validFileCount == 1 ? "" : "s")}");
-
 
                         Console.WriteLine("\nFound books:");
                         for (int i = 1; i <= validFileCount; i++)
@@ -127,9 +127,11 @@ namespace Cli
                             importer.ImportBook(parsedBook, bookName, authorName, seriesName, seriesNumber);
                         }
                         break;
+
                     case "truncate":
                         database.TruncateDatabase();
                         break;
+
                     case "view":
                     case "v":
                         Tuple<string, string> viewInput = consoleInput.Item2.ToLower().Trim().SplitOnFirstBlank();
@@ -152,56 +154,59 @@ namespace Cli
                                     }
                                 }
                                 break;
+
                             case "all":
                             case "a":
                                 foreach (Book book in database.Books)
                                     Console.WriteLine(BookUtils.GetDetails(book));
                                 break;
+
                             case "author":
                             case "au":
                                 foreach (Author author in database.Authors)
                                     Console.WriteLine(AuthorUtils.GetDetails(author));
                                 break;
-                                /*
-                            case "collection":
-                            case "c":
-                                if (viewInput.Item2 == "")
-                                    foreach (Collection collection in database.Collections)
+                            /*
+                        case "collection":
+                        case "c":
+                            if (viewInput.Item2 == "")
+                                foreach (Collection collection in database.Collections)
+                                    Console.WriteLine(collection);
+                            else
+                                try
+                                {
+                                    Collection collection = database.GetCollectionFromID(Int64.Parse(viewInput.Item2));
+                                    if (collection != null)
                                         Console.WriteLine(collection);
-                                else
-                                    try
-                                    {
-                                        Collection collection = database.GetCollectionFromID(Int64.Parse(viewInput.Item2));
-                                        if (collection != null)
-                                            Console.WriteLine(collection);
-                                        else
-                                            Console.WriteLine("Collection does not exit");
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        Console.WriteLine("Invalid collection id");
-                                    }
-                                break;
-                            case "series":
-                            case "s":
-                                if (viewInput.Item2 == "")
-                                    foreach (Series series in database.Series)
-                                        Console.WriteLine(series.name);
-                                else
-                                    try
-                                    {
-                                        Series series = database.GetSeriesFromID(Int64.Parse(viewInput.Item2));
-                                        if (series != null)
-                                            Console.WriteLine(series);
-                                        else
-                                            Console.WriteLine("Series does not exit");
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        Console.WriteLine("Invalid series id");
-                                    }
-                                break;
-                                */
+                                    else
+                                        Console.WriteLine("Collection does not exit");
+                                }
+                                catch (Exception e)
+                                {
+                                    Console.WriteLine("Invalid collection id");
+                                }
+                            break;
+
+                        case "series":
+                        case "s":
+                            if (viewInput.Item2 == "")
+                                foreach (Series series in database.Series)
+                                    Console.WriteLine(series.name);
+                            else
+                                try
+                                {
+                                    Series series = database.GetSeriesFromID(Int64.Parse(viewInput.Item2));
+                                    if (series != null)
+                                        Console.WriteLine(series);
+                                    else
+                                        Console.WriteLine("Series does not exit");
+                                }
+                                catch (Exception e)
+                                {
+                                    Console.WriteLine("Invalid series id");
+                                }
+                            break;
+                            */
                             default:
                                 Console.WriteLine("View command was incorrect");
                                 break;
@@ -219,7 +224,6 @@ namespace Cli
                         Console.Write($"Title[{newBook.Title}]*: ");
 
                         book.name = GetNewOrDefaultInput(newBook.Title);
-
 
                         Console.Write($"Author[{newBook.Author}]*: ");
                         string authorName = GetNewOrDefaultInput(newBook.Author);
@@ -265,12 +269,11 @@ namespace Cli
                         book.FileValues.Add(database.AddFileDB(new Data.DomainModel.File() { book = book, fileBlob = System.IO.File.ReadAllBytes(fileList[i]), format = Path.GetExtension(fileList[i]) }));
                         database.AddOrUpdateBook(book);
 
-
                         database.AddBookAuthorLink(book, author);// TODO: Remove save changes
                     }
 
-
                     break;
+
                 case "metadata":
                 case "m":
                     try
@@ -282,6 +285,7 @@ namespace Cli
                         Console.WriteLine("Invalid format");
                     }
                     break;
+
                 case "find":
                 case "f":
                     Tuple<string, string> findInput = consoleInput.Item2.ToLower().Trim().SplitOnFirstBlank();
@@ -315,12 +319,13 @@ namespace Cli
                                 Console.WriteLine();
                             }
                             break;
+
                         default:
                             Console.WriteLine("Find command was incorrect");
                             break;
-
                     }
                     break;
+
                 case "view":
                 case "v":
                     Tuple<string, string> viewInput = consoleInput.Item2.ToLower().Trim().SplitOnFirstBlank();
@@ -330,16 +335,19 @@ namespace Cli
                         case "d":
                             Console.Write(database.GetBookFromID(Int64.Parse(viewInput.Item2)).GetDetails()); // TODO: Error handling
                             break;
+
                         case "all":
                         case "a":
                             foreach (Book book in database.Books)
                                 Console.WriteLine(book);
                             break;
+
                         case "author":
                         case "au":
                             foreach (Author author in database.Authors)
                                 Console.WriteLine(author);
                             break;
+
                         case "collection":
                         case "c":
                             if(viewInput.Item2 == "")
@@ -359,6 +367,7 @@ namespace Cli
                                     Console.WriteLine("Invalid collection id");
                                 }
                             break;
+
                         case "series":
                         case "s":
                             if (viewInput.Item2 == "")
@@ -378,18 +387,17 @@ namespace Cli
                                     Console.WriteLine("Invalid series id");
                                 }
                             break;
+
                         default:
                             Console.WriteLine("View command was incorrect");
                             break;
                     }
                     */
 
-
                     default:
                         Console.WriteLine("Unknown command");
                         break;
                 }
-
             } while (command != "exit");
 
             Console.WriteLine("Exiting...");

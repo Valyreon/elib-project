@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using DataLayer;
+﻿using DataLayer;
 using Domain;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Models;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace DatabaseTests
 {
@@ -29,7 +28,7 @@ namespace DatabaseTests
                 .Include("Quotes")
                 .Where(x => x.Name.Contains("Conversation"))
                 .FirstOrDefault();
-            Assert.IsNotNull(first.Books); 
+            Assert.IsNotNull(first.Books);
             Assert.IsNotNull(collection.Books);
             Assert.IsNotNull(mybook.Series);
             Assert.IsNotNull(mybook.Authors);
@@ -40,18 +39,18 @@ namespace DatabaseTests
         [TestMethod]
         public void TestAddingToDatabase()
         {
-            string[] bookFilePaths = new string[] 
-            {   
+            string[] bookFilePaths = new string[]
+            {
                 @"C:\Users\luka.budrak\Downloads\[Reynolds_Alastair]_Revelation_Space(z-lib.org).mobi"
             };
             string coverPicturePath = null;
-            string[] authorNames = new string[] 
+            string[] authorNames = new string[]
             {
                 "Alastair Reynolds"
             };
             string bookName = "Revelation Space";
             string seriesName = "Revelation Space";
-            string[] collectionTags = new string[] 
+            string[] collectionTags = new string[]
             {
                 "scifi",
                 "adventure"
@@ -83,7 +82,7 @@ namespace DatabaseTests
             }
 
             // Add collections, but first check if each exists in database
-            foreach(var collectionTag in collectionTags)
+            foreach (var collectionTag in collectionTags)
             {
                 var collection = context.UserCollections.Where(col => col.Tag.Equals(collectionTag)).FirstOrDefault();
                 newBook.UserCollections = new List<UserCollection>
@@ -93,7 +92,7 @@ namespace DatabaseTests
             }
 
             // Add files, check if they exists on given location
-            foreach(var filePath in bookFilePaths)
+            foreach (var filePath in bookFilePaths)
             {
                 if (File.Exists(filePath))
                 {

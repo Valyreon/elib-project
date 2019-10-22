@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace CommandLineInterface.Utilities
 {
@@ -26,7 +25,7 @@ namespace CommandLineInterface.Utilities
                 stringBuilder.Append(string.Format(formatString, "Series:", series.Name))
                     .Append(string.Format(formatString, "Number:", book.NumberInSeries));
 
-            if(book.IsRead != null)
+            if (book.IsRead != null)
                 stringBuilder.Append(string.Format(formatString, "Read:", (bool)book.IsRead ? "Yes" : "No"));
 
             if (collections != null)

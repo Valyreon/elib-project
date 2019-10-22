@@ -5,7 +5,7 @@ using System.Windows.Input;
 
 namespace ElibWpf.ViewModels
 {
-    public class TheWindowViewModel: ViewModelBase
+    public class TheWindowViewModel : ViewModelBase
     {
         private readonly Stack<object> viewModelHistory = new Stack<object>();
         private object currentControl;

@@ -1,10 +1,9 @@
-﻿using System;
+﻿using DataLayer;
+using Domain;
+using EbookTools;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using DataLayer;
-using Domain;
-using EbookTools;
 
 namespace Models
 {

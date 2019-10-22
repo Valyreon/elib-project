@@ -7,9 +7,9 @@
         xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
-        Title="Electronic Library" 
-        WindowStartupLocation="CenterScreen" 
-        ResizeMode="CanResize" 
+        Title="Electronic Library"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanResize"
         Left="0" Top="0"
         TitleCaps="False"
         ShowIconOnTitleBar="True">
@@ -45,9 +45,8 @@
             </Grid.RowDefinitions>
 
             <Button Grid.Row="0" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
-                    <iconPacks:PackIconModern Width="16" Height="16" Kind="NavigatePrevious" />
+                <iconPacks:PackIconModern Width="16" Height="16" Kind="NavigatePrevious" />
             </Button>
-            
         </Grid>
         <ContentControl Grid.Row="1" Grid.Column="0" Content="{Binding CurrentControl}"></ContentControl>
     </Grid>

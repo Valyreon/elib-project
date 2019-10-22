@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain
 {
@@ -12,12 +8,16 @@ namespace Domain
     public class Book : DomainEntity
     {
         public int Id { get; set; }
+
         [Required]
         [StringLength(100)]
         public string Name { get; set; }
+
         public int? SeriesId { get; set; }
+
         [ForeignKey("SeriesId")]
         public BookSeries Series { get; set; }
+
         public decimal? NumberInSeries { get; set; }
         public byte[] Cover { get; set; }
         public bool? IsRead { get; set; }

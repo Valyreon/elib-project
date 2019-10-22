@@ -2,7 +2,7 @@
 
 namespace CommandLineInterface.Utilities
 {
-   public class StringUtils
+    public class StringUtils
     {
         public static bool EqualsIgnoreCase(string a, string b)
         {
