@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EbookParser.cs" />
+    <Compile Include="EbookParserFactory.cs" />
     <Compile Include="Epub\EpubParser.cs" />
     <Compile Include="Mobi\MobiFile.cs" />
     <Compile Include="Mobi\MobiParser.cs" />

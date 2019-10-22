@@ -14,21 +14,27 @@ namespace EbookTools
 
 		public string ContentHtml { get; private set; } = null;
 
+        public string Format { get; private set; } = null;
+
+        public byte[] RawData { get; private set; } = null;
+
 		public Image Cover { get; private set; }
 
-		public ParsedBook(string title, string author, string isbn, string publisher, string content, Image cover)
+		public ParsedBook(string title, string author, string isbn, string publisher, string content, Image cover, string format, byte[] rawData)
 		{
-			Title = title;
-			Author = author;
-			ISBN = isbn;
-			Publisher = publisher;
-			ContentHtml = content;
-			Cover = cover;
+            this.Title = title;
+            this.Author = author;
+            this.ISBN = isbn;
+            this.Publisher = publisher;
+            this.ContentHtml = content;
+            this.Cover = cover;
+            this.Format = format;
+            this.RawData = rawData;
 		}
 
 		public ParsedBook(string content)
 		{
-			ContentHtml = content;
+            this.ContentHtml = content;
 		}
 	}
 }

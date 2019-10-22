@@ -41,7 +41,7 @@ namespace DatabaseTests
         public void TestAddingToDatabase()
         {
             string[] bookFilePaths = new string[] 
-            {
+            {   
                 @"C:\Users\luka.budrak\Downloads\[Reynolds_Alastair]_Revelation_Space(z-lib.org).mobi"
             };
             string coverPicturePath = null;
