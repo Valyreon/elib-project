@@ -298,6 +298,17 @@ namespace Cli
                                 }
 
                                 break;
+                            case "collection":
+                            case "c":
+                                ISet<int> collectionIds = selectInput.Item2.GetIDsSeperatedBySpace();
+
+                                foreach (int id in collectionIds)
+                                {
+                                    foreach (Book book in database.UserCollections.Find(id).Books)
+                                        selectedBooks.Add(book);
+                                }
+
+                                break;
                             default:
                                 Console.WriteLine("Select command was incorrect");
                                 break;
