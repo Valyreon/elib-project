@@ -19,6 +19,7 @@ namespace Cli
     {
         private ElibContext database;
         private Importer importer;
+        private DetailUtils detail;
 
         public static void Main(string[] args)
         {
@@ -30,6 +31,7 @@ namespace Cli
         {
             database = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
             importer = new Importer(database);
+            detail = new DetailUtils(database);
             Console.WriteLine("Starting eLIB in CLI mode.\nWELCOME TO ELIB COMMAND LINE.\n");
         }
 
@@ -157,29 +159,53 @@ namespace Cli
                                 {
                                     try
                                     {
-                                        Book book = database.Books.Find(long.Parse(viewInput.Item2));
-                                        if (book != null)
-                                            Console.Write(BookUtils.GetDetails(book));
-                                        else
-                                            Console.WriteLine("Book does not exist.");
+                                        int id = int.Parse(viewInput.Item2);
+                                        Console.Write(detail.BookDetailsID(id));
                                     }
-                                    catch (Exception)
+                                    catch (FormatException fe)
                                     {
                                         Console.WriteLine("Invalid book ID.");
+                                    }
+                                    catch (KeyNotFoundException knfe)
+                                    {
+                                        Console.WriteLine("Book was not found.");
                                     }
                                 }
                                 break;
 
                             case "all":
                             case "a":
-                                foreach (Book book in database.Books)
-                                    Console.WriteLine(BookUtils.GetDetails(book));
+                                foreach (int id in database.Books.Select(x => x.Id))
+                                {
+                                    Console.WriteLine(detail.BookDetailsID(id));
+                                }
                                 break;
 
                             case "author":
                             case "au":
-                                foreach (Author author in database.Authors)
-                                    Console.WriteLine(AuthorUtils.GetDetails(author));
+                                if (string.IsNullOrEmpty(viewInput.Item2.Trim()))
+                                {
+                                    foreach (int id in database.Authors.Select(x => x.Id))
+                                    {
+                                        Console.WriteLine(detail.AuthorDetailsID(id));
+                                    }
+                                }
+                                else
+                                {
+                                    try
+                                    {
+                                        int id = int.Parse(viewInput.Item2);
+                                        Console.Write(detail.AuthorDetailsID(id));
+                                    }
+                                    catch (FormatException fe)
+                                    {
+                                        Console.WriteLine("Invalid author ID.");
+                                    }
+                                    catch (KeyNotFoundException knfe)
+                                    {
+                                        Console.WriteLine("Author was not found.");
+                                    }
+                                }
                                 break;
                             /*
                         case "collection":
