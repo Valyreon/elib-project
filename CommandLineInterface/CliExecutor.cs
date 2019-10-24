@@ -77,13 +77,28 @@ namespace Cli
 
                     case "import":
                     case "i":
-                        // TODO: Check if book exists
-                        IEnumerable<string> fileList = consoleInput.Item2.GetFilePathsFromString();
-                        IEnumerable<string> validFileList = ImportUtils.GetValidBookPaths(fileList);
-                        IEnumerable<string> invalidFileList = ImportUtils.GetInvalidBookPaths(fileList);
+                        IEnumerable<string> validFileList = new List<string>();
+                        try
+                        {
+                            if (consoleInput.Item2.EndsWith("*"))// Directory
+                            {
+                                validFileList = ImportUtils.GetValidFilesFromDirectory(consoleInput.Item2.Substring(0, consoleInput.Item2.Length - 2));
+                            }
+                            else
+                            {
+                                // TODO: Check if book exists
+                                IEnumerable<string> fileList = consoleInput.Item2.GetFilePathsFromString();
+                                validFileList = ImportUtils.GetValidBookPaths(fileList);
+                                IEnumerable<string> invalidFileList = ImportUtils.GetInvalidBookPaths(fileList);
 
-                        foreach (string invalidFilePath in invalidFileList)
-                            Console.WriteLine($"File {invalidFilePath} is not valid or does not exist.");
+                                foreach (string invalidFilePath in invalidFileList)
+                                    Console.WriteLine($"File {invalidFilePath} is not valid or does not exist.");
+                            }
+                        }
+                        catch (DirectoryNotFoundException dnfe)
+                        {
+                            Console.WriteLine("Invalid directory.");
+                        }
 
                         int validFileCount = validFileList.Count();
                         Console.WriteLine($"Found {validFileCount} book{(validFileCount == 1 ? "" : "s")}");
@@ -126,7 +141,7 @@ namespace Cli
 
                             importer.ImportBook(parsedBook, bookName, authorName, seriesName, seriesNumber);
                         }
-                        break;
+                break;
 
                     case "truncate":
                         database.TruncateDatabase();
@@ -144,7 +159,7 @@ namespace Cli
                                     {
                                         Book book = database.Books.Find(long.Parse(viewInput.Item2));
                                         if (book != null)
-                                            Console.Write(BookUtils.GetDetails(book)); // TODO: Error handling
+                                            Console.Write(BookUtils.GetDetails(book));
                                         else
                                             Console.WriteLine("Book does not exist.");
                                     }
