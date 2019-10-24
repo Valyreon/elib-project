@@ -29,5 +29,24 @@ namespace Models.Helpers
             Regex splitRegex = new Regex("(?<=\")[^\"]*(?=\")|[^\" ]+");
             return splitRegex.Matches(str).Cast<Match>().Select(x => x.Value);
         }
+
+        public static ISet<int> GetIDsSeperatedBySpace(this string str)
+        {
+            ISet<int> result = new HashSet<int>();
+
+            foreach (string x in str.Split(' '))
+            {
+                try
+                {
+                    result.Add(int.Parse(x));
+                }
+                catch (FormatException fe)
+                {
+                    
+                }
+            }
+
+            return result;
+        }
     }
 }

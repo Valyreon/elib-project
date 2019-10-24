@@ -281,23 +281,22 @@ namespace Cli
                         {
                             case "book":
                             case "b":
-                                HashSet<int> bookIds = new HashSet<int>();
-                                foreach (string x in selectInput.Item2.Split(' '))
-                                {
-                                    try
-                                    {
-                                        bookIds.Add(int.Parse(x));
-                                    }
-                                    catch (FormatException fe)
-                                    {
-                                        Console.WriteLine($"ID: {x} is invalid.");
-                                    }
-                                }
+                                ISet<int> bookIds = selectInput.Item2.GetIDsSeperatedBySpace();
 
                                 foreach(int id in bookIds)
-                                {
                                     selectedBooks.Add(database.Books.Find(id));
+
+                                break;
+                            case "series":
+                            case "s":
+                                ISet<int> seriesIds = selectInput.Item2.GetIDsSeperatedBySpace();
+
+                                foreach (int id in seriesIds)
+                                {
+                                    foreach (Book book in database.Series.Find(id).Books)
+                                        selectedBooks.Add(book);
                                 }
+
                                 break;
                             default:
                                 Console.WriteLine("Select command was incorrect");
