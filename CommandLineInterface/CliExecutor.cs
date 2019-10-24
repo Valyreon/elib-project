@@ -20,6 +20,7 @@ namespace Cli
         private ElibContext database;
         private Importer importer;
         private DetailUtils detail;
+        private ISet<Book> selectedBooks;
 
         public static void Main(string[] args)
         {
@@ -31,6 +32,7 @@ namespace Cli
         {
             database = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
             importer = new Importer(database);
+            selectedBooks = new HashSet<Book>();
             detail = new DetailUtils(database);
             Console.WriteLine("Starting eLIB in CLI mode.\nWELCOME TO ELIB COMMAND LINE.\n");
         }
@@ -234,7 +236,7 @@ namespace Cli
                                 }
                                 break;
                             case "series":
-                            case "s":
+                            case "ser":
                                 if (string.IsNullOrEmpty(viewInput.Item2.Trim()))
                                 {
                                     foreach (int id in database.Series.Select(x => x.Id))
@@ -259,49 +261,46 @@ namespace Cli
                                     }
                                 }
                                 break;
-                            /*
-                        case "collection":
-                        case "c":
-                            if (viewInput.Item2 == "")
-                                foreach (Collection collection in database.Collections)
-                                    Console.WriteLine(collection);
-                            else
-                                try
+                            case "selected":
+                            case "s":
+                                foreach (Book book in selectedBooks)
                                 {
-                                    Collection collection = database.GetCollectionFromID(Int64.Parse(viewInput.Item2));
-                                    if (collection != null)
-                                        Console.WriteLine(collection);
-                                    else
-                                        Console.WriteLine("Collection does not exit");
+                                    Console.Write(detail.BookDetailsID(book.Id));
                                 }
-                                catch (Exception e)
-                                {
-                                    Console.WriteLine("Invalid collection id");
-                                }
-                            break;
-
-                        case "series":
-                        case "s":
-                            if (viewInput.Item2 == "")
-                                foreach (Series series in database.Series)
-                                    Console.WriteLine(series.name);
-                            else
-                                try
-                                {
-                                    Series series = database.GetSeriesFromID(Int64.Parse(viewInput.Item2));
-                                    if (series != null)
-                                        Console.WriteLine(series);
-                                    else
-                                        Console.WriteLine("Series does not exit");
-                                }
-                                catch (Exception e)
-                                {
-                                    Console.WriteLine("Invalid series id");
-                                }
-                            break;
-                            */
+                                break;
                             default:
                                 Console.WriteLine("View command was incorrect");
+                                break;
+                        }
+                        break;
+
+                    case "select":
+                    case "s":
+                        Tuple<string, string> selectInput = consoleInput.Item2.ToLower().Trim().SplitOnFirstBlank();
+                        switch (selectInput.Item1)
+                        {
+                            case "book":
+                            case "b":
+                                HashSet<int> bookIds = new HashSet<int>();
+                                foreach (string x in selectInput.Item2.Split(' '))
+                                {
+                                    try
+                                    {
+                                        bookIds.Add(int.Parse(x));
+                                    }
+                                    catch (FormatException fe)
+                                    {
+                                        Console.WriteLine($"ID: {x} is invalid.");
+                                    }
+                                }
+
+                                foreach(int id in bookIds)
+                                {
+                                    selectedBooks.Add(database.Books.Find(id));
+                                }
+                                break;
+                            default:
+                                Console.WriteLine("Select command was incorrect");
                                 break;
                         }
                         break;
