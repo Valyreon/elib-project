@@ -309,6 +309,21 @@ namespace Cli
                                 }
 
                                 break;
+                            case "all":
+                            case "a":
+                                selectedBooks.UnionWith(database.Books);
+                                break;
+                            case "clear":
+                            case "clr":
+                                selectedBooks.Clear();
+                                break;
+                            case "deselect":
+                            case "d":
+                                ISet<int> deselectIds = selectInput.Item2.GetIDsSeperatedBySpace();
+
+                                foreach (int id in deselectIds)
+                                    selectedBooks.Remove(database.Books.Find(id));
+                                break;
                             default:
                                 Console.WriteLine("Select command was incorrect");
                                 break;
