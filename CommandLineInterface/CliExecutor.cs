@@ -352,7 +352,7 @@ namespace Cli
                         {
                             Console.Write("Group exported books by series[0], author(1), both(2), neither(3): ");
                             exportString = Console.ReadLine().Trim();
-                        } while (exportString != "" || !int.TryParse(exportString, out exportChoice) && (exportChoice == 0 || exportChoice == 1 || exportChoice == 2 || exportChoice == 3));
+                        } while (!int.TryParse(exportString, out exportChoice) && (exportChoice == 0 || exportChoice == 1 || exportChoice == 2 || exportChoice == 3));
 
                         ExporterOptions options = new ExporterOptions();
 
