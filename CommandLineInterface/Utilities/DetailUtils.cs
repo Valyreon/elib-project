@@ -76,5 +76,50 @@ namespace CommandLineInterface.Utilities
 
             return stringBuilder.ToString();
         }
+
+        public string UserCollectionDetailsID(int collection_id)
+        {
+            UserCollection collection = _database.UserCollections
+                   .Include("Books")
+                   .Where(x => x.Id == collection_id)
+                   .FirstOrDefault();
+
+            if (collection == null)
+                throw new KeyNotFoundException();
+
+            const string formatString = "{0, -12} {1}\n";
+
+            ICollection<Book> books = collection.Books;
+
+            StringBuilder stringBuilder = new StringBuilder(string.Format(formatString, "Name:", collection.Tag));
+
+            if (books != null)
+                stringBuilder.Append(string.Format(formatString, books.Count > 1 ? "Books:" : "Book:", string.Join(", ", books.Select(x => x.Name))));
+
+            return stringBuilder.ToString();
+        }
+
+        public string BookSeriesDetailsID(int series_id)
+        {
+            BookSeries series = _database.Series
+                   .Include("Books")
+                   .Where(x => x.Id == series_id)
+                   .FirstOrDefault();
+
+            if (series == null)
+                throw new KeyNotFoundException();
+
+            const string formatString = "{0, -12} {1}\n";
+
+            ICollection<Book> books = series.Books;
+
+            StringBuilder stringBuilder = new StringBuilder(string.Format(formatString, "Name:", series.Name));
+
+            if (books != null)
+                stringBuilder.Append(string.Format(formatString, books.Count > 1 ? "Books:" : "Book:", string.Join(", ", books.Select(x => x.Name))));
+
+            return stringBuilder.ToString();
+        }
+
     }
 }

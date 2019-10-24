@@ -207,6 +207,58 @@ namespace Cli
                                     }
                                 }
                                 break;
+                            case "collection":
+                            case "c":
+                                if (string.IsNullOrEmpty(viewInput.Item2.Trim()))
+                                {
+                                    foreach (int id in database.UserCollections.Select(x => x.Id))
+                                    {
+                                        Console.WriteLine(detail.UserCollectionDetailsID(id));
+                                    }
+                                }
+                                else
+                                {
+                                    try
+                                    {
+                                        int id = int.Parse(viewInput.Item2);
+                                        Console.Write(detail.UserCollectionDetailsID(id));
+                                    }
+                                    catch (FormatException fe)
+                                    {
+                                        Console.WriteLine("Invalid User Collection ID.");
+                                    }
+                                    catch (KeyNotFoundException knfe)
+                                    {
+                                        Console.WriteLine("User Collection was not found.");
+                                    }
+                                }
+                                break;
+                            case "series":
+                            case "s":
+                                if (string.IsNullOrEmpty(viewInput.Item2.Trim()))
+                                {
+                                    foreach (int id in database.Series.Select(x => x.Id))
+                                    {
+                                        Console.WriteLine(detail.BookSeriesDetailsID(id));
+                                    }
+                                }
+                                else
+                                {
+                                    try
+                                    {
+                                        int id = int.Parse(viewInput.Item2);
+                                        Console.Write(detail.BookSeriesDetailsID(id));
+                                    }
+                                    catch (FormatException fe)
+                                    {
+                                        Console.WriteLine("Invalid Book Series ID.");
+                                    }
+                                    catch (KeyNotFoundException knfe)
+                                    {
+                                        Console.WriteLine("Book Series was not found.");
+                                    }
+                                }
+                                break;
                             /*
                         case "collection":
                         case "c":
