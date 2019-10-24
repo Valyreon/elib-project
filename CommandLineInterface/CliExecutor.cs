@@ -4,6 +4,7 @@ using Domain;
 using EbookTools;
 using Models;
 using Models.Helpers;
+using Models.Options;
 using Models.Utilities;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ namespace Cli
     {
         private ElibContext database;
         private Importer importer;
+        private Exporter exporter;
         private DetailUtils detail;
         private ISet<Book> selectedBooks;
 
@@ -32,6 +34,7 @@ namespace Cli
         {
             database = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
             importer = new Importer(database);
+            exporter = new Exporter(database);
             selectedBooks = new HashSet<Book>();
             detail = new DetailUtils(database);
             Console.WriteLine("Starting eLIB in CLI mode.\nWELCOME TO ELIB COMMAND LINE.\n");
@@ -293,7 +296,7 @@ namespace Cli
 
                                 foreach (int id in seriesIds)
                                 {
-                                    foreach (Book book in database.Series.Find(id).Books)
+                                    foreach (Book book in database.Series.Include("Books").Where(x => x.Id == id).FirstOrDefault()?.Books)
                                         selectedBooks.Add(book);
                                 }
 
@@ -304,7 +307,7 @@ namespace Cli
 
                                 foreach (int id in collectionIds)
                                 {
-                                    foreach (Book book in database.UserCollections.Find(id).Books)
+                                    foreach (Book book in database.UserCollections.Include("Books").Where(x => x.Id == id).FirstOrDefault()?.Books)
                                         selectedBooks.Add(book);
                                 }
 
@@ -328,6 +331,49 @@ namespace Cli
                                 Console.WriteLine("Select command was incorrect");
                                 break;
                         }
+                        break;
+                    case "export":
+                    case "e":
+                        ISet<EFile> exportFiles = new HashSet<EFile>();
+
+                        Console.WriteLine("Selected books for export:");
+
+                        foreach (Book book in selectedBooks)
+                        {
+                            database.Entry(book).Collection(f => f.Authors).Load();
+                            database.Entry(book).Collection(f => f.Files).Load();
+                            Console.WriteLine($"Id:{book.Id} {book.Name} by {(string.Join(", ", book.Authors.Select(x => x.Name)))}");
+                            exportFiles.UnionWith(book.Files);
+                        }
+
+                        int exportChoice = 0;
+                        string exportString = "";
+                        do
+                        {
+                            Console.Write("Group exported books by series[0], author(1), both(2), neither(3): ");
+                            exportString = Console.ReadLine().Trim();
+                        } while (exportString != "" || !int.TryParse(exportString, out exportChoice) && (exportChoice == 0 || exportChoice == 1 || exportChoice == 2 || exportChoice == 3));
+
+                        ExporterOptions options = new ExporterOptions();
+
+                        switch (exportChoice)
+                        {
+                            case 0:
+                                options.GroupBySeries = true;
+                                break;
+                            case 1:
+                                options.GroupByAuthor = true;
+                                break;
+                            case 2:
+                                options.GroupByAuthor = options.GroupBySeries = true;
+                                break;
+                            default:
+                                break;
+                        }
+
+                        options.DestinationDirectory = consoleInput.Item2;
+                        exporter.ExportBookFiles(exportFiles, options);
+
                         break;
 
                     /*
