@@ -26,28 +26,5 @@
             </Button>
         </Controls:WindowCommands>
     </Controls:MetroWindow.RightWindowCommands>
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"></ColumnDefinition>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="40"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-        </Grid.RowDefinitions>
-        <Grid Grid.Row="0" Grid.Column="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="40"></ColumnDefinition>
-                <ColumnDefinition Width="*"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="40"></RowDefinition>
-                <RowDefinition></RowDefinition>
-            </Grid.RowDefinitions>
-
-            <Button Grid.Row="0" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
-                <iconPacks:PackIconModern Width="16" Height="16" Kind="NavigatePrevious" />
-            </Button>
-        </Grid>
-        <ContentControl Grid.Row="1" Grid.Column="0" Content="{Binding CurrentControl}"></ContentControl>
-    </Grid>
+    <ContentControl Grid.Row="1" Grid.Column="0" Content="{Binding CurrentControl}"></ContentControl>
 </Controls:MetroWindow>
