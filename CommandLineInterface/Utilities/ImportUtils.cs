@@ -22,6 +22,21 @@ namespace Models.Utilities
             return fileList.Where(filePath => IsValidBookExtension(filePath) && File.Exists(filePath));
         }
 
+        public static IList<string> GetValidFilesFromDirectory(string directory)
+        {
+            if (!Directory.Exists(directory))
+                throw new DirectoryNotFoundException();
+
+            List<string> validFileList = new List<string>();
+
+            foreach (string ext in EbookParserFactory.SupportedExtensions)
+            {
+                validFileList.AddRange(Directory.GetFiles(directory, "*" + ext));
+            }
+
+            return validFileList;
+        }
+
         public static IEnumerable<string> GetInvalidBookPaths(IEnumerable<string> fileList)
         {
             return fileList.Where(filePath => !IsValidBookExtension(filePath) || !File.Exists(filePath));
