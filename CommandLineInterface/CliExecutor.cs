@@ -375,6 +375,27 @@ namespace Cli
                         exporter.ExportBookFiles(exportFiles, options);
 
                         break;
+                    case "delete":
+                    case "d":
+                        Console.WriteLine("Selected books for deletion:");
+                        foreach (Book book in selectedBooks)
+                        {
+                            database.Entry(book).Collection(f => f.Authors).Load();
+                            database.Entry(book).Collection(f => f.Files).Load();
+                            Console.WriteLine($"Id:{book.Id} {book.Name} by {(string.Join(", ", book.Authors.Select(x => x.Name)))}");
+                        }
+
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write("WARNING");
+                        Console.ResetColor();
+                        Console.WriteLine(": This is a permanent action. Consider exporting first.");
+                        if (ConsoleQuestion("Do you want to continue?", true))
+                        {
+                            database.Books.RemoveRange(selectedBooks);
+                            selectedBooks.Clear();
+                            database.SaveChanges();
+                        }
+                        break;
 
                     /*
 
