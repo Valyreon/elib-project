@@ -10,6 +10,7 @@ namespace ElibWpf.Views
     {
         public TheWindow()
         {
+            //bla bla
             InitializeComponent();
             this.DataContext = new TheWindowViewModel();
         }
