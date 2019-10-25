@@ -1,4 +1,5 @@
-﻿using GalaSoft.MvvmLight;
+﻿using ElibWpf.Views;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using System.Collections.Generic;
 using System.Windows.Input;
@@ -9,6 +10,11 @@ namespace ElibWpf.ViewModels
     {
         private readonly Stack<object> viewModelHistory = new Stack<object>();
         private object currentControl;
+
+        public TheWindowViewModel()
+        {
+            CurrentControl = new DashboardViewModel();
+        }
 
         public object CurrentControl
         {
