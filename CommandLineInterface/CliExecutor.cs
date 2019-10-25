@@ -102,7 +102,7 @@ namespace Cli
                                     Console.WriteLine($"File {invalidFilePath} is not valid or does not exist.");
                             }
                         }
-                        catch (DirectoryNotFoundException dnfe)
+                        catch (DirectoryNotFoundException)
                         {
                             Console.WriteLine("Invalid directory.");
                         }
@@ -167,11 +167,11 @@ namespace Cli
                                         int id = int.Parse(viewInput.Item2);
                                         Console.Write(detail.BookDetailsID(id));
                                     }
-                                    catch (FormatException fe)
+                                    catch (FormatException)
                                     {
                                         Console.WriteLine("Invalid book ID.");
                                     }
-                                    catch (KeyNotFoundException knfe)
+                                    catch (KeyNotFoundException)
                                     {
                                         Console.WriteLine("Book was not found.");
                                     }
@@ -202,11 +202,11 @@ namespace Cli
                                         int id = int.Parse(viewInput.Item2);
                                         Console.Write(detail.AuthorDetailsID(id));
                                     }
-                                    catch (FormatException fe)
+                                    catch (FormatException)
                                     {
                                         Console.WriteLine("Invalid author ID.");
                                     }
-                                    catch (KeyNotFoundException knfe)
+                                    catch (KeyNotFoundException)
                                     {
                                         Console.WriteLine("Author was not found.");
                                     }
@@ -228,11 +228,11 @@ namespace Cli
                                         int id = int.Parse(viewInput.Item2);
                                         Console.Write(detail.UserCollectionDetailsID(id));
                                     }
-                                    catch (FormatException fe)
+                                    catch (FormatException)
                                     {
                                         Console.WriteLine("Invalid User Collection ID.");
                                     }
-                                    catch (KeyNotFoundException knfe)
+                                    catch (KeyNotFoundException)
                                     {
                                         Console.WriteLine("User Collection was not found.");
                                     }
@@ -254,11 +254,11 @@ namespace Cli
                                         int id = int.Parse(viewInput.Item2);
                                         Console.Write(detail.BookSeriesDetailsID(id));
                                     }
-                                    catch (FormatException fe)
+                                    catch (FormatException)
                                     {
                                         Console.WriteLine("Invalid Book Series ID.");
                                     }
-                                    catch (KeyNotFoundException knfe)
+                                    catch (KeyNotFoundException)
                                     {
                                         Console.WriteLine("Book Series was not found.");
                                     }
