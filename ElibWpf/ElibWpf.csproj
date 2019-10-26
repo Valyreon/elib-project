@@ -127,7 +127,7 @@
     <Compile Include="ViewModels\IPageViewModel.cs" />
     <Compile Include="ViewModels\QuotesViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
-    <Compile Include="ViewModels\TheWindowViewModel.cs" />
+    <Compile Include="ViewModels\Windows\TheWindowViewModel.cs" />
     <Compile Include="Views\BooksControl.xaml.cs">
       <DependentUpon>BooksControl.xaml</DependentUpon>
     </Compile>
