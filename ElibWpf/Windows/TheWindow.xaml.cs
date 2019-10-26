@@ -1,4 +1,5 @@
 ﻿using ElibWpf.ViewModels;
+using ElibWpf.ViewModels.Windows;
 using MahApps.Metro.Controls;
 
 namespace ElibWpf.Views

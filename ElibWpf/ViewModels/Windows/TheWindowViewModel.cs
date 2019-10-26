@@ -4,7 +4,7 @@ using GalaSoft.MvvmLight.Command;
 using System.Collections.Generic;
 using System.Windows.Input;
 
-namespace ElibWpf.ViewModels
+namespace ElibWpf.ViewModels.Windows
 {
     public class TheWindowViewModel : ViewModelBase
     {
