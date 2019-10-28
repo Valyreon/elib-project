@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ElibWpf.ViewModels
+namespace ElibWpf.ViewModels.Controls
 {
     public class BooksViewModel : ViewModelBase, IPageViewModel
     {

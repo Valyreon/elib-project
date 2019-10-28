@@ -1,4 +1,5 @@
-﻿using ElibWpf.Views;
+﻿using ElibWpf.ViewModels.Controls;
+using ElibWpf.Views;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using System.Collections.Generic;

@@ -1,8 +1,0 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:vm="clr-namespace:ElibWpf.ViewModels"
-                    xmlns:view="clr-namespace:ElibWpf.Views">
-    <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
-        <view:DashboardControl />
-    </DataTemplate>
-</ResourceDictionary>

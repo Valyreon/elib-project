@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ElibWpf.ViewModels
+namespace ElibWpf.ViewModels.Controls
 {
-    public class SettingsViewModel : ViewModelBase, IPageViewModel
+    public class QuotesViewModel : ViewModelBase, IPageViewModel
     {
-        private string _caption = "Settings";
+        private string _caption = "Quotes";
 
         public string Caption
         {

@@ -122,59 +122,59 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ViewModels\BooksViewModel.cs" />
-    <Compile Include="ViewModels\DashboardViewModel.cs" />
+    <Compile Include="ViewModels\Controls\BooksViewModel.cs" />
+    <Compile Include="ViewModels\Controls\DashboardViewModel.cs" />
     <Compile Include="ViewModels\IPageViewModel.cs" />
-    <Compile Include="ViewModels\QuotesViewModel.cs" />
-    <Compile Include="ViewModels\SettingsViewModel.cs" />
+    <Compile Include="ViewModels\Controls\QuotesViewModel.cs" />
+    <Compile Include="ViewModels\Controls\SettingsViewModel.cs" />
     <Compile Include="ViewModels\Windows\TheWindowViewModel.cs" />
-    <Compile Include="Views\BooksControl.xaml.cs">
+    <Compile Include="Views\Controls\BooksControl.xaml.cs">
       <DependentUpon>BooksControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\DashboardControl.xaml.cs">
+    <Compile Include="Views\Controls\DashboardControl.xaml.cs">
       <DependentUpon>DashboardControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\QuotesControl.xaml.cs">
+    <Compile Include="Views\Controls\QuotesControl.xaml.cs">
       <DependentUpon>QuotesControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\SettingsControl.xaml.cs">
+    <Compile Include="Views\Controls\SettingsControl.xaml.cs">
       <DependentUpon>SettingsControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\SplashScreen.xaml.cs">
+    <Compile Include="Views\Windows\SplashScreen.xaml.cs">
       <DependentUpon>SplashScreen.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\TheWindow.xaml.cs">
+    <Compile Include="Views\Windows\TheWindow.xaml.cs">
       <DependentUpon>TheWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Views\BooksControl.xaml">
+    <Page Include="Views\Controls\BooksControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\DashboardControl.xaml">
+    <Page Include="Views\Controls\DashboardControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\DataTemplate.xaml">
+    <Page Include="Views\Windows\DataTemplates.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\QuotesControl.xaml">
+    <Page Include="Views\Controls\QuotesControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\SettingsControl.xaml">
+    <Page Include="Views\Controls\SettingsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\SplashScreen.xaml">
+    <Page Include="Views\Windows\SplashScreen.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\TheWindow.xaml">
+    <Page Include="Views\Windows\TheWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -246,6 +246,7 @@
       <Name>Models</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

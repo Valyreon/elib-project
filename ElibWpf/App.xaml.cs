@@ -1,8 +1,6 @@
 ﻿using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
-using System.ComponentModel;
-using ElibWpf.Windows;
 
 namespace ElibWpf
 {
@@ -17,7 +15,7 @@ namespace ElibWpf
         {
             var splashScreenThread = new Thread(() =>
                 {
-                    var splashScreen = new Windows.SplashScreen();
+                    var splashScreen = new Views.Windows.SplashScreen();
                     splashScreenDispacher = splashScreen.Dispatcher;
                     splashScreenDispacher.ShutdownStarted += (o, args) => splashScreen.Close();
                     splashScreen.Show();
