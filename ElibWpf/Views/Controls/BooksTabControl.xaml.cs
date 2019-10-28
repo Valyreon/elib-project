@@ -11,5 +11,12 @@ namespace ElibWpf.Views.Controls
         {
             InitializeComponent();
         }
+
+        private void ScrollViewer_PreviewMouseDown(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            ScrollViewer scv = (ScrollViewer)sender;
+            scv.ScrollToVerticalOffset(scv.VerticalOffset - e.Delta/10);
+            e.Handled = true;
+        }
     }
 }

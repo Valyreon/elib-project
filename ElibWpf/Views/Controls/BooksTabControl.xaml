@@ -8,6 +8,7 @@
              xmlns:WindowViews="clr-namespace:ElibWpf.Views.Windows"
              xmlns:WindowViewModels="clr-namespace:ElibWpf.ViewModels.Windows"
              xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -41,7 +42,7 @@
                 <Setter Property="FontSize" Value="12" />
                 <Setter Property="Padding" Value="0" />
                 <Setter Property="BorderThickness" Value="0" />
-                <Setter Property="Height" Value="40"/>
+                <Setter Property="Height" Value="38"/>
                 <Setter Property="VerticalContentAlignment" Value="Stretch"/>
                 <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                 <Setter Property="Template">
@@ -109,92 +110,97 @@
                             <ListBoxItem Style="{StaticResource ListBoxItemContainerStyle}">
                                 <RadioButton
                                         Command="{Binding SelectPopularTab}"
-                                        GroupName="Movies"
+                                        GroupName="PaneSelect"
                                         IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Path=IsSelected}"
                                         Style="{StaticResource FlatButton}">
-                                    <Grid>
+                                    <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
+                                        <fa:ImageAwesome Height="12" Foreground="White" Icon="Book" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                         <TextBlock
                                                     Margin="10,0,0,0"
                                                     VerticalAlignment="Center"
                                                     FontSize="16"
                                                     Text="All" />
-                                    </Grid>
+                                    </StackPanel>
                                 </RadioButton>
                             </ListBoxItem>
                             <ListBoxItem Style="{StaticResource ListBoxItemContainerStyle}">
                                 <RadioButton
                                         Command="{Binding SelectPopularTab}"
-                                        GroupName="Movies"
+                                        GroupName="PaneSelect"
                                         IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Path=IsSelected}"
                                         Style="{StaticResource FlatButton}">
-                                    <Grid>
-
+                                    <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
+                                        <fa:ImageAwesome Height="12" Foreground="White" Icon="Star" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                         <TextBlock
                                                     Margin="10,0,0,0"
                                                     VerticalAlignment="Center"
                                                     FontSize="16"
                                                     Text="Favorites" />
-                                    </Grid>
+                                    </StackPanel>
                                 </RadioButton>
                             </ListBoxItem>
                             <ListBoxItem Style="{StaticResource ListBoxItemContainerStyle}">
                                 <RadioButton
                                         Command="{Binding SelectPopularTab}"
-                                        GroupName="Movies"
+                                        GroupName="PaneSelect"
                                         IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Path=IsSelected}"
                                         Style="{StaticResource FlatButton}">
-                                    <Grid>
+                                    <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
+                                        <fa:ImageAwesome Height="12" Foreground="White" Icon="Check" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                         <TextBlock
                                                     Margin="10,0,0,0"
                                                     VerticalAlignment="Center"
                                                     FontSize="16"
                                                     Text="Read" />
-                                    </Grid>
+                                    </StackPanel>
                                 </RadioButton>
                             </ListBoxItem>
                             <ListBoxItem Style="{StaticResource ListBoxItemContainerStyle}">
                                 <RadioButton
                                         Command="{Binding SelectPopularTab}"
-                                        GroupName="Movies"
+                                        GroupName="PaneSelect"
                                         IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Path=IsSelected}"
                                         Style="{StaticResource FlatButton}">
-                                    <Grid>
+                                    <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
+                                        <fa:ImageAwesome Height="12" Foreground="White" Icon="TimesCircle" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                         <TextBlock
                                                     Margin="10,0,0,0"
                                                     VerticalAlignment="Center"
                                                     FontSize="16"
                                                     Text="Not Read" />
-                                    </Grid>
+                                    </StackPanel>
                                 </RadioButton>
                             </ListBoxItem>
                             <ListBoxItem Style="{StaticResource ListBoxItemContainerStyle}">
                                 <RadioButton
                                         Command="{Binding SelectPopularTab}"
-                                        GroupName="Movies"
+                                        GroupName="PaneSelect"
                                         IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Path=IsSelected}"
                                         Style="{StaticResource FlatButton}">
-                                    <Grid>
+                                    <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
+                                        <fa:ImageAwesome Height="12" Foreground="White" Icon="Link" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                         <TextBlock
                                                     Margin="10,0,0,0"
                                                     VerticalAlignment="Center"
                                                     FontSize="16"
                                                     Text="Series" />
-                                    </Grid>
+                                    </StackPanel>
                                 </RadioButton>
                             </ListBoxItem>
                             <ListBoxItem Style="{StaticResource ListBoxItemContainerStyle}">
                                 <RadioButton
                                         Command="{Binding SelectPopularTab}"
-                                        GroupName="Movies"
+                                        GroupName="PaneSelect"
                                         IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Path=IsSelected}"
                                         Style="{StaticResource FlatButton}">
-                                    <Grid>
+                                    <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
+                                        <fa:ImageAwesome Height="12" Foreground="White" Icon="Users" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                         <TextBlock
                                                     Margin="10,0,0,0"
                                                     VerticalAlignment="Center"
                                                     FontSize="16"
                                                     Text="Authors" />
-                                    </Grid>
+                                    </StackPanel>
                                 </RadioButton>
                             </ListBoxItem>
                         </ListBox>
@@ -204,12 +210,14 @@
                                 Grid.Row="1"
                                 Grid.Column="0"
                                 FontSize="16"
-                                Foreground="#637D8C"
-                                Text="Collections"/>
-                        <ScrollViewer Grid.Row="2" Grid.Column="0" VerticalScrollBarVisibility="Auto" Background="#222222">
+                                Foreground="{StaticResource AccentColorBrush}"
+                                Text="Collections"
+                                Margin="10,0,0,0"/>
+                        <ScrollViewer Grid.Row="2" Grid.Column="0" VerticalScrollBarVisibility="Auto" Background="Transparent">
+                            <Grid ScrollViewer.CanContentScroll="True">
                             <ListBox
-                                    ItemsSource="{Binding Collections}"
-                                    SelectedItem="{Binding SelectedCollection}"
+                                ItemsSource="{Binding Collections}"
+                                SelectedItem="{Binding SelectedCollection}"
                                 Background="#222222"
                                 ItemContainerStyle="{StaticResource ListBoxItemContainerStyle}">
                                 <ListBox.ItemTemplate>
@@ -217,20 +225,22 @@
                                         <RadioButton
                                         Command="{Binding DataContext.ChangeCollection, ElementName=MenuBar}"
                                         CommandParameter="{Binding Id}"
-                                        GroupName="PaneSelected"
+                                        GroupName="PaneSelect"
                                         IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Path=IsSelected}"
-                                        Style="{StaticResource FlatButton}">
+                                        Style="{StaticResource FlatButton}"
+                                            Height="28">
                                             <Grid>
                                                 <TextBlock
                                                     Margin="10,0,0,0"
                                                     VerticalAlignment="Center"
-                                                    FontSize="16"
+                                                    FontSize="12"
                                                     Text="{Binding Tag}" />
                                             </Grid>
                                         </RadioButton>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
                             </ListBox>
+                            </Grid>
                         </ScrollViewer>
                     </Grid>
                 </Grid>
