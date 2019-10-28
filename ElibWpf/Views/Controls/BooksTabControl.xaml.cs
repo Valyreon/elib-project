@@ -3,11 +3,11 @@
 namespace ElibWpf.Views.Controls
 {
     /// <summary>
-    /// Interaction logic for QuotesControl.xaml
+    /// Interaction logic for BooksControl.xaml
     /// </summary>
-    public partial class QuotesControl : UserControl
+    public partial class BooksTabControl : UserControl
     {
-        public QuotesControl()
+        public BooksTabControl()
         {
             InitializeComponent();
         }

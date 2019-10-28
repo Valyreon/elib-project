@@ -3,6 +3,7 @@ using Domain;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Models;
 using Models.Options;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -130,6 +131,25 @@ namespace DatabaseTests
             };
 
             exp.ExportBookFiles(context.BookFiles.ToList(), options);
+        }
+
+        [TestMethod]
+        public void MoreCollections()
+        {
+            Random random = new Random();
+            string RandomString(int length)
+            {
+                const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+                return new string(Enumerable.Repeat(chars, length)
+                  .Select(s => s[random.Next(s.Length)]).ToArray());
+            }
+
+            using ElibContext context = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
+            for (int i = 0; i < 15; i++)
+            {
+                context.UserCollections.Add(new UserCollection { Tag = RandomString(5) });
+            }
+            context.SaveChanges();
         }
     }
 }

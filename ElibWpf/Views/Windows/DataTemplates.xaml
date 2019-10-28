@@ -7,13 +7,13 @@
     <DataTemplate DataType="{x:Type ControlViewModels:DashboardViewModel}">
         <ControlViews:DashboardControl />
     </DataTemplate>
-    <DataTemplate DataType="{x:Type ControlViewModels:BooksViewModel}">
-        <ControlViews:BooksControl />
+    <DataTemplate DataType="{x:Type ControlViewModels:BooksTabViewModel}">
+        <ControlViews:BooksTabControl />
     </DataTemplate>
-    <DataTemplate DataType="{x:Type ControlViewModels:QuotesViewModel}">
-        <ControlViews:QuotesControl />
+    <DataTemplate DataType="{x:Type ControlViewModels:QuotesTabViewModel}">
+        <ControlViews:QuotesTabControl />
     </DataTemplate>
-    <DataTemplate DataType="{x:Type ControlViewModels:SettingsViewModel}">
-        <ControlViews:SettingsControl />
+    <DataTemplate DataType="{x:Type ControlViewModels:SettingsTabViewModel}">
+        <ControlViews:SettingsTabControl />
     </DataTemplate>
 </ResourceDictionary>

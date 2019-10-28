@@ -20,7 +20,7 @@
         <MetroControls:MetroAnimatedSingleRowTabControl
             Grid.Row="0"
             Grid.Column="0"
-            Margin="0,20,0,0"
+            Margin="0"
             MetroControls:TabControlHelper.Transition="Normal"
             DisplayMemberPath="Caption"
             ItemsSource="{Binding Pages, UpdateSourceTrigger=PropertyChanged}"
@@ -28,14 +28,14 @@
             Style="{StaticResource DashboardControlStyle}"
             >
             <TabControl.Resources>
-                <DataTemplate DataType="{x:Type ControlViewModels:BooksViewModel}">
-                    <ControlViews:BooksControl />
+                <DataTemplate DataType="{x:Type ControlViewModels:BooksTabViewModel}">
+                    <ControlViews:BooksTabControl />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type ControlViewModels:QuotesViewModel}">
-                    <ControlViews:QuotesControl />
+                <DataTemplate DataType="{x:Type ControlViewModels:QuotesTabViewModel}">
+                    <ControlViews:QuotesTabControl />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type ControlViewModels:SettingsViewModel}">
-                    <ControlViews:SettingsControl />
+                <DataTemplate DataType="{x:Type ControlViewModels:SettingsTabViewModel}">
+                    <ControlViews:SettingsTabControl />
                 </DataTemplate>
             </TabControl.Resources>
         </MetroControls:MetroAnimatedSingleRowTabControl>

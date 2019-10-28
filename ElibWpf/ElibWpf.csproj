@@ -131,24 +131,23 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="CustomControls\CustomTab.cs" />
-    <Compile Include="ViewModels\Controls\BooksViewModel.cs" />
+    <Compile Include="ViewModels\Controls\BooksTabViewModel.cs" />
     <Compile Include="ViewModels\Controls\DashboardViewModel.cs" />
     <Compile Include="ViewModels\IPageViewModel.cs" />
-    <Compile Include="ViewModels\Controls\QuotesViewModel.cs" />
-    <Compile Include="ViewModels\Controls\SettingsViewModel.cs" />
+    <Compile Include="ViewModels\Controls\QuotesTabViewModel.cs" />
+    <Compile Include="ViewModels\Controls\SettingsTabViewModel.cs" />
     <Compile Include="ViewModels\Windows\TheWindowViewModel.cs" />
-    <Compile Include="Views\Controls\BooksControl.xaml.cs">
-      <DependentUpon>BooksControl.xaml</DependentUpon>
+    <Compile Include="Views\Controls\BooksTabControl.xaml.cs">
+      <DependentUpon>BooksTabControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\DashboardControl.xaml.cs">
       <DependentUpon>DashboardControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Controls\QuotesControl.xaml.cs">
-      <DependentUpon>QuotesControl.xaml</DependentUpon>
+    <Compile Include="Views\Controls\QuotesTabControl.xaml.cs">
+      <DependentUpon>QuotesTabControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Controls\SettingsControl.xaml.cs">
-      <DependentUpon>SettingsControl.xaml</DependentUpon>
+    <Compile Include="Views\Controls\SettingsTabControl.xaml.cs">
+      <DependentUpon>SettingsTabControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Windows\SplashScreen.xaml.cs">
       <DependentUpon>SplashScreen.xaml</DependentUpon>
@@ -160,10 +159,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="CustomControls\Generic.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Resources\Colors.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -172,7 +167,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Controls\BooksControl.xaml">
+    <Page Include="Views\Controls\BooksTabControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -184,11 +179,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Controls\QuotesControl.xaml">
+    <Page Include="Views\Controls\QuotesTabControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Controls\SettingsControl.xaml">
+    <Page Include="Views\Controls\SettingsTabControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -271,6 +266,7 @@
   <ItemGroup>
     <Resource Include="icon.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

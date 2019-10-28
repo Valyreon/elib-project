@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ElibWpf.ViewModels.Controls
 {
-    public class SettingsViewModel : ViewModelBase, IPageViewModel
+    public class SettingsTabViewModel : ViewModelBase, IPageViewModel
     {
         private string _caption = "Settings";
 

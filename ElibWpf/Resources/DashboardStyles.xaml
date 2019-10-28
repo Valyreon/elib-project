@@ -1,14 +1,9 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:behaviours="http://metro.mahapps.com/winfx/xaml/shared"
-                    xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls">
+                    xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls">
 
     <SolidColorBrush x:Key="TabItemPanelBackgroundBrush" Color="#222222" />
-    <SolidColorBrush x:Key="TabItemBackgroundIsSelectedBrush" Color="{StaticResource Gray2}" />
-    <SolidColorBrush x:Key="TabItemBackgroundIsMouseOverBrush" Color="{StaticResource Gray5}" />
-    <SolidColorBrush x:Key="TabItemForegroundIsSelectedBrush" Color="{StaticResource IdealForegroundColor}" />
-    <SolidColorBrush x:Key="TabItemSelectorBrush" Color="DarkRed" />
-    <SolidColorBrush x:Key="TabControlBackgroundBrush" Color="White" />
 
     <Style x:Key="DashboardTabItemStyle" TargetType="{x:Type TabItem}">
         <Setter Property="Background" Value="Transparent"></Setter>
@@ -54,8 +49,20 @@
                         <Trigger Property="IsSelected" Value="True">
                             <Trigger.Setters>
                                 <Setter TargetName="PART_Selector" Property="Visibility" Value="Visible" />
+                                <Setter Property="Background" Value="#252525"/>
                             </Trigger.Setters>
                         </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition SourceName="PART_Ripple" Property="IsMouseOver" Value="True" />
+                                <Condition Property="IsSelected" Value="False" />
+                            </MultiTrigger.Conditions>
+                            <MultiTrigger.Setters>
+                                <Setter Property="Background" Value="#252525"/>
+                                <Setter TargetName="PART_Selector" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="PART_Selector" Property="Fill" Value="#222222"/>
+                            </MultiTrigger.Setters>
+                        </MultiTrigger>
                         <Trigger SourceName="PART_Ripple" Property="IsMouseOver" Value="True">
                             <Trigger.Setters>
                                 <Setter Property="Cursor" Value="Hand" />
@@ -67,8 +74,8 @@
         </Setter>
     </Style>
 
-    <Style x:Key="DashboardControlStyle" TargetType="{x:Type controls:MetroAnimatedSingleRowTabControl}">
-        <Setter Property="Background" Value="{StaticResource TabControlBackgroundBrush}" />
+    <Style x:Key="DashboardControlStyle" TargetType="{x:Type MetroControls:MetroAnimatedSingleRowTabControl}">
+        <Setter Property="Background" Value="{StaticResource TabItemPanelBackgroundBrush}" />
         <Setter Property="TabStripPlacement" Value="Top" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Margin" Value="0" />
@@ -115,10 +122,10 @@
                             KeyboardNavigation.TabIndex="2"
                             KeyboardNavigation.TabNavigation="Local"
                             SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
-                            <controls:TransitioningContentControl
+                            <MetroControls:TransitioningContentControl
                                 behaviours:ReloadBehavior.OnSelectedTabChanged="True"
                                 RestartTransitionOnContentChange="True"
-                                Transition="{TemplateBinding controls:TabControlHelper.Transition}"
+                                Transition="{TemplateBinding MetroControls:TabControlHelper.Transition}"
                                 UseLayoutRounding="True">
                                 <ContentPresenter
                                     x:Name="PART_SelectedContentHost"
@@ -126,7 +133,7 @@
                                     ContentSource="SelectedContent"
                                     SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                                     UseLayoutRounding="False" />
-                            </controls:TransitioningContentControl>
+                            </MetroControls:TransitioningContentControl>
                         </Border>
                     </DockPanel>
                     <ControlTemplate.Triggers>

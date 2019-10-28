@@ -14,9 +14,9 @@ namespace ElibWpf.ViewModels.Controls
 
         public DashboardViewModel()
         {
-            var books = new BooksViewModel();
-            var quotes = new QuotesViewModel();
-            var settings = new SettingsViewModel();
+            var books = new BooksTabViewModel();
+            var quotes = new QuotesTabViewModel();
+            var settings = new SettingsTabViewModel();
             Pages = new ObservableCollection<IPageViewModel>
             {
                 books,
