@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
 
 namespace ElibWpf.Views.Controls
 {
@@ -10,6 +11,11 @@ namespace ElibWpf.Views.Controls
         public DashboardControl()
         {
             InitializeComponent();
+        }
+
+        private void MoveWindow(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            Window.GetWindow(this).DragMove();
         }
     }
 }

@@ -10,7 +10,7 @@
              xmlns:WindowViewModels="clr-namespace:ElibWpf.ViewModels.Windows"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
+    <Grid Background="#222222" MouseLeftButtonDown="MoveWindow">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
@@ -20,10 +20,13 @@
         <MetroControls:MetroAnimatedSingleRowTabControl
             Grid.Row="0"
             Grid.Column="0"
-            MetroControls:TabControlHelper.Transition="LeftReplace"
+            Margin="0,20,0,0"
+            MetroControls:TabControlHelper.Transition="Normal"
             DisplayMemberPath="Caption"
             ItemsSource="{Binding Pages, UpdateSourceTrigger=PropertyChanged}"
-            SelectedIndex="0">
+            SelectedIndex="0"
+            Style="{StaticResource DashboardControlStyle}"
+            >
             <TabControl.Resources>
                 <DataTemplate DataType="{x:Type ControlViewModels:BooksViewModel}">
                     <ControlViews:BooksControl />

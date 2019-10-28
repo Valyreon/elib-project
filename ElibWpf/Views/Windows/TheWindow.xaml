@@ -9,16 +9,27 @@
         xmlns:WindowViewModels="clr-namespace:ElibWpf.ViewModels.Windows"
         xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+                           xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         mc:Ignorable="d"
         Title="Electronic Library"
         WindowStartupLocation="CenterScreen"
         ResizeMode="CanResize"
         Left="0" Top="0"
         TitleCaps="False"
-        ShowIconOnTitleBar="True">
+        ShowIconOnTitleBar="True"
+        WindowTitleBrush="#222222"
+        IconBitmapScalingMode="HighQuality"
+        IconEdgeMode="Aliased"
+        NonActiveBorderBrush="{StaticResource AccentColorBrush}"
+        NonActiveGlowBrush="{StaticResource AccentColorBrush}"
+        ShowTitleBar="False"
+        WindowCloseButtonStyle="{StaticResource CleanCloseWindowButtonStyle}"
+        WindowMinButtonStyle="{StaticResource CleanCloseWindowButtonStyle}"
+        WindowMaxButtonStyle="{StaticResource CleanCloseWindowButtonStyle}">
+
     <Window.Resources>
         <ResourceDictionary Source="DataTemplates.xaml" />
     </Window.Resources>
-    
-    <ContentControl Grid.Row="1" Grid.Column="0" Content="{Binding CurrentControl}"></ContentControl>
+
+    <ContentControl Content="{Binding CurrentControl}"></ContentControl>
 </MetroControls:MetroWindow>

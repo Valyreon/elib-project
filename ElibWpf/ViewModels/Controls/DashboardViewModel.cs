@@ -1,20 +1,11 @@
 ﻿using GalaSoft.MvvmLight;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ElibWpf.ViewModels.Controls
 {
     public class DashboardViewModel : ViewModelBase
     {
         private ObservableCollection<IPageViewModel> _pages = new ObservableCollection<IPageViewModel>();
-
-        /// <summary>
-        /// Pages shown into the interface
-        /// </summary>
         public ObservableCollection<IPageViewModel> Pages
         {
             get => _pages;

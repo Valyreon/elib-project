@@ -12,8 +12,8 @@
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <MetroControls:SplitView IsPaneOpen="{Binding IsPaneOpen ,UpdateSourceTrigger=PropertyChanged}" OpenPaneLength="230" CompactPaneLength="230">
-            <MetroControls:SplitView.Pane >
+        <MetroControls:SplitView IsPaneOpen="{Binding IsPaneOpen ,UpdateSourceTrigger=PropertyChanged}" OpenPaneLength="230" CompactPaneLength="230" PaneBackground="#222222">
+            <MetroControls:SplitView.Pane>
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="40"></RowDefinition>
@@ -23,9 +23,9 @@
                             MetroControls:TextBoxHelper.Watermark="Search..." 
                             MetroControls:TextBoxHelper.ClearTextButton="True"
                             Grid.Row="0" Grid.Column="0"
-                            VerticalContentAlignment="Center" Margin="5"></TextBox>
+                            VerticalContentAlignment="Center" Margin="5,0,5,0"></TextBox>
 
-                    <Grid Grid.Row="1" Margin="5,0,5,5">
+                    <Grid Grid.Row="1" Margin="5,5,5,5" Background="#222222">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"></RowDefinition>
                             <RowDefinition Height="30"></RowDefinition>
@@ -35,7 +35,7 @@
                             <ColumnDefinition Width="*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
 
-                        <ListBox Grid.Row="0" Grid.Column="0" VerticalContentAlignment="Top" VerticalAlignment="Top">
+                        <ListBox Grid.Row="0" Grid.Column="0" VerticalContentAlignment="Top" VerticalAlignment="Top" Background="#222222">
                             <ListBoxItem>
                                 <RadioButton
                                         Height="40"
@@ -105,11 +105,12 @@
                         </ListBox>
 
                         <TextBlock
+                                VerticalAlignment="Center"
                                 Grid.Row="1"
                                 Grid.Column="0"
-                                FontSize="14"
+                                FontSize="16"
                                 Foreground="#637D8C"
-                                Text="Collections" />
+                                Text="Collections"/>
                         <ScrollViewer Grid.Row="2" Grid.Column="0" VerticalScrollBarVisibility="Auto">
                             <ListBox
                                     ItemsSource="{Binding Collections}"
@@ -132,7 +133,7 @@
                     </Grid>
                 </Grid>
             </MetroControls:SplitView.Pane>
-            <Grid>
+            <Grid Margin="0,5,0,0">
                 
             </Grid>
         </MetroControls:SplitView>
