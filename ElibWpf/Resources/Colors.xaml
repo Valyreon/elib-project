@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <SolidColorBrush x:Key="AccentColorBrush" Color="#7befb2" />
+    <SolidColorBrush x:Key="AccentColorBrush" Color="#446cb3" />
 
     <Style x:Key="CleanCloseWindowButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource MetroWindowButtonStyle}">
         <Style.Triggers>

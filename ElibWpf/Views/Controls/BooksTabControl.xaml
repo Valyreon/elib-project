@@ -9,6 +9,7 @@
              xmlns:WindowViewModels="clr-namespace:ElibWpf.ViewModels.Windows"
              xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:Custom="clr-namespace:ElibWpf.Custom"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -87,16 +88,15 @@
             <MetroControls:SplitView.Pane>
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="40"></RowDefinition>
+                        <RowDefinition Height="60"></RowDefinition>
                         <RowDefinition Height="*"></RowDefinition>
                     </Grid.RowDefinitions>
-                    <TextBox
-                            MetroControls:TextBoxHelper.Watermark="Search..."
-                            MetroControls:TextBoxHelper.ClearTextButton="True"
-                            Grid.Row="0" Grid.Column="0"
-                            VerticalContentAlignment="Center" Margin="5,0,5,0"></TextBox>
+                    <Grid Background="{StaticResource AccentColorBrush}">
+                    <Custom:CustomSearchBox Background="{StaticResource AccentColorBrush}" Foreground="Black"
+                        Width="200" Grid.Row="0" Margin="0"/>
+                    </Grid>
 
-                    <Grid Grid.Row="1" Margin="10,5,10,5" Background="#222222">
+                    <Grid Grid.Row="1" Margin="10,15,10,5" Background="#222222">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"></RowDefinition>
                             <RowDefinition Height="30"></RowDefinition>
@@ -245,7 +245,7 @@
                     </Grid>
                 </Grid>
             </MetroControls:SplitView.Pane>
-            <Grid Margin="0,5,0,0">
+            <Grid Margin="0,0,0,0" Background="GhostWhite">
 
             </Grid>
         </MetroControls:SplitView>
