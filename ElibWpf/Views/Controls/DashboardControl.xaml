@@ -23,8 +23,7 @@
             MetroControls:TabControlHelper.Transition="LeftReplace"
             DisplayMemberPath="Caption"
             ItemsSource="{Binding Pages, UpdateSourceTrigger=PropertyChanged}"
-            SelectedIndex="0"
-            HorizontalAlignment="Center">
+            SelectedIndex="0">
             <TabControl.Resources>
                 <DataTemplate DataType="{x:Type ControlViewModels:BooksViewModel}">
                     <ControlViews:BooksControl />
