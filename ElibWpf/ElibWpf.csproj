@@ -131,7 +131,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="CustomControls\FrameInGrid.cs" />
+    <Compile Include="CustomControls\CustomTab.cs" />
     <Compile Include="ViewModels\Controls\BooksViewModel.cs" />
     <Compile Include="ViewModels\Controls\DashboardViewModel.cs" />
     <Compile Include="ViewModels\IPageViewModel.cs" />

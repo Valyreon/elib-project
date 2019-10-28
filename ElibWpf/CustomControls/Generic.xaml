@@ -3,26 +3,53 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:ElibWpf.CustomControls">
 
-    <Style TargetType="{x:Type local:FrameInGrid}">
+    <Style TargetType="{x:Type local:CustomTab}">
         <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:FrameInGrid}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition ></RowDefinition>
-                            <RowDefinition Height="*"></RowDefinition>
-                            <RowDefinition ></RowDefinition>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition></ColumnDefinition>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                            <ColumnDefinition ></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-
-                        <ContentPresenter Grid.Row="1" Grid.Column="1" Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content}" />
-                    </Grid>
-                </ControlTemplate>
-            </Setter.Value>
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TabItem}">
+                        <Grid
+                        x:Name="PART_Ripple"
+                        Margin="0"
+                        Background="{TemplateBinding Background}"
+                        SnapsToDevicePixels="True">
+                            <Grid
+                            x:Name="PART_Grid"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="4" />
+                                </Grid.RowDefinitions>
+                                <ContentPresenter
+                                x:Name="PART_HeaderContent"
+                                Grid.Row="0"
+                                Margin="{TemplateBinding Padding}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                ContentSource="Header"
+                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                <Rectangle
+                                x:Name="PART_Selector"
+                                Grid.Row="1"
+                                HorizontalAlignment="Stretch"
+                                Fill="{StaticResource AccentColorBrush}"
+                                Visibility="Collapsed" />
+                            </Grid>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Trigger.Setters>
+                                    <Setter TargetName="PART_Selector" Property="Visibility" Value="Visible" />
+                                </Trigger.Setters>
+                            </Trigger>
+                            <Trigger SourceName="PART_Ripple" Property="IsMouseOver" Value="True">
+                                <Trigger.Setters>
+                                    <Setter Property="Cursor" Value="Hand" />
+                                </Trigger.Setters>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
         </Setter>
     </Style>
 </ResourceDictionary>

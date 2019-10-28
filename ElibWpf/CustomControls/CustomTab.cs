@@ -32,15 +32,11 @@ namespace ElibWpf.CustomControls
     ///     <MyNamespace:FrameInGrid/>
     ///
     /// </summary>
-    public class FrameInGrid : UserControl
+    public class CustomTab : UserControl
     {
-        public static int TopPaddingProperty { get; set; }
-        public static int BottomPaddingProperty { get; set; }
-        public static int LeftPaddingProperty { get; set; }
-        public static int RightPaddingProperty { get; set; }
-        static FrameInGrid()
+        static CustomTab()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(FrameInGrid), new FrameworkPropertyMetadata(typeof(FrameInGrid)));
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(CustomTab), new FrameworkPropertyMetadata(typeof(CustomTab)));
         }
     }
 }

@@ -25,7 +25,8 @@
         ShowTitleBar="False"
         WindowCloseButtonStyle="{StaticResource CleanCloseWindowButtonStyle}"
         WindowMinButtonStyle="{StaticResource CleanCloseWindowButtonStyle}"
-        WindowMaxButtonStyle="{StaticResource CleanCloseWindowButtonStyle}">
+        WindowMaxButtonStyle="{StaticResource CleanCloseWindowButtonStyle}"
+                           FontFamily="Segoe UI">
 
     <Window.Resources>
         <ResourceDictionary Source="DataTemplates.xaml" />
