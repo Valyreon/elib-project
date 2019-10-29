@@ -1,12 +1,13 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:behaviours="http://metro.mahapps.com/winfx/xaml/shared"
-                    xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls">
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:behaviours="http://metro.mahapps.com/winfx/xaml/shared">
 
     <SolidColorBrush x:Key="TabItemPanelBackgroundBrush" Color="#222222" />
 
     <Style x:Key="DashboardTabItemStyle" TargetType="{x:Type TabItem}">
-        <Setter Property="Background" Value="Transparent"></Setter>
+        <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Margin" Value="0" />
         <Setter Property="MinWidth" Value="100" />
@@ -49,7 +50,7 @@
                         <Trigger Property="IsSelected" Value="True">
                             <Trigger.Setters>
                                 <Setter TargetName="PART_Selector" Property="Visibility" Value="Visible" />
-                                <Setter Property="Background" Value="#252525"/>
+                                <Setter Property="Background" Value="#252525" />
                             </Trigger.Setters>
                         </Trigger>
                         <MultiTrigger>
@@ -58,9 +59,9 @@
                                 <Condition Property="IsSelected" Value="False" />
                             </MultiTrigger.Conditions>
                             <MultiTrigger.Setters>
-                                <Setter Property="Background" Value="#252525"/>
-                                <Setter TargetName="PART_Selector" Property="Visibility" Value="Visible"/>
-                                <Setter TargetName="PART_Selector" Property="Fill" Value="#222222"/>
+                                <Setter Property="Background" Value="#252525" />
+                                <Setter TargetName="PART_Selector" Property="Visibility" Value="Visible" />
+                                <Setter TargetName="PART_Selector" Property="Fill" Value="#222222" />
                             </MultiTrigger.Setters>
                         </MultiTrigger>
                         <Trigger SourceName="PART_Ripple" Property="IsMouseOver" Value="True">

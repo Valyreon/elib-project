@@ -134,7 +134,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Custom\CustomSearchBox.xaml.cs">
+    <Compile Include="Components\CustomSearchBox.xaml.cs">
       <DependentUpon>CustomSearchBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\Controls\BooksTabViewModel.cs" />
@@ -165,7 +165,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Custom\CustomSearchBox.xaml">
+    <Page Include="Components\CustomSearchBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -9,7 +9,7 @@
              xmlns:WindowViewModels="clr-namespace:ElibWpf.ViewModels.Windows"
              xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:fa="http://schemas.fontawesome.io/icons/"
-             xmlns:Custom="clr-namespace:ElibWpf.Custom"
+             xmlns:Custom="clr-namespace:ElibWpf.Components"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
