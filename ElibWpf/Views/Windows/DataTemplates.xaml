@@ -17,4 +17,7 @@
     <DataTemplate DataType="{x:Type ControlViewModels:SettingsTabViewModel}">
         <ControlViews:SettingsTabControl />
     </DataTemplate>
+    <DataTemplate DataType="{x:Type ControlViewModels:BookViewerViewModel}">
+        <ControlViews:BookViewerControl />
+    </DataTemplate>
 </ResourceDictionary>

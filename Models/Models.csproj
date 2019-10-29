@@ -62,6 +62,7 @@
     <Compile Include="Options\ExporterOptions.cs" />
     <Compile Include="Exporter.cs" />
     <Compile Include="Importer.cs" />
+    <Compile Include="Options\SearchOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

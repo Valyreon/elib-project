@@ -1,5 +1,6 @@
 ﻿using DataLayer;
 using Domain;
+using EbookTools;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Models;
 using Models.Options;
@@ -42,9 +43,8 @@ namespace DatabaseTests
         {
             string[] bookFilePaths = new string[]
             {
-                @"F:\Documents\Ebooks\Miscellaneous\To-Read\Revelation Space by Alastair Reynolds.epub"
+                @"C:\Users\luka.budrak\Downloads\[Reynolds_Alastair]_Redemption_Ark(z-lib.org).epub"
             };
-            string coverPicturePath = null;
             string[] authorNames = new string[]
             {
                 "Alastair Reynolds"
@@ -60,17 +60,19 @@ namespace DatabaseTests
             using ElibContext context = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
             context.TruncateDatabase();
 
+            var parsedBook = EbookParserFactory.Create(bookFilePaths[0]).Parse();
+
             // Create new book object
             Book newBook = new Book
             {
-                Name = bookName,
+                Name = parsedBook.Title,
                 Series = seriesName != null ? new BookSeries
                 {
                     Name = seriesName,
                 } : null,
                 NumberInSeries = 1,
                 IsRead = true,
-                Cover = coverPicturePath == null ? null : File.ReadAllBytes(coverPicturePath)
+                Cover = parsedBook.Cover
             };
 
             // Add authors, but first check if each exists in database

@@ -138,13 +138,18 @@
       <DependentUpon>CustomSearchBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\Controls\BooksTabViewModel.cs" />
+    <Compile Include="ViewModels\Controls\BookViewerViewModel.cs" />
     <Compile Include="ViewModels\Controls\DashboardViewModel.cs" />
     <Compile Include="ViewModels\IPageViewModel.cs" />
     <Compile Include="ViewModels\Controls\QuotesTabViewModel.cs" />
     <Compile Include="ViewModels\Controls\SettingsTabViewModel.cs" />
+    <Compile Include="ViewModels\ISearchable.cs" />
     <Compile Include="ViewModels\Windows\TheWindowViewModel.cs" />
     <Compile Include="Views\Controls\BooksTabControl.xaml.cs">
       <DependentUpon>BooksTabControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\BookViewerControl.xaml.cs">
+      <DependentUpon>BookViewerControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\DashboardControl.xaml.cs">
       <DependentUpon>DashboardControl.xaml</DependentUpon>
@@ -178,6 +183,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Controls\BooksTabControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Controls\BookViewerControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
