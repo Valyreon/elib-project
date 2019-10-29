@@ -26,7 +26,7 @@ namespace Models
                 {
                     new EFile { Format = parsedBook.Format, RawContent = parsedBook.RawData }
                 },
-                Series = seriesName == null ? null : (database.Series.Where(x => x.Name == seriesName).FirstOrDefault() ?? new BookSeries { Name = seriesName }),
+                Series = string.IsNullOrEmpty(seriesName) ? null : (database.Series.Where(x => x.Name == seriesName).FirstOrDefault() ?? new BookSeries { Name = seriesName }),
                 NumberInSeries = seriesNumber
             };
 

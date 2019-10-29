@@ -8,6 +8,7 @@ using Models.Options;
 using Models.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Migrations;
 using System.IO;
 using System.Linq;
 
@@ -333,7 +334,7 @@ namespace Cli
                         }
                         break;
                     case "export":
-                    case "e":
+                    case "ex":
                         ISet<EFile> exportFiles = new HashSet<EFile>();
 
                         Console.WriteLine("Selected books for export:");
@@ -395,6 +396,66 @@ namespace Cli
                             selectedBooks.Clear();
                             database.SaveChanges();
                         }
+                        break;
+
+                    case "edit":
+                    case "ed":
+                        Console.WriteLine("Selected books for editing:");
+                        foreach (Book book in selectedBooks)
+                        {
+                            database.Entry(book).Collection(f => f.Authors).Load();
+                            Console.WriteLine($"Id:{book.Id} {book.Name} by {(string.Join(", ", book.Authors.Select(x => x.Name)))}");
+                        }
+
+                        if (ConsoleQuestion("Do you want to continue?", true))
+                        {
+                            foreach (Book book in selectedBooks)
+                            {
+                                database.Entry(book).Collection("Series").Load();
+
+                                Console.Write($"Title[{book.Name}]*: ");
+                                string bookName = GetNewOrDefaultInput(book.Name);
+
+                                Console.Write($"Author[{book.Authors.FirstOrDefault().Name}]*: ");// Gets only the first
+                                string authorName = GetNewOrDefaultInput(book.Authors.FirstOrDefault().Name);
+
+                                Console.Write($"Series[{book.Series?.Name}]: ");
+                                string seriesName = GetNewOrDefaultInput(book.Series?.Name);
+                                decimal? seriesNumber = null;
+
+                                if (!string.IsNullOrEmpty(seriesName))
+                                {
+                                    decimal newNumber;
+                                    do
+                                    {
+                                        Console.Write("Series number: ");
+                                    } while (!decimal.TryParse(Console.ReadLine().Trim(), out newNumber));
+
+                                    seriesNumber = newNumber;
+                                }
+
+                                Console.Write($"Read[{book.IsRead}]: ");
+
+                                string isReadInput = Console.ReadLine();
+
+                                bool? isRead = null;
+
+                                try
+                                {
+                                    isRead = bool.Parse(isReadInput);
+                                }
+                                catch (FormatException)
+                                {
+
+                                }
+
+                                database.Books.AddOrUpdate(book);
+                                database.SaveChanges();
+
+                               // Console.Write($"Publisher[{book.Pu}]")
+                            }
+                        }
+
                         break;
 
                     default:
