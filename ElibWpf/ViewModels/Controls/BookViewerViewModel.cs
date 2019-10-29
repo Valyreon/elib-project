@@ -36,10 +36,5 @@ namespace ElibWpf.ViewModels.Controls
         {
             get => Books.Count.ToString();
         }
-
-        public string NumberOfBooks
-        {
-            get => App.Database.Books.Count().ToString();
-        }
     }
 }

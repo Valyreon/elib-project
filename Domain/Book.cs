@@ -26,5 +26,10 @@ namespace Domain
         public ICollection<EFile> Files { get; set; }
         public ICollection<Quote> Quotes { get; set; }
         public ICollection<UserCollection> UserCollections { get; set; }
+
+        public string SeriesInfo
+        {
+            get => $"{Series.Name} #{NumberInSeries}";
+        }
     }
 }

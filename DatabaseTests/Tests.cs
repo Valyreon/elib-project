@@ -43,22 +43,17 @@ namespace DatabaseTests
         {
             string[] bookFilePaths = new string[]
             {
-                @"C:\Users\luka.budrak\Downloads\[Reynolds_Alastair]_Redemption_Ark(z-lib.org).epub"
+                @"C:\Users\luka.budrak\Desktop\The-Autumn-Republic.epub"
             };
-            string[] authorNames = new string[]
-            {
-                "Alastair Reynolds"
-            };
-            string bookName = "Revelation Space";
-            string seriesName = "Revelation Space";
+            string seriesName = "Powder Mage";
             string[] collectionTags = new string[]
             {
-                "scifi",
-                "adventure"
+                "fantasy",
+                "adventure",
             };
 
             using ElibContext context = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
-            context.TruncateDatabase();
+            // context.TruncateDatabase();
 
             var parsedBook = EbookParserFactory.Create(bookFilePaths[0]).Parse();
 
@@ -66,6 +61,7 @@ namespace DatabaseTests
             Book newBook = new Book
             {
                 Name = parsedBook.Title,
+                Authors = new List<Author> { context.Authors.Where(au => au.Name.Equals("")).FirstOrDefault() ?? new Author() { Name = parsedBook.Author } },
                 Series = seriesName != null ? new BookSeries
                 {
                     Name = seriesName,
@@ -76,14 +72,14 @@ namespace DatabaseTests
             };
 
             // Add authors, but first check if each exists in database
-            foreach (var authorName in authorNames)
+            /*foreach (var authorName in authorNames)
             {
                 var author = context.Authors.Where(au => au.Name.Equals("")).FirstOrDefault();
                 newBook.Authors = new List<Author>
                 {
                     author ?? new Author() { Name = authorName }
                 };
-            }
+            }*/
 
             // Add collections, but first check if each exists in database
             foreach (var collectionTag in collectionTags)

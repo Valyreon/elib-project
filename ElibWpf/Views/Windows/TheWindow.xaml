@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ControlViewModels="clr-namespace:ElibWpf.ViewModels.Controls"
     xmlns:ControlViews="clr-namespace:ElibWpf.Views.Controls"
+    xmlns:Converters="clr-namespace:ElibWpf.Converters"
     xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:WindowViewModels="clr-namespace:ElibWpf.ViewModels.Windows"
     xmlns:WindowViews="clr-namespace:ElibWpf.Views.Windows"
