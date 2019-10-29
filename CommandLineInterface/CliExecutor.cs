@@ -48,7 +48,7 @@ namespace Cli
             do
             {
                 Console.Write("\n" + question + " " + (inverted ? "[y/N]" : "[Y/n]") + " ");
-                consoleKey = Console.ReadKey(false).Key;
+                consoleKey = Console.ReadKey(true).Key;
             } while (consoleKey != ConsoleKey.Y && consoleKey != ConsoleKey.N && consoleKey != ConsoleKey.Enter);
 
             Console.Write("\n");
@@ -399,10 +399,11 @@ namespace Cli
                         break;
 
                     case "edit":
-                    case "ed":
+                    case "ed":/*
                         Console.WriteLine("Selected books for editing:");
                         foreach (Book book in selectedBooks)
                         {
+                            database.Entry(book).Reference(f => f.Series).Load();
                             database.Entry(book).Collection(f => f.Authors).Load();
                             Console.WriteLine($"Id:{book.Id} {book.Name} by {(string.Join(", ", book.Authors.Select(x => x.Name)))}");
                         }
@@ -411,13 +412,8 @@ namespace Cli
                         {
                             foreach (Book book in selectedBooks)
                             {
-                                database.Entry(book).Collection("Series").Load();
-
                                 Console.Write($"Title[{book.Name}]*: ");
-                                string bookName = GetNewOrDefaultInput(book.Name);
-
-                                Console.Write($"Author[{book.Authors.FirstOrDefault().Name}]*: ");// Gets only the first
-                                string authorName = GetNewOrDefaultInput(book.Authors.FirstOrDefault().Name);
+                                book.Name = GetNewOrDefaultInput(book.Name);
 
                                 Console.Write($"Series[{book.Series?.Name}]: ");
                                 string seriesName = GetNewOrDefaultInput(book.Series?.Name);
@@ -438,11 +434,9 @@ namespace Cli
 
                                 string isReadInput = Console.ReadLine();
 
-                                bool? isRead = null;
-
                                 try
                                 {
-                                    isRead = bool.Parse(isReadInput);
+                                    book.IsRead = bool.Parse(isReadInput);
                                 }
                                 catch (FormatException)
                                 {
@@ -454,8 +448,12 @@ namespace Cli
 
                                // Console.Write($"Publisher[{book.Pu}]")
                             }
-                        }
+                        }*/
+                        break;
 
+                    case "exit":
+                        Console.WriteLine("Exiting...");
+                        database.SaveChanges();
                         break;
 
                     default:
@@ -463,8 +461,6 @@ namespace Cli
                         break;
                 }
             } while (command != "exit");
-
-            Console.WriteLine("Exiting...");
         }
 
         public void Dispose()
