@@ -149,5 +149,56 @@ namespace DatabaseTests
             }
             context.SaveChanges();
         }
+
+        [TestMethod]
+        public void AddBookSeriesFromMyComputer()
+        {
+            string bookSeriesPath = @"F:\Documents\Ebooks\Book Series";
+            using ElibContext context = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
+            context.TruncateDatabase();
+
+            foreach (var dirPath in Directory.GetDirectories(bookSeriesPath))
+            {
+                string[] splitDirName = Path.GetFileName(dirPath).Split(new string[] { " by " }, StringSplitOptions.None);
+                string seriesName = splitDirName[0];
+
+                void DirSearch(string sDir)
+                {
+                    try
+                    {
+                        foreach (string d in Directory.GetDirectories(sDir))
+                        {
+                            foreach (string f in Directory.GetFiles(d))
+                            {
+                                if (f.EndsWith(".epub"))
+                                {
+                                    var parsedBook = EbookParserFactory.Create(f).Parse();
+                                    Book newBook = new Book
+                                    {
+                                        Name = parsedBook.Title,
+                                        Authors = new List<Author> { context.Authors.Where(au => au.Name.Equals(parsedBook.Author)).FirstOrDefault() ?? new Author() { Name = parsedBook.Author } },
+                                        Series = seriesName == null ? null : (context.Series.Where(x => x.Name == seriesName).FirstOrDefault() ?? new BookSeries { Name = seriesName }),
+                                        Cover = parsedBook.Cover,
+                                        Files = new List<EFile>
+                                        {
+                                            new EFile { Format = parsedBook.Format, RawContent = parsedBook.RawData }
+                                        }
+                                    };
+                                    context.Books.Add(newBook);
+                                    context.SaveChanges();
+                                }
+                            }
+                            DirSearch(d);
+                        }
+                    }
+                    catch (System.Exception excpt)
+                    {
+                        Console.WriteLine(excpt.Message);
+                    }
+                }
+
+                DirSearch(dirPath);
+            }
+        }
     }
 }

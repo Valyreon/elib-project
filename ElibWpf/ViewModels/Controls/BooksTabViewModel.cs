@@ -9,6 +9,12 @@ namespace ElibWpf.ViewModels.Controls
 {
     public class BooksTabViewModel : ViewModelBase, IPageViewModel
     {
+        public BooksTabViewModel()
+        {
+            IsShowAllBooksSelected = true;
+            CurrentViewer = new BookViewerViewModel($"All Books", (Book x) => true);
+        }
+
         private string caption = "Books";
         public string Caption
         {
@@ -23,12 +29,12 @@ namespace ElibWpf.ViewModels.Controls
         {
             get => selectedCollection;
 
-            set 
+            set
             {
                 Set(ref selectedCollection, value);
-                if(selectedCollection != null)
+                if (selectedCollection != null)
                 {
-                    CurrentViewer = new BookViewerViewModel($"Collection {selectedCollection.Tag}",(Book x) => x.UserCollections.Where(c => c.Id == SelectedCollection.Id).Count() > 0);
+                    CurrentViewer = new BookViewerViewModel($"Collection {selectedCollection.Tag}", (Book x) => x.UserCollections.Where(c => c.Id == SelectedCollection.Id).Count() > 0);
                 }
             }
         }
@@ -36,18 +42,23 @@ namespace ElibWpf.ViewModels.Controls
         private ISearchable currentViewer;
         public ISearchable CurrentViewer
         {
-            get => currentViewer; 
+            get => currentViewer;
             set => Set(ref currentViewer, value);
         }
 
-        public ICommand ViewCollectionCommand { get => new RelayCommand(this.ViewCollection); }
+        public ICommand ShowAllBooksCommand { get => new RelayCommand(this.ShowAllBooks); }
 
-        private void ViewCollection()
+        private bool isShowAllBooksSelected;
+        public bool IsShowAllBooksSelected
         {
-            if(SelectedCollection != null)
-            {
-                
-            }
+            get => isShowAllBooksSelected;
+            set => Set(ref isShowAllBooksSelected, value);
+        }
+
+        public void ShowAllBooks()
+        {
+            IsShowAllBooksSelected = true;
+            CurrentViewer = new BookViewerViewModel($"All Books", (Book x) => true);
         }
     }
 }

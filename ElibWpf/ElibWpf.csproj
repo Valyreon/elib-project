@@ -138,6 +138,9 @@
       <DependentUpon>CustomSearchBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\AuthorsToStringConverter.cs" />
+    <Compile Include="Converters\BoolToInverseBoolConverter.cs" />
+    <Compile Include="Converters\BoolToInverseVisibilityConverter.cs" />
+    <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="ViewModels\Controls\BooksTabViewModel.cs" />
     <Compile Include="ViewModels\Controls\BookViewerViewModel.cs" />
     <Compile Include="ViewModels\Controls\DashboardViewModel.cs" />
