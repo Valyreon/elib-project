@@ -10,17 +10,25 @@
     xmlns:WindowViews="clr-namespace:ElibWpf.Views.Windows"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:fa="http://schemas.fontawesome.io/icons/"
+    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding OnTabLoadedCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
     <UserControl.Resources>
         <ResourceDictionary>
             <Style
                 x:Key="ListBoxItemContainerStyle"
                 BasedOn="{StaticResource MetroListBoxItem}"
                 TargetType="{x:Type ListBoxItem}">
-                <Setter Property="Background" Value="#222222" />
+                <Setter Property="Background" Value="{StaticResource LighterBackgroundColorBrush}" />
                 <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 <Setter Property="VerticalContentAlignment" Value="Stretch" />
                 <Style.Triggers>
@@ -34,13 +42,13 @@
                 x:Key="ListBoxButtons"
                 BasedOn="{StaticResource MetroListBox}"
                 TargetType="{x:Type ListBox}">
-                <Setter Property="Background" Value="#222222" />
+                <Setter Property="Background" Value="{StaticResource LighterBackgroundColorBrush}" />
                 <Setter Property="BorderThickness" Value="0" />
                 <Setter Property="ItemContainerStyle" Value="{StaticResource ListBoxItemContainerStyle}" />
             </Style>
 
             <Style x:Key="FlatButton" TargetType="{x:Type RadioButton}">
-                <Setter Property="Background" Value="#222222" />
+                <Setter Property="Background" Value="{StaticResource LighterBackgroundColorBrush}" />
                 <Setter Property="Foreground" Value="White" />
                 <Setter Property="FontSize" Value="12" />
                 <Setter Property="Padding" Value="0" />
@@ -51,9 +59,10 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type RadioButton}">
+
                             <StackPanel
                                 x:Name="Canvas"
-                                Background="#222222"
+                                Background="{StaticResource LighterBackgroundColorBrush}"
                                 Orientation="Horizontal">
                                 <ContentPresenter
                                     HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
@@ -62,11 +71,11 @@
                             </StackPanel>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsPressed" Value="True">
-                                    <Setter TargetName="Canvas" Property="Background" Value="#262626" />
+                                    <Setter TargetName="Canvas" Property="Background" Value="#434343" />
                                     <Setter Property="Foreground" Value="White" />
                                 </Trigger>
                                 <Trigger Property="IsChecked" Value="True">
-                                    <Setter TargetName="Canvas" Property="Background" Value="#262626" />
+                                    <Setter TargetName="Canvas" Property="Background" Value="#222222" />
                                     <Setter Property="Foreground" Value="White" />
                                 </Trigger>
                                 <MultiTrigger>
@@ -75,7 +84,7 @@
                                         <Condition Property="IsChecked" Value="False" />
                                     </MultiTrigger.Conditions>
                                     <MultiTrigger.Setters>
-                                        <Setter TargetName="Canvas" Property="Background" Value="#242424" />
+                                        <Setter TargetName="Canvas" Property="Background" Value="#272727" />
                                     </MultiTrigger.Setters>
                                 </MultiTrigger>
                                 <Trigger Property="IsEnabled" Value="False">
@@ -88,30 +97,39 @@
             </Style>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid Background="#222222">
+    <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="230" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="0">
-            <Grid>
+            <Grid Background="{StaticResource LighterBackgroundColorBrush}">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="80" />
+                    <RowDefinition Height="60" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <Grid Background="{StaticResource AccentColorBrush}">
-                    <Custom:CustomSearchBox
-                        Grid.Row="0"
-                        Width="200"
-                        Margin="0"
-                        Background="{StaticResource AccentColorBrush}"
-                        Foreground="Black" />
-                </Grid>
 
-                <Grid
-                    Grid.Row="1"
-                    Margin="10,15,10,5"
-                    Background="#222222">
+                <Border
+                    Grid.Row="0"
+                    Background="White"
+                    BorderThickness="0">
+                    <Border.Effect>
+                        <DropShadowEffect
+                            BlurRadius="5"
+                            Direction="270"
+                            Opacity="0.3" />
+                    </Border.Effect>
+                    <Grid Background="{StaticResource AccentColorBrush}">
+                        <Custom:CustomSearchBox
+                            Grid.Row="0"
+                            Width="200"
+                            Margin="0"
+                            Background="{StaticResource AccentColorBrush}"
+                            Foreground="Black" />
+                    </Grid>
+                </Border>
+
+                <Grid Grid.Row="1" Margin="10,10,10,10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="30" />
@@ -126,14 +144,13 @@
                         Grid.Column="0"
                         VerticalAlignment="Top"
                         VerticalContentAlignment="Top"
-                        Background="#222222"
-                        Foreground="Red">
+                        Background="{StaticResource LighterBackgroundColorBrush}">
                         <ListBoxItem Style="{StaticResource ListBoxItemContainerStyle}">
                             <RadioButton
-                                IsChecked="True"
-                                IsEnabled="{Binding IsShowAllBooksSelected}"
                                 Command="{Binding ShowAllBooksCommand}"
                                 GroupName="PaneSelect"
+                                IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Path=IsSelected}"
+                                IsEnabled="{Binding IsShowAllBooksSelected}"
                                 Style="{StaticResource FlatButton}">
                                 <StackPanel Margin="10,0,0,0" Orientation="Horizontal">
                                     <fa:ImageAwesome
@@ -152,7 +169,7 @@
                         </ListBoxItem>
                         <ListBoxItem Style="{StaticResource ListBoxItemContainerStyle}">
                             <RadioButton
-                                Command="{Binding ShowFavorites}"
+                                Command="{Binding ShowFavoriteBooksCommand}"
                                 GroupName="PaneSelect"
                                 IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Path=IsSelected}"
                                 Style="{StaticResource FlatButton}">
@@ -272,7 +289,7 @@
                         VerticalScrollBarVisibility="Auto">
                         <Grid ScrollViewer.CanContentScroll="True">
                             <ListBox
-                                Background="#222222"
+                                Background="{StaticResource LighterBackgroundColorBrush}"
                                 ItemContainerStyle="{StaticResource ListBoxItemContainerStyle}"
                                 ItemsSource="{Binding Collections, Mode=OneWay}"
                                 SelectedItem="{Binding SelectedCollection}">

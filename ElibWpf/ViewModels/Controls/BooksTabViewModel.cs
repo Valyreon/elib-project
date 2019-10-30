@@ -9,10 +9,12 @@ namespace ElibWpf.ViewModels.Controls
 {
     public class BooksTabViewModel : ViewModelBase, IPageViewModel
     {
+        private BookViewerViewModel AllBooksControl { get; set; }
+        private BookViewerViewModel FavoriteBooksControl { get; set; }
+
         public BooksTabViewModel()
         {
-            IsShowAllBooksSelected = true;
-            CurrentViewer = new BookViewerViewModel($"All Books", (Book x) => true);
+
         }
 
         private string caption = "Books";
@@ -46,19 +48,16 @@ namespace ElibWpf.ViewModels.Controls
             set => Set(ref currentViewer, value);
         }
 
-        public ICommand ShowAllBooksCommand { get => new RelayCommand(this.ShowAllBooks); }
+        public ICommand ShowAllBooksCommand { get => new RelayCommand(() => { CurrentViewer = AllBooksControl; }); }
 
-        private bool isShowAllBooksSelected;
-        public bool IsShowAllBooksSelected
-        {
-            get => isShowAllBooksSelected;
-            set => Set(ref isShowAllBooksSelected, value);
-        }
+        public ICommand ShowFavoriteBooksCommand { get => new RelayCommand(() => { CurrentViewer = FavoriteBooksControl; }); }
 
-        public void ShowAllBooks()
+        public ICommand OnTabLoadedCommand { get => new RelayCommand(this.Reload); }
+
+        public void Reload()
         {
-            IsShowAllBooksSelected = true;
-            CurrentViewer = new BookViewerViewModel($"All Books", (Book x) => true);
+            AllBooksControl = new BookViewerViewModel($"All Books", (Book x) => true);
+            FavoriteBooksControl = new BookViewerViewModel($"All Books", (Book x) => x.IsFavorite);
         }
     }
 }

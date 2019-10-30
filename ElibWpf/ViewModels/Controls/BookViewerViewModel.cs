@@ -1,13 +1,20 @@
 ﻿using Domain;
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 using Models.Options;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace ElibWpf.ViewModels.Controls
 {
-    public class BookViewerViewModel: ViewModelBase, ISearchable
+    public class BookViewerViewModel : ViewModelBase, ISearchable
     {
         private Func<Book, bool> defaultQuery;
 
@@ -20,12 +27,13 @@ namespace ElibWpf.ViewModels.Controls
 
         public BookViewerViewModel(string caption, Func<Book, bool> defaultQuery)
         {
-            this.caption = caption;
+            Caption = caption;
             this.defaultQuery = defaultQuery;
-            Books = App.Database.Books.Include("UserCollections").Include("Series").Include("Authors").Where(defaultQuery).ToList();
+            Books = new ObservableCollection<Book>();
+            Books.CollectionChanged += (a, b) => base.RaisePropertyChanged("CurrentNumberOfBooks");
         }
 
-        public List<Book> Books { get; set; } = new List<Book>();
+        public ObservableCollection<Book> Books { get; set; } 
 
         public void Search(string token, SearchOptions options = null)
         {
@@ -35,6 +43,27 @@ namespace ElibWpf.ViewModels.Controls
         public string CurrentNumberOfBooks
         {
             get => Books.Count.ToString();
+        }
+
+        public ICommand OnViewerLoadedCommand { get => new RelayCommand(this.OnViewerLoaded); }
+
+        private void OnViewerLoaded()
+        {
+            async void bookSetup()
+            {
+                foreach (var x in App.Database.Books.Include("UserCollections").Include("Series").Include("Authors").Where(defaultQuery))
+                {
+                    App.Current.Dispatcher.Invoke(() => Books.Add(x));
+                    await Task.Run(() => Thread.Sleep(15));
+                }
+            }
+
+            Application.Current.Dispatcher.Invoke(
+                DispatcherPriority.ApplicationIdle,
+                new Action(() =>
+                {
+                    bookSetup();
+                }));
         }
     }
 }

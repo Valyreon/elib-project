@@ -6,6 +6,10 @@ using Models;
 using Models.Options;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Migrations;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 
@@ -200,5 +204,23 @@ namespace DatabaseTests
                 DirSearch(dirPath);
             }
         }
+
+        [TestMethod]
+        public void OptimizeImages()
+        {
+            using ElibContext context = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
+
+            foreach (var book in context.Books.Where(b => true))
+            {
+                if (book.Cover != null)
+                {
+                    book.Cover = ImageOptimizer.ResizeAndFill(book.Cover, 200, 320, Color.GhostWhite);
+                }
+            }
+
+            context.SaveChanges();
+        }
+
+        
     }
 }

@@ -6,17 +6,25 @@
     xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:custompanels="clr-namespace:ElibWpf.Components"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
     xmlns:local="clr-namespace:ElibWpf.Views.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding OnViewerLoadedCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
     <UserControl.Resources>
         <ResourceDictionary>
             <Style x:Key="LargeTileStyle" TargetType="MetroControls:Tile">
-                <Setter Property="Width" Value="150" />
-                <Setter Property="Height" Value="225" />
                 <Setter Property="TitleFontSize" Value="14" />
+                <Setter Property="Width" Value="164" />
+                <Setter Property="Height" Value="262" />
             </Style>
             <Converters:AuthorsToStringConverter x:Key="AuthorsToStringConverter" />
         </ResourceDictionary>
@@ -24,44 +32,57 @@
     <Grid>
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="80" />
+                <RowDefinition Height="60" />
                 <RowDefinition Height="*" />
+                <RowDefinition Height="30" />
             </Grid.RowDefinitions>
-            <Border Grid.Row="0" Background="White">
+            <Border
+                Grid.Row="0"
+                Background="GhostWhite"
+                BorderThickness="0">
                 <Border.Effect>
-                    <DropShadowEffect BlurRadius="5" Opacity="0.3" Direction="270"/>
+                    <DropShadowEffect
+                        BlurRadius="5"
+                        Direction="270"
+                        Opacity="0.3" />
                 </Border.Effect>
-                <StackPanel Orientation="Horizontal">
+                <Grid VerticalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="20" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="10" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="20" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="20" />
+                    </Grid.ColumnDefinitions>
                     <TextBlock
-                        Margin="20,0,0,10"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        FontSize="28"
+                        Grid.Column="1"
+                        FontSize="24"
                         Foreground="#484b4e"
                         Text="{Binding Caption}" />
-                    <Label
-                        Margin="5,0,0,0"
+                    <TextBlock
+                        Grid.Column="3"
                         VerticalAlignment="Center"
-                        FontSize="18"
+                        FontSize="14"
                         FontStyle="Italic"
                         Foreground="#484b4e">
                         <Grid>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock x:Name="CurrentMovies" Visibility="Collapsed" />
-                                <TextBlock Margin="5,0,0,0" Text="{Binding CurrentNumberOfBooks, Mode=OneWay}" />
+                                <TextBlock Margin="0,0,0,0" Text="{Binding CurrentNumberOfBooks, Mode=OneWay}" />
                                 <TextBlock Margin="0,0,0,0" Text=" books" />
                             </StackPanel>
                         </Grid>
-                    </Label>
+                    </TextBlock>
                     <MetroControls:MetroProgressBar
+                        Grid.Column="5"
                         Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}, Path=ActualWidth, Mode=OneWay}"
-                        Margin="10,10,0,10"
                         EllipseDiameter="5"
                         Foreground="{StaticResource AccentColorBrush}"
                         IsIndeterminate="True"
                         Maximum="100"
                         Minimum="0" />
-                </StackPanel>
+                </Grid>
             </Border>
             <ItemsControl
                 Grid.Row="1"
@@ -89,44 +110,47 @@
                                     </Style.Triggers>
                                 </Style>
                             </StackPanel.Style>
-                            <MetroControls:Tile
-                                Margin="0,0,0,5"
-                                Background="#FF2F2F2F"
-                                CommandParameter="{Binding Mode=OneTime}"
-                                Style="{StaticResource LargeTileStyle}">
-                                <MetroControls:Tile.Triggers>
-                                    <EventTrigger RoutedEvent="MetroControls:Tile.MouseEnter">
-                                        <EventTrigger.Actions />
-                                    </EventTrigger>
-                                    <EventTrigger RoutedEvent="MetroControls:Tile.MouseLeave">
-                                        <EventTrigger.Actions />
-                                    </EventTrigger>
-                                </MetroControls:Tile.Triggers>
-                                <Grid>
-                                    <Image
-                                        x:Name="BackgroundImage"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        Source="{Binding Cover}" />
-                                </Grid>
-                            </MetroControls:Tile>
+                            <Border BorderBrush="LightGray" BorderThickness="1">
+                                <MetroControls:Tile
+                                    Background="GhostWhite"
+                                    CommandParameter="{Binding Mode=OneTime}"
+                                    Style="{StaticResource LargeTileStyle}">
+                                    <MetroControls:Tile.Triggers>
+                                        <EventTrigger RoutedEvent="MetroControls:Tile.MouseEnter">
+                                            <EventTrigger.Actions />
+                                        </EventTrigger>
+                                        <EventTrigger RoutedEvent="MetroControls:Tile.MouseLeave">
+                                            <EventTrigger.Actions />
+                                        </EventTrigger>
+                                    </MetroControls:Tile.Triggers>
+                                    <Grid>
+                                        <Image
+                                            x:Name="BackgroundImage"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Source="{Binding Cover}"
+                                            Stretch="Fill" />
+
+                                    </Grid>
+                                </MetroControls:Tile>
+                            </Border>
                             <TextBlock
                                 Name="Title"
-                                Width="150"
+                                Width="175"
                                 HorizontalAlignment="Left"
                                 FontSize="14"
                                 Text="{Binding Name}"
                                 TextOptions.TextHintingMode="Fixed"
                                 TextTrimming="CharacterEllipsis" />
                             <TextBlock
-                                Width="150"
+                                Width="175"
                                 HorizontalAlignment="Left"
                                 FontSize="12"
                                 Foreground="Gray"
                                 Text="{Binding Authors, Converter={StaticResource AuthorsToStringConverter}}"
                                 TextOptions.TextHintingMode="Fixed" />
                             <TextBlock
-                                Width="150"
+                                Width="175"
                                 HorizontalAlignment="Left"
                                 FontSize="12"
                                 Foreground="Gray"
