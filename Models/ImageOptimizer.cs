@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Models
 {
@@ -18,6 +14,9 @@ namespace Models
 
             int sourceWidth = imgPhoto.Width;
             int sourceHeight = imgPhoto.Height;
+
+            Width = (int)(((float)sourceWidth * (float)Height) / (float)sourceHeight);
+
             int sourceX = 0;
             int sourceY = 0;
             int destX = 0;
@@ -32,14 +31,12 @@ namespace Models
             if (nPercentH < nPercentW)
             {
                 nPercent = nPercentH;
-                destX = System.Convert.ToInt16((Width -
-                              (sourceWidth * nPercent)) / 2);
+                destX = Convert.ToInt16((Width - (sourceWidth * nPercent)) / 2);
             }
             else
             {
                 nPercent = nPercentW;
-                destY = System.Convert.ToInt16((Height -
-                              (sourceHeight * nPercent)) / 2);
+                destY = Convert.ToInt16((Height - (sourceHeight * nPercent)) / 2);
             }
 
             int destWidth = (int)(sourceWidth * nPercent);
@@ -50,7 +47,7 @@ namespace Models
             bmPhoto.SetResolution(imgPhoto.HorizontalResolution,
                              imgPhoto.VerticalResolution);
 
-            Graphics grPhoto = Graphics.FromImage(bmPhoto);
+            using Graphics grPhoto = Graphics.FromImage(bmPhoto);
             grPhoto.Clear(fillColor);
             grPhoto.InterpolationMode =
                     InterpolationMode.HighQualityBicubic;
@@ -59,8 +56,6 @@ namespace Models
                 new Rectangle(destX, destY, destWidth, destHeight),
                 new Rectangle(sourceX, sourceY, sourceWidth, sourceHeight),
                 GraphicsUnit.Pixel);
-
-            grPhoto.Dispose();
 
             using MemoryStream outStr = new MemoryStream();
             bmPhoto.Save(outStr, ImageFormat.Jpeg);

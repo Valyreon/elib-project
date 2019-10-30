@@ -3,7 +3,6 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using Models.Options;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
@@ -16,7 +15,7 @@ namespace ElibWpf.ViewModels.Controls
 {
     public class BookViewerViewModel : ViewModelBase, ISearchable
     {
-        private Func<Book, bool> defaultQuery;
+        private readonly Func<Book, bool> defaultQuery;
 
         private string caption;
         public string Caption
@@ -33,7 +32,7 @@ namespace ElibWpf.ViewModels.Controls
             Books.CollectionChanged += (a, b) => base.RaisePropertyChanged("CurrentNumberOfBooks");
         }
 
-        public ObservableCollection<Book> Books { get; set; } 
+        public ObservableCollection<Book> Books { get; set; }
 
         public void Search(string token, SearchOptions options = null)
         {

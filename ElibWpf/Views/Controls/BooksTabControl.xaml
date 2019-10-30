@@ -16,12 +16,6 @@
     d:DesignWidth="800"
     mc:Ignorable="d">
 
-    <i:Interaction.Triggers>
-        <i:EventTrigger EventName="Loaded">
-            <i:InvokeCommandAction Command="{Binding OnTabLoadedCommand}" />
-        </i:EventTrigger>
-    </i:Interaction.Triggers>
-
     <UserControl.Resources>
         <ResourceDictionary>
             <Style
@@ -144,134 +138,32 @@
                         Grid.Column="0"
                         VerticalAlignment="Top"
                         VerticalContentAlignment="Top"
-                        Background="{StaticResource LighterBackgroundColorBrush}">
-                        <ListBoxItem Style="{StaticResource ListBoxItemContainerStyle}">
-                            <RadioButton
-                                Command="{Binding ShowAllBooksCommand}"
-                                GroupName="PaneSelect"
-                                IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Path=IsSelected}"
-                                IsEnabled="{Binding IsShowAllBooksSelected}"
-                                Style="{StaticResource FlatButton}">
-                                <StackPanel Margin="10,0,0,0" Orientation="Horizontal">
-                                    <fa:ImageAwesome
-                                        Height="12"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        Foreground="White"
-                                        Icon="Book" />
-                                    <TextBlock
-                                        Margin="10,0,0,0"
-                                        VerticalAlignment="Center"
-                                        FontSize="16"
-                                        Text="All" />
-                                </StackPanel>
-                            </RadioButton>
-                        </ListBoxItem>
-                        <ListBoxItem Style="{StaticResource ListBoxItemContainerStyle}">
-                            <RadioButton
-                                Command="{Binding ShowFavoriteBooksCommand}"
-                                GroupName="PaneSelect"
-                                IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Path=IsSelected}"
-                                Style="{StaticResource FlatButton}">
-                                <StackPanel Margin="10,0,0,0" Orientation="Horizontal">
-                                    <fa:ImageAwesome
-                                        Height="12"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        Foreground="White"
-                                        Icon="Star" />
-                                    <TextBlock
-                                        Margin="10,0,0,0"
-                                        VerticalAlignment="Center"
-                                        FontSize="16"
-                                        Text="Favorites" />
-                                </StackPanel>
-                            </RadioButton>
-                        </ListBoxItem>
-                        <ListBoxItem Style="{StaticResource ListBoxItemContainerStyle}">
-                            <RadioButton
-                                Command="{Binding ShowRead}"
-                                GroupName="PaneSelect"
-                                IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Path=IsSelected}"
-                                Style="{StaticResource FlatButton}">
-                                <StackPanel Margin="10,0,0,0" Orientation="Horizontal">
-                                    <fa:ImageAwesome
-                                        Height="12"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        Foreground="White"
-                                        Icon="Check" />
-                                    <TextBlock
-                                        Margin="10,0,0,0"
-                                        VerticalAlignment="Center"
-                                        FontSize="16"
-                                        Text="Read" />
-                                </StackPanel>
-                            </RadioButton>
-                        </ListBoxItem>
-                        <ListBoxItem Style="{StaticResource ListBoxItemContainerStyle}">
-                            <RadioButton
-                                Command="{Binding ShowNotRead}"
-                                GroupName="PaneSelect"
-                                IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Path=IsSelected}"
-                                Style="{StaticResource FlatButton}">
-                                <StackPanel Margin="10,0,0,0" Orientation="Horizontal">
-                                    <fa:ImageAwesome
-                                        Height="12"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        Foreground="White"
-                                        Icon="TimesCircle" />
-                                    <TextBlock
-                                        Margin="10,0,0,0"
-                                        VerticalAlignment="Center"
-                                        FontSize="16"
-                                        Text="Not Read" />
-                                </StackPanel>
-                            </RadioButton>
-                        </ListBoxItem>
-                        <ListBoxItem Style="{StaticResource ListBoxItemContainerStyle}">
-                            <RadioButton
-                                Command="{Binding ShowSeries}"
-                                GroupName="PaneSelect"
-                                IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Path=IsSelected}"
-                                Style="{StaticResource FlatButton}">
-                                <StackPanel Margin="10,0,0,0" Orientation="Horizontal">
-                                    <fa:ImageAwesome
-                                        Height="12"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        Foreground="White"
-                                        Icon="Link" />
-                                    <TextBlock
-                                        Margin="10,0,0,0"
-                                        VerticalAlignment="Center"
-                                        FontSize="16"
-                                        Text="Series" />
-                                </StackPanel>
-                            </RadioButton>
-                        </ListBoxItem>
-                        <ListBoxItem Style="{StaticResource ListBoxItemContainerStyle}">
-                            <RadioButton
-                                Command="{Binding ShowAuthors}"
-                                GroupName="PaneSelect"
-                                IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Path=IsSelected}"
-                                Style="{StaticResource FlatButton}">
-                                <StackPanel Margin="10,0,0,0" Orientation="Horizontal">
-                                    <fa:ImageAwesome
-                                        Height="12"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        Foreground="White"
-                                        Icon="Users" />
-                                    <TextBlock
-                                        Margin="10,0,0,0"
-                                        VerticalAlignment="Center"
-                                        FontSize="16"
-                                        Text="Authors" />
-                                </StackPanel>
-                            </RadioButton>
-                        </ListBoxItem>
+                        Background="{StaticResource LighterBackgroundColorBrush}"
+                        ItemsSource="{Binding MainPaneItems}"
+                        SelectedItem="{Binding SelectedMainPaneItem, UpdateSourceTrigger=PropertyChanged}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <RadioButton
+                                    Command="{Binding ShowAuthors}"
+                                    GroupName="PaneSelect"
+                                    IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Path=IsSelected}"
+                                    Style="{StaticResource FlatButton}">
+                                    <StackPanel Margin="10,0,0,0" Orientation="Horizontal">
+                                        <fa:ImageAwesome
+                                            Height="12"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Foreground="White"
+                                            Icon="{Binding FaIconName}" />
+                                        <TextBlock
+                                            Margin="10,0,0,0"
+                                            VerticalAlignment="Center"
+                                            FontSize="16"
+                                            Text="{Binding Caption}" />
+                                    </StackPanel>
+                                </RadioButton>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
                     </ListBox>
 
                     <TextBlock
