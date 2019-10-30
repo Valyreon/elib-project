@@ -137,6 +137,7 @@
     <Compile Include="Components\CustomSearchBox.xaml.cs">
       <DependentUpon>CustomSearchBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\TabContent.cs" />
     <Compile Include="Converters\AuthorsToStringConverter.cs" />
     <Compile Include="Converters\BoolToInverseBoolConverter.cs" />
     <Compile Include="Converters\BoolToInverseVisibilityConverter.cs" />
