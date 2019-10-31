@@ -3,6 +3,7 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using Models.Options;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
@@ -44,25 +45,18 @@ namespace ElibWpf.ViewModels.Controls
             get => Books.Count.ToString();
         }
 
-        public ICommand OnViewerLoadedCommand { get => new RelayCommand(this.OnViewerLoaded); }
+        public ICommand OnViewerLoadedCommand { get => new RelayCommand(this.Refresh); }
 
-        private void OnViewerLoaded()
+        public async void Refresh()
         {
-            async void bookSetup()
-            {
-                foreach (var x in App.Database.Books.Include("UserCollections").Include("Series").Include("Authors").Where(defaultQuery))
-                {
-                    App.Current.Dispatcher.Invoke(() => Books.Add(x));
-                    await Task.Run(() => Thread.Sleep(15));
-                }
-            }
+            App.Current.Dispatcher.Invoke(() => Books.Clear());
+            var books = await Task.Run(() => App.Database.Books.Include("UserCollections").Include("Series").Include("Authors").Where(defaultQuery));
 
-            Application.Current.Dispatcher.Invoke(
-                DispatcherPriority.ApplicationIdle,
-                new Action(() =>
-                {
-                    bookSetup();
-                }));
+            foreach (var x in books)
+            {
+                App.Current.Dispatcher.Invoke(() => Books.Add(x));
+                await Task.Run(() => Thread.Sleep(15));
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Domain;
+using ElibWpf.ViewModels.Controls;
 using System;
 
 namespace ElibWpf.Components
@@ -6,16 +7,14 @@ namespace ElibWpf.Components
     public class PaneMainItem
     {
         public string PaneCaption { get; }
-        public string ViewerCaption { get; }
         public string FaIconName { get; }
-        public Func<Book, bool> BooksQuery { get; }
+        public BookViewerViewModel ViewModel { get; }
 
-        public PaneMainItem(Func<Book, bool> booksQuery, string viewCaption, string paneCaption, string faIconName)
+        public PaneMainItem(string paneCaption, string faIconName, BookViewerViewModel viewModel)
         {
-            this.BooksQuery = booksQuery;
-            this.ViewerCaption = viewCaption;
             this.PaneCaption = paneCaption;
             this.FaIconName = faIconName;
+            this.ViewModel = viewModel;
         }
     }
 }

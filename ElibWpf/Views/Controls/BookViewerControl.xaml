@@ -13,12 +13,6 @@
     d:DesignWidth="800"
     mc:Ignorable="d">
 
-    <i:Interaction.Triggers>
-        <i:EventTrigger EventName="Loaded">
-            <i:InvokeCommandAction Command="{Binding OnViewerLoadedCommand}" />
-        </i:EventTrigger>
-    </i:Interaction.Triggers>
-
     <UserControl.Resources>
         <ResourceDictionary>
             <Style x:Key="LargeTileStyle" TargetType="MetroControls:Tile">
@@ -74,14 +68,14 @@
                             </StackPanel>
                         </Grid>
                     </TextBlock>
-                    <MetroControls:MetroProgressBar
+                    <!--<MetroControls:MetroProgressBar
                         Grid.Column="5"
                         Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}, Path=ActualWidth, Mode=OneWay}"
                         EllipseDiameter="5"
                         Foreground="{StaticResource AccentColorBrush}"
                         IsIndeterminate="True"
                         Maximum="100"
-                        Minimum="0" />
+                        Minimum="0" />-->
                 </Grid>
             </Border>
             <ItemsControl

@@ -26,5 +26,10 @@ namespace ElibWpf
                     Dispatcher.Run();
                 });
         }
+
+        private void OnExit(object sender, ExitEventArgs e)
+        {
+            Database.Vacuum();
+        }
     }
 }
