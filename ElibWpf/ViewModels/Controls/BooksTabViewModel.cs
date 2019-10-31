@@ -15,6 +15,8 @@ namespace ElibWpf.ViewModels.Controls
     {
         public ObservableCollection<PaneMainItem> MainPaneItems { get; set; }
 
+        private List<Book> allBooks;
+
         private PaneMainItem selectedMainPaneItem;
         public PaneMainItem SelectedMainPaneItem
         {
@@ -54,7 +56,12 @@ namespace ElibWpf.ViewModels.Controls
                 Set(ref selectedCollection, value);
                 if (selectedCollection != null)
                 {
-                    CurrentViewer = new BookViewerViewModel($"Collection {selectedCollection.Tag}", (Book x) => x.UserCollections.Where(c => c.Id == SelectedCollection.Id).Count() > 0);
+                    var newViewModel = new BookViewerViewModel($"Collection {selectedCollection.Tag}", (Book x) => x.UserCollections.Where(c => c.Id == SelectedCollection.Id).Count() > 0);
+                    CurrentViewer = newViewModel;
+                    foreach (var book in allBooks.Where(newViewModel.DefaultCondition))
+                    {
+                        App.Current.Dispatcher.Invoke(() => newViewModel.Books.Add(book));
+                    }
                 }
             }
         }
@@ -70,17 +77,25 @@ namespace ElibWpf.ViewModels.Controls
 
         private void PaneSelectionChanged()
         {
-            CurrentViewer = SelectedMainPaneItem.ViewModel;
+            if (SelectedMainPaneItem != null)
+            {
+                CurrentViewer = SelectedMainPaneItem.ViewModel;
+            }
         }
 
         public ICommand OnPaneLoadedCommand { get => new RelayCommand(this.Refresh); }
 
         private async void Refresh()
         {
+            allBooks = await Task.Run(() => App.Database.Books.Include("Authors").Include("Series").Include("UserCollections").ToList());
             foreach(var item in MainPaneItems)
             {
-                await Task.Run(() => item.ViewModel.Refresh());
-            }
+                App.Current.Dispatcher.Invoke(() => item.ViewModel.Books.Clear());
+                foreach(var book in allBooks.Where(item.ViewModel.DefaultCondition))
+                {
+                    App.Current.Dispatcher.Invoke(() => item.ViewModel.Books.Add(book));
+                }
+            };
         }
     }
 }
