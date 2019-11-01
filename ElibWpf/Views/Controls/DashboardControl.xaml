@@ -27,7 +27,7 @@
             MetroControls:TabControlHelper.Transition="Normal"
             DisplayMemberPath="Caption"
             ItemsSource="{Binding Pages, UpdateSourceTrigger=PropertyChanged}"
-            SelectedIndex="0"
+            SelectedItem="{Binding SelectedPage, UpdateSourceTrigger=PropertyChanged}"
             Style="{StaticResource TabControlExStyle}">
             <TabControl.Resources>
                 <DataTemplate DataType="{x:Type ControlViewModels:BooksTabViewModel}">

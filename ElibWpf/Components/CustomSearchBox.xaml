@@ -17,7 +17,7 @@
             BorderThickness="0,0,0,1">
             <TextBox
                 x:Name="SearchBox"
-                Width="200"
+                Width="250"
                 controls:TextBoxHelper.ClearTextButton="True"
                 controls:TextBoxHelper.Watermark="Search..."
                 Background="Transparent"
