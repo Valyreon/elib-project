@@ -7,6 +7,7 @@
     xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:custompanels="clr-namespace:ElibWpf.Components"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:fa="http://schemas.fontawesome.io/icons/"
     xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
     xmlns:local="clr-namespace:ElibWpf.Views.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -71,6 +72,7 @@
                             </StackPanel>
                         </Grid>
                     </TextBlock>
+
                     <Image Grid.Column="6" Width="368">
                         <Image.Source>
                             <BitmapImage DecodePixelWidth="368" UriSource="/Images/searchBackgorund.png" />
@@ -78,10 +80,11 @@
                     </Image>
                     <custompanels:CustomSearchBox
                         Grid.Column="6"
-                        Width="400"
-                        Margin="0"
+                        Width="250"
+                        Margin="40,0,0,0"
                         Background="Transparent"
                         Foreground="Black" />
+
                 </Grid>
             </Border>
             <ItemsControl
