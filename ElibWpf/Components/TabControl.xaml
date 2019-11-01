@@ -73,6 +73,7 @@
         </Setter>
     </Style>
 
+
     <Style x:Key="TabControlExStyle" TargetType="{x:Type local:TabControlEx}">
         <Setter Property="Background" Value="{StaticResource TabItemPanelBackgroundBrush}" />
         <Setter Property="TabStripPlacement" Value="Top" />

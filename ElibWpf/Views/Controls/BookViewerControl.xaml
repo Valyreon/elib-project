@@ -23,6 +23,52 @@
                 <Setter Property="Height" Value="262" />
             </Style>
             <Converters:AuthorsToStringConverter x:Key="AuthorsToStringConverter" />
+
+            <Style x:Key="SearchOptionsButtonStyle" TargetType="Button">
+                <Setter Property="Width" Value="30" />
+                <Setter Property="Height" Value="30" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="HorizontalContentAlignment" Value="Center" />
+                <Setter Property="Foreground" Value="Gray" />
+                <Setter Property="Background" Value="GhostWhite" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <Border
+                                x:Name="TheBorder"
+                                Background="GhostWhite"
+                                BorderBrush="LightGray"
+                                BorderThickness="1"
+                                CornerRadius="1">
+                                <Grid
+                                    x:Name="GridHolder"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Background="GhostWhite">
+                                    <TextBlock>
+                                        <fa:ImageAwesome
+                                            x:Name="TheGearIcon"
+                                            Height="18"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Foreground="{StaticResource LighterBackgroundColorBrush}"
+                                            Icon="Gear" />
+                                    </TextBlock>
+                                </Grid>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="TheGearIcon" Property="Foreground" Value="{StaticResource AccentColorBrush}" />
+                                    <Setter TargetName="GridHolder" Property="Background" Value="White" />
+                                    <Setter TargetName="TheBorder" Property="Background" Value="White" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
@@ -78,12 +124,32 @@
                             <BitmapImage DecodePixelWidth="368" UriSource="/Images/searchBackgorund.png" />
                         </Image.Source>
                     </Image>
-                    <custompanels:CustomSearchBox
-                        Grid.Column="6"
-                        Width="250"
-                        Margin="40,0,0,0"
-                        Background="Transparent"
-                        Foreground="Black" />
+                    <Grid Grid.Column="6" HorizontalAlignment="Right">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="250" />
+                            <ColumnDefinition Width="1" />
+                            <ColumnDefinition Width="30" />
+                            <ColumnDefinition Width="30" />
+                        </Grid.ColumnDefinitions>
+
+                        <custompanels:CustomSearchBox
+                            Grid.Column="0"
+                            Width="230"
+                            HorizontalContentAlignment="Right"
+                            Background="Transparent"
+                            Foreground="Black" />
+
+                        <Button Grid.Column="2" Style="{StaticResource SearchOptionsButtonStyle}">
+                            <fa:ImageAwesome
+                                x:Name="TheGearIcon"
+                                Height="18"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Foreground="{StaticResource LighterBackgroundColorBrush}"
+                                Icon="Gear" />
+                        </Button>
+                    </Grid>
+
 
                 </Grid>
             </Border>

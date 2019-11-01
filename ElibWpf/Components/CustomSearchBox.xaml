@@ -16,7 +16,7 @@
             Height="30"
             BorderBrush="LightGray"
             BorderThickness="1"
-            CornerRadius="2">
+            CornerRadius="1">
             <Grid>
                 <TextBox
                     x:Name="SearchBox"
