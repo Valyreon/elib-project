@@ -139,7 +139,7 @@
       <DependentUpon>CustomSearchBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\PaneMainItem.cs" />
-    <Compile Include="Components\TabContent.cs" />
+    <Compile Include="Components\TabControlEx.cs" />
     <Compile Include="Converters\AuthorsToStringConverter.cs" />
     <Compile Include="Converters\BoolToInverseBoolConverter.cs" />
     <Compile Include="Converters\BoolToInverseVisibilityConverter.cs" />
@@ -181,11 +181,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Resources\Colors.xaml">
+    <Page Include="Components\TabControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Resources\DashboardStyles.xaml">
+    <Page Include="Resources\Colors.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

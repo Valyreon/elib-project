@@ -20,16 +20,15 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        <MetroControls:MetroAnimatedSingleRowTabControl
+        <Components:TabControlEx
             Grid.Row="0"
             Grid.Column="0"
             Margin="0"
-            Components:TabContent.IsCached="True"
             MetroControls:TabControlHelper.Transition="Normal"
             DisplayMemberPath="Caption"
             ItemsSource="{Binding Pages, UpdateSourceTrigger=PropertyChanged}"
             SelectedIndex="0"
-            Style="{StaticResource DashboardControlStyle}">
+            Style="{StaticResource TabControlExStyle}">
             <TabControl.Resources>
                 <DataTemplate DataType="{x:Type ControlViewModels:BooksTabViewModel}">
                     <ControlViews:BooksTabControl />
@@ -41,7 +40,7 @@
                     <ControlViews:SettingsTabControl />
                 </DataTemplate>
             </TabControl.Resources>
-        </MetroControls:MetroAnimatedSingleRowTabControl>
+        </Components:TabControlEx>
 
     </Grid>
 </UserControl>

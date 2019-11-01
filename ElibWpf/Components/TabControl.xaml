@@ -2,10 +2,8 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
-    xmlns:behaviours="http://metro.mahapps.com/winfx/xaml/shared">
-
-    <SolidColorBrush x:Key="TabItemPanelBackgroundBrush" Color="#222222" />
-
+    xmlns:behaviours="http://metro.mahapps.com/winfx/xaml/shared"
+    xmlns:local="clr-namespace:ElibWpf.Components">
     <Style x:Key="DashboardTabItemStyle" TargetType="{x:Type TabItem}">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
@@ -75,7 +73,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="DashboardControlStyle" TargetType="{x:Type MetroControls:MetroAnimatedSingleRowTabControl}">
+    <Style x:Key="TabControlExStyle" TargetType="{x:Type local:TabControlEx}">
         <Setter Property="Background" Value="{StaticResource TabItemPanelBackgroundBrush}" />
         <Setter Property="TabStripPlacement" Value="Top" />
         <Setter Property="BorderThickness" Value="0" />
@@ -123,18 +121,10 @@
                             KeyboardNavigation.TabIndex="2"
                             KeyboardNavigation.TabNavigation="Local"
                             SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
-                            <MetroControls:TransitioningContentControl
-                                behaviours:ReloadBehavior.OnSelectedTabChanged="True"
-                                RestartTransitionOnContentChange="True"
-                                Transition="{TemplateBinding MetroControls:TabControlHelper.Transition}"
-                                UseLayoutRounding="True">
-                                <ContentPresenter
-                                    x:Name="PART_SelectedContentHost"
-                                    Margin="{TemplateBinding Padding}"
-                                    ContentSource="SelectedContent"
-                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
-                                    UseLayoutRounding="False" />
-                            </MetroControls:TransitioningContentControl>
+                            <Grid
+                                x:Name="PART_ItemsHolder"
+                                Margin="{TemplateBinding Padding}"
+                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                         </Border>
                     </DockPanel>
                     <ControlTemplate.Triggers>
@@ -146,5 +136,4 @@
             </Setter.Value>
         </Setter>
     </Style>
-
 </ResourceDictionary>
