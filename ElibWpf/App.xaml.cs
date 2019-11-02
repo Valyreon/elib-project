@@ -29,7 +29,7 @@ namespace ElibWpf
 
         private void OnExit(object sender, ExitEventArgs e)
         {
-            Database.Vacuum();
+            //Database.Vacuum(); this slows the shutdown of application
         }
     }
 }

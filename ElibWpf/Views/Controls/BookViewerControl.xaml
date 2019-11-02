@@ -5,7 +5,6 @@
     xmlns:Components="clr-namespace:ElibWpf.Components"
     xmlns:Converters="clr-namespace:ElibWpf.Converters"
     xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
-    xmlns:custompanels="clr-namespace:ElibWpf.Components"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:fa="http://schemas.fontawesome.io/icons/"
     xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
@@ -23,52 +22,6 @@
                 <Setter Property="Height" Value="262" />
             </Style>
             <Converters:AuthorsToStringConverter x:Key="AuthorsToStringConverter" />
-
-            <Style x:Key="SearchOptionsButtonStyle" TargetType="Button">
-                <Setter Property="Width" Value="30" />
-                <Setter Property="Height" Value="30" />
-                <Setter Property="VerticalContentAlignment" Value="Center" />
-                <Setter Property="VerticalAlignment" Value="Center" />
-                <Setter Property="HorizontalContentAlignment" Value="Center" />
-                <Setter Property="Foreground" Value="Gray" />
-                <Setter Property="Background" Value="GhostWhite" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate>
-                            <Border
-                                x:Name="TheBorder"
-                                Background="GhostWhite"
-                                BorderBrush="LightGray"
-                                BorderThickness="1"
-                                CornerRadius="1">
-                                <Grid
-                                    x:Name="GridHolder"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    Background="GhostWhite">
-                                    <TextBlock>
-                                        <fa:ImageAwesome
-                                            x:Name="TheGearIcon"
-                                            Height="18"
-                                            HorizontalAlignment="Center"
-                                            VerticalAlignment="Center"
-                                            Foreground="{StaticResource LighterBackgroundColorBrush}"
-                                            Icon="Gear" />
-                                    </TextBlock>
-                                </Grid>
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="TheGearIcon" Property="Foreground" Value="{StaticResource AccentColorBrush}" />
-                                    <Setter TargetName="GridHolder" Property="Background" Value="White" />
-                                    <Setter TargetName="TheBorder" Property="Background" Value="White" />
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
@@ -79,7 +32,6 @@
             </Grid.RowDefinitions>
             <Border
                 Grid.Row="0"
-                Panel.ZIndex="5"
                 Background="GhostWhite"
                 BorderThickness="0">
                 <Border.Effect>
@@ -94,9 +46,10 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="10" />
                         <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="20" />
+                        <ColumnDefinition Width="10" />
+                        <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="368" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <TextBlock
                         Grid.Column="1"
@@ -119,35 +72,42 @@
                         </Grid>
                     </TextBlock>
 
-                    <Image Grid.Column="6" Width="368">
+                    <Components:SymbolButton
+                        Grid.Column="5"
+                        Width="30"
+                        Height="30"
+                        Foreground="#484b4e"
+                        IconName="Refresh"
+                        IconSize="16" />
+
+                    <Image Grid.Column="7" Width="368">
                         <Image.Source>
                             <BitmapImage DecodePixelWidth="368" UriSource="/Images/searchBackgorund.png" />
                         </Image.Source>
                     </Image>
-                    <Grid Grid.Column="6" HorizontalAlignment="Right">
+                    <Grid Grid.Column="7" HorizontalAlignment="Right">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="250" />
-                            <ColumnDefinition Width="1" />
+                            <ColumnDefinition Width="20" />
+                            <ColumnDefinition Width="240" />
+                            <ColumnDefinition Width="5" />
                             <ColumnDefinition Width="30" />
-                            <ColumnDefinition Width="30" />
+                            <ColumnDefinition Width="15" />
                         </Grid.ColumnDefinitions>
 
-                        <custompanels:CustomSearchBox
-                            Grid.Column="0"
+                        <Components:TextBoxWithSymbol
+                            Grid.Column="1"
                             Width="230"
-                            HorizontalContentAlignment="Right"
-                            Background="Transparent"
-                            Foreground="Black" />
+                            Height="30"
+                            IconName="Search"
+                            WatermarkText="Search..." />
 
-                        <Button Grid.Column="2" Style="{StaticResource SearchOptionsButtonStyle}">
-                            <fa:ImageAwesome
-                                x:Name="TheGearIcon"
-                                Height="18"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Foreground="{StaticResource LighterBackgroundColorBrush}"
-                                Icon="Gear" />
-                        </Button>
+                        <Components:SymbolButton
+                            Grid.Column="3"
+                            Width="30"
+                            Height="30"
+                            Foreground="GhostWhite"
+                            IconName="Gear"
+                            IconSize="24" />
                     </Grid>
 
 
@@ -200,14 +160,6 @@
                                     Background="GhostWhite"
                                     CommandParameter="{Binding Mode=OneTime}"
                                     Style="{StaticResource LargeTileStyle}">
-                                    <MetroControls:Tile.Triggers>
-                                        <EventTrigger RoutedEvent="MetroControls:Tile.MouseEnter">
-                                            <EventTrigger.Actions />
-                                        </EventTrigger>
-                                        <EventTrigger RoutedEvent="MetroControls:Tile.MouseLeave">
-                                            <EventTrigger.Actions />
-                                        </EventTrigger>
-                                    </MetroControls:Tile.Triggers>
                                     <Grid>
                                         <Image
                                             x:Name="BackgroundImage"
@@ -224,7 +176,6 @@
                                                 <BitmapImage DecodePixelWidth="200" UriSource="/Images/book.png" />
                                             </Image.Source>
                                         </Image>
-
                                     </Grid>
                                 </MetroControls:Tile>
                             </Border>

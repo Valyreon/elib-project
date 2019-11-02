@@ -135,11 +135,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Components\CustomSearchBox.xaml.cs">
-      <DependentUpon>CustomSearchBox.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Components\SymbolButton.cs" />
     <Compile Include="Components\PaneMainItem.cs" />
     <Compile Include="Components\TabControlEx.cs" />
+    <Compile Include="Components\TextBoxWithSymbol.cs" />
+    <Compile Include="Components\UI.cs" />
     <Compile Include="Converters\AuthorsToStringConverter.cs" />
     <Compile Include="Converters\BoolToInverseBoolConverter.cs" />
     <Compile Include="Converters\BoolToInverseVisibilityConverter.cs" />
@@ -177,15 +177,15 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Components\CustomSearchBox.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Components\TabControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\Colors.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Generic.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
