@@ -1,0 +1,283 @@
+﻿<UserControl
+    x:Class="ElibWpf.Views.Controls.BookViewerControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Components="clr-namespace:ElibWpf.Components"
+    xmlns:Converters="clr-namespace:ElibWpf.Converters"
+    xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:custompanels="clr-namespace:ElibWpf.Components"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:fa="http://schemas.fontawesome.io/icons/"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:local="clr-namespace:ElibWpf.Views.Controls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <Style x:Key="LargeTileStyle" TargetType="MetroControls:Tile">
+                <Setter Property="TitleFontSize" Value="14" />
+                <Setter Property="Width" Value="164" />
+                <Setter Property="Height" Value="262" />
+            </Style>
+            <Converters:AuthorsToStringConverter x:Key="AuthorsToStringConverter" />
+
+            <Style x:Key="SearchOptionsButtonStyle" TargetType="Button">
+                <Setter Property="Width" Value="30" />
+                <Setter Property="Height" Value="30" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="HorizontalContentAlignment" Value="Center" />
+                <Setter Property="Foreground" Value="Gray" />
+                <Setter Property="Background" Value="GhostWhite" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <Border
+                                x:Name="TheBorder"
+                                Background="GhostWhite"
+                                BorderBrush="LightGray"
+                                BorderThickness="1"
+                                CornerRadius="1">
+                                <Grid
+                                    x:Name="GridHolder"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Background="GhostWhite">
+                                    <TextBlock>
+                                        <fa:ImageAwesome
+                                            x:Name="TheGearIcon"
+                                            Height="18"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Foreground="{StaticResource LighterBackgroundColorBrush}"
+                                            Icon="Gear" />
+                                    </TextBlock>
+                                </Grid>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="TheGearIcon" Property="Foreground" Value="{StaticResource AccentColorBrush}" />
+                                    <Setter TargetName="GridHolder" Property="Background" Value="White" />
+                                    <Setter TargetName="TheBorder" Property="Background" Value="White" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="60" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Border
+                Grid.Row="0"
+                Panel.ZIndex="5"
+                Background="GhostWhite"
+                BorderThickness="0">
+                <Border.Effect>
+                    <DropShadowEffect
+                        BlurRadius="5"
+                        Direction="270"
+                        Opacity="0.3" />
+                </Border.Effect>
+                <Grid VerticalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="20" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="10" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="20" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="368" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        FontSize="24"
+                        Foreground="#484b4e"
+                        Text="{Binding Caption}" />
+                    <TextBlock
+                        Grid.Column="3"
+                        Margin="0,7,0,0"
+                        VerticalAlignment="Center"
+                        FontSize="14"
+                        FontStyle="Italic"
+                        Foreground="#484b4e">
+                        <Grid>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Margin="0,0,0,0" Text="{Binding CurrentNumberOfBooks, Mode=OneWay}" />
+                                <TextBlock Margin="0,0,0,0" Text=" books" />
+                            </StackPanel>
+                        </Grid>
+                    </TextBlock>
+
+                    <Image Grid.Column="6" Width="368">
+                        <Image.Source>
+                            <BitmapImage DecodePixelWidth="368" UriSource="/Images/searchBackgorund.png" />
+                        </Image.Source>
+                    </Image>
+                    <Grid Grid.Column="6" HorizontalAlignment="Right">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="250" />
+                            <ColumnDefinition Width="1" />
+                            <ColumnDefinition Width="30" />
+                            <ColumnDefinition Width="30" />
+                        </Grid.ColumnDefinitions>
+
+                        <custompanels:CustomSearchBox
+                            Grid.Column="0"
+                            Width="230"
+                            HorizontalContentAlignment="Right"
+                            Background="Transparent"
+                            Foreground="Black" />
+
+                        <Button Grid.Column="2" Style="{StaticResource SearchOptionsButtonStyle}">
+                            <fa:ImageAwesome
+                                x:Name="TheGearIcon"
+                                Height="18"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Foreground="{StaticResource LighterBackgroundColorBrush}"
+                                Icon="Gear" />
+                        </Button>
+                    </Grid>
+
+
+                </Grid>
+            </Border>
+            <ItemsControl
+                Grid.Row="1"
+                Margin="15,0,15,0"
+                VerticalAlignment="Top"
+                ItemsSource="{Binding Books, Mode=OneTime, IsAsync=True}"
+                ScrollViewer.CanContentScroll="True"
+                VirtualizingStackPanel.IsVirtualizing="True"
+                VirtualizingStackPanel.VirtualizationMode="Recycling">
+                <ItemsControl.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Menu item 1" />
+                        <MenuItem Header="Menu item 2" />
+                        <Separator />
+                        <MenuItem Header="Menu item 3" />
+                    </ContextMenu>
+                </ItemsControl.ContextMenu>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel
+                            Margin="15,15,15,15"
+                            HorizontalAlignment="Left"
+                            Orientation="Vertical"
+                            RenderOptions.BitmapScalingMode="HighQuality"
+                            RenderOptions.ClearTypeHint="Enabled"
+                            TextOptions.TextRenderingMode="ClearType">
+                            <StackPanel.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Book item" />
+                                    <MenuItem Header="Menu item 2" />
+                                    <Separator />
+                                    <MenuItem Header="Menu item 3" />
+                                </ContextMenu>
+                            </StackPanel.ContextMenu>
+                            <StackPanel.Style>
+                                <Style TargetType="StackPanel">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Cursor" Value="Hand" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
+                            <Border BorderBrush="LightGray" BorderThickness="1">
+                                <MetroControls:Tile
+                                    Background="GhostWhite"
+                                    CommandParameter="{Binding Mode=OneTime}"
+                                    Style="{StaticResource LargeTileStyle}">
+                                    <MetroControls:Tile.Triggers>
+                                        <EventTrigger RoutedEvent="MetroControls:Tile.MouseEnter">
+                                            <EventTrigger.Actions />
+                                        </EventTrigger>
+                                        <EventTrigger RoutedEvent="MetroControls:Tile.MouseLeave">
+                                            <EventTrigger.Actions />
+                                        </EventTrigger>
+                                    </MetroControls:Tile.Triggers>
+                                    <Grid>
+                                        <Image
+                                            x:Name="BackgroundImage"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Panel.ZIndex="10"
+                                            Source="{Binding Cover}"
+                                            Stretch="Fill" />
+                                        <Image
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Stretch="Fill">
+                                            <Image.Source>
+                                                <BitmapImage DecodePixelWidth="200" UriSource="/Images/book.png" />
+                                            </Image.Source>
+                                        </Image>
+
+                                    </Grid>
+                                </MetroControls:Tile>
+                            </Border>
+                            <TextBlock
+                                Name="Title"
+                                Width="175"
+                                HorizontalAlignment="Left"
+                                FontSize="14"
+                                Text="{Binding Name}"
+                                TextOptions.TextHintingMode="Fixed"
+                                TextTrimming="CharacterEllipsis" />
+                            <TextBlock
+                                Width="175"
+                                HorizontalAlignment="Left"
+                                FontSize="12"
+                                Foreground="Gray"
+                                Text="{Binding Authors, Converter={StaticResource AuthorsToStringConverter}}"
+                                TextOptions.TextHintingMode="Fixed" />
+                            <TextBlock
+                                Width="175"
+                                HorizontalAlignment="Left"
+                                FontSize="12"
+                                Foreground="Gray"
+                                Text="{Binding SeriesInfo}"
+                                TextOptions.TextHintingMode="Fixed" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.Template>
+                    <ControlTemplate>
+                        <Border
+                            Padding="{TemplateBinding Control.Padding}"
+                            Background="{TemplateBinding Panel.Background}"
+                            BorderBrush="{TemplateBinding Border.BorderBrush}"
+                            BorderThickness="{TemplateBinding Border.BorderThickness}"
+                            SnapsToDevicePixels="True">
+                            <ScrollViewer
+                                x:Name="MovieScrollViewer"
+                                Padding="{TemplateBinding Control.Padding}"
+                                FocusVisualStyle="{x:Null}"
+                                Focusable="True"
+                                VerticalScrollBarVisibility="Auto">
+                                <ItemsPresenter SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
+                            </ScrollViewer>
+                        </Border>
+                    </ControlTemplate>
+                </ItemsControl.Template>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </Grid>
+    </Grid>
+</UserControl>

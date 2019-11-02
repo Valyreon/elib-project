@@ -1,7 +1,19 @@
-﻿using System.Windows;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 
-namespace ElibWpf.CustomControls
+namespace ElibWpf.Custom
 {
     /// <summary>
     /// Follow steps 1a or 1b and then 2 to use this custom control in a XAML file.
@@ -10,14 +22,14 @@ namespace ElibWpf.CustomControls
     /// Add this XmlNamespace attribute to the root element of the markup file where it is 
     /// to be used:
     ///
-    ///     xmlns:MyNamespace="clr-namespace:ElibWpf.CustomControls"
+    ///     xmlns:MyNamespace="clr-namespace:ElibWpf.Custom"
     ///
     ///
     /// Step 1b) Using this custom control in a XAML file that exists in a different project.
     /// Add this XmlNamespace attribute to the root element of the markup file where it is 
     /// to be used:
     ///
-    ///     xmlns:MyNamespace="clr-namespace:ElibWpf.CustomControls;assembly=ElibWpf.CustomControls"
+    ///     xmlns:MyNamespace="clr-namespace:ElibWpf.Custom;assembly=ElibWpf.Custom"
     ///
     /// You will also need to add a project reference from the project where the XAML file lives
     /// to this project and Rebuild to avoid compilation errors:
@@ -29,14 +41,14 @@ namespace ElibWpf.CustomControls
     /// Step 2)
     /// Go ahead and use your control in the XAML file.
     ///
-    ///     <MyNamespace:FrameInGrid/>
+    ///     <MyNamespace:CustomSearchControl/>
     ///
     /// </summary>
-    public class CustomTab : UserControl
+    public class CustomSearchControl : Control
     {
-        static CustomTab()
+        static CustomSearchControl()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(CustomTab), new FrameworkPropertyMetadata(typeof(CustomTab)));
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(CustomSearchControl), new FrameworkPropertyMetadata(typeof(CustomSearchControl)));
         }
     }
 }

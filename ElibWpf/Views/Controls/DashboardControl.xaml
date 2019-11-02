@@ -1,44 +1,46 @@
-﻿<UserControl x:Class="ElibWpf.Views.Controls.DashboardControl"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
-             xmlns:ControlViews="clr-namespace:ElibWpf.Views.Controls"
-             xmlns:ControlViewModels="clr-namespace:ElibWpf.ViewModels.Controls"
-             xmlns:WindowViews="clr-namespace:ElibWpf.Views.Windows"
-             xmlns:WindowViewModels="clr-namespace:ElibWpf.ViewModels.Windows"
-             mc:Ignorable="d"
-             d:DesignHeight="450" d:DesignWidth="800">
+﻿<UserControl
+    x:Class="ElibWpf.Views.Controls.DashboardControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Components="clr-namespace:ElibWpf.Components"
+    xmlns:ControlViewModels="clr-namespace:ElibWpf.ViewModels.Controls"
+    xmlns:ControlViews="clr-namespace:ElibWpf.Views.Controls"
+    xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:WindowViewModels="clr-namespace:ElibWpf.ViewModels.Windows"
+    xmlns:WindowViews="clr-namespace:ElibWpf.Views.Windows"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
     <Grid Background="#222222" MouseLeftButtonDown="MoveWindow">
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        <MetroControls:MetroAnimatedSingleRowTabControl
+        <Components:TabControlEx
             Grid.Row="0"
             Grid.Column="0"
-            Margin="0,20,0,0"
+            Margin="0"
             MetroControls:TabControlHelper.Transition="Normal"
             DisplayMemberPath="Caption"
             ItemsSource="{Binding Pages, UpdateSourceTrigger=PropertyChanged}"
-            SelectedIndex="0"
-            Style="{StaticResource DashboardControlStyle}"
-            >
+            SelectedItem="{Binding SelectedPage, UpdateSourceTrigger=PropertyChanged}"
+            Style="{StaticResource TabControlExStyle}">
             <TabControl.Resources>
-                <DataTemplate DataType="{x:Type ControlViewModels:BooksViewModel}">
-                    <ControlViews:BooksControl />
+                <DataTemplate DataType="{x:Type ControlViewModels:BooksTabViewModel}">
+                    <ControlViews:BooksTabControl />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type ControlViewModels:QuotesViewModel}">
-                    <ControlViews:QuotesControl />
+                <DataTemplate DataType="{x:Type ControlViewModels:QuotesTabViewModel}">
+                    <ControlViews:QuotesTabControl />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type ControlViewModels:SettingsViewModel}">
-                    <ControlViews:SettingsControl />
+                <DataTemplate DataType="{x:Type ControlViewModels:SettingsTabViewModel}">
+                    <ControlViews:SettingsTabControl />
                 </DataTemplate>
             </TabControl.Resources>
-        </MetroControls:MetroAnimatedSingleRowTabControl>
+        </Components:TabControlEx>
 
     </Grid>
 </UserControl>

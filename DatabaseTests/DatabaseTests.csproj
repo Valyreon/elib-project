@@ -68,6 +68,7 @@
     <Reference Include="System.Data.SQLite.Linq, Version=1.0.111.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Data.SQLite.Linq.1.0.111.0\lib\net46\System.Data.SQLite.Linq.dll</HintPath>
     </Reference>
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Tests.cs" />
@@ -88,6 +89,10 @@
     <ProjectReference Include="..\Domain\Domain.csproj">
       <Project>{1A7E4187-0A14-4B7F-BA7E-A5E618C0BFC8}</Project>
       <Name>Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EbookTools\EbookTools.csproj">
+      <Project>{E3621A3E-7F43-4150-9689-9B7C43040688}</Project>
+      <Name>EbookTools</Name>
     </ProjectReference>
     <ProjectReference Include="..\Models\Models.csproj">
       <Project>{A35ECB0D-7185-4C6B-82A4-F2A70258F0B5}</Project>

@@ -1,4 +1,5 @@
 ﻿using Domain;
+using System;
 using System.Data.Entity;
 using System.Data.SQLite;
 
@@ -45,6 +46,11 @@ namespace DataLayer
             modelBuilder.Entity<UserCollection>().HasIndex(x => x.Tag).IsUnique();
         }
 
+        public void Vacuum()
+        {
+            this.Database.ExecuteSqlCommand(TransactionalBehavior.DoNotEnsureTransaction, "VACUUM;"); // this solves the db size problem
+        }
+
         public void TruncateDatabase()
         {
             this.Database.ExecuteSqlCommand("DELETE FROM [AuthorBooks]");
@@ -55,7 +61,7 @@ namespace DataLayer
             this.Database.ExecuteSqlCommand("DELETE FROM [Series]");
             this.Database.ExecuteSqlCommand("DELETE FROM [UserCollectionBooks]");
             this.Database.ExecuteSqlCommand("DELETE FROM [UserCollections]");
-            this.Database.ExecuteSqlCommand(TransactionalBehavior.DoNotEnsureTransaction, "VACUUM;"); // this solves the db size problem
+            this.Vacuum();
         }
     }
 }

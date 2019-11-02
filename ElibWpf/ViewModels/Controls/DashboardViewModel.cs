@@ -12,17 +12,25 @@ namespace ElibWpf.ViewModels.Controls
             private set { Set(() => Pages, ref _pages, value); }
         }
 
+        private IPageViewModel selectedPage;
+        public IPageViewModel SelectedPage
+        {
+            get => selectedPage;
+            set => Set(ref selectedPage, value);
+        }
+
         public DashboardViewModel()
         {
-            var books = new BooksViewModel();
-            var quotes = new QuotesViewModel();
-            var settings = new SettingsViewModel();
+            var books = new BooksTabViewModel();
+            var quotes = new QuotesTabViewModel();
+            var settings = new SettingsTabViewModel();
             Pages = new ObservableCollection<IPageViewModel>
             {
                 books,
                 quotes,
                 settings
             };
+            SelectedPage = Pages[0];
         }
     }
 }

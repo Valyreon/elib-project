@@ -5,9 +5,9 @@ namespace ElibWpf.Views.Controls
     /// <summary>
     /// Interaction logic for SettingsControl.xaml
     /// </summary>
-    public partial class SettingsControl : UserControl
+    public partial class SettingsTabControl : UserControl
     {
-        public SettingsControl()
+        public SettingsTabControl()
         {
             InitializeComponent();
         }

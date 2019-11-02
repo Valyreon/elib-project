@@ -1,4 +1,6 @@
-﻿using System.Threading;
+﻿using DataLayer;
+using Models;
+using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -9,6 +11,8 @@ namespace ElibWpf
     /// </summary>
     public partial class App : Application
     {
+        public static ElibContext Database = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
+
         private Dispatcher splashScreenDispacher;
 
         private void OnStartup(object sender, StartupEventArgs e)
@@ -21,6 +25,11 @@ namespace ElibWpf
                     splashScreen.Show();
                     Dispatcher.Run();
                 });
+        }
+
+        private void OnExit(object sender, ExitEventArgs e)
+        {
+            Database.Vacuum();
         }
     }
 }

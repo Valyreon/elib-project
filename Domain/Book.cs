@@ -20,11 +20,18 @@ namespace Domain
 
         public decimal? NumberInSeries { get; set; }
         public byte[] Cover { get; set; }
-        public bool? IsRead { get; set; }
+        public bool IsRead { get; set; } = false;
         public int? WhenRead { get; set; }
+        public bool IsFavorite { get; set; } = false;
+        public decimal PercentageRead { get; set; } = 0;
         public ICollection<Author> Authors { get; set; }
         public ICollection<EFile> Files { get; set; }
         public ICollection<Quote> Quotes { get; set; }
         public ICollection<UserCollection> UserCollections { get; set; }
+
+        public string SeriesInfo
+        {
+            get => $"{Series.Name} {((NumberInSeries!=null)?($"#{NumberInSeries}"):(""))}";
+        }
     }
 }

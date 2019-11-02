@@ -5,9 +5,9 @@ namespace ElibWpf.Views.Controls
     /// <summary>
     /// Interaction logic for QuotesControl.xaml
     /// </summary>
-    public partial class QuotesControl : UserControl
+    public partial class QuotesTabControl : UserControl
     {
-        public QuotesControl()
+        public QuotesTabControl()
         {
             InitializeComponent();
         }
