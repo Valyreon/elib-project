@@ -27,6 +27,7 @@ namespace DataLayer
                 true)
         {
             DbConfiguration.SetConfiguration(new SQLiteConfiguration());
+            this.Configuration.LazyLoadingEnabled = false;
             Database.ExecuteSqlCommand("PRAGMA foreign_keys = ON");
         }
 

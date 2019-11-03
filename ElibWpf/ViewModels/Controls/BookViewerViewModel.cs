@@ -57,6 +57,8 @@ namespace ElibWpf.ViewModels.Controls
         private async void LoadMore()
         {
             var bookList = await Task.Run(() => App.Database.Books.Include("Authors").Include("Series").Include("UserCollections").Where(DefaultCondition).AsQueryable().ToPagedList(nextPage++, 30));
+            if (bookList[0].Authors.First().Books != null)
+                throw new NullReferenceException();
             if(Books.Count < bookList.TotalCount)
             {
                 foreach (var item in bookList)

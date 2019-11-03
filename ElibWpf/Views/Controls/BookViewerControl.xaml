@@ -124,6 +124,7 @@
             <ItemsControl
                 Grid.Row="1"
                 Margin="15,0,15,0"
+                Padding="0,5,0,0"
                 VerticalAlignment="Top"
                 ItemsSource="{Binding Books, Mode=OneTime, IsAsync=True}"
                 ScrollViewer.CanContentScroll="True"
@@ -139,90 +140,11 @@
                 </ItemsControl.ContextMenu>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel
-                            x:Name="BookContainer"
-                            Margin="15,15,15,15"
-                            HorizontalAlignment="Left"
-                            Opacity="0"
-                            Orientation="Vertical"
-                            RenderOptions.BitmapScalingMode="HighQuality"
-                            RenderOptions.ClearTypeHint="Enabled"
-                            TextOptions.TextRenderingMode="ClearType">
-                            <StackPanel.ContextMenu>
-                                <ContextMenu>
-                                    <MenuItem Header="Book item" />
-                                    <MenuItem Header="Menu item 2" />
-                                    <Separator />
-                                    <MenuItem Header="Menu item 3" />
-                                </ContextMenu>
-                            </StackPanel.ContextMenu>
-                            <StackPanel.Style>
-                                <Style TargetType="StackPanel">
-                                    <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Cursor" Value="Hand" />
-                                        </Trigger>
-                                        <EventTrigger RoutedEvent="Loaded">
-                                            <BeginStoryboard>
-                                                <Storyboard>
-                                                    <DoubleAnimation
-                                                        Storyboard.TargetProperty="Opacity"
-                                                        To="1"
-                                                        Duration="0:0:0.4" />
-                                                </Storyboard>
-                                            </BeginStoryboard>
-                                        </EventTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </StackPanel.Style>
-                            <Border BorderBrush="LightGray" BorderThickness="1">
-                                <MetroControls:Tile
-                                    x:Name="TheTile"
-                                    Background="GhostWhite"
-                                    CommandParameter="{Binding Mode=OneTime}"
-                                    Style="{StaticResource LargeTileStyle}">
-                                    <Grid>
-                                        <Image
-                                            x:Name="BackgroundImage"
-                                            HorizontalAlignment="Center"
-                                            VerticalAlignment="Center"
-                                            Panel.ZIndex="10"
-                                            Source="{Binding Cover}"
-                                            Stretch="Fill" />
-                                        <Image
-                                            HorizontalAlignment="Center"
-                                            VerticalAlignment="Center"
-                                            Stretch="Fill">
-                                            <Image.Source>
-                                                <BitmapImage DecodePixelWidth="200" UriSource="/Images/book.png" />
-                                            </Image.Source>
-                                        </Image>
-                                    </Grid>
-                                </MetroControls:Tile>
-                            </Border>
-                            <TextBlock
-                                Name="Title"
-                                Width="175"
-                                HorizontalAlignment="Left"
-                                FontSize="14"
-                                Text="{Binding Name}"
-                                TextOptions.TextHintingMode="Fixed"
-                                TextTrimming="CharacterEllipsis" />
-                            <TextBlock
-                                Width="175"
-                                HorizontalAlignment="Left"
-                                FontSize="12"
-                                Foreground="Gray"
-                                Text="{Binding Authors, Converter={StaticResource AuthorsToStringConverter}}"
-                                TextOptions.TextHintingMode="Fixed" />
-                            <TextBlock
-                                Width="175"
-                                HorizontalAlignment="Left"
-                                FontSize="12"
-                                Foreground="Gray"
-                                Text="{Binding SeriesInfo}"
-                                TextOptions.TextHintingMode="Fixed" />
-                        </StackPanel>
+                        <Components:BookTile
+                            Title="{Binding Name}"
+                            Authors="{Binding Authors, Converter={StaticResource AuthorsToStringConverter}}"
+                            Cover="{Binding Cover}"
+                            SeriesInfo="{Binding SeriesInfo}" />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
                 <ItemsControl.Template>
@@ -238,7 +160,7 @@
                                 Padding="{TemplateBinding Control.Padding}"
                                 AttachedProperties:ScrollViewerExtensions.ScrollToBottom="{Binding LoadMoreCommand}"
                                 FocusVisualStyle="{x:Null}"
-                                Focusable="True"
+                                Focusable="False"
                                 VerticalScrollBarVisibility="Auto">
                                 <ItemsPresenter SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
                             </ScrollViewer>

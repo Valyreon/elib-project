@@ -120,7 +120,7 @@
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="Components:BookTile">
+                <ControlTemplate TargetType="{x:Type Components:BookTile}">
                     <StackPanel
                         x:Name="BookContainer"
                         Margin="15,15,15,15"
@@ -139,7 +139,10 @@
                                 </Style.Triggers>
                             </Style>
                         </StackPanel.Style>
-                        <Border BorderBrush="LightGray" BorderThickness="1">
+                        <Border
+                            x:Name="TileBorder"
+                            BorderBrush="LightGray"
+                            BorderThickness="1">
                             <MetroControls:Tile
                                 x:Name="TheTile"
                                 Width="164"
@@ -151,17 +154,15 @@
                                         x:Name="BackgroundImage"
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
-                                        Panel.ZIndex="10"
+                                        Panel.ZIndex="100"
                                         Source="{Binding Cover}"
                                         Stretch="Fill" />
                                     <Image
+                                        x:Name="PlaceholderImage"
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
-                                        Stretch="Fill">
-                                        <Image.Source>
-                                            <BitmapImage DecodePixelWidth="200" UriSource="/Images/book.png" />
-                                        </Image.Source>
-                                    </Image>
+                                        Source="pack://application:,,,/ElibWpf;component/Images/book.png"
+                                        Stretch="Fill" />
                                 </Grid>
                             </MetroControls:Tile>
                         </Border>
@@ -170,7 +171,8 @@
                             Width="175"
                             HorizontalAlignment="Left"
                             FontSize="14"
-                            Text="{Binding Name}"
+                            Foreground="Black"
+                            Text="{Binding Title}"
                             TextOptions.TextHintingMode="Fixed"
                             TextTrimming="CharacterEllipsis" />
                         <TextBlock
@@ -178,7 +180,7 @@
                             HorizontalAlignment="Left"
                             FontSize="12"
                             Foreground="Gray"
-                            Text="{Binding Authors, Converter={StaticResource AuthorsToStringConverter}}"
+                            Text="{Binding Authors}"
                             TextOptions.TextHintingMode="Fixed" />
                         <TextBlock
                             Width="175"
@@ -188,6 +190,19 @@
                             Text="{Binding SeriesInfo}"
                             TextOptions.TextHintingMode="Fixed" />
                     </StackPanel>
+                    <ControlTemplate.Triggers>
+                        <EventTrigger RoutedEvent="Loaded">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation
+                                        Storyboard.TargetName="BookContainer"
+                                        Storyboard.TargetProperty="Opacity"
+                                        To="1"
+                                        Duration="0:0:0.8" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

@@ -1,6 +1,5 @@
 ﻿using Domain;
 using ElibWpf.BindingItems;
-using ElibWpf.CustomComponents;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using System.Collections.Generic;
