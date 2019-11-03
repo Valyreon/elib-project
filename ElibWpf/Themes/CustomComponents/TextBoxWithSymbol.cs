@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace ElibWpf.Components
+namespace ElibWpf.CustomComponents
 {
     public class TextBoxWithSymbol : TextBox
     {

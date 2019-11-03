@@ -136,12 +136,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AttachedProperties\ScrollViewerExtensions.cs" />
-    <Compile Include="Components\BookTile.cs" />
-    <Compile Include="Components\SymbolButton.cs" />
-    <Compile Include="Components\PaneMainItem.cs" />
-    <Compile Include="Components\TabControlEx.cs" />
-    <Compile Include="Components\TextBoxWithSymbol.cs" />
-    <Compile Include="Components\UI.cs" />
+    <Compile Include="Themes\CustomComponents\BookTile.cs" />
+    <Compile Include="Themes\CustomComponents\SymbolButton.cs" />
+    <Compile Include="BindingItems\PaneMainItem.cs" />
+    <Compile Include="Themes\CustomComponents\TabControlWithCache.cs" />
+    <Compile Include="Themes\CustomComponents\TextBoxWithSymbol.cs" />
+    <Compile Include="AttachedProperties\UI.cs" />
     <Compile Include="Converters\AuthorsToStringConverter.cs" />
     <Compile Include="Converters\BoolToInverseBoolConverter.cs" />
     <Compile Include="Converters\BoolToInverseVisibilityConverter.cs" />
@@ -182,7 +182,11 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Components\TabControl.xaml">
+    <Page Include="Resources\DashboardTabControlStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\CustomComponents\TabControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -309,6 +313,7 @@
     <Content Include="Content\font-awesome.min.css" />
     <Content Include="fonts\fontawesome-webfont.svg" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

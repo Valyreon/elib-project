@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ControlViewModels="clr-namespace:ElibWpf.ViewModels.Controls"
     xmlns:ControlViews="clr-namespace:ElibWpf.Views.Controls"
-    xmlns:Custom="clr-namespace:ElibWpf.Components"
+    xmlns:Custom="clr-namespace:ElibWpf.CustomComponents"
     xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:WindowViewModels="clr-namespace:ElibWpf.ViewModels.Windows"
     xmlns:WindowViews="clr-namespace:ElibWpf.Views.Windows"
@@ -102,7 +102,16 @@
             <ColumnDefinition Width="230" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        <Grid>
+        <Border
+            Grid.Column="0"
+            Panel.ZIndex="10"
+            BorderThickness="0">
+            <Border.Effect>
+                <DropShadowEffect
+                    BlurRadius="5"
+                    Direction="0"
+                    Opacity="0.4" />
+            </Border.Effect>
             <Grid Background="{StaticResource LighterBackgroundColorBrush}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
@@ -197,7 +206,7 @@
                     </ScrollViewer>
                 </Grid>
             </Grid>
-        </Grid>
+        </Border>
         <Grid Grid.Column="1" Background="GhostWhite">
             <ContentControl Content="{Binding CurrentViewer}" />
         </Grid>

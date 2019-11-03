@@ -4,14 +4,14 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 
-namespace ElibWpf.Components
+namespace ElibWpf.CustomComponents
 {
     [TemplatePart(Name = "PART_ItemsHolder", Type = typeof(Panel))]
-    public class TabControlEx : TabControl
+    public class TabControlWithCache : TabControl
     {
         private Panel ItemsHolderPanel = null;
 
-        public TabControlEx()
+        public TabControlWithCache()
             : base()
         {
             // This is necessary so that we get the initial databound selected item

@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Effects;
 
-namespace ElibWpf.Components
+namespace ElibWpf.CustomComponents
 {
     public static class UI
     {

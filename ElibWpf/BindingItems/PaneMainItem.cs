@@ -2,7 +2,7 @@
 using ElibWpf.ViewModels.Controls;
 using System;
 
-namespace ElibWpf.Components
+namespace ElibWpf.BindingItems
 {
     public class PaneMainItem
     {

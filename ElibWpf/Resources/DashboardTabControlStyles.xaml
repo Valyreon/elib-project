@@ -1,9 +1,7 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
-    xmlns:behaviours="http://metro.mahapps.com/winfx/xaml/shared"
-    xmlns:local="clr-namespace:ElibWpf.Components">
+    xmlns:Components="clr-namespace:ElibWpf.CustomComponents">
     <Style x:Key="DashboardTabItemStyle" TargetType="{x:Type TabItem}">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
@@ -73,8 +71,7 @@
         </Setter>
     </Style>
 
-
-    <Style x:Key="TabControlExStyle" TargetType="{x:Type local:TabControlEx}">
+    <Style x:Key="DashboardTabControlStyle" TargetType="{x:Type Components:TabControlWithCache}">
         <Setter Property="Background" Value="{StaticResource TabItemPanelBackgroundBrush}" />
         <Setter Property="TabStripPlacement" Value="Top" />
         <Setter Property="BorderThickness" Value="0" />

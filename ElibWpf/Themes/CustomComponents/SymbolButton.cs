@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using FontAwesome.WPF;
 
-namespace ElibWpf.Components
+namespace ElibWpf.CustomComponents
 {
     public class SymbolButton : Button
     {
