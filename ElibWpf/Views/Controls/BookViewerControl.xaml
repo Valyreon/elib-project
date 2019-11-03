@@ -2,6 +2,7 @@
     x:Class="ElibWpf.Views.Controls.BookViewerControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:AttachedProperties="clr-namespace:ElibWpf.AttachedProperties"
     xmlns:Components="clr-namespace:ElibWpf.Components"
     xmlns:Converters="clr-namespace:ElibWpf.Converters"
     xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
@@ -13,6 +14,12 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadMoreCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -32,6 +39,7 @@
             </Grid.RowDefinitions>
             <Border
                 Grid.Row="0"
+                Panel.ZIndex="20"
                 Background="GhostWhite"
                 BorderThickness="0">
                 <Border.Effect>
@@ -132,8 +140,10 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <StackPanel
+                            x:Name="BookContainer"
                             Margin="15,15,15,15"
                             HorizontalAlignment="Left"
+                            Opacity="0"
                             Orientation="Vertical"
                             RenderOptions.BitmapScalingMode="HighQuality"
                             RenderOptions.ClearTypeHint="Enabled"
@@ -152,11 +162,22 @@
                                         <Trigger Property="IsMouseOver" Value="True">
                                             <Setter Property="Cursor" Value="Hand" />
                                         </Trigger>
+                                        <EventTrigger RoutedEvent="Loaded">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation
+                                                        Storyboard.TargetProperty="Opacity"
+                                                        To="1"
+                                                        Duration="0:0:0.4" />
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </StackPanel.Style>
                             <Border BorderBrush="LightGray" BorderThickness="1">
                                 <MetroControls:Tile
+                                    x:Name="TheTile"
                                     Background="GhostWhite"
                                     CommandParameter="{Binding Mode=OneTime}"
                                     Style="{StaticResource LargeTileStyle}">
@@ -215,6 +236,7 @@
                             <ScrollViewer
                                 x:Name="MovieScrollViewer"
                                 Padding="{TemplateBinding Control.Padding}"
+                                AttachedProperties:ScrollViewerExtensions.ScrollToBottom="{Binding LoadMoreCommand}"
                                 FocusVisualStyle="{x:Null}"
                                 Focusable="True"
                                 VerticalScrollBarVisibility="Auto">

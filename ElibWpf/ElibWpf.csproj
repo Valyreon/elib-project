@@ -135,6 +135,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AttachedProperties\ScrollViewerExtensions.cs" />
+    <Compile Include="Components\BookTile.cs" />
     <Compile Include="Components\SymbolButton.cs" />
     <Compile Include="Components\PaneMainItem.cs" />
     <Compile Include="Components\TabControlEx.cs" />
@@ -144,6 +146,9 @@
     <Compile Include="Converters\BoolToInverseBoolConverter.cs" />
     <Compile Include="Converters\BoolToInverseVisibilityConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
+    <Compile Include="Paging\IPagedList.cs" />
+    <Compile Include="Paging\PagedList.cs" />
+    <Compile Include="Paging\PagedListExtensions.cs" />
     <Compile Include="ViewModels\Controls\BooksTabViewModel.cs" />
     <Compile Include="ViewModels\Controls\BookViewerViewModel.cs" />
     <Compile Include="ViewModels\Controls\DashboardViewModel.cs" />

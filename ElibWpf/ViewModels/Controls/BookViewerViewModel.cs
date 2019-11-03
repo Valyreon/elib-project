@@ -4,16 +4,18 @@ using GalaSoft.MvvmLight.Command;
 using Models.Options;
 using System;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using ElibWpf.Paging;
+using System.Linq;
+using System.Threading;
 
 namespace ElibWpf.ViewModels.Controls
 {
     public class BookViewerViewModel : ViewModelBase, ISearchable
     {
         public readonly Func<Book, bool> DefaultCondition;
+        private int nextPage = 1;
 
         private string caption;
         public string Caption
@@ -42,5 +44,26 @@ namespace ElibWpf.ViewModels.Controls
             get => Books.Count.ToString();
         }
 
+        private void Refresh()
+        {
+            nextPage = 1;
+            Books.Clear();
+            LoadMore();
+        }
+
+        public ICommand RefreshCommand { get => new RelayCommand(this.Refresh); }
+        public ICommand LoadMoreCommand { get => new RelayCommand(this.LoadMore); }
+
+        private async void LoadMore()
+        {
+            var bookList = await Task.Run(() => App.Database.Books.Include("Authors").Include("Series").Include("UserCollections").Where(DefaultCondition).AsQueryable().ToPagedList(nextPage++, 30));
+            if(Books.Count < bookList.TotalCount)
+            {
+                foreach (var item in bookList)
+                {
+                    App.Current.Dispatcher.Invoke(() => Books.Add(item));
+                };
+            }
+        }
     }
 }

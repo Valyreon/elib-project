@@ -21,4 +21,9 @@
     <DataTemplate DataType="{x:Type ControlViewModels:BookViewerViewModel}">
         <ControlViews:BookViewerControl />
     </DataTemplate>
+
+    <Style TargetType="ScrollBar">
+        <Setter Property="Margin" Value="0,15,0,15" />
+        <Setter Property="Foreground" Value="Black" />
+    </Style>
 </ResourceDictionary>

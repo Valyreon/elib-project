@@ -114,4 +114,81 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style TargetType="{x:Type Components:BookTile}">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Components:BookTile">
+                    <StackPanel
+                        x:Name="BookContainer"
+                        Margin="15,15,15,15"
+                        HorizontalAlignment="Left"
+                        Opacity="0"
+                        Orientation="Vertical"
+                        RenderOptions.BitmapScalingMode="HighQuality"
+                        RenderOptions.ClearTypeHint="Enabled"
+                        TextOptions.TextRenderingMode="ClearType">
+                        <StackPanel.Style>
+                            <Style TargetType="StackPanel">
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Cursor" Value="Hand" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
+                        <Border BorderBrush="LightGray" BorderThickness="1">
+                            <MetroControls:Tile
+                                x:Name="TheTile"
+                                Width="164"
+                                Height="262"
+                                Background="GhostWhite"
+                                TitleFontSize="14">
+                                <Grid>
+                                    <Image
+                                        x:Name="BackgroundImage"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Panel.ZIndex="10"
+                                        Source="{Binding Cover}"
+                                        Stretch="Fill" />
+                                    <Image
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Stretch="Fill">
+                                        <Image.Source>
+                                            <BitmapImage DecodePixelWidth="200" UriSource="/Images/book.png" />
+                                        </Image.Source>
+                                    </Image>
+                                </Grid>
+                            </MetroControls:Tile>
+                        </Border>
+                        <TextBlock
+                            Name="Title"
+                            Width="175"
+                            HorizontalAlignment="Left"
+                            FontSize="14"
+                            Text="{Binding Name}"
+                            TextOptions.TextHintingMode="Fixed"
+                            TextTrimming="CharacterEllipsis" />
+                        <TextBlock
+                            Width="175"
+                            HorizontalAlignment="Left"
+                            FontSize="12"
+                            Foreground="Gray"
+                            Text="{Binding Authors, Converter={StaticResource AuthorsToStringConverter}}"
+                            TextOptions.TextHintingMode="Fixed" />
+                        <TextBlock
+                            Width="175"
+                            HorizontalAlignment="Left"
+                            FontSize="12"
+                            Foreground="Gray"
+                            Text="{Binding SeriesInfo}"
+                            TextOptions.TextHintingMode="Fixed" />
+                    </StackPanel>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>

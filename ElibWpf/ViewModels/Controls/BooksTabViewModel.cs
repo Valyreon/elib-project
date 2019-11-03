@@ -2,11 +2,9 @@
 using ElibWpf.Components;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace ElibWpf.ViewModels.Controls
@@ -14,8 +12,6 @@ namespace ElibWpf.ViewModels.Controls
     public class BooksTabViewModel : ViewModelBase, IPageViewModel
     {
         public ObservableCollection<PaneMainItem> MainPaneItems { get; set; }
-
-        private List<Book> allBooks;
 
         private PaneMainItem selectedMainPaneItem;
         public PaneMainItem SelectedMainPaneItem
@@ -28,10 +24,10 @@ namespace ElibWpf.ViewModels.Controls
         {
             MainPaneItems = new ObservableCollection<PaneMainItem>
             {
-                new PaneMainItem("All", "Book", new BookViewerViewModel($"All Books", (Book x) => true)),
-                new PaneMainItem("Favorite", "Star", new BookViewerViewModel($"Favorite Books", (Book x) => x.IsFavorite)),
-                new PaneMainItem("Read", "Check", new BookViewerViewModel($"Read Books", (Book x) => x.IsRead)),
-                new PaneMainItem("Not Read", "TimesCircle", new BookViewerViewModel($"Unread Books", (Book x) => !x.IsRead))
+                new PaneMainItem("All", "Book", "All Books", (Book x) => true),
+                new PaneMainItem("Favorite", "Star", "Favorite Books", (Book x) => x.IsFavorite),
+                new PaneMainItem("Read", "Check", "Read Books", (Book x) => x.IsRead),
+                new PaneMainItem("Not Read", "TimesCircle", "Not Read Books", (Book x) => !x.IsRead)
             };
             SelectedMainPaneItem = MainPaneItems[0];
             PaneSelectionChanged();
@@ -56,12 +52,7 @@ namespace ElibWpf.ViewModels.Controls
                 Set(ref selectedCollection, value);
                 if (selectedCollection != null)
                 {
-                    var newViewModel = new BookViewerViewModel($"Collection {selectedCollection.Tag}", (Book x) => x.UserCollections.Where(c => c.Id == SelectedCollection.Id).Count() > 0);
-                    CurrentViewer = newViewModel;
-                    foreach (var book in allBooks.Where(newViewModel.DefaultCondition))
-                    {
-                        App.Current.Dispatcher.Invoke(() => newViewModel.Books.Add(book));
-                    }
+                    CurrentViewer = new BookViewerViewModel($"Collection {selectedCollection.Tag}", (Book x) => x.UserCollections.Where(c => c.Id == SelectedCollection.Id).Count() > 0);
                 }
             }
         }
@@ -79,23 +70,8 @@ namespace ElibWpf.ViewModels.Controls
         {
             if (SelectedMainPaneItem != null)
             {
-                CurrentViewer = SelectedMainPaneItem.ViewModel;
+                CurrentViewer = new BookViewerViewModel(SelectedMainPaneItem.ViewerCaption, SelectedMainPaneItem.Condition);
             }
-        }
-
-        public ICommand OnPaneLoadedCommand { get => new RelayCommand(this.Refresh); }
-
-        private async void Refresh()
-        {
-            allBooks = await Task.Run(() => App.Database.Books.Include("Authors").Include("Series").Include("UserCollections").ToList());
-            foreach(var item in MainPaneItems)
-            {
-                App.Current.Dispatcher.Invoke(() => item.ViewModel.Books.Clear());
-                foreach(var book in allBooks.Where(item.ViewModel.DefaultCondition))
-                {
-                    App.Current.Dispatcher.Invoke(() => item.ViewModel.Books.Add(book));
-                }
-            };
         }
     }
 }
