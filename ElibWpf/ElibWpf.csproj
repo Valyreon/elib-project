@@ -136,6 +136,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AttachedProperties\ScrollViewerExtensions.cs" />
+    <Compile Include="Converters\ImageConverter.cs" />
     <Compile Include="Themes\CustomComponents\BookTile.cs" />
     <Compile Include="Themes\CustomComponents\SymbolButton.cs" />
     <Compile Include="BindingItems\PaneMainItem.cs" />

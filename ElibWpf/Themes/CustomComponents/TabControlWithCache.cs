@@ -114,13 +114,15 @@ namespace ElibWpf.CustomComponents
                 return cp;
 
             // the actual child to be added.  cp.Tag is a reference to the TabItem
-            cp = new ContentPresenter();
-            cp.Content = (item is TabItem) ? (item as TabItem).Content : item;
-            cp.ContentTemplate = this.SelectedContentTemplate;
-            cp.ContentTemplateSelector = this.SelectedContentTemplateSelector;
-            cp.ContentStringFormat = this.SelectedContentStringFormat;
-            cp.Visibility = Visibility.Collapsed;
-            cp.Tag = (item is TabItem) ? item : (this.ItemContainerGenerator.ContainerFromItem(item));
+            cp = new ContentPresenter
+            {
+                Content = (item is TabItem) ? (item as TabItem).Content : item,
+                ContentTemplate = this.SelectedContentTemplate,
+                ContentTemplateSelector = this.SelectedContentTemplateSelector,
+                ContentStringFormat = this.SelectedContentStringFormat,
+                Visibility = Visibility.Collapsed,
+                Tag = (item is TabItem) ? item : (this.ItemContainerGenerator.ContainerFromItem(item))
+            };
             ItemsHolderPanel.Children.Add(cp);
             return cp;
         }
@@ -151,8 +153,7 @@ namespace ElibWpf.CustomComponents
             if (selectedItem == null)
                 return null;
 
-            TabItem item = selectedItem as TabItem;
-            if (item == null)
+            if (!(selectedItem is TabItem item))
                 item = base.ItemContainerGenerator.ContainerFromIndex(base.SelectedIndex) as TabItem;
 
             return item;
