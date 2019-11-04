@@ -1,5 +1,5 @@
 --
--- File generated with SQLiteStudio v3.2.1 on Tue Oct 29 19:57:33 2019
+-- File generated with SQLiteStudio v3.2.1 on Mon Nov 4 13:58:57 2019
 --
 -- Text encoding used: System
 --
@@ -37,7 +37,7 @@ CREATE TABLE BookFiles (
 -- Table: Books
 CREATE TABLE Books (
     Id             INTEGER       PRIMARY KEY AUTOINCREMENT,
-    Name           VARCHAR (100) NOT NULL,
+    Title          VARCHAR (100) NOT NULL,
     SeriesId       INTEGER       REFERENCES Series (Id),
     IsRead         BOOL          DEFAULT (false),
     Cover          BLOB,
@@ -82,6 +82,18 @@ CREATE TABLE UserCollections (
     Id  INTEGER      PRIMARY KEY AUTOINCREMENT,
     Tag VARCHAR (50) NOT NULL
                      UNIQUE
+);
+
+
+-- Index: Author_Book_BookId_Index
+CREATE INDEX Author_Book_BookId_Index ON AuthorBooks (
+    Book_Id
+);
+
+
+-- Index: User_Collection_BookId_Index
+CREATE INDEX User_Collection_BookId_Index ON UserCollectionBooks (
+    Book_Id
 );
 
 

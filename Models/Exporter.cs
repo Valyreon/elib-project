@@ -25,7 +25,7 @@ namespace Models
 
             // there can be more than one author
             int index = 1;
-            fileNameBuilder.Append($"{eFile.Book.Name}{((eFile.Book.SeriesId == null) ?(""):($"({eFile.Book.Series.Name} #{eFile.Book.NumberInSeries})"))} by {eFile.Book.Authors.ElementAt(0).Name}");
+            fileNameBuilder.Append($"{eFile.Book.Title}{((eFile.Book.SeriesId == null) ?(""):($"({eFile.Book.Series.Name} #{eFile.Book.NumberInSeries})"))} by {eFile.Book.Authors.ElementAt(0).Name}");
             while (index < eFile.Book.Authors.Count)
             {
                 if (index == eFile.Book.Authors.Count - 1)

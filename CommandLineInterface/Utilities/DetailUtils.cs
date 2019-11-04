@@ -33,7 +33,7 @@ namespace CommandLineInterface.Utilities
 
             StringBuilder stringBuilder = new StringBuilder(String.Format(formatString, "ID:", book_id));
 
-            stringBuilder.Append(String.Format(formatString, "Title:", book.Name));
+            stringBuilder.Append(String.Format(formatString, "Title:", book.Title));
 
             ICollection<Author> authors = book.Authors;
             ICollection<UserCollection> collections = book.UserCollections;
@@ -74,7 +74,7 @@ namespace CommandLineInterface.Utilities
             StringBuilder stringBuilder = new StringBuilder(string.Format(formatString, "Name:", author.Name));
 
             if (books != null)
-                stringBuilder.Append(string.Format(formatString, books.Count > 1 ? "Books:" : "Book:", string.Join(", ", books.Select(x => x.Name))));
+                stringBuilder.Append(string.Format(formatString, books.Count > 1 ? "Books:" : "Book:", string.Join(", ", books.Select(x => x.Title))));
 
             return stringBuilder.ToString();
         }
@@ -96,7 +96,7 @@ namespace CommandLineInterface.Utilities
             StringBuilder stringBuilder = new StringBuilder(string.Format(formatString, "Name:", collection.Tag));
 
             if (books != null)
-                stringBuilder.Append(string.Format(formatString, books.Count > 1 ? "Books:" : "Book:", string.Join(", ", books.Select(x => x.Name))));
+                stringBuilder.Append(string.Format(formatString, books.Count > 1 ? "Books:" : "Book:", string.Join(", ", books.Select(x => x.Title))));
 
             return stringBuilder.ToString();
         }
@@ -118,7 +118,7 @@ namespace CommandLineInterface.Utilities
             StringBuilder stringBuilder = new StringBuilder(string.Format(formatString, "Name:", series.Name));
 
             if (books != null)
-                stringBuilder.Append(string.Format(formatString, books.Count > 1 ? "Books:" : "Book:", string.Join(", ", books.Select(x => x.Name))));
+                stringBuilder.Append(string.Format(formatString, books.Count > 1 ? "Books:" : "Book:", string.Join(", ", books.Select(x => x.Title))));
 
             return stringBuilder.ToString();
         }

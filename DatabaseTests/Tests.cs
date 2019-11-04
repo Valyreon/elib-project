@@ -64,7 +64,7 @@ namespace DatabaseTests
             // Create new book object
             Book newBook = new Book
             {
-                Name = parsedBook.Title,
+                Title = parsedBook.Title,
                 Authors = new List<Author> { context.Authors.Where(au => au.Name.Equals("")).FirstOrDefault() ?? new Author() { Name = parsedBook.Author } },
                 Series = seriesName != null ? new BookSeries
                 {
@@ -179,7 +179,7 @@ namespace DatabaseTests
                                     var parsedBook = EbookParserFactory.Create(f).Parse();
                                     Book newBook = new Book
                                     {
-                                        Name = parsedBook.Title,
+                                        Title = parsedBook.Title,
                                         Authors = new List<Author> { context.Authors.Where(au => au.Name.Equals(parsedBook.Author)).FirstOrDefault() ?? new Author() { Name = parsedBook.Author } },
                                         Series = seriesName == null ? null : (context.Series.Where(x => x.Name == seriesName).FirstOrDefault() ?? new BookSeries { Name = seriesName }),
                                         Cover = parsedBook.Cover,

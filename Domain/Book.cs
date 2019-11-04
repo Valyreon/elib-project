@@ -11,7 +11,7 @@ namespace Domain
 
         [Required]
         [StringLength(100)]
-        public string Name { get; set; }
+        public string Title { get; set; }
 
         public int? SeriesId { get; set; }
 

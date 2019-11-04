@@ -343,7 +343,7 @@ namespace Cli
                         {
                             database.Entry(book).Collection(f => f.Authors).Load();
                             database.Entry(book).Collection(f => f.Files).Load();
-                            Console.WriteLine($"Id:{book.Id} {book.Name} by {(string.Join(", ", book.Authors.Select(x => x.Name)))}");
+                            Console.WriteLine($"Id:{book.Id} {book.Title} by {(string.Join(", ", book.Authors.Select(x => x.Name)))}");
                             exportFiles.UnionWith(book.Files);
                         }
 
@@ -383,7 +383,7 @@ namespace Cli
                         {
                             database.Entry(book).Collection(f => f.Authors).Load();
                             database.Entry(book).Collection(f => f.Files).Load();
-                            Console.WriteLine($"Id:{book.Id} {book.Name} by {(string.Join(", ", book.Authors.Select(x => x.Name)))}");
+                            Console.WriteLine($"Id:{book.Id} {book.Title} by {(string.Join(", ", book.Authors.Select(x => x.Name)))}");
                         }
 
                         Console.ForegroundColor = ConsoleColor.Red;

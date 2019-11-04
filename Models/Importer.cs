@@ -20,7 +20,7 @@ namespace Models
         {
             Book book = new Book()
             {
-                Name = bookName,
+                Title = bookName,
                 Authors = new List<Author> { database.Authors.Where(x => x.Name == authorName).FirstOrDefault() ?? new Author { Name = authorName } },
                 Files = new List<EFile>
                 {
@@ -39,7 +39,7 @@ namespace Models
         {
             Book book = new Book()
             {
-                Name = parsedBook.Title,
+                Title = parsedBook.Title,
                 Authors = new List<Author> { database.Authors.Where(x => x.Name == parsedBook.Author).FirstOrDefault() ?? new Author { Name = parsedBook.Author } },
                 Files = new List<EFile>
                 {

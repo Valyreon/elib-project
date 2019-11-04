@@ -141,7 +141,7 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Components:BookTile
-                            Title="{Binding Name}"
+                            Title="{Binding Title}"
                             Authors="{Binding Authors, Converter={StaticResource AuthorsToStringConverter}}"
                             Cover="{Binding Cover}"
                             SeriesInfo="{Binding SeriesInfo}" />
