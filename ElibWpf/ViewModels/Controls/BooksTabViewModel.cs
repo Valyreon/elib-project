@@ -2,9 +2,11 @@
 using ElibWpf.BindingItems;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 
 namespace ElibWpf.ViewModels.Controls
@@ -52,7 +54,10 @@ namespace ElibWpf.ViewModels.Controls
                 Set(ref selectedCollection, value);
                 if (selectedCollection != null)
                 {
-                    CurrentViewer = new BookViewerViewModel($"Collection {selectedCollection.Tag}", (Book x) => x.UserCollections.Where(c => c.Id == SelectedCollection.Id).Count() > 0);
+                    var newViewer = new BookViewerViewModel($"Collection {selectedCollection.Tag}", (Book x) => x.UserCollections.Where(c => c.Id == SelectedCollection.Id).Count() > 0);
+                    newViewer.RegisterEvents(this);
+                    CurrentViewer = newViewer;
+                    RaiseSelectionChangedEvent();
                 }
             }
         }
@@ -70,8 +75,19 @@ namespace ElibWpf.ViewModels.Controls
         {
             if (SelectedMainPaneItem != null)
             {
-                CurrentViewer = new BookViewerViewModel(SelectedMainPaneItem.ViewerCaption, SelectedMainPaneItem.Condition);
+                var newViewer = new BookViewerViewModel(SelectedMainPaneItem.ViewerCaption, SelectedMainPaneItem.Condition);
+                newViewer.RegisterEvents(this);
+                CurrentViewer = newViewer;
+                RaiseSelectionChangedEvent();
             }
+        }
+
+        public event Action SelectionChanged;
+
+        public void RaiseSelectionChangedEvent()
+        {
+            // Your logic
+            SelectionChanged?.Invoke();
         }
     }
 }

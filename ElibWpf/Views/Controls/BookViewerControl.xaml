@@ -159,6 +159,7 @@
                                 x:Name="MovieScrollViewer"
                                 Padding="{TemplateBinding Control.Padding}"
                                 AttachedProperties:ScrollViewerExtensions.ScrollToBottom="{Binding LoadMoreCommand}"
+                                AttachedProperties:ScrollViewerExtensions.VerticalOffset="{Binding ScrollVertical}"
                                 FocusVisualStyle="{x:Null}"
                                 Focusable="False"
                                 VerticalScrollBarVisibility="Auto">
