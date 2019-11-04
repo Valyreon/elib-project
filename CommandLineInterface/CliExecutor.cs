@@ -8,6 +8,7 @@ using Models.Options;
 using Models.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Migrations;
 using System.IO;
 using System.Linq;
 
@@ -47,7 +48,7 @@ namespace Cli
             do
             {
                 Console.Write("\n" + question + " " + (inverted ? "[y/N]" : "[Y/n]") + " ");
-                consoleKey = Console.ReadKey(false).Key;
+                consoleKey = Console.ReadKey(true).Key;
             } while (consoleKey != ConsoleKey.Y && consoleKey != ConsoleKey.N && consoleKey != ConsoleKey.Enter);
 
             Console.Write("\n");
@@ -333,7 +334,7 @@ namespace Cli
                         }
                         break;
                     case "export":
-                    case "e":
+                    case "ex":
                         ISet<EFile> exportFiles = new HashSet<EFile>();
 
                         Console.WriteLine("Selected books for export:");
@@ -397,194 +398,69 @@ namespace Cli
                         }
                         break;
 
-                    /*
-
-                    for (int i = 0; i < foundBooks.Count; i++)
-                    {
-                        Book book = new Book();
-                        ParsedBook newBook = foundBooks[i];
-
-                        Console.WriteLine($"{i+1}. {newBook.Title}");
-                        Console.Write($"Title[{newBook.Title}]*: ");
-
-                        book.name = GetNewOrDefaultInput(newBook.Title);
-
-                        Console.Write($"Author[{newBook.Author}]*: ");
-                        string authorName = GetNewOrDefaultInput(newBook.Author);
-
-                        Author author = database.FindAuthor(authorName);
-                        if (author == null)
-                            author = database.AddAuthorDB(new Author() { name = authorName }) ;
-
-                        Console.Write("Series: ");
-                        string seriesName = Console.ReadLine().Trim();
-                        if (seriesName != "")
+                    case "edit":
+                    case "ed":/*
+                        Console.WriteLine("Selected books for editing:");
+                        foreach (Book book in selectedBooks)
                         {
-                            int seriesNumber;
-                            do
-                            {
-                                Console.Write("Series number: ");
-                            } while (!Int32.TryParse(Console.ReadLine().Trim(), out seriesNumber));
-
-                            book.seriesNumber = seriesNumber;
+                            database.Entry(book).Reference(f => f.Series).Load();
+                            database.Entry(book).Collection(f => f.Authors).Load();
+                            Console.WriteLine($"Id:{book.Id} {book.Name} by {(string.Join(", ", book.Authors.Select(x => x.Name)))}");
                         }
 
-                        Console.WriteLine("Cover image: " + (newBook.Cover == null ? "[not found]" : "[found]") + " ");
-
-                        book.isRead = ConsoleQuestion("Read", true);
-
-                        Console.WriteLine($"Publisher: {newBook.Publisher}");
-
-                        book = database.AddOrUpdateBook(book);
-
-                        if (seriesName != "")
+                        if (ConsoleQuestion("Do you want to continue?", true))
                         {
-                            Series series = database.FindSeries(seriesName);
-
-                            if (series == null)
-                                series = new Series() { name = seriesName, author = author };
-
-                            series.BookValues.Add(book);
-
-                            database.AddOrUpdateSeries(series);
-                            book.series = series;
-                            database.AddOrUpdateBook(book);
-                        }
-                        book.FileValues.Add(database.AddFileDB(new Data.DomainModel.File() { book = book, fileBlob = System.IO.File.ReadAllBytes(fileList[i]), format = Path.GetExtension(fileList[i]) }));
-                        database.AddOrUpdateBook(book);
-
-                        database.AddBookAuthorLink(book, author);// TODO: Remove save changes
-                    }
-
-                    break;
-
-                case "metadata":
-                case "m":
-                    try
-                    {
-                        //Console.WriteLine(database.GetBookMetadata(Int64.Parse(consoleInput.Item2)).GetJson());
-                    }
-                    catch(Exception e)
-                    {
-                        Console.WriteLine("Invalid format");
-                    }
-                    break;
-
-                case "find":
-                case "f":
-                    Tuple<string, string> findInput = consoleInput.Item2.ToLower().Trim().SplitOnFirstBlank();
-
-                    string findType = findInput.Item1.ToLower();
-                    string findWhat = findInput.Item2;
-                    switch (findType)
-                    {
-                        case "book":
-                        case "b":
-                            IList<Book> books = database.FindBooks(findWhat);
-                            foreach (Book book in books)
+                            foreach (Book book in selectedBooks)
                             {
-                                Console.WriteLine("Book: " + book.name);
-                                Console.WriteLine("Authors:");
-                                foreach (Author author in database.GetBookAuthors(book))
-                                    Console.WriteLine("    " + author.name);
-                                Console.WriteLine();
-                            }
-                            break;
+                                Console.Write($"Title[{book.Name}]*: ");
+                                book.Name = GetNewOrDefaultInput(book.Name);
 
-                        case "author":
-                        case "a":
-                            IList<Author> authors = database.FindAuthors(findWhat);
-                            foreach (Author author in authors)
-                            {
-                                Console.WriteLine(author);
-                                Console.WriteLine("Books: ");
-                                foreach (Book book in database.GetAuthorBooks(author))
-                                    Console.WriteLine("    " + book.name);
-                                Console.WriteLine();
-                            }
-                            break;
+                                Console.Write($"Series[{book.Series?.Name}]: ");
+                                string seriesName = GetNewOrDefaultInput(book.Series?.Name);
+                                decimal? seriesNumber = null;
 
-                        default:
-                            Console.WriteLine("Find command was incorrect");
-                            break;
-                    }
-                    break;
+                                if (!string.IsNullOrEmpty(seriesName))
+                                {
+                                    decimal newNumber;
+                                    do
+                                    {
+                                        Console.Write("Series number: ");
+                                    } while (!decimal.TryParse(Console.ReadLine().Trim(), out newNumber));
 
-                case "view":
-                case "v":
-                    Tuple<string, string> viewInput = consoleInput.Item2.ToLower().Trim().SplitOnFirstBlank();
-                    switch(viewInput.Item1)
-                    {
-                        case "details":
-                        case "d":
-                            Console.Write(database.GetBookFromID(Int64.Parse(viewInput.Item2)).GetDetails()); // TODO: Error handling
-                            break;
+                                    seriesNumber = newNumber;
+                                }
 
-                        case "all":
-                        case "a":
-                            foreach (Book book in database.Books)
-                                Console.WriteLine(book);
-                            break;
+                                Console.Write($"Read[{book.IsRead}]: ");
 
-                        case "author":
-                        case "au":
-                            foreach (Author author in database.Authors)
-                                Console.WriteLine(author);
-                            break;
+                                string isReadInput = Console.ReadLine();
 
-                        case "collection":
-                        case "c":
-                            if(viewInput.Item2 == "")
-                                foreach (Collection collection in database.Collections)
-                                    Console.WriteLine(collection);
-                            else
                                 try
                                 {
-                                    Collection collection = database.GetCollectionFromID(Int64.Parse(viewInput.Item2));
-                                    if(collection != null)
-                                        Console.WriteLine(collection);
-                                    else
-                                        Console.WriteLine("Collection does not exit");
+                                    book.IsRead = bool.Parse(isReadInput);
                                 }
-                                catch (Exception e)
+                                catch (FormatException)
                                 {
-                                    Console.WriteLine("Invalid collection id");
-                                }
-                            break;
 
-                        case "series":
-                        case "s":
-                            if (viewInput.Item2 == "")
-                                foreach (Series series in database.Series)
-                                    Console.WriteLine(series.name);
-                            else
-                                try
-                                {
-                                    Series series = database.GetSeriesFromID(Int64.Parse(viewInput.Item2));
-                                    if (series != null)
-                                        Console.WriteLine(series);
-                                    else
-                                        Console.WriteLine("Series does not exit");
                                 }
-                                catch (Exception e)
-                                {
-                                    Console.WriteLine("Invalid series id");
-                                }
-                            break;
 
-                        default:
-                            Console.WriteLine("View command was incorrect");
-                            break;
-                    }
-                    */
+                                database.Books.AddOrUpdate(book);
+                                database.SaveChanges();
+
+                               // Console.Write($"Publisher[{book.Pu}]")
+                            }
+                        }*/
+                        break;
+
+                    case "exit":
+                        Console.WriteLine("Exiting...");
+                        database.SaveChanges();
+                        break;
 
                     default:
                         Console.WriteLine("Unknown command");
                         break;
                 }
             } while (command != "exit");
-
-            Console.WriteLine("Exiting...");
         }
 
         public void Dispose()

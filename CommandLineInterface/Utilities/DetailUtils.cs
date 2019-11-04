@@ -31,7 +31,9 @@ namespace CommandLineInterface.Utilities
 
             const string formatString = "{0, -12} {1}\n";
 
-            StringBuilder stringBuilder = new StringBuilder(String.Format(formatString, "Title:", book.Name));
+            StringBuilder stringBuilder = new StringBuilder(String.Format(formatString, "ID:", book_id));
+
+            stringBuilder.Append(String.Format(formatString, "Title:", book.Name));
 
             ICollection<Author> authors = book.Authors;
             ICollection<UserCollection> collections = book.UserCollections;
