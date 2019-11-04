@@ -156,7 +156,7 @@
     <Compile Include="ViewModels\IPageViewModel.cs" />
     <Compile Include="ViewModels\Controls\QuotesTabViewModel.cs" />
     <Compile Include="ViewModels\Controls\SettingsTabViewModel.cs" />
-    <Compile Include="ViewModels\ISearchable.cs" />
+    <Compile Include="ViewModels\ViewerViewModel.cs" />
     <Compile Include="ViewModels\Windows\TheWindowViewModel.cs" />
     <Compile Include="Views\Controls\BooksTabControl.xaml.cs">
       <DependentUpon>BooksTabControl.xaml</DependentUpon>

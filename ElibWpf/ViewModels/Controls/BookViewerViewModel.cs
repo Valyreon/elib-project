@@ -12,7 +12,7 @@ using System.Threading;
 
 namespace ElibWpf.ViewModels.Controls
 {
-    public class BookViewerViewModel : ViewModelBase, ISearchable
+    public class BookViewerViewModel : ViewerViewModel
     {
         public readonly Func<Book, bool> DefaultCondition;
         private int nextPage = 1;
@@ -36,46 +36,25 @@ namespace ElibWpf.ViewModels.Controls
             Caption = caption;
             this.DefaultCondition = defaultQuery;
             Books = new ObservableCollection<Book>();
-            Books.CollectionChanged += (a, b) => base.RaisePropertyChanged("CurrentNumberOfBooks");
-        }
-
-        public void RegisterEvents(BooksTabViewModel parentViewModel)
-        {
-            parentViewModel.SelectionChanged += this.ResetVerticalScroll;
         }
 
         public ObservableCollection<Book> Books { get; set; }
 
-        public void Search(string token, SearchOptions options = null)
+        private string numberOfBooks;
+        public string NumberOfBooks
         {
-            throw new NotImplementedException();
+            get => numberOfBooks;
+            set => Set(ref numberOfBooks, value);
         }
 
-        public void ResetVerticalScroll()
-        {
-            ScrollVertical = 0;
-        }
-
-        public string CurrentNumberOfBooks
-        {
-            get => Books.Count.ToString();
-        }
-
-        public ICommand RefreshCommand { get => new RelayCommand(this.Refresh); }
-
-        private void Refresh()
-        {
-            nextPage = 1;
-            ResetVerticalScroll();
-            Books.Clear();
-            LoadMore();
-        }
+        public ICommand RefreshCommand { get => new RelayCommand(this.RaiseRefreshEvent); }
 
         public ICommand LoadMoreCommand { get => new RelayCommand(this.LoadMore); }
 
         private async void LoadMore()
         {
             var bookList = await Task.Run(() => App.Database.Books.Include("Authors").Include("Series").Include("UserCollections").Where(DefaultCondition).AsQueryable().ToPagedList(nextPage++, 30));
+            NumberOfBooks = bookList.TotalCount.ToString();
             if(Books.Count < bookList.TotalCount)
             {
                 foreach (var item in bookList)
@@ -83,6 +62,11 @@ namespace ElibWpf.ViewModels.Controls
                     App.Current.Dispatcher.Invoke(() => Books.Add(item));
                 };
             }
+        }
+
+        public override object Clone()
+        {
+            return new BookViewerViewModel(this.Caption, this.DefaultCondition);
         }
     }
 }

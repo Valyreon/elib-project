@@ -55,15 +55,14 @@ namespace ElibWpf.ViewModels.Controls
                 if (selectedCollection != null)
                 {
                     var newViewer = new BookViewerViewModel($"Collection {selectedCollection.Tag}", (Book x) => x.UserCollections.Where(c => c.Id == SelectedCollection.Id).Count() > 0);
-                    newViewer.RegisterEvents(this);
+                    newViewer.Refresh += RefreshCurrent;
                     CurrentViewer = newViewer;
-                    RaiseSelectionChangedEvent();
                 }
             }
         }
 
-        private ISearchable currentViewer;
-        public ISearchable CurrentViewer
+        private ViewerViewModel currentViewer;
+        public ViewerViewModel CurrentViewer
         {
             get => currentViewer;
             set => Set(ref currentViewer, value);
@@ -76,18 +75,16 @@ namespace ElibWpf.ViewModels.Controls
             if (SelectedMainPaneItem != null)
             {
                 var newViewer = new BookViewerViewModel(SelectedMainPaneItem.ViewerCaption, SelectedMainPaneItem.Condition);
-                newViewer.RegisterEvents(this);
+                newViewer.Refresh += RefreshCurrent;
                 CurrentViewer = newViewer;
-                RaiseSelectionChangedEvent();
             }
         }
 
-        public event Action SelectionChanged;
-
-        public void RaiseSelectionChangedEvent()
+        private void RefreshCurrent()
         {
-            // Your logic
-            SelectionChanged?.Invoke();
+            var newViewer = CurrentViewer.Clone() as ViewerViewModel;
+            newViewer.Refresh += RefreshCurrent;
+            CurrentViewer = newViewer;
         }
     }
 }
