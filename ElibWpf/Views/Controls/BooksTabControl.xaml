@@ -232,9 +232,11 @@
                             Width="60"
                             Height="60"
                             Background="GhostWhite"
+                            Command="{Binding BackCommand}"
                             Foreground="#484b4e"
                             IconName="ChevronLeft"
-                            IconSize="20" />
+                            IconSize="20"
+                            IsEnabled="{Binding IsBackEnabled}" />
                     </Border>
 
                     <TextBlock

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace ElibWpf.CustomComponents
 {
@@ -10,6 +11,7 @@ namespace ElibWpf.CustomComponents
         public static DependencyProperty TitleProperty;
         public static DependencyProperty AuthorsProperty;
         public static DependencyProperty SeriesInfoProperty;
+        public static DependencyProperty TileCommandProperty;
 
         static BookTile()
         {
@@ -18,6 +20,7 @@ namespace ElibWpf.CustomComponents
             TitleProperty = DependencyProperty.Register("Title", typeof(string), typeof(BookTile));
             AuthorsProperty = DependencyProperty.Register("Authors", typeof(string), typeof(BookTile));
             SeriesInfoProperty = DependencyProperty.Register("SeriesInfo", typeof(string), typeof(BookTile));
+            TileCommandProperty = DependencyProperty.Register("TileCommand", typeof(ICommand), typeof(BookTile));
         }
 
         public IList<byte> Cover
@@ -42,6 +45,12 @@ namespace ElibWpf.CustomComponents
         {
             get { return (string)base.GetValue(SeriesInfoProperty); }
             set => base.SetValue(SeriesInfoProperty, value);
+        }
+
+        public ICommand TileCommand
+        {
+            get { return (ICommand)base.GetValue(TileCommandProperty); }
+            set => base.SetValue(TileCommandProperty, value);
         }
     }
 }

@@ -1,10 +1,13 @@
 ﻿using Domain;
 using ElibWpf.BindingItems;
+using ElibWpf.DataStructures;
+using ElibWpf.Messages;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -17,8 +20,15 @@ namespace ElibWpf.ViewModels.Controls
         private IViewer currentViewer;
         private UserCollection selectedCollection;
         private PaneMainItem selectedMainPaneItem;
+        private readonly ObservableStack<IViewer> viewerHistory = new ObservableStack<IViewer>();
+
         public BooksTabViewModel()
         {
+            MessengerInstance.Register<AuthorSelectedMessage>(this, this.HandleAuthorSelection);
+            MessengerInstance.Register<SeriesSelectedMessage>(this, this.HandleSeriesSelection);
+
+            viewerHistory.AddHandlerOnStackChange((object sender, NotifyCollectionChangedEventArgs e) => RaisePropertyChanged("IsBackEnabled"));
+
             MainPaneItems = new ObservableCollection<PaneMainItem>
             {
                 new PaneMainItem("All", "Book", "All Books", (Book x) => true),
@@ -28,6 +38,25 @@ namespace ElibWpf.ViewModels.Controls
             };
             SelectedMainPaneItem = MainPaneItems[0];
             PaneSelectionChanged();
+        }
+
+        private void HandleSeriesSelection(SeriesSelectedMessage obj)
+        {
+            CurrentViewer = new BookViewerViewModel($"{obj.Series.Name} Series", (Book x) => x.SeriesId.HasValue && x.SeriesId == obj.Series.Id);
+        }
+
+        private void HandleAuthorSelection(AuthorSelectedMessage obj)
+        {
+            CurrentViewer = new BookViewerViewModel($"Books by {obj.Author.Name}", (Book x) => x.Authors.Select(a => a.Id).Contains(obj.Author.Id));
+        }
+
+        public ICommand BackCommand { get => new RelayCommand(this.GoToPreviousViewer); }
+
+        public bool IsBackEnabled { get => viewerHistory.Count >= 2; }
+
+        private void GoToPreviousViewer()
+        {
+            CurrentViewer = viewerHistory.Pop();
         }
 
         public string Caption
@@ -40,10 +69,15 @@ namespace ElibWpf.ViewModels.Controls
         public IViewer CurrentViewer
         {
             get => currentViewer;
-            set => Set(ref currentViewer, value);
+            set
+            {
+                viewerHistory.Push(CurrentViewer);
+                Set(ref currentViewer, value);
+            }
         }
 
         public ObservableCollection<PaneMainItem> MainPaneItems { get; set; }
+
         public ICommand PaneSelectionChangedCommand { get => new RelayCommand(this.PaneSelectionChanged); }
 
         public ICommand RefreshCommand { get => new RelayCommand(this.RefreshCurrent); }
@@ -57,8 +91,8 @@ namespace ElibWpf.ViewModels.Controls
                 Set(ref selectedCollection, value);
                 if (selectedCollection != null)
                 {
-                    var newViewer = new BookViewerViewModel($"Collection {selectedCollection.Tag}", (Book x) => x.UserCollections.Where(c => c.Id == SelectedCollection.Id).Count() > 0);
-                    CurrentViewer = newViewer;
+                    viewerHistory.Clear();
+                    CurrentViewer = new BookViewerViewModel($"Collection {selectedCollection.Tag}", (Book x) => x.UserCollections.Where(c => c.Id == SelectedCollection.Id).Count() > 0);
                 }
             }
         }
@@ -68,19 +102,20 @@ namespace ElibWpf.ViewModels.Controls
             get => selectedMainPaneItem;
             set => Set("SelectedMainPaneItem", ref selectedMainPaneItem, value);
         }
+
         private void PaneSelectionChanged()
         {
             if (SelectedMainPaneItem != null)
             {
-                var newViewer = new BookViewerViewModel(SelectedMainPaneItem.ViewerCaption, SelectedMainPaneItem.Condition);
-                CurrentViewer = newViewer;
+                viewerHistory.Clear();
+                CurrentViewer = new BookViewerViewModel(SelectedMainPaneItem.ViewerCaption, SelectedMainPaneItem.Condition);
             }
         }
 
         private void RefreshCurrent()
         {
-            var newViewer = CurrentViewer.Clone() as IViewer;
-            CurrentViewer = newViewer;
+            viewerHistory.Pop();
+            CurrentViewer = CurrentViewer.Clone() as IViewer;
         }
     }
 }

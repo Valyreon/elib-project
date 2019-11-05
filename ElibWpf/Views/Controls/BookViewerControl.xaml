@@ -56,7 +56,8 @@
                             Title="{Binding Title}"
                             Authors="{Binding Authors, Converter={StaticResource AuthorsToStringConverter}}"
                             Cover="{Binding Cover}"
-                            SeriesInfo="{Binding SeriesInfo}" />
+                            SeriesInfo="{Binding SeriesInfo}"
+                            TileCommand="{Binding DataContext.GoToAuthor, RelativeSource={RelativeSource AncestorType=ItemsControl}}" />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
                 <ItemsControl.Template>

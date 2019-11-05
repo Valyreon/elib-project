@@ -9,6 +9,8 @@ using System.Windows.Input;
 using ElibWpf.Paging;
 using System.Linq;
 using System.Threading;
+using GalaSoft.MvvmLight.Messaging;
+using ElibWpf.Messages;
 
 namespace ElibWpf.ViewModels.Controls
 {
@@ -18,7 +20,6 @@ namespace ElibWpf.ViewModels.Controls
         private string caption;
         private int nextPage = 1;
         private string numberOfBooks;
-
         private double scrollVerticalOffset;
 
         public BookViewerViewModel(string caption, Func<Book, bool> defaultQuery)
@@ -35,6 +36,7 @@ namespace ElibWpf.ViewModels.Controls
             get => caption;
             set => Set(ref caption, value);
         }
+
         public ICommand LoadMoreCommand { get => new RelayCommand(this.LoadMore); }
 
         public string NumberOfBooks
@@ -64,6 +66,14 @@ namespace ElibWpf.ViewModels.Controls
                     App.Current.Dispatcher.Invoke(() => Books.Add(item));
                 };
             }
+            ;
+        }
+
+        public ICommand GoToAuthor { get => new RelayCommand(this.AuthorSelectedHandler); }
+
+        private void AuthorSelectedHandler()
+        {
+            Messenger.Default.Send(new AuthorSelectedMessage { Author = Books[0].Authors.ElementAt(0) });
         }
     }
 }
