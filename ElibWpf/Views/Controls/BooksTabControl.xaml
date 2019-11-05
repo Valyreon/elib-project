@@ -53,7 +53,6 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type RadioButton}">
-
                             <StackPanel
                                 x:Name="Canvas"
                                 Background="{StaticResource LighterBackgroundColorBrush}"
@@ -100,12 +99,6 @@
             Grid.Column="0"
             Panel.ZIndex="10"
             BorderThickness="0">
-            <Border.Effect>
-                <DropShadowEffect
-                    BlurRadius="5"
-                    Direction="0"
-                    Opacity="0.4" />
-            </Border.Effect>
             <Grid Background="{StaticResource LighterBackgroundColorBrush}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
@@ -202,6 +195,7 @@
             </Grid>
         </Border>
         <Grid Grid.Column="1" Background="GhostWhite">
+
             <ContentControl Content="{Binding CurrentViewer}" />
         </Grid>
     </Grid>

@@ -69,25 +69,25 @@
 
     <Style TargetType="{x:Type Components:SymbolButton}">
         <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Background" Value="GhostWhite" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Components:SymbolButton">
-                    <Grid
-                        x:Name="Enveloper"
-                        Width="{TemplateBinding Width}"
-                        Height="{TemplateBinding Height}">
-                        <fa:ImageAwesome
-                            x:Name="AweImg"
-                            Width="{TemplateBinding IconSize}"
-                            Height="{TemplateBinding IconSize}"
-                            Foreground="{TemplateBinding Foreground}"
-                            Icon="{TemplateBinding IconName}"
-                            RenderTransformOrigin="0.5,0.5">
-                            <fa:ImageAwesome.RenderTransform>
-                                <ScaleTransform ScaleX="1" ScaleY="1" />
-                            </fa:ImageAwesome.RenderTransform>
-                        </fa:ImageAwesome>
-                    </Grid>
+                    <Border x:Name="Enveloper" Background="{TemplateBinding Background}">
+                        <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
+                            <fa:ImageAwesome
+                                x:Name="AweImg"
+                                Width="{TemplateBinding IconSize}"
+                                Height="{TemplateBinding IconSize}"
+                                Foreground="{TemplateBinding Foreground}"
+                                Icon="{TemplateBinding IconName}"
+                                RenderTransformOrigin="0.5,0.5">
+                                <fa:ImageAwesome.RenderTransform>
+                                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                                </fa:ImageAwesome.RenderTransform>
+                            </fa:ImageAwesome>
+                        </Grid>
+                    </Border>
                     <ControlTemplate.Triggers>
                         <EventTrigger RoutedEvent="MouseDown" SourceName="Enveloper">
                             <BeginStoryboard>
@@ -117,6 +117,9 @@
                                 </Storyboard>
                             </BeginStoryboard>
                         </EventTrigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="AweImg" Property="Foreground" Value="LightGray" />
+                        </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

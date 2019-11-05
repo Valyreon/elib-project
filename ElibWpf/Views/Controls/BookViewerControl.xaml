@@ -50,7 +50,8 @@
                 </Border.Effect>
                 <Grid VerticalAlignment="Center">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="20" />
+                        <ColumnDefinition Width="60" />
+                        <ColumnDefinition Width="15" />
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="10" />
                         <ColumnDefinition Width="Auto" />
@@ -59,14 +60,28 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
+                    <Border
+                        Grid.Column="0"
+                        BorderBrush="LightGray"
+                        BorderThickness="0,0,1,0">
+                        <Components:SymbolButton
+                            Grid.Column="0"
+                            Width="60"
+                            Height="60"
+                            Background="GhostWhite"
+                            Foreground="#484b4e"
+                            IconName="ChevronLeft"
+                            IconSize="20" />
+                    </Border>
+
                     <TextBlock
-                        Grid.Column="1"
+                        Grid.Column="2"
                         VerticalAlignment="Center"
                         FontSize="24"
                         Foreground="#484b4e"
                         Text="{Binding Caption}" />
                     <TextBlock
-                        Grid.Column="3"
+                        Grid.Column="4"
                         Margin="0,7,0,0"
                         VerticalAlignment="Center"
                         FontSize="14"
@@ -81,7 +96,7 @@
                     </TextBlock>
 
                     <Components:SymbolButton
-                        Grid.Column="5"
+                        Grid.Column="6"
                         Width="30"
                         Height="30"
                         Command="{Binding RefreshCommand}"
@@ -89,12 +104,12 @@
                         IconName="Refresh"
                         IconSize="16" />
 
-                    <Image Grid.Column="7" Width="368">
+                    <Image Grid.Column="8" Width="368">
                         <Image.Source>
                             <BitmapImage DecodePixelWidth="368" UriSource="/Images/searchBackgorund.png" />
                         </Image.Source>
                     </Image>
-                    <Grid Grid.Column="7" HorizontalAlignment="Right">
+                    <Grid Grid.Column="8" HorizontalAlignment="Right">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="20" />
                             <ColumnDefinition Width="240" />
@@ -107,6 +122,7 @@
                             Grid.Column="1"
                             Width="230"
                             Height="30"
+                            Background="Transparent"
                             IconName="Search"
                             WatermarkText="Search..." />
 
@@ -114,6 +130,7 @@
                             Grid.Column="3"
                             Width="30"
                             Height="30"
+                            Background="Transparent"
                             Foreground="GhostWhite"
                             IconName="Gear"
                             IconSize="24" />
