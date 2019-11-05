@@ -12,24 +12,14 @@ using System.Threading;
 
 namespace ElibWpf.ViewModels.Controls
 {
-    public class BookViewerViewModel : ViewerViewModel
+    public class BookViewerViewModel : ViewModelBase, IViewer
     {
         public readonly Func<Book, bool> DefaultCondition;
-        private int nextPage = 1;
-
         private string caption;
-        public string Caption
-        {
-            get => caption;
-            set => Set(ref caption, value);
-        }
+        private int nextPage = 1;
+        private string numberOfBooks;
 
         private double scrollVerticalOffset;
-        public double ScrollVertical
-        {
-            get => scrollVerticalOffset;
-            set => Set(ref scrollVerticalOffset, value);
-        }
 
         public BookViewerViewModel(string caption, Func<Book, bool> defaultQuery)
         {
@@ -40,16 +30,28 @@ namespace ElibWpf.ViewModels.Controls
 
         public ObservableCollection<Book> Books { get; set; }
 
-        private string numberOfBooks;
+        public string Caption
+        {
+            get => caption;
+            set => Set(ref caption, value);
+        }
+        public ICommand LoadMoreCommand { get => new RelayCommand(this.LoadMore); }
+
         public string NumberOfBooks
         {
             get => numberOfBooks;
             set => Set(ref numberOfBooks, value);
         }
 
-        public ICommand RefreshCommand { get => new RelayCommand(this.RaiseRefreshEvent); }
-
-        public ICommand LoadMoreCommand { get => new RelayCommand(this.LoadMore); }
+        public double ScrollVertical
+        {
+            get => scrollVerticalOffset;
+            set => Set(ref scrollVerticalOffset, value);
+        }
+        public object Clone()
+        {
+            return new BookViewerViewModel(this.Caption, this.DefaultCondition);
+        }
 
         private async void LoadMore()
         {
@@ -62,11 +64,6 @@ namespace ElibWpf.ViewModels.Controls
                     App.Current.Dispatcher.Invoke(() => Books.Add(item));
                 };
             }
-        }
-
-        public override object Clone()
-        {
-            return new BookViewerViewModel(this.Caption, this.DefaultCondition);
         }
     }
 }

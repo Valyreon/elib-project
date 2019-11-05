@@ -2,9 +2,9 @@
     x:Class="ElibWpf.Views.Controls.BooksTabControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Components="clr-namespace:ElibWpf.CustomComponents"
     xmlns:ControlViewModels="clr-namespace:ElibWpf.ViewModels.Controls"
     xmlns:ControlViews="clr-namespace:ElibWpf.Views.Controls"
-    xmlns:Custom="clr-namespace:ElibWpf.CustomComponents"
     xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:WindowViewModels="clr-namespace:ElibWpf.ViewModels.Windows"
     xmlns:WindowViews="clr-namespace:ElibWpf.Views.Windows"
@@ -194,9 +194,113 @@
                 </Grid>
             </Grid>
         </Border>
-        <Grid Grid.Column="1" Background="GhostWhite">
 
-            <ContentControl Content="{Binding CurrentViewer}" />
+        <Grid Grid.Column="1" Background="GhostWhite">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="60" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Border
+                Grid.Row="0"
+                Panel.ZIndex="20"
+                Background="GhostWhite"
+                BorderThickness="0">
+                <Border.Effect>
+                    <DropShadowEffect
+                        BlurRadius="5"
+                        Direction="270"
+                        Opacity="0.3" />
+                </Border.Effect>
+                <Grid VerticalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="60" />
+                        <ColumnDefinition Width="15" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="10" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="10" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Border
+                        Grid.Column="0"
+                        BorderBrush="LightGray"
+                        BorderThickness="0,0,1,0">
+                        <Components:SymbolButton
+                            Grid.Column="0"
+                            Width="60"
+                            Height="60"
+                            Background="GhostWhite"
+                            Foreground="#484b4e"
+                            IconName="ChevronLeft"
+                            IconSize="20" />
+                    </Border>
+
+                    <TextBlock
+                        Grid.Column="2"
+                        VerticalAlignment="Center"
+                        FontSize="24"
+                        Foreground="#484b4e"
+                        Text="{Binding CurrentViewer.Caption}" />
+                    <TextBlock
+                        Grid.Column="4"
+                        Margin="0,7,0,0"
+                        VerticalAlignment="Center"
+                        FontSize="14"
+                        FontStyle="Italic"
+                        Foreground="#484b4e">
+                        <Grid>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Margin="0,0,0,0" Text="{Binding CurrentViewer.NumberOfBooks, Mode=OneWay}" />
+                                <TextBlock Margin="0,0,0,0" Text=" books" />
+                            </StackPanel>
+                        </Grid>
+                    </TextBlock>
+
+                    <Components:SymbolButton
+                        Grid.Column="6"
+                        Width="30"
+                        Height="30"
+                        Command="{Binding RefreshCommand}"
+                        Foreground="#484b4e"
+                        IconName="Refresh"
+                        IconSize="16" />
+
+                    <Image Grid.Column="8" Width="368">
+                        <Image.Source>
+                            <BitmapImage DecodePixelWidth="368" UriSource="/Images/searchBackgorund.png" />
+                        </Image.Source>
+                    </Image>
+                    <Grid Grid.Column="8" HorizontalAlignment="Right">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="20" />
+                            <ColumnDefinition Width="240" />
+                            <ColumnDefinition Width="5" />
+                            <ColumnDefinition Width="30" />
+                            <ColumnDefinition Width="15" />
+                        </Grid.ColumnDefinitions>
+
+                        <Components:TextBoxWithSymbol
+                            Grid.Column="1"
+                            Width="230"
+                            Height="30"
+                            Background="Transparent"
+                            IconName="Search"
+                            WatermarkText="Search..." />
+
+                        <Components:SymbolButton
+                            Grid.Column="3"
+                            Width="30"
+                            Height="30"
+                            Background="Transparent"
+                            Foreground="GhostWhite"
+                            IconName="Gear"
+                            IconSize="24" />
+                    </Grid>
+                </Grid>
+            </Border>
+            <ContentControl Grid.Row="1" Content="{Binding CurrentViewer}" />
         </Grid>
     </Grid>
 </UserControl>

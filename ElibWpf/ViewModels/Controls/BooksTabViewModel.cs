@@ -13,15 +13,10 @@ namespace ElibWpf.ViewModels.Controls
 {
     public class BooksTabViewModel : ViewModelBase, IPageViewModel
     {
-        public ObservableCollection<PaneMainItem> MainPaneItems { get; set; }
-
+        private string caption = "Books";
+        private IViewer currentViewer;
+        private UserCollection selectedCollection;
         private PaneMainItem selectedMainPaneItem;
-        public PaneMainItem SelectedMainPaneItem
-        {
-            get => selectedMainPaneItem;
-            set => Set("SelectedMainPaneItem", ref selectedMainPaneItem, value);
-        }
-
         public BooksTabViewModel()
         {
             MainPaneItems = new ObservableCollection<PaneMainItem>
@@ -35,7 +30,6 @@ namespace ElibWpf.ViewModels.Controls
             PaneSelectionChanged();
         }
 
-        private string caption = "Books";
         public string Caption
         {
             get => caption;
@@ -43,8 +37,17 @@ namespace ElibWpf.ViewModels.Controls
         }
 
         public List<UserCollection> Collections { get; set; } = App.Database.UserCollections.ToList();
+        public IViewer CurrentViewer
+        {
+            get => currentViewer;
+            set => Set(ref currentViewer, value);
+        }
 
-        private UserCollection selectedCollection;
+        public ObservableCollection<PaneMainItem> MainPaneItems { get; set; }
+        public ICommand PaneSelectionChangedCommand { get => new RelayCommand(this.PaneSelectionChanged); }
+
+        public ICommand RefreshCommand { get => new RelayCommand(this.RefreshCurrent); }
+
         public UserCollection SelectedCollection
         {
             get => selectedCollection;
@@ -55,35 +58,28 @@ namespace ElibWpf.ViewModels.Controls
                 if (selectedCollection != null)
                 {
                     var newViewer = new BookViewerViewModel($"Collection {selectedCollection.Tag}", (Book x) => x.UserCollections.Where(c => c.Id == SelectedCollection.Id).Count() > 0);
-                    newViewer.Refresh += RefreshCurrent;
                     CurrentViewer = newViewer;
                 }
             }
         }
 
-        private ViewerViewModel currentViewer;
-        public ViewerViewModel CurrentViewer
+        public PaneMainItem SelectedMainPaneItem
         {
-            get => currentViewer;
-            set => Set(ref currentViewer, value);
+            get => selectedMainPaneItem;
+            set => Set("SelectedMainPaneItem", ref selectedMainPaneItem, value);
         }
-
-        public ICommand PaneSelectionChangedCommand { get => new RelayCommand(this.PaneSelectionChanged); }
-
         private void PaneSelectionChanged()
         {
             if (SelectedMainPaneItem != null)
             {
                 var newViewer = new BookViewerViewModel(SelectedMainPaneItem.ViewerCaption, SelectedMainPaneItem.Condition);
-                newViewer.Refresh += RefreshCurrent;
                 CurrentViewer = newViewer;
             }
         }
 
         private void RefreshCurrent()
         {
-            var newViewer = CurrentViewer.Clone() as ViewerViewModel;
-            newViewer.Refresh += RefreshCurrent;
+            var newViewer = CurrentViewer.Clone() as IViewer;
             CurrentViewer = newViewer;
         }
     }
