@@ -23,7 +23,7 @@
     </DataTemplate>
 
     <Style TargetType="ScrollBar">
-        <Setter Property="Margin" Value="0,15,0,15" />
+        <Setter Property="Margin" Value="0" />
         <Setter Property="Foreground" Value="Black" />
     </Style>
 </ResourceDictionary>

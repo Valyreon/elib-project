@@ -35,7 +35,7 @@
         <Grid>
             <ItemsControl
                 Grid.Row="1"
-                Margin="15,0,15,0"
+                Margin="0,0,0,0"
                 Padding="0,0,0,0"
                 VerticalAlignment="Top"
                 ItemsSource="{Binding Books, Mode=OneWay, IsAsync=True}"
