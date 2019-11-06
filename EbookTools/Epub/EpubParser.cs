@@ -110,7 +110,7 @@ namespace EbookTools.Epub
             {
                 string id = child.Attributes["idref"]?.Value; // we find the ID of the xml tag that contains the path to the file of the chapter in epub zip manifest block
                 XmlNode item = manifestNode.ChildNodes.Cast<XmlNode>()
-                    .Where(node => node.Attributes["id"].Value == id)
+                    .Where(node => node?.Attributes?["id"]?.Value == id)
                     .FirstOrDefault(); // now we get the xmlnode with that id
 
                 string itemPath = item.Attributes["href"]?.Value; // we get the file it points to
