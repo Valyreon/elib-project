@@ -5,6 +5,11 @@ namespace ElibWpf.Messages
 {
     public class SeriesSelectedMessage: MessageBase
     {
-        public BookSeries Series { get; set; }
+        public BookSeries Series { get; }
+
+        public SeriesSelectedMessage(BookSeries series)
+        {
+            this.Series = series;
+        }
     }
 }

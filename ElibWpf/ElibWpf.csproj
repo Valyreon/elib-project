@@ -189,6 +189,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Resources\BookTileSubLinksStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\DashboardTabControlStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -258,11 +262,6 @@
     <Content Include="Fonts\fontawesome-webfont.eot" />
     <Content Include="Fonts\fontawesome-webfont.woff" />
     <Content Include="Fonts\fontawesome-webfont.woff2" />
-    <Resource Include="Fonts\Raleway-Bold.ttf" />
-    <Resource Include="Fonts\Raleway-Light.ttf" />
-    <Resource Include="Fonts\Raleway-Medium.ttf" />
-    <Resource Include="Fonts\Raleway-Regular.ttf" />
-    <Resource Include="Fonts\SofiaProLight.ttf" />
     <Resource Include="Fonts\SofiaProRegular.ttf" />
     <None Include="packages.config" />
     <None Include="properties.json">

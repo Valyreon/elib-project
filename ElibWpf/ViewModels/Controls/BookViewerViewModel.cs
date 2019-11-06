@@ -11,6 +11,8 @@ using System.Linq;
 using System.Threading;
 using GalaSoft.MvvmLight.Messaging;
 using ElibWpf.Messages;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace ElibWpf.ViewModels.Controls
 {
@@ -69,11 +71,9 @@ namespace ElibWpf.ViewModels.Controls
             ;
         }
 
-        public ICommand GoToAuthor { get => new RelayCommand(this.AuthorSelectedHandler); }
+        public ICommand GoToAuthor { get => new RelayCommand<ICollection<Author>>((ICollection<Author> a) => Messenger.Default.Send(new AuthorSelectedMessage(a.ElementAt(0)))); }
 
-        private void AuthorSelectedHandler()
-        {
-            Messenger.Default.Send(new AuthorSelectedMessage { Author = Books[0].Authors.ElementAt(0) });
-        }
+        public ICommand GoToSeries { get => new RelayCommand<BookSeries>((BookSeries a) => Messenger.Default.Send(new SeriesSelectedMessage(a))); }
+
     }
 }

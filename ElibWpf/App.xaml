@@ -21,6 +21,7 @@
 
                 <ResourceDictionary Source="Resources/Colors.xaml" />
                 <ResourceDictionary Source="Resources/DashboardTabControlStyles.xaml" />
+                <ResourceDictionary Source="Resources/BookTileSubLinksStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

@@ -53,11 +53,15 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Components:BookTile
+                            x:Name="bookTile"
                             Title="{Binding Title}"
+                            AuthorCommand="{Binding DataContext.GoToAuthor, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                            AuthorParameter="{Binding Authors}"
                             Authors="{Binding Authors, Converter={StaticResource AuthorsToStringConverter}}"
                             Cover="{Binding Cover}"
+                            SeriesCommand="{Binding DataContext.GoToSeries, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                             SeriesInfo="{Binding SeriesInfo}"
-                            TileCommand="{Binding DataContext.GoToAuthor, RelativeSource={RelativeSource AncestorType=ItemsControl}}" />
+                            SeriesParameter="{Binding Series}" />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
                 <ItemsControl.Template>

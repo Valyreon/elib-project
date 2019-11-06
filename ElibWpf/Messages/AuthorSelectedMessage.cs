@@ -10,6 +10,11 @@ namespace ElibWpf.Messages
 {
     public class AuthorSelectedMessage: MessageBase
     {
-        public Author Author { get; set; }
+        public Author Author { get; }
+
+        public AuthorSelectedMessage(Author selectedAuthor)
+        {
+            this.Author = selectedAuthor;
+        }
     }
 }

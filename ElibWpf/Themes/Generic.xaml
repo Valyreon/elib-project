@@ -151,8 +151,10 @@
                         </StackPanel.Style>
                         <Border
                             x:Name="TileBorder"
+                            Background="GhostWhite"
                             BorderBrush="LightGray"
                             BorderThickness="1">
+                            <Border.Triggers />
                             <MetroControls:Tile
                                 x:Name="TheTile"
                                 Width="164"
@@ -171,28 +173,32 @@
                                 </Grid>
                             </MetroControls:Tile>
                         </Border>
-                        <TextBlock
-                            Name="Title"
-                            Width="175"
-                            HorizontalAlignment="Left"
-                            FontSize="14"
-                            Foreground="Black"
-                            Text="{TemplateBinding Title}"
-                            TextOptions.TextHintingMode="Fixed"
-                            TextTrimming="CharacterEllipsis" />
                         <Components:TextLinkButton
                             Width="175"
                             HorizontalAlignment="Left"
+                            Command="{TemplateBinding TileCommand}"
+                            FontSize="14"
+                            Foreground="Black"
+                            Text="{TemplateBinding Title}"
+                            TextOptions.TextHintingMode="Auto" />
+                        <Components:TextLinkButton
+                            Width="175"
+                            HorizontalAlignment="Left"
+                            Command="{TemplateBinding AuthorCommand}"
+                            CommandParameter="{TemplateBinding AuthorParameter}"
                             FontSize="12"
                             Foreground="Gray"
+                            Style="{DynamicResource SubLinkStyle}"
                             Text="{TemplateBinding Authors}"
                             TextOptions.TextHintingMode="Fixed" />
                         <Components:TextLinkButton
                             Width="175"
                             HorizontalAlignment="Left"
-                            Command="{}"
+                            Command="{TemplateBinding SeriesCommand}"
+                            CommandParameter="{TemplateBinding SeriesParameter}"
                             FontSize="12"
                             Foreground="Gray"
+                            Style="{DynamicResource SubLinkStyle}"
                             Text="{TemplateBinding SeriesInfo}"
                             TextOptions.TextHintingMode="Fixed" />
                     </StackPanel>
@@ -205,6 +211,28 @@
                                         Storyboard.TargetProperty="Opacity"
                                         To="1"
                                         Duration="0:0:0.4" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="MouseEnter">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation
+                                        Storyboard.TargetName="TileBorder"
+                                        Storyboard.TargetProperty="(Border.BorderBrush).(Color)"
+                                        To="CornflowerBlue"
+                                        Duration="0:0:0.3" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="MouseLeave">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation
+                                        Storyboard.TargetName="TileBorder"
+                                        Storyboard.TargetProperty="(Border.BorderBrush).(Color)"
+                                        To="LightGray"
+                                        Duration="0:0:0.3" />
                                 </Storyboard>
                             </BeginStoryboard>
                         </EventTrigger>
