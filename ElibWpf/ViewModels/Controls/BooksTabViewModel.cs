@@ -42,17 +42,27 @@ namespace ElibWpf.ViewModels.Controls
 
         private void HandleSeriesSelection(SeriesSelectedMessage obj)
         {
-            CurrentViewer = new BookViewerViewModel($"{obj.Series.Name} Series", (Book x) => x.SeriesId.HasValue && x.SeriesId == obj.Series.Id);
+            string viewerCaption = $"{obj.Series.Name} Series";
+            if(viewerCaption != CurrentViewer.Caption)
+            {
+                viewerHistory.Push(CurrentViewer);
+                CurrentViewer = new BookViewerViewModel(viewerCaption, (Book x) => x.SeriesId.HasValue && x.SeriesId == obj.Series.Id);
+            }
         }
 
         private void HandleAuthorSelection(AuthorSelectedMessage obj)
         {
-            CurrentViewer = new BookViewerViewModel($"Books by {obj.Author.Name}", (Book x) => x.Authors.Select(a => a.Id).Contains(obj.Author.Id));
+            string viewerCaption = $"Books by {obj.Author.Name}";
+            if (viewerCaption != CurrentViewer.Caption)
+            {
+                viewerHistory.Push(CurrentViewer);
+                CurrentViewer = new BookViewerViewModel(viewerCaption, (Book x) => x.Authors.Select(a => a.Id).Contains(obj.Author.Id));
+            }
         }
 
         public ICommand BackCommand { get => new RelayCommand(this.GoToPreviousViewer); }
 
-        public bool IsBackEnabled { get => viewerHistory.Count >= 2; }
+        public bool IsBackEnabled { get => viewerHistory.Count > 0; }
 
         private void GoToPreviousViewer()
         {
@@ -69,11 +79,7 @@ namespace ElibWpf.ViewModels.Controls
         public IViewer CurrentViewer
         {
             get => currentViewer;
-            set
-            {
-                viewerHistory.Push(CurrentViewer);
-                Set(ref currentViewer, value);
-            }
+            set => Set(ref currentViewer, value);
         }
 
         public ObservableCollection<PaneMainItem> MainPaneItems { get; set; }
@@ -114,7 +120,6 @@ namespace ElibWpf.ViewModels.Controls
 
         private void RefreshCurrent()
         {
-            viewerHistory.Pop();
             CurrentViewer = CurrentViewer.Clone() as IViewer;
         }
     }
