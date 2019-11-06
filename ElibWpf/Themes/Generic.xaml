@@ -140,15 +140,6 @@
                         RenderOptions.BitmapScalingMode="HighQuality"
                         RenderOptions.ClearTypeHint="Auto"
                         TextOptions.TextRenderingMode="Auto">
-                        <StackPanel.Style>
-                            <Style TargetType="StackPanel">
-                                <Style.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Cursor" Value="Hand" />
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </StackPanel.Style>
                         <Border
                             x:Name="TileBorder"
                             Background="GhostWhite"
@@ -174,6 +165,7 @@
                             </MetroControls:Tile>
                         </Border>
                         <Components:TextLinkButton
+                            x:Name="TheBookTitle"
                             Width="175"
                             HorizontalAlignment="Left"
                             Command="{TemplateBinding TileCommand}"
@@ -203,6 +195,9 @@
                             TextOptions.TextHintingMode="Fixed" />
                     </StackPanel>
                     <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Cursor" Value="Hand" />
+                        </Trigger>
                         <EventTrigger RoutedEvent="Loaded">
                             <BeginStoryboard>
                                 <Storyboard>
@@ -222,6 +217,11 @@
                                         Storyboard.TargetProperty="(Border.BorderBrush).(Color)"
                                         To="CornflowerBlue"
                                         Duration="0:0:0.3" />
+                                    <ColorAnimation
+                                        Storyboard.TargetName="TheBookTitle"
+                                        Storyboard.TargetProperty="(Foreground).(Color)"
+                                        To="CornflowerBlue"
+                                        Duration="0:0:0.3" />
                                 </Storyboard>
                             </BeginStoryboard>
                         </EventTrigger>
@@ -232,6 +232,11 @@
                                         Storyboard.TargetName="TileBorder"
                                         Storyboard.TargetProperty="(Border.BorderBrush).(Color)"
                                         To="LightGray"
+                                        Duration="0:0:0.3" />
+                                    <ColorAnimation
+                                        Storyboard.TargetName="TheBookTitle"
+                                        Storyboard.TargetProperty="(Foreground).(Color)"
+                                        To="Black"
                                         Duration="0:0:0.3" />
                                 </Storyboard>
                             </BeginStoryboard>
