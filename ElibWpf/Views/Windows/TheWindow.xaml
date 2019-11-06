@@ -13,7 +13,6 @@
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="Electronic Library"
-    FontFamily="Segoe UI"
     IconBitmapScalingMode="HighQuality"
     IconEdgeMode="Aliased"
     Left="0"
@@ -32,8 +31,8 @@
     mc:Ignorable="d">
 
     <Window.Resources>
-        <ResourceDictionary Source="DataTemplates.xaml" />
+        <ResourceDictionary Source="WindowResources.xaml" />
     </Window.Resources>
 
-    <ContentControl Content="{Binding CurrentControl}" />
+    <ContentControl Content="{Binding CurrentControl}" FontFamily="{StaticResource Font}" />
 </MetroControls:MetroWindow>

@@ -138,8 +138,8 @@
                         Opacity="0"
                         Orientation="Vertical"
                         RenderOptions.BitmapScalingMode="HighQuality"
-                        RenderOptions.ClearTypeHint="Enabled"
-                        TextOptions.TextRenderingMode="ClearType">
+                        RenderOptions.ClearTypeHint="Auto"
+                        TextOptions.TextRenderingMode="Auto">
                         <StackPanel.Style>
                             <Style TargetType="StackPanel">
                                 <Style.Triggers>
