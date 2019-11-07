@@ -13,9 +13,25 @@ namespace ElibWpf.Views.Controls
             InitializeComponent();
         }
 
-        private void MoveWindow(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void HandleLeftClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            Window.GetWindow(this).DragMove();
+            if (e.ClickCount == 2)
+            {
+                var thisWindow = Window.GetWindow(this);
+                if(thisWindow.WindowState == WindowState.Maximized)
+                {
+                    thisWindow.WindowState = WindowState.Normal;
+                }
+                else if(thisWindow.WindowState == WindowState.Normal)
+                {
+                    thisWindow.WindowState = WindowState.Maximized;
+                }
+
+            }
+            else
+            {
+                Window.GetWindow(this).DragMove();
+            }
         }
     }
 }

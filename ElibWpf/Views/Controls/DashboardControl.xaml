@@ -13,7 +13,7 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
-    <Grid Background="#222222" MouseLeftButtonDown="MoveWindow">
+    <Grid Background="#222222" MouseLeftButtonDown="HandleLeftClick">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>

@@ -9,7 +9,6 @@ namespace ElibWpf.ViewModels.Windows
 {
     public class TheWindowViewModel : ViewModelBase
     {
-        private readonly Stack<object> viewModelHistory = new Stack<object>();
         private object currentControl;
 
         public TheWindowViewModel()
@@ -19,25 +18,8 @@ namespace ElibWpf.ViewModels.Windows
 
         public object CurrentControl
         {
-            get
-            {
-                return this.currentControl;
-            }
-
-            internal set
-            {
-                viewModelHistory.Push(value);
-                Set("CurrentControl", ref currentControl, value);
-            }
-        }
-
-        public ICommand GoBack { get => new RelayCommand(GoToPreviousViewModel); }
-
-        public void GoToPreviousViewModel()
-        {
-            if (viewModelHistory.Count > 1)
-                viewModelHistory.Pop();
-            this.CurrentControl = viewModelHistory.Peek();
+            get => this.currentControl;
+            set => Set("CurrentControl", ref currentControl, value);
         }
     }
 }
