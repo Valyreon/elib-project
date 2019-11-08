@@ -2,7 +2,10 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using ImageProcessor.Imaging.Filters;
 using System.IO;
+using ImageProcessor;
+using ImageProcessor.Imaging;
 
 namespace Models
 {
@@ -12,56 +15,38 @@ namespace Models
         {
             Color fillColor = Color.GhostWhite;
 
-            Image imgPhoto = Image.FromStream(new MemoryStream(imgBytes));
+            using Image imgPhoto = Image.FromStream(new MemoryStream(imgBytes));
 
-            int sourceWidth = imgPhoto.Width;
-            int sourceHeight = imgPhoto.Height;
+            Size size = new Size(Width, Height);
 
-            Width = (int)(((float)sourceWidth * (float)Height) / (float)sourceHeight);
+            ResizeLayer resizeLayer = new ResizeLayer(size, ResizeMode.Max);
 
-            int sourceX = 0;
-            int sourceY = 0;
-            int destX = 0;
-            int destY = 0;
+            using MemoryStream outStream = new MemoryStream();
+            using ImageFactory imageFactory = new ImageFactory(preserveExifData: true);
 
-            float nPercent = 0;
-            float nPercentW = 0;
-            float nPercentH = 0;
+            // Resize cover image and stor in outstream
+            imageFactory.Load(imgPhoto)
+                .Resize(resizeLayer)
+                .Save(outStream);
 
-            nPercentW = ((float)Width / (float)sourceWidth);
-            nPercentH = ((float)Height / (float)sourceHeight);
-            if (nPercentH < nPercentW)
-            {
-                nPercent = nPercentH;
-                destX = Convert.ToInt16((Width - (sourceWidth * nPercent)) / 2);
-            }
-            else
-            {
-                nPercent = nPercentW;
-                destY = Convert.ToInt16((Height - (sourceHeight * nPercent)) / 2);
-            }
+            using Image resizePhoto = Image.FromStream(outStream);
 
-            int destWidth = (int)(sourceWidth * nPercent);
-            int destHeight = (int)(sourceHeight * nPercent);
+            ImageLayer resizedImage = new ImageLayer() { Image = resizePhoto };
 
-            Bitmap bmPhoto = new Bitmap(Width, Height,
-                              PixelFormat.Format24bppRgb);
-            bmPhoto.SetResolution(imgPhoto.HorizontalResolution,
-                             imgPhoto.VerticalResolution);
+            // If the picture fits do not blur the background
+            if (resizedImage.Size == size)
+                return outStream.ToArray();
 
-            using Graphics grPhoto = Graphics.FromImage(bmPhoto);
-            grPhoto.Clear(fillColor);
-            grPhoto.InterpolationMode =
-                    InterpolationMode.HighQualityBicubic;
+            resizeLayer = new ResizeLayer(size, ResizeMode.Min);
 
-            grPhoto.DrawImage(imgPhoto,
-                new Rectangle(destX, destY, destWidth, destHeight),
-                new Rectangle(sourceX, sourceY, sourceWidth, sourceHeight),
-                GraphicsUnit.Pixel);
+            // Loads the original image resizes it to have the shortest side fit the dimensions, blurs it then overlays the original resized image
+            imageFactory.Load(imgPhoto)
+                .Resize(resizeLayer)
+                .GaussianBlur(10)
+                .Overlay(resizedImage)
+                .Save(outStream);
 
-            using MemoryStream outStr = new MemoryStream();
-            bmPhoto.Save(outStr, ImageFormat.Jpeg);
-            return outStr.ToArray();
+            return outStream.ToArray();
         }
     }
 }
