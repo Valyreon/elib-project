@@ -13,8 +13,6 @@ namespace Models
     {
         public static byte[] ResizeAndFill(byte[] imgBytes, int Width = 200, int Height = 320)
         {
-            Color fillColor = Color.GhostWhite;
-
             using Image imgPhoto = Image.FromStream(new MemoryStream(imgBytes));
 
             Size size = new Size(Width, Height);
