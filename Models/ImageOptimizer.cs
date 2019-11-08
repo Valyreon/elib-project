@@ -8,8 +8,10 @@ namespace Models
 {
     public static class ImageOptimizer
     {
-        public static byte[] ResizeAndFill(byte[] imgBytes, int Width, int Height, Color fillColor)
+        public static byte[] ResizeAndFill(byte[] imgBytes, int Width = 200, int Height = 320)
         {
+            Color fillColor = Color.GhostWhite;
+
             Image imgPhoto = Image.FromStream(new MemoryStream(imgBytes));
 
             int sourceWidth = imgPhoto.Width;

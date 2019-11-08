@@ -2,6 +2,7 @@
 using Domain;
 using EbookTools;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 
@@ -27,9 +28,10 @@ namespace Models
                     new EFile { Format = parsedBook.Format, RawContent = parsedBook.RawData }
                 },
                 Series = string.IsNullOrEmpty(seriesName) ? null : (database.Series.Where(x => x.Name == seriesName).FirstOrDefault() ?? new BookSeries { Name = seriesName }),
-                NumberInSeries = seriesNumber
+                NumberInSeries = seriesNumber,
+                Cover = ImageOptimizer.ResizeAndFill(parsedBook.Cover)
             };
-
+            
             Book result = database.Books.Add(book);
             database.SaveChanges();
             return result;
@@ -44,7 +46,8 @@ namespace Models
                 Files = new List<EFile>
                 {
                     new EFile { Format = parsedBook.Format, RawContent = parsedBook.RawData}
-                }
+                },
+                Cover = ImageOptimizer.ResizeAndFill(parsedBook.Cover)
             };
 
             book = database.Books.Add(book);
