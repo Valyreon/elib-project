@@ -20,7 +20,7 @@ namespace Models
             ResizeLayer resizeLayer = new ResizeLayer(size, ResizeMode.Max);
 
             using MemoryStream outStream = new MemoryStream();
-            using ImageFactory imageFactory = new ImageFactory(preserveExifData: true);
+            using ImageFactory imageFactory = new ImageFactory();
 
             // Resize cover image and stor in outstream
             imageFactory.Load(imgPhoto)
