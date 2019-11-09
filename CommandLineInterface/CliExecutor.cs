@@ -147,7 +147,7 @@ namespace Cli
                                 seriesNumber = newNumber;
                             }
 
-                            importer.ImportBook(parsedBook, bookName, authorName, seriesName, seriesNumber);
+                            importer.ImportBook(parsedBook, bookName, authorName, seriesName, seriesNumber).GetAwaiter().GetResult();
                         }
                 break;
 
