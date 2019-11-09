@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Domain;
+using OnlineBookApi.OpenLibrary.Models;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace OnlineBookApi.OpenLibrary
 {
@@ -19,6 +23,17 @@ namespace OnlineBookApi.OpenLibrary
             
             
             throw new NotImplementedException();
+        }
+
+        public IList<byte[]> GetMultipleCovers(Book book)
+        {
+            SearchQuery searchQuery = Query.GeneralQueryAsync(book.Title, Query.SearchType.Title).Result;
+            IList<byte[]> result = new List<byte[]>();
+
+            foreach (var x in searchQuery.docs)
+                result.Add(Query.GetImageFromImageIdAsync(x.cover_i.ToString()).Result);
+
+            return result;
         }
     }
 }

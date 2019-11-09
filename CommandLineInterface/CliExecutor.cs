@@ -6,6 +6,7 @@ using Models;
 using Models.Helpers;
 using Models.Options;
 using Models.Utilities;
+using OnlineBookApi;
 using OnlineBookApi.OpenLibrary;
 using OnlineBookApi.OpenLibrary.Models;
 using System;
@@ -458,10 +459,15 @@ namespace Cli
                         break;
                     case "query":
                     case "q":
-                        Task<IsbnDetailed> queryResult = Query.IsbnQueryAsync(consoleInput.Item2.ToLower().Trim());
-                        IsbnDetailed isbnDetailed = queryResult.Result;
-
-                        Image image = Image.FromStream(new MemoryStream(Query.GetImageFromOLidAsync(isbnDetailed.identifiers.openlibrary.FirstOrDefault()).Result));
+                        IOnline online = new OnlineAPI();
+                        IList<byte[]> images = online.GetSimilarCovers(database.Books.Find(int.Parse(consoleInput.Item2)));
+                        /*
+                        foreach (byte[] img in images)
+                        {
+                            Image image = Image.FromStream(new MemoryStream(img));
+                            image.Save(@"c:\users\gygasync\desktop\testtest\" + img.GetHashCode() + ".jpg", ImageFormat.Jpeg);
+                        }
+                        */
 
                         break;
 
