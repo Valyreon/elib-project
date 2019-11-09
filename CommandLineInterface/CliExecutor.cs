@@ -461,7 +461,7 @@ namespace Cli
                         Task<IsbnDetailed> queryResult = Query.IsbnQueryAsync(consoleInput.Item2.ToLower().Trim());
                         IsbnDetailed isbnDetailed = queryResult.Result;
 
-                        Image image = Image.FromStream(new MemoryStream(Query.GetImageFromOLid(isbnDetailed.identifiers.openlibrary.FirstOrDefault()).Result));
+                        Image image = Image.FromStream(new MemoryStream(Query.GetImageFromOLidAsync(isbnDetailed.identifiers.openlibrary.FirstOrDefault()).Result));
 
                         break;
 

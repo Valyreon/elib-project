@@ -1,11 +1,16 @@
 ﻿using System;
+using Domain;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
+
 
 namespace OnlineBookApi
 {
-    interface IOnline
+    public interface IOnline
     {
-        byte[] GetCover(string query);
+        byte[] GetCover(Book book);
+
+        Task<byte[]> GetCoverAsync(Book book);
     }
 }
