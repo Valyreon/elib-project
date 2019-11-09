@@ -4,6 +4,7 @@ using EbookTools;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Models
 {
@@ -16,7 +17,7 @@ namespace Models
             this.database = db;
         }
 
-        public Book ImportBook(ParsedBook parsedBook, string bookName, string authorName, string seriesName = null, decimal? seriesNumber = null)
+        public async Task<Book> ImportBook(ParsedBook parsedBook, string bookName, string authorName, string seriesName = null, decimal? seriesNumber = null)
         {
             Book book = new Book()
             {
@@ -31,11 +32,11 @@ namespace Models
             };
 
             Book result = database.Books.Add(book);
-            database.SaveChanges();
+            await database.SaveChangesAsync();
             return result;
         }
 
-        public Book ImportBook(ParsedBook parsedBook)
+        public async Task<Book> ImportBook(ParsedBook parsedBook)
         {
             Book book = new Book()
             {
@@ -48,11 +49,11 @@ namespace Models
             };
 
             book = database.Books.Add(book);
-            database.SaveChanges();
+            await database.SaveChangesAsync();
             return book;
         }
 
-        public ICollection<Book> ImportBooksFromDirectory(string path)
+        public async Task<ICollection<Book>> ImportBooksFromDirectory(string path)
         {
             ICollection<Book> result = new List<Book>();
 
@@ -61,12 +62,10 @@ namespace Models
 
             List<string> validFileList = new List<string>();
             foreach (string ext in EbookParserFactory.SupportedExtensions)
-            {
-                validFileList.AddRange(Directory.GetFiles(path, "*" + ext));
-            }
+                validFileList.AddRange(Directory.GetFiles(path, $"*{ext}"));
 
             foreach (string filePath in validFileList)
-                result.Add(ImportBook(EbookParserFactory.Create(filePath).Parse()));
+                result.Add(await ImportBook(EbookParserFactory.Create(filePath).Parse()));
 
             return result;
         }
