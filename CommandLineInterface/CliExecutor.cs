@@ -460,7 +460,8 @@ namespace Cli
                     case "query":
                     case "q":
                         IOnline online = new OnlineAPI();
-                        IList<byte[]> images = online.GetSimilarCovers(database.Books.Find(int.Parse(consoleInput.Item2)));
+                        int localid = int.Parse(consoleInput.Item2);
+                        IList<byte[]> images = online.GetMultipleCoversAsync(database.Books.Include("Authors").Where(x=> x.Id == localid).FirstOrDefault()).Result;
                         /*
                         foreach (byte[] img in images)
                         {

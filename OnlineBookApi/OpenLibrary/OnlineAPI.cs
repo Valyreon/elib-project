@@ -7,6 +7,7 @@ using Domain;
 using OnlineBookApi.OpenLibrary.Models;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Linq;
 
 namespace OnlineBookApi.OpenLibrary
 {
@@ -27,7 +28,8 @@ namespace OnlineBookApi.OpenLibrary
 
         public async Task<IList<byte[]>> GetMultipleCoversAsync(Book book)
         {
-            SearchQuery searchQuery = await Query.GeneralQueryAsync(book.Title, Query.SearchType.Title);
+            SearchQuery searchQuery = await Query.GeneralQueryAsync(book.Title + " " + string.Join(" ", book.Authors?.Select(x => x.Name)), Query.SearchType.Query);
+
             IList<byte[]> result = new List<byte[]>();
 
             foreach (var x in searchQuery.docs)
