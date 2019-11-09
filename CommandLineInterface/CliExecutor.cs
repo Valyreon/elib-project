@@ -6,11 +6,17 @@ using Models;
 using Models.Helpers;
 using Models.Options;
 using Models.Utilities;
+using OnlineBookApi.OpenLibrary;
+using OnlineBookApi.OpenLibrary.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Migrations;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Cli
 {
@@ -70,7 +76,7 @@ namespace Cli
         ///  Starts the CLI loop until the keyword 'exit' is inputted.
         /// </summary>
         ///
-        public void Execute()
+        public async void Execute()
         {
             string command;
             do
@@ -449,6 +455,14 @@ namespace Cli
                                // Console.Write($"Publisher[{book.Pu}]")
                             }
                         }*/
+                        break;
+                    case "query":
+                    case "q":
+                        Task<IsbnDetailed> queryResult = Query.IsbnQueryAsync(consoleInput.Item2.ToLower().Trim());
+                        IsbnDetailed isbnDetailed = queryResult.Result;
+
+                        Image image = Image.FromStream(new MemoryStream(Query.GetImageFromOLid(isbnDetailed.identifiers.openlibrary.FirstOrDefault()).Result));
+
                         break;
 
                     case "exit":
