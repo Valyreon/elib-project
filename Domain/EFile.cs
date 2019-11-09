@@ -6,6 +6,7 @@ namespace Domain
     [Table("BookFiles")]
     public class EFile
     {
+        public EFile(string format, byte[] rawContent) => (Format, RawContent) = (format, rawContent);
         public int Id { get; set; }
 
         [Required]

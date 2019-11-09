@@ -12,10 +12,7 @@ namespace Models
     {
         private readonly ElibContext database;
 
-        public Importer(ElibContext db)
-        {
-            this.database = db;
-        }
+        public Importer(ElibContext db) => database = db;
 
         public async Task<Book> ImportBook(ParsedBook parsedBook, string bookName, string authorName, string seriesName = null, decimal? seriesNumber = null)
         {
@@ -25,7 +22,7 @@ namespace Models
                 Authors = new List<Author> { database.Authors.Where(x => x.Name == authorName).FirstOrDefault() ?? new Author { Name = authorName } },
                 Files = new List<EFile>
                 {
-                    new EFile { Format = parsedBook.Format, RawContent = parsedBook.RawData }
+                    new EFile(parsedBook.Format, parsedBook.RawData)
                 },
                 Series = string.IsNullOrEmpty(seriesName) ? null : (database.Series.Where(x => x.Name == seriesName).FirstOrDefault() ?? new BookSeries { Name = seriesName }),
                 NumberInSeries = seriesNumber
@@ -44,7 +41,7 @@ namespace Models
                 Authors = new List<Author> { database.Authors.Where(x => x.Name == parsedBook.Author).FirstOrDefault() ?? new Author { Name = parsedBook.Author } },
                 Files = new List<EFile>
                 {
-                    new EFile { Format = parsedBook.Format, RawContent = parsedBook.RawData}
+                    new EFile(parsedBook.Format, parsedBook.RawData)
                 }
             };
 

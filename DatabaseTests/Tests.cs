@@ -99,15 +99,10 @@ namespace DatabaseTests
             foreach (var filePath in bookFilePaths)
             {
                 if (File.Exists(filePath))
-                {
                     newBook.Files = new List<EFile>
                     {
-                        new EFile {
-                            RawContent = File.ReadAllBytes(filePath),
-                            Format = Path.GetExtension(filePath)
-                        }
+                        new EFile(Path.GetExtension(filePath), File.ReadAllBytes(filePath))
                     };
-                }
             }
 
             // Now add book to database and commit changes
@@ -185,7 +180,7 @@ namespace DatabaseTests
                                         Cover = parsedBook.Cover,
                                         Files = new List<EFile>
                                         {
-                                            new EFile { Format = parsedBook.Format, RawContent = parsedBook.RawData }
+                                            new EFile(parsedBook.Format, parsedBook.RawData)
                                         }
                                     };
                                     context.Books.Add(newBook);
