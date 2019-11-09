@@ -17,30 +17,30 @@ namespace EbookTools.Epub
 
         public EpubParser(byte[] file)
         {
-            this.StyleSettings = StyleSettings.Default;
-            this._rawFile = file;
+            StyleSettings = StyleSettings.Default;
+            _rawFile = file;
         }
 
         public EpubParser(byte[] file, StyleSettings settings)
         {
-            this.StyleSettings = settings;
-            this._rawFile = file;
+            StyleSettings = settings;
+            _rawFile = file;
         }
 
         public EpubParser(Stream file)
         {
-            this.StyleSettings = StyleSettings.Default;
+            StyleSettings = StyleSettings.Default;
             MemoryStream ms = new MemoryStream();
             file.CopyTo(ms);
-            this._rawFile = ms.GetBuffer();
+            _rawFile = ms.GetBuffer();
         }
 
         public EpubParser(Stream file, StyleSettings settings)
         {
-            this.StyleSettings = settings;
+            StyleSettings = settings;
             MemoryStream ms = new MemoryStream();
             file.CopyTo(ms);
-            this._rawFile = ms.GetBuffer();
+            _rawFile = ms.GetBuffer();
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace EbookTools.Epub
         /// </summary>
         public override ParsedBook Parse()
         {
-            MemoryStream ms = new MemoryStream(this._rawFile);
+            MemoryStream ms = new MemoryStream(_rawFile);
             string title, author, publisher, isbn = null, htmlBook;
             XmlDocument doc = null;
             byte[] cover;
