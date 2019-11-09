@@ -13,6 +13,6 @@ namespace OnlineBookApi
 
         Task<byte[]> GetCoverAsync(Book book);
 
-        IList<byte[]> GetMultipleCovers(Book book);
+        Task<IList<byte[]>> GetMultipleCoversAsync(Book book);
     }
 }

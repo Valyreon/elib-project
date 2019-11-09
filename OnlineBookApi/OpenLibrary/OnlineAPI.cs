@@ -25,9 +25,9 @@ namespace OnlineBookApi.OpenLibrary
             throw new NotImplementedException();
         }
 
-        public IList<byte[]> GetMultipleCovers(Book book)
+        public async Task<IList<byte[]>> GetMultipleCoversAsync(Book book)
         {
-            SearchQuery searchQuery = Query.GeneralQueryAsync(book.Title, Query.SearchType.Title).Result;
+            SearchQuery searchQuery = await Query.GeneralQueryAsync(book.Title, Query.SearchType.Title);
             IList<byte[]> result = new List<byte[]>();
 
             foreach (var x in searchQuery.docs)
