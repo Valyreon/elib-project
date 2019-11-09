@@ -12,10 +12,5 @@ namespace ElibWpf.Views.Controls
         {
             InitializeComponent();
         }
-
-        private void MoveWindow(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            Window.GetWindow(this).DragMove();
-        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿<ResourceDictionary
+    x:Class="ElibWpf.Resources.DashboardTabControlStyles"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:Components="clr-namespace:ElibWpf.CustomComponents">
@@ -85,7 +86,8 @@
                         <Grid
                             x:Name="HeaderGrid"
                             Background="{StaticResource TabItemPanelBackgroundBrush}"
-                            DockPanel.Dock="Left">
+                            DockPanel.Dock="Left"
+                            MouseLeftButtonDown="HandleLeftClick">
                             <StackPanel
                                 Margin="15,0,0,0"
                                 HorizontalAlignment="Left"

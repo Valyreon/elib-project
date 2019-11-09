@@ -141,6 +141,9 @@
     <Compile Include="DataStructures\ObservableStack.cs" />
     <Compile Include="Messages\AuthorSelectedMessage.cs" />
     <Compile Include="Messages\SeriesSelectedMessage.cs" />
+    <Compile Include="Resources\DashboardTabControlStyles.xaml.cs">
+      <DependentUpon>DashboardTabControlStyles.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Themes\CustomComponents\BookTile.cs" />
     <Compile Include="Themes\CustomComponents\SimpleFlatTextBox.cs" />
     <Compile Include="Themes\CustomComponents\SymbolButton.cs" />

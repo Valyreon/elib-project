@@ -31,7 +31,7 @@ namespace Domain
 
         public string SeriesInfo
         {
-            get => $"{Series.Name} {((NumberInSeries!=null)?($"#{NumberInSeries}"):(""))}";
+                get => Series != null ? $"{Series.Name} {((NumberInSeries!=null)?($"#{NumberInSeries}"):(""))}" : "";
         }
     }
 }

@@ -13,6 +13,8 @@
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="Electronic Library"
+    MinWidth="1000"
+    MinHeight="800"
     IconBitmapScalingMode="HighQuality"
     IconEdgeMode="Aliased"
     Left="0"
