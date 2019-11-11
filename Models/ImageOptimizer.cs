@@ -2,64 +2,52 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using ImageProcessor.Imaging.Filters;
 using System.IO;
+using ImageProcessor;
+using ImageProcessor.Imaging;
 
 namespace Models
 {
     public static class ImageOptimizer
     {
-        public static byte[] ResizeAndFill(byte[] imgBytes, int Width, int Height, Color fillColor)
+        public static byte[] ResizeAndFill(byte[] imgBytes, int Width = 200, int Height = 320)
         {
-            Image imgPhoto = Image.FromStream(new MemoryStream(imgBytes));
+            using Image imgPhoto = Image.FromStream(new MemoryStream(imgBytes));
 
-            int sourceWidth = imgPhoto.Width;
-            int sourceHeight = imgPhoto.Height;
+            Size size = new Size(Width, Height);
 
-            Width = (int)(((float)sourceWidth * (float)Height) / (float)sourceHeight);
+            ResizeLayer resizeLayer = new ResizeLayer(size, ResizeMode.Max);
 
-            int sourceX = 0;
-            int sourceY = 0;
-            int destX = 0;
-            int destY = 0;
+            using MemoryStream outStream = new MemoryStream();
+            using ImageFactory imageFactory = new ImageFactory(preserveExifData: false);
 
-            float nPercent = 0;
-            float nPercentW = 0;
-            float nPercentH = 0;
+            CropLayer cropLayer = new CropLayer(2, 3, 2, 3, CropMode.Percentage);
 
-            nPercentW = ((float)Width / (float)sourceWidth);
-            nPercentH = ((float)Height / (float)sourceHeight);
-            if (nPercentH < nPercentW)
-            {
-                nPercent = nPercentH;
-                destX = Convert.ToInt16((Width - (sourceWidth * nPercent)) / 2);
-            }
-            else
-            {
-                nPercent = nPercentW;
-                destY = Convert.ToInt16((Height - (sourceHeight * nPercent)) / 2);
-            }
+            // Resize cover image and stor in outstream
+            imageFactory.Load(imgPhoto)
+                .Crop(cropLayer)
+                .Resize(resizeLayer)
+                .Save(outStream);
 
-            int destWidth = (int)(sourceWidth * nPercent);
-            int destHeight = (int)(sourceHeight * nPercent);
+            using Image resizePhoto = Image.FromStream(outStream);
 
-            Bitmap bmPhoto = new Bitmap(Width, Height,
-                              PixelFormat.Format24bppRgb);
-            bmPhoto.SetResolution(imgPhoto.HorizontalResolution,
-                             imgPhoto.VerticalResolution);
+            ImageLayer resizedImage = new ImageLayer() { Image = resizePhoto };
 
-            using Graphics grPhoto = Graphics.FromImage(bmPhoto);
-            grPhoto.Clear(fillColor);
-            grPhoto.InterpolationMode =
-                    InterpolationMode.HighQualityBicubic;
+            // If the picture fits do not blur the background
+            if (resizedImage.Size == size)
+                return outStream.ToArray();
 
-            grPhoto.DrawImage(imgPhoto,
-                new Rectangle(destX, destY, destWidth, destHeight),
-                new Rectangle(sourceX, sourceY, sourceWidth, sourceHeight),
-                GraphicsUnit.Pixel);
+            resizeLayer = new ResizeLayer(size, ResizeMode.Min);
 
-            using MemoryStream outStr = new MemoryStream();
-            bmPhoto.Save(outStr, ImageFormat.Jpeg);
-            return outStr.ToArray();
+            // Loads the original image resizes it to have the shortest side fit the dimensions, blurs it then overlays the original resized image
+            imageFactory.Load(imgPhoto)
+                .Resize(resizeLayer)
+                .GaussianBlur(10)
+                .Overlay(resizedImage)
+                .Save(outStream);
+
+            return outStream.ToArray();
         }
     }
 }

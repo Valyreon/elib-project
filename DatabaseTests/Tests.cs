@@ -214,7 +214,7 @@ namespace DatabaseTests
             {
                 if (book.Cover != null)
                 {
-                    book.Cover = ImageOptimizer.ResizeAndFill(book.Cover, 200, 320, Color.GhostWhite);
+                    book.Cover = ImageOptimizer.ResizeAndFill(book.Cover, 200, 320);
                 }
             }
 
