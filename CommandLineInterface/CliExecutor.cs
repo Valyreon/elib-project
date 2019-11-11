@@ -6,11 +6,18 @@ using Models;
 using Models.Helpers;
 using Models.Options;
 using Models.Utilities;
+using OnlineBookApi;
+using OnlineBookApi.OpenLibrary;
+using OnlineBookApi.OpenLibrary.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Migrations;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Cli
 {
@@ -70,7 +77,7 @@ namespace Cli
         ///  Starts the CLI loop until the keyword 'exit' is inputted.
         /// </summary>
         ///
-        public void Execute()
+        public async void Execute()
         {
             string command;
             do
@@ -449,6 +456,20 @@ namespace Cli
                                // Console.Write($"Publisher[{book.Pu}]")
                             }
                         }*/
+                        break;
+                    case "query":
+                    case "q":
+                        IOnline online = new OnlineAPI();
+                        int localid = int.Parse(consoleInput.Item2);
+                        IList<byte[]> images = online.GetMultipleCoversAsync(database.Books.Include("Authors").Where(x=> x.Id == localid).FirstOrDefault()).Result;
+                        /*
+                        foreach (byte[] img in images)
+                        {
+                            Image image = Image.FromStream(new MemoryStream(img));
+                            image.Save(@"c:\users\gygasync\desktop\testtest\" + img.GetHashCode() + ".jpg", ImageFormat.Jpeg);
+                        }
+                        */
+
                         break;
 
                     case "exit":
