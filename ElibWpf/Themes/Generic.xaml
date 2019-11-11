@@ -117,28 +117,7 @@
                                 </Storyboard>
                             </BeginStoryboard>
                         </EventTrigger>
-                        <EventTrigger RoutedEvent="MouseEnter" SourceName="Enveloper">
-                            <BeginStoryboard>
-                                <Storyboard>
-                                    <ColorAnimation
-                                        Storyboard.TargetName="AweImg"
-                                        Storyboard.TargetProperty="Foreground.Color"
-                                        To="CornflowerBlue"
-                                        Duration="0:0:0.3" />
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                        <EventTrigger RoutedEvent="MouseLeave" SourceName="Enveloper">
-                            <BeginStoryboard>
-                                <Storyboard>
-                                    <ColorAnimation
-                                        Storyboard.TargetName="AweImg"
-                                        Storyboard.TargetProperty="Foreground.Color"
-                                        To="#484b4e"
-                                        Duration="0:0:0.3" />
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
+
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="AweImg" Property="Foreground" Value="LightGray" />
                         </Trigger>

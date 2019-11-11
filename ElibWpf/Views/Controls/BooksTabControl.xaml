@@ -252,7 +252,32 @@
                             Foreground="#484b4e"
                             IconName="ChevronLeft"
                             IconSize="20"
-                            IsEnabled="{Binding IsBackEnabled}" />
+                            IsEnabled="{Binding IsBackEnabled}">
+                            <Components:ConditionalEventTrigger.Triggers>
+                                <Components:ConditionalEventTriggerCollection>
+                                    <Components:ConditionalEventTrigger Condition="{Binding IsBackEnabled}" RoutedEvent="MouseEnter">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ColorAnimation
+                                                    Storyboard.TargetProperty="Foreground.Color"
+                                                    To="CornflowerBlue"
+                                                    Duration="0:0:0.3" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </Components:ConditionalEventTrigger>
+                                    <Components:ConditionalEventTrigger Condition="{Binding IsBackEnabled}" RoutedEvent="MouseLeave">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ColorAnimation
+                                                    Storyboard.TargetProperty="Foreground.Color"
+                                                    To="#484b4e"
+                                                    Duration="0:0:0.3" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </Components:ConditionalEventTrigger>
+                                </Components:ConditionalEventTriggerCollection>
+                            </Components:ConditionalEventTrigger.Triggers>
+                        </Components:SymbolButton>
                     </Border>
 
                     <TextBlock
@@ -283,7 +308,8 @@
                         Command="{Binding RefreshCommand}"
                         Foreground="#484b4e"
                         IconName="Refresh"
-                        IconSize="16" />
+                        IconSize="16"
+                        Style="{StaticResource BlueHoverStyle}" />
 
                     <Grid Grid.Column="8" HorizontalAlignment="Right">
                         <Grid.ColumnDefinitions>
@@ -301,7 +327,8 @@
                             Background="Transparent"
                             Foreground="#484b4e"
                             IconName="Gear"
-                            IconSize="24" />
+                            IconSize="24"
+                            Style="{StaticResource BlueHoverStyle}" />
                     </Grid>
                 </Grid>
             </Border>

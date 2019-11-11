@@ -19,7 +19,7 @@ namespace ElibWpf.CustomComponents
         public FontAwesomeIcon IconName
         {
             get { return (FontAwesomeIcon)base.GetValue(IconNameProperty); }
-            set { base.SetValue(IconNameProperty, value); }
+            set { base.SetValue(IconNameProperty, value);}
         }
 
         public double IconSize

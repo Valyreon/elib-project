@@ -145,6 +145,7 @@
       <DependentUpon>DashboardTabControlStyles.xaml</DependentUpon>
     </Compile>
     <Compile Include="Themes\CustomComponents\BookTile.cs" />
+    <Compile Include="Themes\CustomComponents\ConditionalEventTrigger.cs" />
     <Compile Include="Themes\CustomComponents\SimpleFlatTextBox.cs" />
     <Compile Include="Themes\CustomComponents\SymbolButton.cs" />
     <Compile Include="BindingItems\PaneMainItem.cs" />
@@ -201,6 +202,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\Colors.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\SymbolButtonResources.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
