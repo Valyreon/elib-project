@@ -11,7 +11,7 @@ namespace Models
 {
     public static class ImageOptimizer
     {
-        public static byte[] ResizeAndFill(byte[] imgBytes, int Width = 200, int Height = 320)
+        public static byte[] ResizeAndFill(byte[] imgBytes, int Width = 200, int Height = 300)
         {
             using Image imgPhoto = Image.FromStream(new MemoryStream(imgBytes));
 
@@ -22,7 +22,7 @@ namespace Models
             using MemoryStream outStream = new MemoryStream();
             using ImageFactory imageFactory = new ImageFactory(preserveExifData: false);
 
-            CropLayer cropLayer = new CropLayer(2, 3, 2, 3, CropMode.Percentage);
+            CropLayer cropLayer = new CropLayer(2, 2, 2, 2, CropMode.Percentage);
 
             // Resize cover image and stor in outstream
             imageFactory.Load(imgPhoto)
