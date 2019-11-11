@@ -20,10 +20,13 @@ namespace Models
             ResizeLayer resizeLayer = new ResizeLayer(size, ResizeMode.Max);
 
             using MemoryStream outStream = new MemoryStream();
-            using ImageFactory imageFactory = new ImageFactory();
+            using ImageFactory imageFactory = new ImageFactory(preserveExifData: false);
+
+            CropLayer cropLayer = new CropLayer(2, 3, 2, 3, CropMode.Percentage);
 
             // Resize cover image and stor in outstream
             imageFactory.Load(imgPhoto)
+                .Crop(cropLayer)
                 .Resize(resizeLayer)
                 .Save(outStream);
 
