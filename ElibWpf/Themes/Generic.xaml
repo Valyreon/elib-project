@@ -150,7 +150,8 @@
                             <MetroControls:Tile
                                 x:Name="TheTile"
                                 Width="164"
-                                Height="262"
+                                Height="246"
+                                Margin="2,3,2,3"
                                 Background="GhostWhite"
                                 Command="{TemplateBinding TileCommand}"
                                 CommandParameter="{TemplateBinding TileParameter}"
