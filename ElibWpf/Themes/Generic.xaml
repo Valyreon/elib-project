@@ -153,6 +153,7 @@
                                 Height="262"
                                 Background="GhostWhite"
                                 Command="{TemplateBinding TileCommand}"
+                                CommandParameter="{TemplateBinding TileParameter}"
                                 TitleFontSize="14">
                                 <Grid>
                                     <Image
@@ -170,6 +171,7 @@
                             Width="175"
                             HorizontalAlignment="Left"
                             Command="{TemplateBinding TileCommand}"
+                            CommandParameter="{TemplateBinding TileParameter}"
                             FontSize="14"
                             Foreground="Black"
                             Text="{TemplateBinding Title}"

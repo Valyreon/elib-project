@@ -15,6 +15,7 @@ namespace ElibWpf.CustomComponents
         public static DependencyProperty TileCommandProperty;
         public static DependencyProperty AuthorCommandProperty;
         public static DependencyProperty SeriesCommandProperty;
+        public static DependencyProperty TileParameterProperty;
         public static DependencyProperty AuthorParameterProperty;
         public static DependencyProperty SeriesParameterProperty;
 
@@ -27,11 +28,12 @@ namespace ElibWpf.CustomComponents
             TitleProperty = DependencyProperty.Register("Title", typeof(string), typeof(BookTile));
             AuthorsProperty = DependencyProperty.Register("Authors", typeof(string), typeof(BookTile));
             SeriesInfoProperty = DependencyProperty.Register("SeriesInfo", typeof(string), typeof(BookTile));
-            TileCommandProperty = DependencyProperty.Register("TileCommand", typeof(ICommand), typeof(BookTile));
 
+            TileCommandProperty = DependencyProperty.Register("TileCommand", typeof(ICommand), typeof(BookTile));
             AuthorCommandProperty = DependencyProperty.Register("AuthorCommand", typeof(ICommand), typeof(BookTile));
             SeriesCommandProperty = DependencyProperty.Register("SeriesCommand", typeof(ICommand), typeof(BookTile));
 
+            TileParameterProperty = DependencyProperty.Register("TileParameter", typeof(Book), typeof(BookTile));
             AuthorParameterProperty = DependencyProperty.Register("AuthorParameter", typeof(ICollection<Author>), typeof(BookTile));
             SeriesParameterProperty = DependencyProperty.Register("SeriesParameter", typeof(BookSeries), typeof(BookTile));
         }
@@ -88,6 +90,12 @@ namespace ElibWpf.CustomComponents
         {
             get => (BookSeries)base.GetValue(SeriesParameterProperty);
             set => base.SetValue(SeriesParameterProperty, value);
+        }
+
+        public Book TileParameter
+        {
+            get => (Book)base.GetValue(TileParameterProperty);
+            set => base.SetValue(TileParameterProperty, value);
         }
     }
 }

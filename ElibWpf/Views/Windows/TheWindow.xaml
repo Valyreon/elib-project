@@ -36,5 +36,19 @@
         <ResourceDictionary Source="WindowResources.xaml" />
     </Window.Resources>
 
+    <MetroControls:MetroWindow.Flyouts>
+        <MetroControls:FlyoutsControl>
+            <MetroControls:Flyout
+                Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MetroWindow}, Path=ActualWidth, Mode=OneWay}"
+                Margin="0.01,0,0,0"
+                AnimateOpacity="True"
+                CloseCommand="{Binding CloseDetailsCommand}"
+                IsOpen="{Binding IsBookDetailsFlyoutOpen}"
+                Opacity="0.93"
+                Position="Right" />
+            <ContentControl Content="{Binding FlyoutControl}" />
+        </MetroControls:FlyoutsControl>
+    </MetroControls:MetroWindow.Flyouts>
+
     <ContentControl Content="{Binding CurrentControl}" FontFamily="{StaticResource Font}" />
 </MetroControls:MetroWindow>
