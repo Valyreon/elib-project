@@ -1,6 +1,8 @@
 ﻿using ElibWpf.Messages;
 using ElibWpf.ViewModels.Controls;
+using ElibWpf.ViewModels.Flyouts;
 using ElibWpf.Views;
+using ElibWpf.Views.Flyouts;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using System;
@@ -20,7 +22,7 @@ namespace ElibWpf.ViewModels.Windows
             set => Set(ref isBookDetailsFlyoutOpen, value);
         }
 
-        public ICommand CloseDetailsCommand { get => new RelayCommand(() => { IsBookDetailsFlyoutOpen = false; }); }
+        public ICommand CloseDetailsCommand { get => new RelayCommand(() => { IsBookDetailsFlyoutOpen = false; FlyoutControl = null; }); }
 
         public TheWindowViewModel()
         {
@@ -31,19 +33,20 @@ namespace ElibWpf.ViewModels.Windows
         private void HandleBookFlyout(ShowBookDetailsMessage obj)
         {
             IsBookDetailsFlyoutOpen = true;
+            FlyoutControl = new BookDetailsViewModel(obj.Book);
         }
 
         public object CurrentControl
         {
             get => this.currentControl;
-            set => Set("CurrentControl", ref currentControl, value);
+            set => Set(ref currentControl, value);
         }
 
         private object flyoutControl;
         public object FlyoutControl
         {
             get => this.flyoutControl;
-            set => Set("FyloutControl", ref flyoutControl, value);
+            set => Set("FlyoutControl", ref flyoutControl, value);
         }
     }
 }

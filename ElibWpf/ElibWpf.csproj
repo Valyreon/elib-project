@@ -164,6 +164,7 @@
     <Compile Include="ViewModels\Controls\BooksTabViewModel.cs" />
     <Compile Include="ViewModels\Controls\BookViewerViewModel.cs" />
     <Compile Include="ViewModels\Controls\DashboardViewModel.cs" />
+    <Compile Include="ViewModels\Flyouts\BookDetailsViewModel.cs" />
     <Compile Include="ViewModels\IPageViewModel.cs" />
     <Compile Include="ViewModels\Controls\QuotesTabViewModel.cs" />
     <Compile Include="ViewModels\Controls\SettingsTabViewModel.cs" />
@@ -183,6 +184,9 @@
     </Compile>
     <Compile Include="Views\Controls\SettingsTabControl.xaml.cs">
       <DependentUpon>SettingsTabControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Flyouts\BookDetailsControl.xaml.cs">
+      <DependentUpon>BookDetailsControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Windows\SplashScreen.xaml.cs">
       <DependentUpon>SplashScreen.xaml</DependentUpon>
@@ -223,6 +227,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Controls\DashboardControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Flyouts\BookDetailsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -4,6 +4,8 @@
     xmlns:ControlViewModels="clr-namespace:ElibWpf.ViewModels.Controls"
     xmlns:ControlViews="clr-namespace:ElibWpf.Views.Controls"
     xmlns:Converters="clr-namespace:ElibWpf.Converters"
+    xmlns:FlyoutViewModels="clr-namespace:ElibWpf.ViewModels.Flyouts"
+    xmlns:FlyoutViews="clr-namespace:ElibWpf.Views.Flyouts"
     xmlns:WindowViewModels="clr-namespace:ElibWpf.ViewModels.Windows"
     xmlns:WindowViews="clr-namespace:ElibWpf.Views.Windows">
     <DataTemplate DataType="{x:Type ControlViewModels:DashboardViewModel}">
@@ -20,6 +22,9 @@
     </DataTemplate>
     <DataTemplate DataType="{x:Type ControlViewModels:BookViewerViewModel}">
         <ControlViews:BookViewerControl />
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type FlyoutViewModels:BookDetailsViewModel}">
+        <FlyoutViews:BookDetailsControl />
     </DataTemplate>
 
     <Style TargetType="ScrollBar">

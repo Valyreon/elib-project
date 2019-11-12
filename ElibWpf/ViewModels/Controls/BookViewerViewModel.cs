@@ -1,17 +1,14 @@
 ﻿using Domain;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using Models.Options;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using ElibWpf.Paging;
 using System.Linq;
-using System.Threading;
 using GalaSoft.MvvmLight.Messaging;
 using ElibWpf.Messages;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace ElibWpf.ViewModels.Controls

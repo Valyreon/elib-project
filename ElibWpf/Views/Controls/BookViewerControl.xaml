@@ -63,7 +63,7 @@
                             SeriesInfo="{Binding SeriesInfo}"
                             SeriesParameter="{Binding Series}"
                             TileCommand="{Binding DataContext.OpenBookDetails, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                            TileParameter="{Binding DataContext}" />
+                            TileParameter="{Binding}" />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
                 <ItemsControl.Template>
