@@ -18,6 +18,7 @@ namespace Models
             Size size = new Size(Width, Height);
 
             ResizeLayer resizeLayer = new ResizeLayer(size, ResizeMode.Max);
+            ResizeLayer resizeCropLayer = new ResizeLayer(size, ResizeMode.Crop, AnchorPosition.Center);
 
             using MemoryStream outStream = new MemoryStream();
             using ImageFactory imageFactory = new ImageFactory(preserveExifData: false);
@@ -45,6 +46,7 @@ namespace Models
                 .Resize(resizeLayer)
                 .GaussianBlur(10)
                 .Overlay(resizedImage)
+                .Resize(resizeCropLayer)
                 .Save(outStream);
 
             return outStream.ToArray();
