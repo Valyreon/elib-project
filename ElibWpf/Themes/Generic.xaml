@@ -143,15 +143,16 @@
                         TextOptions.TextRenderingMode="Auto">
                         <Border
                             x:Name="TileBorder"
+                            Width="166"
+                            Height="248"
                             Background="GhostWhite"
                             BorderBrush="LightGray"
                             BorderThickness="1">
-                            <Border.Triggers />
                             <MetroControls:Tile
                                 x:Name="TheTile"
                                 Width="164"
                                 Height="246"
-                                Margin="2,3,2,3"
+                                Margin="3"
                                 Background="GhostWhite"
                                 Command="{TemplateBinding TileCommand}"
                                 CommandParameter="{TemplateBinding TileParameter}"
@@ -159,17 +160,19 @@
                                 <Grid>
                                     <Image
                                         x:Name="BackgroundImage"
+                                        Width="164"
+                                        Height="246"
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
                                         Panel.ZIndex="100"
                                         Source="{Binding Cover, Converter={StaticResource ImageConverter}}"
-                                        Stretch="Fill" />
+                                        Stretch="UniformToFill" />
                                 </Grid>
                             </MetroControls:Tile>
                         </Border>
                         <Components:TextLinkButton
                             x:Name="TheBookTitle"
-                            Width="175"
+                            Width="166"
                             HorizontalAlignment="Left"
                             Command="{TemplateBinding TileCommand}"
                             CommandParameter="{TemplateBinding TileParameter}"
@@ -178,7 +181,7 @@
                             Text="{TemplateBinding Title}"
                             TextOptions.TextHintingMode="Auto" />
                         <Components:TextLinkButton
-                            Width="175"
+                            Width="166"
                             HorizontalAlignment="Left"
                             Command="{TemplateBinding AuthorCommand}"
                             CommandParameter="{TemplateBinding AuthorParameter}"
@@ -188,7 +191,7 @@
                             Text="{TemplateBinding Authors}"
                             TextOptions.TextHintingMode="Fixed" />
                         <Components:TextLinkButton
-                            Width="175"
+                            Width="166"
                             HorizontalAlignment="Left"
                             Command="{TemplateBinding SeriesCommand}"
                             CommandParameter="{TemplateBinding SeriesParameter}"
