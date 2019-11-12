@@ -23,7 +23,7 @@ namespace Models
             using MemoryStream outStream = new MemoryStream();
             using ImageFactory imageFactory = new ImageFactory(preserveExifData: false);
 
-            CropLayer cropLayer = new CropLayer(2, 2, 2, 2, CropMode.Percentage);
+            CropLayer cropLayer = new CropLayer(2, 2, imgPhoto.Width-4, imgPhoto.Height - 4, CropMode.Pixels);
 
             // Resize cover image and stor in outstream
             imageFactory.Load(imgPhoto)
