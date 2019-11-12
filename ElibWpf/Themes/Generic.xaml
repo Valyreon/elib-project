@@ -152,7 +152,6 @@
                                 x:Name="TheTile"
                                 Width="164"
                                 Height="246"
-                                Margin="3"
                                 Background="GhostWhite"
                                 Command="{TemplateBinding TileCommand}"
                                 CommandParameter="{TemplateBinding TileParameter}"
@@ -166,7 +165,7 @@
                                         VerticalAlignment="Center"
                                         Panel.ZIndex="100"
                                         Source="{Binding Cover, Converter={StaticResource ImageConverter}}"
-                                        Stretch="UniformToFill" />
+                                        Stretch="Fill" />
                                 </Grid>
                             </MetroControls:Tile>
                         </Border>
