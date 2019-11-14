@@ -41,8 +41,8 @@ namespace ElibWpf.ViewModels.Windows
 
         private void HandleBookFlyout(ShowBookDetailsMessage obj)
         {
-            IsBookDetailsFlyoutOpen = true;
             FlyoutControl = new BookDetailsViewModel(obj.Book);
+            IsBookDetailsFlyoutOpen = true;
         }
 
         private ObservableCollection<IPageViewModel> _pages = new ObservableCollection<IPageViewModel>();
@@ -63,7 +63,7 @@ namespace ElibWpf.ViewModels.Windows
         public object FlyoutControl
         {
             get => this.flyoutControl;
-            set => Set("FlyoutControl", ref flyoutControl, value);
+            set => Set(ref flyoutControl, value);
         }
     }
 }

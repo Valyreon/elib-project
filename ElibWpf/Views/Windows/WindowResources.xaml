@@ -8,9 +8,6 @@
     xmlns:FlyoutViews="clr-namespace:ElibWpf.Views.Flyouts"
     xmlns:WindowViewModels="clr-namespace:ElibWpf.ViewModels.Windows"
     xmlns:WindowViews="clr-namespace:ElibWpf.Views.Windows">
-    <DataTemplate DataType="{x:Type ControlViewModels:DashboardViewModel}">
-        <ControlViews:DashboardControl />
-    </DataTemplate>
     <DataTemplate DataType="{x:Type ControlViewModels:BooksTabViewModel}">
         <ControlViews:BooksTabControl />
     </DataTemplate>

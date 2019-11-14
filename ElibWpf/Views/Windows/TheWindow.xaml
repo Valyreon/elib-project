@@ -48,11 +48,7 @@
                 Opacity="0.93"
                 Position="Right">
                 <Grid>
-                    <ContentControl Content="{Binding FlyoutControl}" FontFamily="{StaticResource Font}" />
-                    <Rectangle
-                        Width="200"
-                        Height="200"
-                        Fill="DarkBlue" />
+                    <ContentControl Content="{Binding FlyoutControl, UpdateSourceTrigger=PropertyChanged}" FontFamily="{StaticResource Font}" />
                 </Grid>
             </MetroControls:Flyout>
         </MetroControls:FlyoutsControl>

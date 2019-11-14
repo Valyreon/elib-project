@@ -163,7 +163,6 @@
     <Compile Include="Themes\CustomComponents\TextLinkButton.cs" />
     <Compile Include="ViewModels\Controls\BooksTabViewModel.cs" />
     <Compile Include="ViewModels\Controls\BookViewerViewModel.cs" />
-    <Compile Include="ViewModels\Controls\DashboardViewModel.cs" />
     <Compile Include="ViewModels\Flyouts\BookDetailsViewModel.cs" />
     <Compile Include="ViewModels\IPageViewModel.cs" />
     <Compile Include="ViewModels\Controls\QuotesTabViewModel.cs" />
@@ -175,9 +174,6 @@
     </Compile>
     <Compile Include="Views\Controls\BookViewerControl.xaml.cs">
       <DependentUpon>BookViewerControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Controls\DashboardControl.xaml.cs">
-      <DependentUpon>DashboardControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\QuotesTabControl.xaml.cs">
       <DependentUpon>QuotesTabControl.xaml</DependentUpon>
@@ -223,10 +219,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Controls\BookViewerControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Controls\DashboardControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
