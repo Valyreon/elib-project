@@ -68,8 +68,8 @@
             MetroControls:TabControlHelper.Transition="Normal"
             DisplayMemberPath="Caption"
             FontFamily="{StaticResource Font}"
-            ItemsSource="{Binding Pages, UpdateSourceTrigger=PropertyChanged}"
-            SelectedItem="{Binding SelectedPage, UpdateSourceTrigger=PropertyChanged}"
+            ItemsSource="{Binding Tabs, UpdateSourceTrigger=PropertyChanged}"
+            SelectedItem="{Binding SelectedTab, UpdateSourceTrigger=PropertyChanged}"
             Style="{StaticResource DashboardTabControlStyle}">
             <TabControl.Resources>
                 <DataTemplate DataType="{x:Type ControlViewModels:BooksTabViewModel}">

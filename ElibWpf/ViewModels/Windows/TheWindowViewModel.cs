@@ -29,7 +29,7 @@ namespace ElibWpf.ViewModels.Windows
                 new QuotesTabViewModel(),
                 new SettingsTabViewModel()
             };
-            SelectedPage = Tabs[0];
+            SelectedTab = Tabs[0];
         }
 
         private void HandleBookFlyout(ShowBookDetailsMessage obj)
@@ -40,11 +40,11 @@ namespace ElibWpf.ViewModels.Windows
 
         public ObservableCollection<ITabViewModel> Tabs { get; set; }
 
-        private ITabViewModel selectedPage;
-        public ITabViewModel SelectedPage
+        private ITabViewModel selectedTab;
+        public ITabViewModel SelectedTab
         {
-            get => selectedPage;
-            set => Set(ref selectedPage, value);
+            get => selectedTab;
+            set => Set(ref selectedTab, value);
         }
 
         private object flyoutControl;
