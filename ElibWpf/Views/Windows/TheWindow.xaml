@@ -47,9 +47,7 @@
                 IsOpen="{Binding IsBookDetailsFlyoutOpen}"
                 Opacity="0.93"
                 Position="Right">
-                <Grid>
-                    <ContentControl Content="{Binding FlyoutControl, UpdateSourceTrigger=PropertyChanged}" FontFamily="{StaticResource Font}" />
-                </Grid>
+                <ContentControl Content="{Binding FlyoutControl}" FontFamily="{StaticResource Font}" />
             </MetroControls:Flyout>
         </MetroControls:FlyoutsControl>
     </MetroControls:MetroWindow.Flyouts>

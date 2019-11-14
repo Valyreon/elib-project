@@ -6,23 +6,12 @@
     xmlns:local="clr-namespace:ElibWpf.Views.Flyouts"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="450"
-    d:DesignWidth="1200"
+    d:DesignWidth="800"
     mc:Ignorable="d">
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="900" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="300" />
-        </Grid.RowDefinitions>
-
-        <Grid
-            Grid.Row="0"
-            Grid.Column="1"
-            Background="DarkBlue">
-            <TextBlock Text="LALALLALA" />
-        </Grid>
+        <Rectangle
+            Width="400"
+            Height="400"
+            Fill="Blue" />
     </Grid>
 </UserControl>

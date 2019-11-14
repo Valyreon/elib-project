@@ -1,7 +1,6 @@
 ﻿using ElibWpf.Messages;
 using ElibWpf.ViewModels.Controls;
 using ElibWpf.ViewModels.Flyouts;
-
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 
