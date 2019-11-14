@@ -7,7 +7,7 @@ namespace Popcorn.Converters
     /// <summary>
     /// Convert a boolean to its inverse
     /// </summary>
-    [ValueConversion(typeof (bool), typeof (bool))]
+    [ValueConversion(typeof(bool), typeof(bool))]
     public class BoolToInverseBoolConverter : IValueConverter
     {
         /// <summary>
@@ -19,7 +19,7 @@ namespace Popcorn.Converters
         /// <param name="culture">The culture to use in the converter.</param>
         /// <returns>Inversed boolean</returns>
         public object Convert(object value, Type targetType, object parameter,
-            CultureInfo culture) => !(bool) value;
+            CultureInfo culture) => !(bool)value;
 
         /// <summary>
         /// Not supported

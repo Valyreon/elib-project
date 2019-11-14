@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ElibWpf.DataStructures
 {
@@ -12,9 +8,21 @@ namespace ElibWpf.DataStructures
     {
         private readonly ObservableCollection<T> list = new ObservableCollection<T>();
 
-        public void Push(T element)
+        public int Count { get => list.Count; }
+
+        public void AddHandlerOnStackChange(NotifyCollectionChangedEventHandler x)
         {
-            list.Add(element);
+            list.CollectionChanged += x;
+        }
+
+        public void Clear()
+        {
+            list.Clear();
+        }
+
+        public T Peek()
+        {
+            return list.Last();
         }
 
         public T Pop()
@@ -24,21 +32,9 @@ namespace ElibWpf.DataStructures
             return res;
         }
 
-        public T Peek()
+        public void Push(T element)
         {
-            return list.Last();
-        }
-
-        public void AddHandlerOnStackChange(NotifyCollectionChangedEventHandler x)
-        {
-            list.CollectionChanged += x;
-        }
-
-        public int Count { get => list.Count; }
-
-        public void Clear()
-        {
-            list.Clear();
+            list.Add(element);
         }
     }
 }

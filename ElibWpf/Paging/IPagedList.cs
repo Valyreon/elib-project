@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ElibWpf.Paging
+﻿namespace ElibWpf.Paging
 {
     public interface IPagedList
     {
@@ -13,5 +7,4 @@ namespace ElibWpf.Paging
         int Page { get; }
         int PageSize { get; }
     }
-
 }

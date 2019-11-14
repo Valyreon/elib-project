@@ -21,10 +21,10 @@ namespace Popcorn.Converters
         public object Convert(object value, Type targetType, object parameter,
             CultureInfo culture)
         {
-            if (targetType != typeof (Visibility))
+            if (targetType != typeof(Visibility))
                 throw new InvalidOperationException("The target must be a VisibilityProperty");
 
-            if ((bool) value)
+            if ((bool)value)
                 return Visibility.Visible;
 
             return Visibility.Collapsed;

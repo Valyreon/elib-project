@@ -1,8 +1,10 @@
 ﻿using ElibWpf.Messages;
 using ElibWpf.ViewModels.Controls;
 using ElibWpf.ViewModels.Flyouts;
+
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
@@ -10,14 +12,9 @@ namespace ElibWpf.ViewModels.Windows
 {
     public class TheWindowViewModel : ViewModelBase
     {
+        private object flyoutControl;
         private bool isBookDetailsFlyoutOpen;
-        public bool IsBookDetailsFlyoutOpen
-        {
-            get => isBookDetailsFlyoutOpen;
-            set => Set(ref isBookDetailsFlyoutOpen, value);
-        }
-
-        public ICommand CloseDetailsCommand { get => new RelayCommand(() => { IsBookDetailsFlyoutOpen = false; FlyoutControl = null; }); }
+        private ITabViewModel selectedTab;
 
         public TheWindowViewModel()
         {
@@ -32,26 +29,32 @@ namespace ElibWpf.ViewModels.Windows
             SelectedTab = Tabs[0];
         }
 
-        private void HandleBookFlyout(ShowBookDetailsMessage obj)
+        public ICommand CloseDetailsCommand { get => new RelayCommand(() => { IsBookDetailsFlyoutOpen = false; FlyoutControl = null; }); }
+
+        public object FlyoutControl
         {
-            FlyoutControl = new BookDetailsViewModel(obj.Book);
-            IsBookDetailsFlyoutOpen = true;
+            get => this.flyoutControl;
+            set => Set(ref flyoutControl, value);
         }
 
-        public ObservableCollection<ITabViewModel> Tabs { get; set; }
+        public bool IsBookDetailsFlyoutOpen
+        {
+            get => isBookDetailsFlyoutOpen;
+            set => Set(ref isBookDetailsFlyoutOpen, value);
+        }
 
-        private ITabViewModel selectedTab;
         public ITabViewModel SelectedTab
         {
             get => selectedTab;
             set => Set(ref selectedTab, value);
         }
 
-        private object flyoutControl;
-        public object FlyoutControl
+        public ObservableCollection<ITabViewModel> Tabs { get; set; }
+
+        private void HandleBookFlyout(ShowBookDetailsMessage obj)
         {
-            get => this.flyoutControl;
-            set => Set(ref flyoutControl, value);
+            FlyoutControl = new BookDetailsViewModel(obj.Book);
+            IsBookDetailsFlyoutOpen = true;
         }
     }
 }

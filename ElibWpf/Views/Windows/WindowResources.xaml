@@ -30,5 +30,4 @@
     </Style>
 
     <FontFamily x:Key="Font">/Fonts/#Sofia Pro Regular</FontFamily>
-
 </ResourceDictionary>

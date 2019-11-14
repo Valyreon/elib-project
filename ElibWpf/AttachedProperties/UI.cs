@@ -13,20 +13,6 @@ namespace ElibWpf.CustomComponents
 
         public static void SetElevation(this UIElement element, double elevation) => element.SetValue(ElevationProperty, elevation);
 
-        private static object OnElevationChanged(DependencyObject d, object value)
-        {
-            if (d is UIElement element && value is double elevation)
-                if (elevation == 0)
-                    element.Effect = null;
-                else
-                {
-                    Effect e = CreateElevation(elevation, element.Effect);
-                    if (e != null)
-                        element.Effect = e;
-                }
-            return value;
-        }
-
         private static Effect CreateElevation(double elevation, Effect source)
         {
             static void MixShadows(DropShadowEffect nearest, DropShadowEffect matched, double balance)
@@ -81,6 +67,20 @@ namespace ElibWpf.CustomComponents
             shadow.Opacity = .42;
             shadow.RenderingBias = RenderingBias.Performance;
             return modify ? null : shadow;
+        }
+
+        private static object OnElevationChanged(DependencyObject d, object value)
+        {
+            if (d is UIElement element && value is double elevation)
+                if (elevation == 0)
+                    element.Effect = null;
+                else
+                {
+                    Effect e = CreateElevation(elevation, element.Effect);
+                    if (e != null)
+                        element.Effect = e;
+                }
+            return value;
         }
     }
 }

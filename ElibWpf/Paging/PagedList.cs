@@ -5,11 +5,6 @@ namespace ElibWpf.Paging
 {
     public class PagedList<T> : List<T>, IPagedList
     {
-        public int TotalCount { get; private set; }
-        public int PageCount { get; private set; }
-        public int Page { get; private set; }
-        public int PageSize { get; private set; }
-
         public PagedList(IQueryable<T> source, int page, int pageSize)
         {
             TotalCount = source.Count();
@@ -20,6 +15,11 @@ namespace ElibWpf.Paging
             AddRange(source.Skip(Page * PageSize).Take(PageSize).ToList());
         }
 
+        public int Page { get; private set; }
+        public int PageCount { get; private set; }
+        public int PageSize { get; private set; }
+        public int TotalCount { get; private set; }
+
         private int GetPageCount(int pageSize, int totalCount)
         {
             if (pageSize == 0)
@@ -29,5 +29,4 @@ namespace ElibWpf.Paging
             return (totalCount / pageSize) + (remainder == 0 ? 0 : 1);
         }
     }
-
 }

@@ -1,6 +1,7 @@
-﻿using System.Windows;
+﻿using FontAwesome.WPF;
+
+using System.Windows;
 using System.Windows.Controls;
-using FontAwesome.WPF;
 
 namespace ElibWpf.CustomComponents
 {
@@ -19,7 +20,7 @@ namespace ElibWpf.CustomComponents
         public FontAwesomeIcon IconName
         {
             get { return (FontAwesomeIcon)base.GetValue(IconNameProperty); }
-            set { base.SetValue(IconNameProperty, value);}
+            set { base.SetValue(IconNameProperty, value); }
         }
 
         public double IconSize

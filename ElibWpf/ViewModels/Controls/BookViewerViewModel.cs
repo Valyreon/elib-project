@@ -1,24 +1,26 @@
 ﻿using Domain;
+
+using ElibWpf.Messages;
+using ElibWpf.Paging;
+
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Messaging;
+
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using ElibWpf.Paging;
-using System.Linq;
-using GalaSoft.MvvmLight.Messaging;
-using ElibWpf.Messages;
-using System.Collections.Generic;
-using System.Threading;
 
 namespace ElibWpf.ViewModels.Controls
 {
     public class BookViewerViewModel : ViewModelBase, IViewer
     {
-        private static readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
-
         public readonly Func<Book, bool> DefaultCondition;
+        private static readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
         private string caption;
         private int nextPage = 1;
         private string numberOfBooks;
@@ -39,6 +41,8 @@ namespace ElibWpf.ViewModels.Controls
             set => Set(ref caption, value);
         }
 
+        public ICommand GoToAuthor { get => new RelayCommand<ICollection<Author>>((ICollection<Author> a) => Messenger.Default.Send(new AuthorSelectedMessage(a.ElementAt(0)))); }
+        public ICommand GoToSeries { get => new RelayCommand<BookSeries>((BookSeries a) => Messenger.Default.Send(new SeriesSelectedMessage(a))); }
         public ICommand LoadMoreCommand { get => new RelayCommand(this.LoadMore); }
 
         public string NumberOfBooks
@@ -47,11 +51,14 @@ namespace ElibWpf.ViewModels.Controls
             set => Set(ref numberOfBooks, value);
         }
 
+        public ICommand OpenBookDetails { get => new RelayCommand<Book>((Book b) => Messenger.Default.Send(new ShowBookDetailsMessage(b))); }
+
         public double ScrollVertical
         {
             get => scrollVerticalOffset;
             set => Set(ref scrollVerticalOffset, value);
         }
+
         public object Clone()
         {
             return new BookViewerViewModel(this.Caption, this.DefaultCondition);
@@ -80,12 +87,5 @@ namespace ElibWpf.ViewModels.Controls
             }
             ;
         }
-
-        public ICommand GoToAuthor { get => new RelayCommand<ICollection<Author>>((ICollection<Author> a) => Messenger.Default.Send(new AuthorSelectedMessage(a.ElementAt(0)))); }
-
-        public ICommand GoToSeries { get => new RelayCommand<BookSeries>((BookSeries a) => Messenger.Default.Send(new SeriesSelectedMessage(a))); }
-
-        public ICommand OpenBookDetails { get => new RelayCommand<Book>((Book b) => Messenger.Default.Send(new ShowBookDetailsMessage(b))); }
-
     }
 }

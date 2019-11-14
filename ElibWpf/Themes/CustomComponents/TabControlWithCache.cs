@@ -19,20 +19,6 @@ namespace ElibWpf.CustomComponents
         }
 
         /// <summary>
-        /// If containers are done, generate the selected item
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
-        {
-            if (this.ItemContainerGenerator.Status == GeneratorStatus.ContainersGenerated)
-            {
-                this.ItemContainerGenerator.StatusChanged -= ItemContainerGenerator_StatusChanged;
-                UpdateSelectedItem();
-            }
-        }
-
-        /// <summary>
         /// Get the ItemsHolder and generate any children
         /// </summary>
         public override void OnApplyTemplate()
@@ -40,6 +26,18 @@ namespace ElibWpf.CustomComponents
             base.OnApplyTemplate();
             ItemsHolderPanel = GetTemplateChild("PART_ItemsHolder") as Panel;
             UpdateSelectedItem();
+        }
+
+        protected TabItem GetSelectedTabItem()
+        {
+            object selectedItem = base.SelectedItem;
+            if (selectedItem == null)
+                return null;
+
+            if (!(selectedItem is TabItem item))
+                item = base.ItemContainerGenerator.ContainerFromIndex(base.SelectedIndex) as TabItem;
+
+            return item;
         }
 
         /// <summary>
@@ -88,21 +86,6 @@ namespace ElibWpf.CustomComponents
             UpdateSelectedItem();
         }
 
-        private void UpdateSelectedItem()
-        {
-            if (ItemsHolderPanel == null)
-                return;
-
-            // Generate a ContentPresenter if necessary
-            TabItem item = GetSelectedTabItem();
-            if (item != null)
-                CreateChildContentPresenter(item);
-
-            // show the right child
-            foreach (ContentPresenter child in ItemsHolderPanel.Children)
-                child.Visibility = ((child.Tag as TabItem).IsSelected) ? Visibility.Visible : Visibility.Collapsed;
-        }
-
         private ContentPresenter CreateChildContentPresenter(object item)
         {
             if (item == null)
@@ -147,16 +130,32 @@ namespace ElibWpf.CustomComponents
             return null;
         }
 
-        protected TabItem GetSelectedTabItem()
+        /// <summary>
+        /// If containers are done, generate the selected item
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
         {
-            object selectedItem = base.SelectedItem;
-            if (selectedItem == null)
-                return null;
+            if (this.ItemContainerGenerator.Status == GeneratorStatus.ContainersGenerated)
+            {
+                this.ItemContainerGenerator.StatusChanged -= ItemContainerGenerator_StatusChanged;
+                UpdateSelectedItem();
+            }
+        }
+        private void UpdateSelectedItem()
+        {
+            if (ItemsHolderPanel == null)
+                return;
 
-            if (!(selectedItem is TabItem item))
-                item = base.ItemContainerGenerator.ContainerFromIndex(base.SelectedIndex) as TabItem;
+            // Generate a ContentPresenter if necessary
+            TabItem item = GetSelectedTabItem();
+            if (item != null)
+                CreateChildContentPresenter(item);
 
-            return item;
+            // show the right child
+            foreach (ContentPresenter child in ItemsHolderPanel.Children)
+                child.Visibility = ((child.Tag as TabItem).IsSelected) ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 }

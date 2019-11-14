@@ -1,9 +1,12 @@
 ﻿using Domain;
+
 using ElibWpf.BindingItems;
 using ElibWpf.DataStructures;
 using ElibWpf.Messages;
+
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -101,12 +104,13 @@ namespace ElibWpf.ViewModels.Controls
         private void HandleSeriesSelection(SeriesSelectedMessage obj)
         {
             string viewerCaption = $"{obj.Series.Name} Series";
-            if(viewerCaption != CurrentViewer.Caption)
+            if (viewerCaption != CurrentViewer.Caption)
             {
                 viewerHistory.Push(CurrentViewer);
                 CurrentViewer = new BookViewerViewModel(viewerCaption, (Book x) => x.SeriesId.HasValue && x.SeriesId == obj.Series.Id);
             }
         }
+
         private void PaneSelectionChanged()
         {
             if (SelectedMainPaneItem != null)

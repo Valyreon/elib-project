@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 
 namespace ElibWpf.Paging
 {
@@ -13,5 +9,4 @@ namespace ElibWpf.Paging
             return new PagedList<T>(source, page, pageSize);
         }
     }
-
 }
