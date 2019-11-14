@@ -11,11 +11,11 @@ namespace ElibWpf.ViewModels.Flyouts
 {
     public class BookDetailsViewModel : ViewModelBase
     {
-        private readonly Book book;
+        public Book Book { get; private set; }
 
         public BookDetailsViewModel(Book book)
         {
-            this.book = book;
+            this.Book = book;
         }
     }
 }
