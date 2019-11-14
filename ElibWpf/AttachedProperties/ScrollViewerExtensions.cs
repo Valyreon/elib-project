@@ -28,9 +28,10 @@ namespace ElibWpf.AttachedProperties
 
         private static void OnScrollViewerLoaded(object sender, RoutedEventArgs e)
         {
-            (sender as ScrollViewer).Loaded -= OnScrollViewerLoaded;
-            (sender as ScrollViewer).Unloaded += OnScrollViewerUnloaded;
-            (sender as ScrollViewer).ScrollChanged += OnScrollViewerScrollChanged;
+            ScrollViewer theSender = sender as ScrollViewer;
+            theSender.Loaded -= OnScrollViewerLoaded;
+            theSender.Unloaded += OnScrollViewerUnloaded;
+            theSender.ScrollChanged += OnScrollViewerScrollChanged;
         }
 
         private static void OnScrollViewerScrollChanged(object sender, ScrollChangedEventArgs e)
@@ -48,8 +49,9 @@ namespace ElibWpf.AttachedProperties
 
         private static void OnScrollViewerUnloaded(object sender, RoutedEventArgs e)
         {
-            (sender as ScrollViewer).Unloaded -= OnScrollViewerUnloaded;
-            (sender as ScrollViewer).ScrollChanged -= OnScrollViewerScrollChanged;
+            var theSender = sender as ScrollViewer;
+            theSender.Unloaded -= OnScrollViewerUnloaded;
+            theSender.ScrollChanged -= OnScrollViewerScrollChanged;
         }
 
         /// <summary>
@@ -77,11 +79,9 @@ namespace ElibWpf.AttachedProperties
             depObj.SetValue(VerticalOffsetProperty, value);
         }
 
-        private static void OnVerticalOffsetPropertyChanged(DependencyObject d,
-            DependencyPropertyChangedEventArgs e)
+        private static void OnVerticalOffsetPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            ScrollViewer scrollViewer = d as ScrollViewer;
-            if (scrollViewer == null)
+            if (!(d is ScrollViewer scrollViewer))
                 return;
 
             BindVerticalOffset(scrollViewer);
