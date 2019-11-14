@@ -14,7 +14,7 @@ using System.Windows.Input;
 
 namespace ElibWpf.ViewModels.Controls
 {
-    public class BooksTabViewModel : ViewModelBase, IPageViewModel
+    public class BooksTabViewModel : ViewModelBase, ITabViewModel
     {
         private string caption = "Books";
         private IViewer currentViewer;

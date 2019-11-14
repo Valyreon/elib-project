@@ -27,14 +27,11 @@ namespace ElibWpf.ViewModels.Windows
         {
             MessengerInstance.Register<ShowBookDetailsMessage>(this, this.HandleBookFlyout);
 
-            var books = new BooksTabViewModel();
-            var quotes = new QuotesTabViewModel();
-            var settings = new SettingsTabViewModel();
-            Pages = new ObservableCollection<IPageViewModel>
+            Pages = new ObservableCollection<ITabViewModel>
             {
-                books,
-                quotes,
-                settings
+                new BooksTabViewModel(),
+                new QuotesTabViewModel(),
+                new SettingsTabViewModel()
             };
             SelectedPage = Pages[0];
         }
@@ -45,15 +42,15 @@ namespace ElibWpf.ViewModels.Windows
             IsBookDetailsFlyoutOpen = true;
         }
 
-        private ObservableCollection<IPageViewModel> _pages = new ObservableCollection<IPageViewModel>();
-        public ObservableCollection<IPageViewModel> Pages
+        private ObservableCollection<ITabViewModel> _pages = new ObservableCollection<ITabViewModel>();
+        public ObservableCollection<ITabViewModel> Pages
         {
             get => _pages;
             private set { Set(() => Pages, ref _pages, value); }
         }
 
-        private IPageViewModel selectedPage;
-        public IPageViewModel SelectedPage
+        private ITabViewModel selectedPage;
+        public ITabViewModel SelectedPage
         {
             get => selectedPage;
             set => Set(ref selectedPage, value);

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ElibWpf.ViewModels
 {
-    public interface IPageViewModel
+    public interface ITabViewModel
     {
         string Caption { get; set; }
     }
