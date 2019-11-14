@@ -20,16 +20,26 @@
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Column="1" Orientation="Vertical">
             <Grid Width="1000">
-                <Border
-                    Width="208"
-                    Height="308"
-                    BorderBrush="LightGray"
-                    BorderThickness="1">
-                    <Image
-                        Width="200"
-                        Height="300"
-                        Source="{Binding Book.Cover, Converter={StaticResource ImageConverter}}" />
-                </Border>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="328" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Border
+                        Grid.Column="0"
+                        Width="208"
+                        Height="308"
+                        Margin="10"
+                        BorderBrush="LightGray"
+                        BorderThickness="1">
+                        <Image
+                            Width="200"
+                            Height="300"
+                            Source="{Binding Book.Cover, Converter={StaticResource ImageConverter}}" />
+                    </Border>
+                </Grid>
+
             </Grid>
         </StackPanel>
     </Grid>
