@@ -7,14 +7,13 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows.Input;
 
 namespace ElibWpf.ViewModels.Windows
 {
     public class TheWindowViewModel : ViewModelBase
     {
-        private object currentControl;
-
         private bool isBookDetailsFlyoutOpen;
         public bool IsBookDetailsFlyoutOpen
         {
@@ -26,8 +25,18 @@ namespace ElibWpf.ViewModels.Windows
 
         public TheWindowViewModel()
         {
-            CurrentControl = new DashboardViewModel();
             MessengerInstance.Register<ShowBookDetailsMessage>(this, this.HandleBookFlyout);
+
+            var books = new BooksTabViewModel();
+            var quotes = new QuotesTabViewModel();
+            var settings = new SettingsTabViewModel();
+            Pages = new ObservableCollection<IPageViewModel>
+            {
+                books,
+                quotes,
+                settings
+            };
+            SelectedPage = Pages[0];
         }
 
         private void HandleBookFlyout(ShowBookDetailsMessage obj)
@@ -36,10 +45,18 @@ namespace ElibWpf.ViewModels.Windows
             FlyoutControl = new BookDetailsViewModel(obj.Book);
         }
 
-        public object CurrentControl
+        private ObservableCollection<IPageViewModel> _pages = new ObservableCollection<IPageViewModel>();
+        public ObservableCollection<IPageViewModel> Pages
         {
-            get => this.currentControl;
-            set => Set(ref currentControl, value);
+            get => _pages;
+            private set { Set(() => Pages, ref _pages, value); }
+        }
+
+        private IPageViewModel selectedPage;
+        public IPageViewModel SelectedPage
+        {
+            get => selectedPage;
+            set => Set(ref selectedPage, value);
         }
 
         private object flyoutControl;
