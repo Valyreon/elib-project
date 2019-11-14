@@ -10,11 +10,14 @@ using System.Linq;
 using GalaSoft.MvvmLight.Messaging;
 using ElibWpf.Messages;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace ElibWpf.ViewModels.Controls
 {
     public class BookViewerViewModel : ViewModelBase, IViewer
     {
+        private static readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
+
         public readonly Func<Book, bool> DefaultCondition;
         private string caption;
         private int nextPage = 1;
@@ -56,9 +59,19 @@ namespace ElibWpf.ViewModels.Controls
 
         private async void LoadMore()
         {
-            var bookList = await Task.Run(() => App.Database.Books.Include("Authors").Include("Series").Include("UserCollections").Where(DefaultCondition).AsQueryable().ToPagedList(nextPage++, 30));
+            PagedList<Book> bookList;
+            await semaphoreSlim.WaitAsync();
+            try
+            {
+                bookList = await Task.Run(() => App.Database.Books.Include("Authors").Include("Series").Include("UserCollections").Where(DefaultCondition).AsQueryable().ToPagedList(nextPage++, 30));
+            }
+            finally
+            {
+                semaphoreSlim.Release();
+            }
+
             NumberOfBooks = bookList.TotalCount.ToString();
-            if(Books.Count < bookList.TotalCount)
+            if (Books.Count < bookList.TotalCount)
             {
                 foreach (var item in bookList)
                 {
