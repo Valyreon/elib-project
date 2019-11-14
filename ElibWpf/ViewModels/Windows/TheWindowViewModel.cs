@@ -1,12 +1,8 @@
 ﻿using ElibWpf.Messages;
 using ElibWpf.ViewModels.Controls;
 using ElibWpf.ViewModels.Flyouts;
-using ElibWpf.Views;
-using ElibWpf.Views.Flyouts;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
@@ -27,13 +23,13 @@ namespace ElibWpf.ViewModels.Windows
         {
             MessengerInstance.Register<ShowBookDetailsMessage>(this, this.HandleBookFlyout);
 
-            Pages = new ObservableCollection<ITabViewModel>
+            Tabs = new ObservableCollection<ITabViewModel>
             {
                 new BooksTabViewModel(),
                 new QuotesTabViewModel(),
                 new SettingsTabViewModel()
             };
-            SelectedPage = Pages[0];
+            SelectedPage = Tabs[0];
         }
 
         private void HandleBookFlyout(ShowBookDetailsMessage obj)
@@ -42,12 +38,7 @@ namespace ElibWpf.ViewModels.Windows
             IsBookDetailsFlyoutOpen = true;
         }
 
-        private ObservableCollection<ITabViewModel> _pages = new ObservableCollection<ITabViewModel>();
-        public ObservableCollection<ITabViewModel> Pages
-        {
-            get => _pages;
-            private set { Set(() => Pages, ref _pages, value); }
-        }
+        public ObservableCollection<ITabViewModel> Tabs { get; set; }
 
         private ITabViewModel selectedPage;
         public ITabViewModel SelectedPage

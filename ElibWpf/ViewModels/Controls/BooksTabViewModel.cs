@@ -4,23 +4,21 @@ using ElibWpf.DataStructures;
 using ElibWpf.Messages;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Windows;
 using System.Windows.Input;
 
 namespace ElibWpf.ViewModels.Controls
 {
     public class BooksTabViewModel : ViewModelBase, ITabViewModel
     {
+        private readonly ObservableStack<IViewer> viewerHistory = new ObservableStack<IViewer>();
         private string caption = "Books";
         private IViewer currentViewer;
         private UserCollection selectedCollection;
         private PaneMainItem selectedMainPaneItem;
-        private readonly ObservableStack<IViewer> viewerHistory = new ObservableStack<IViewer>();
 
         public BooksTabViewModel()
         {
@@ -40,34 +38,7 @@ namespace ElibWpf.ViewModels.Controls
             PaneSelectionChanged();
         }
 
-        private void HandleSeriesSelection(SeriesSelectedMessage obj)
-        {
-            string viewerCaption = $"{obj.Series.Name} Series";
-            if(viewerCaption != CurrentViewer.Caption)
-            {
-                viewerHistory.Push(CurrentViewer);
-                CurrentViewer = new BookViewerViewModel(viewerCaption, (Book x) => x.SeriesId.HasValue && x.SeriesId == obj.Series.Id);
-            }
-        }
-
-        private void HandleAuthorSelection(AuthorSelectedMessage obj)
-        {
-            string viewerCaption = $"Books by {obj.Author.Name}";
-            if (viewerCaption != CurrentViewer.Caption)
-            {
-                viewerHistory.Push(CurrentViewer);
-                CurrentViewer = new BookViewerViewModel(viewerCaption, (Book x) => x.Authors.Select(a => a.Id).Contains(obj.Author.Id));
-            }
-        }
-
         public ICommand BackCommand { get => new RelayCommand(this.GoToPreviousViewer); }
-
-        public bool IsBackEnabled { get => viewerHistory.Count > 0; }
-
-        private void GoToPreviousViewer()
-        {
-            CurrentViewer = viewerHistory.Pop();
-        }
 
         public string Caption
         {
@@ -76,11 +47,14 @@ namespace ElibWpf.ViewModels.Controls
         }
 
         public List<UserCollection> Collections { get; set; } = App.Database.UserCollections.ToList();
+
         public IViewer CurrentViewer
         {
             get => currentViewer;
             set => Set(ref currentViewer, value);
         }
+
+        public bool IsBackEnabled { get => viewerHistory.Count > 0; }
 
         public ObservableCollection<PaneMainItem> MainPaneItems { get; set; }
 
@@ -109,6 +83,30 @@ namespace ElibWpf.ViewModels.Controls
             set => Set("SelectedMainPaneItem", ref selectedMainPaneItem, value);
         }
 
+        private void GoToPreviousViewer()
+        {
+            CurrentViewer = viewerHistory.Pop();
+        }
+
+        private void HandleAuthorSelection(AuthorSelectedMessage obj)
+        {
+            string viewerCaption = $"Books by {obj.Author.Name}";
+            if (viewerCaption != CurrentViewer.Caption)
+            {
+                viewerHistory.Push(CurrentViewer);
+                CurrentViewer = new BookViewerViewModel(viewerCaption, (Book x) => x.Authors.Select(a => a.Id).Contains(obj.Author.Id));
+            }
+        }
+
+        private void HandleSeriesSelection(SeriesSelectedMessage obj)
+        {
+            string viewerCaption = $"{obj.Series.Name} Series";
+            if(viewerCaption != CurrentViewer.Caption)
+            {
+                viewerHistory.Push(CurrentViewer);
+                CurrentViewer = new BookViewerViewModel(viewerCaption, (Book x) => x.SeriesId.HasValue && x.SeriesId == obj.Series.Id);
+            }
+        }
         private void PaneSelectionChanged()
         {
             if (SelectedMainPaneItem != null)
