@@ -28,19 +28,47 @@
                         <ColumnDefinition Width="232" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-
-                    <Border
-                        Grid.Column="0"
-                        Width="208"
-                        Height="308"
-                        Margin="0"
-                        BorderBrush="LightGray"
-                        BorderThickness="1">
-                        <Image
-                            Width="200"
-                            Height="300"
-                            Source="{Binding Book.Cover, Converter={StaticResource ImageConverter}}" />
-                    </Border>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="308" />
+                            <RowDefinition Height="35" />
+                        </Grid.RowDefinitions>
+                        <Border
+                            Grid.Column="0"
+                            Grid.ColumnSpan="2"
+                            Width="208"
+                            Height="308"
+                            Margin="0"
+                            BorderBrush="LightGray"
+                            BorderThickness="1">
+                            <Image
+                                Width="200"
+                                Height="300"
+                                Source="{Binding Book.Cover, Converter={StaticResource ImageConverter}}" />
+                        </Border>
+                        <Components:SymbolButton
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Margin="10,5,0,0"
+                            HorizontalAlignment="Left"
+                            Background="Transparent"
+                            Foreground="Gray"
+                            IconName="StarOutline"
+                            IconSize="25" />
+                        <Components:SymbolButton
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Margin="0,5,10,0"
+                            HorizontalAlignment="Right"
+                            Background="Transparent"
+                            Foreground="Gray"
+                            IconName="Check"
+                            IconSize="25" />
+                    </Grid>
                     <StackPanel
                         Grid.Column="1"
                         Margin="0"
