@@ -3,7 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:Components="clr-namespace:ElibWpf.CustomComponents"
     xmlns:local="clr-namespace:ElibWpf.Resources">
-    <Style x:Key="SubLinkStyle" TargetType="{x:Type Components:TextLinkButton}">
+    <Style x:Key="BookViewerSubLinkStyle" TargetType="{x:Type Components:TextLinkButton}">
         <Style.Triggers>
             <EventTrigger RoutedEvent="MouseEnter">
                 <BeginStoryboard>
@@ -21,6 +21,56 @@
                         <ColorAnimation
                             Storyboard.TargetProperty="(Button.Foreground).(Color)"
                             To="Gray"
+                            Duration="0:0:0.3" />
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="BookDetailsSubLinkGrayStyle" TargetType="{x:Type Components:TextLinkButton}">
+        <Style.Triggers>
+            <EventTrigger RoutedEvent="MouseEnter">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <ColorAnimation
+                            Storyboard.TargetProperty="(Button.Foreground).(Color)"
+                            To="CornflowerBlue"
+                            Duration="0:0:0.3" />
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+            <EventTrigger RoutedEvent="MouseLeave">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <ColorAnimation
+                            Storyboard.TargetProperty="(Button.Foreground).(Color)"
+                            To="Gray"
+                            Duration="0:0:0.3" />
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="BookDetailsSubLinkLightGrayStyle" TargetType="{x:Type Components:TextLinkButton}">
+        <Style.Triggers>
+            <EventTrigger RoutedEvent="MouseEnter">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <ColorAnimation
+                            Storyboard.TargetProperty="(Button.Foreground).(Color)"
+                            To="CornflowerBlue"
+                            Duration="0:0:0.3" />
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+            <EventTrigger RoutedEvent="MouseLeave">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <ColorAnimation
+                            Storyboard.TargetProperty="(Button.Foreground).(Color)"
+                            To="LightGray"
                             Duration="0:0:0.3" />
                     </Storyboard>
                 </BeginStoryboard>

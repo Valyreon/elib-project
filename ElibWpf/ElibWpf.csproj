@@ -138,8 +138,10 @@
     </ApplicationDefinition>
     <Compile Include="AttachedProperties\ScrollViewerExtensions.cs" />
     <Compile Include="Converters\ImageConverter.cs" />
+    <Compile Include="Converters\StringToVisibilityConverter.cs" />
     <Compile Include="DataStructures\ObservableStack.cs" />
     <Compile Include="Messages\AuthorSelectedMessage.cs" />
+    <Compile Include="Messages\CloseFlyoutMessage.cs" />
     <Compile Include="Messages\SeriesSelectedMessage.cs" />
     <Compile Include="Messages\ShowBookDetailsMessage.cs" />
     <Compile Include="Resources\DashboardTabControlStyles.xaml.cs">

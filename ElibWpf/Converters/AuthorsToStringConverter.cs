@@ -12,7 +12,7 @@ namespace ElibWpf.Converters
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            if (value is ICollection<Author> authorList)
+            if (value is IEnumerable<Author> authorList)
             {
                 return authorList.Select(a => a.Name).Aggregate((i, j) => i + ", " + j);
             }

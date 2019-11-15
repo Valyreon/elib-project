@@ -42,11 +42,7 @@ namespace DatabaseTests
         [TestMethod]
         public void TestAddingToDatabase()
         {
-            string[] bookFilePaths = new string[]
-            {
-                @"C:\Users\luka.budrak\Desktop\The-Autumn-Republic.epub"
-            };
-            string seriesName = "Powder Mage";
+            string bookFilePath = @"C:\Users\luka.budrak\Downloads\[Peter_Hollins]_Finish_What_You_Start__The_Art_of_(z-lib.org).epub";
             string[] collectionTags = new string[]
             {
                 "fantasy",
@@ -56,62 +52,16 @@ namespace DatabaseTests
             using ElibContext context = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
             // context.TruncateDatabase();
 
-            var parsedBook = EbookParserFactory.Create(bookFilePaths[0]).Parse();
-
-            // Create new book object
+            var parsedBook = EbookParserFactory.Create(bookFilePath).Parse();
             Book newBook = new Book
             {
                 Title = parsedBook.Title,
-                Authors = new List<Author> { context.Authors.Where(au => au.Name.Equals("")).FirstOrDefault() ?? new Author() { Name = parsedBook.Author } },
-                Series = seriesName != null ? new BookSeries
-                {
-                    Name = seriesName,
-                } : null,
-                NumberInSeries = 1,
-                IsRead = true,
-                Cover = parsedBook.Cover
+                Authors = new List<Author> { context.Authors.Where(au => au.Name.Equals(parsedBook.Author)).FirstOrDefault() ?? new Author() { Name = parsedBook.Author } },
+                Cover = ImageOptimizer.ResizeAndFill(parsedBook.Cover),
+                Files = new List<EFile>{ new EFile { Format = parsedBook.Format, RawContent = parsedBook.RawData } }
             };
-
-            // Add authors, but first check if each exists in database
-            /*foreach (var authorName in authorNames)
-            {
-                var author = context.Authors.Where(au => au.Name.Equals("")).FirstOrDefault();
-                newBook.Authors = new List<Author>
-                {
-                    author ?? new Author() { Name = authorName }
-                };
-            }*/
-
-            // Add collections, but first check if each exists in database
-            foreach (var collectionTag in collectionTags)
-            {
-                var collection = context.UserCollections.Where(col => col.Tag.Equals(collectionTag)).FirstOrDefault();
-                newBook.UserCollections = new List<UserCollection>
-                {
-                    collection ?? new UserCollection { Tag = collectionTag }
-                };
-            }
-
-            // Add files, check if they exists on given location
-            foreach (var filePath in bookFilePaths)
-            {
-                if (File.Exists(filePath))
-                {
-                    newBook.Files = new List<EFile>
-                    {
-                        new EFile {
-                            RawContent = File.ReadAllBytes(filePath),
-                            Format = Path.GetExtension(filePath)
-                        }
-                    };
-                }
-            }
-
-            // Now add book to database and commit changes
             context.Books.Add(newBook);
             context.SaveChanges();
-
-            // That is it, Entity Framework will take care of all the mapping and many to many relationships.
         }
 
         [TestMethod]

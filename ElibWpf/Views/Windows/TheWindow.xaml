@@ -45,8 +45,10 @@
                 AnimateOpacity="False"
                 CloseCommand="{Binding CloseDetailsCommand}"
                 IsOpen="{Binding IsBookDetailsFlyoutOpen}"
-                Opacity="0.93"
                 Position="Right">
+                <MetroControls:Flyout.Background>
+                    <SolidColorBrush Opacity="0.95" Color="#222222" />
+                </MetroControls:Flyout.Background>
                 <ContentControl Content="{Binding FlyoutControl}" FontFamily="{StaticResource Font}" />
             </MetroControls:Flyout>
         </MetroControls:FlyoutsControl>

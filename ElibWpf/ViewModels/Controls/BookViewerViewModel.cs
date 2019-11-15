@@ -41,7 +41,7 @@ namespace ElibWpf.ViewModels.Controls
             set => Set(ref caption, value);
         }
 
-        public ICommand GoToAuthor { get => new RelayCommand<ICollection<Author>>((ICollection<Author> a) => Messenger.Default.Send(new AuthorSelectedMessage(a.ElementAt(0)))); }
+        public ICommand GoToAuthor { get => new RelayCommand<ICollection<Author>>((ICollection<Author> a) => Messenger.Default.Send(new AuthorSelectedMessage(a))); }
         public ICommand GoToSeries { get => new RelayCommand<BookSeries>((BookSeries a) => Messenger.Default.Send(new SeriesSelectedMessage(a))); }
         public ICommand LoadMoreCommand { get => new RelayCommand(this.LoadMore); }
 

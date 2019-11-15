@@ -18,6 +18,7 @@ namespace ElibWpf.ViewModels.Windows
         public TheWindowViewModel()
         {
             MessengerInstance.Register<ShowBookDetailsMessage>(this, this.HandleBookFlyout);
+            MessengerInstance.Register(this, (CloseFlyoutMessage m) => IsBookDetailsFlyoutOpen = false);
 
             Tabs = new ObservableCollection<ITabViewModel>
             {

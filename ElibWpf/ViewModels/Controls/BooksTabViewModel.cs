@@ -1,12 +1,13 @@
 ﻿using Domain;
 
 using ElibWpf.BindingItems;
+using ElibWpf.Converters;
 using ElibWpf.DataStructures;
 using ElibWpf.Messages;
 
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -93,11 +94,23 @@ namespace ElibWpf.ViewModels.Controls
 
         private void HandleAuthorSelection(AuthorSelectedMessage obj)
         {
-            string viewerCaption = $"Books by {obj.Author.Name}";
+            string viewerCaption = $"Books by {obj.Authors.Select(a => a.Name).Aggregate((i, j) => i + ", " + j)}";
             if (viewerCaption != CurrentViewer.Caption)
             {
                 viewerHistory.Push(CurrentViewer);
-                CurrentViewer = new BookViewerViewModel(viewerCaption, (Book x) => x.Authors.Select(a => a.Id).Contains(obj.Author.Id));
+                Func<Book, bool> selector = (Book x) =>
+                {
+                    var bookAuthorsIds = x.Authors.Select(a => a.Id);
+                    foreach (Author selected in obj.Authors)
+                    {
+                        if (!bookAuthorsIds.Contains(selected.Id))
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+                };
+                CurrentViewer = new BookViewerViewModel(viewerCaption, selector);
             }
         }
 
