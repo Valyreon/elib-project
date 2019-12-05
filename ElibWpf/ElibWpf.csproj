@@ -149,6 +149,7 @@
     </Compile>
     <Compile Include="Themes\CustomComponents\BookTile.cs" />
     <Compile Include="Themes\CustomComponents\ConditionalEventTrigger.cs" />
+    <Compile Include="Themes\CustomComponents\CheckboxButton.cs" />
     <Compile Include="Themes\CustomComponents\SimpleFlatTextBox.cs" />
     <Compile Include="Themes\CustomComponents\SymbolButton.cs" />
     <Compile Include="BindingItems\PaneMainItem.cs" />

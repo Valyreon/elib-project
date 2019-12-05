@@ -3,12 +3,7 @@ using ElibWpf.Messages;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace ElibWpf.ViewModels.Flyouts
@@ -26,5 +21,26 @@ namespace ElibWpf.ViewModels.Flyouts
 
         public ICommand GoToSeries { get => new RelayCommand<BookSeries>((BookSeries a) => { Messenger.Default.Send(new SeriesSelectedMessage(a)); Messenger.Default.Send(new CloseFlyoutMessage()); }); }
 
+        public bool IsBookRead
+        {
+            get => Book.IsRead;
+            set
+            {
+                Book.IsRead = value;
+                this.RaisePropertyChanged("IsBookRead");
+                App.Database.SaveChangesAsync();
+            }
+        }
+
+        public bool IsBookFavorite
+        {
+            get => Book.IsFavorite;
+            set
+            {
+                Book.IsFavorite = value;
+                this.RaisePropertyChanged("IsBookFavorite");
+                App.Database.SaveChangesAsync();
+            }
+        }
     }
 }
