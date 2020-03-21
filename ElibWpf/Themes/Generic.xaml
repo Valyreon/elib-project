@@ -274,11 +274,11 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type Components:SimpleFlatTextBox}">
+    <Style TargetType="{x:Type Components:SimpleFlatSearchBox}">
         <Setter Property="Foreground" Value="GhostWhite" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type Components:SimpleFlatTextBox}">
+                <ControlTemplate TargetType="{x:Type Components:SimpleFlatSearchBox}">
                     <Grid x:Name="SearchContainer">
                         <Border
                             Width="{Binding ElementName=SearchBox, Path=ActualWidth}"
@@ -298,7 +298,7 @@
                                     FontSize="16"
                                     Foreground="White"
                                     MaxLength="45"
-                                    Text="{Binding Path=SearchFilter, UpdateSourceTrigger=PropertyChanged}"
+                                    Text="{Binding SearchInputText, UpdateSourceTrigger=PropertyChanged}"
                                     TextOptions.TextRenderingMode="Aliased">
                                     <TextBox.Style>
                                         <Style TargetType="{x:Type TextBox}">

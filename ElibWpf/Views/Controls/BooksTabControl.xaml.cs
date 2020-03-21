@@ -1,4 +1,6 @@
-﻿using System.Windows.Controls;
+﻿using ElibWpf.ViewModels.Controls;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace ElibWpf.Views.Controls
 {

@@ -8,6 +8,7 @@
     xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:WindowViewModels="clr-namespace:ElibWpf.ViewModels.Windows"
     xmlns:WindowViews="clr-namespace:ElibWpf.Views.Windows"
+    xmlns:cmd="http://www.galasoft.ch/mvvmlight"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:fa="http://schemas.fontawesome.io/icons/"
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
@@ -15,6 +16,9 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
+    <UserControl.InputBindings>
+        <KeyBinding Key="Esc" Command="{Binding BackCommand}" />
+    </UserControl.InputBindings>
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -106,7 +110,7 @@
                 </Grid.RowDefinitions>
 
                 <Grid Grid.Row="0" Background="{StaticResource AccentColorBrush}">
-                    <Components:SimpleFlatTextBox
+                    <Components:SimpleFlatSearchBox
                         Grid.Column="1"
                         Width="230"
                         Height="30"
@@ -153,7 +157,7 @@
                                             Foreground="White"
                                             Icon="{Binding FaIconName}" />
                                         <TextBlock
-                                            Margin="10,0,0,0"
+                                            Margin="10,0,0,2"
                                             VerticalAlignment="Center"
                                             FontSize="16"
                                             Text="{Binding PaneCaption}" />

@@ -323,6 +323,10 @@
       <Project>{A35ECB0D-7185-4C6B-82A4-F2A70258F0B5}</Project>
       <Name>Models</Name>
     </ProjectReference>
+    <ProjectReference Include="..\OnlineBookApi\OnlineBookApi.csproj">
+      <Project>{4802D3B7-F3FB-4057-AA1E-D17E12DA161F}</Project>
+      <Name>OnlineBookApi</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="icon.ico" />

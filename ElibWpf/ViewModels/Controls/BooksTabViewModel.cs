@@ -7,12 +7,16 @@ using ElibWpf.Messages;
 
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using MahApps.Metro.Controls;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace ElibWpf.ViewModels.Controls
 {
@@ -23,6 +27,8 @@ namespace ElibWpf.ViewModels.Controls
         private IViewer currentViewer;
         private UserCollection selectedCollection;
         private PaneMainItem selectedMainPaneItem;
+        private string searchInput;
+        private bool isInSearchResults = false;
 
         public BooksTabViewModel()
         {
@@ -40,14 +46,45 @@ namespace ElibWpf.ViewModels.Controls
             };
             SelectedMainPaneItem = MainPaneItems[0];
             PaneSelectionChanged();
+            SearchInputText = "";
         }
 
         public ICommand BackCommand { get => new RelayCommand(this.GoToPreviousViewer); }
+
+        public ICommand SearchInputChangedCommand { get => new RelayCommand(this.ProcessSearchInput); }
+
+        public ICommand SearchCommand { get => new RelayCommand(this.ProcessSearchInput); }
+
+        private async void ProcessSearchInput()
+        {
+            if(!isInSearchResults)
+            {
+                viewerHistory.Push(CurrentViewer);
+                isInSearchResults = true;
+            }
+            Func<Book, bool> condition = (Book x) => x.Title.Contains(searchInput) && viewerHistory.Peek().DefaultCondition(x);
+            int temp = await Task.Run(() => App.Database.Books.Where(condition).Count());
+
+               
+            if(temp > 0)
+                CurrentViewer = new BookViewerViewModel($"Search results for '{searchInput}' in " + viewerHistory.Peek().Caption, condition);
+            else
+                await ((MetroWindow)Application.Current.MainWindow).ShowMessageAsync("No matches", "No books found matching the search conditions.");
+        }
 
         public string Caption
         {
             get => caption;
             set => Set(ref caption, value);
+        }
+
+        public string SearchInputText
+        {
+            get => searchInput;
+            set 
+            {
+                Set("SearchInputText", ref searchInput, value);
+            }
         }
 
         public List<UserCollection> Collections { get; set; } = App.Database.UserCollections.ToList();
@@ -89,7 +126,11 @@ namespace ElibWpf.ViewModels.Controls
 
         private void GoToPreviousViewer()
         {
-            CurrentViewer = viewerHistory.Pop();
+            if (IsBackEnabled)
+            {
+                isInSearchResults = false;
+                CurrentViewer = viewerHistory.Pop();
+            }
         }
 
         private void HandleAuthorSelection(AuthorSelectedMessage obj)

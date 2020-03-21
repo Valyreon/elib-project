@@ -3,16 +3,16 @@ using System.Windows.Controls;
 
 namespace ElibWpf.CustomComponents
 {
-    public class SimpleFlatTextBox : TextBox
+    public class SimpleFlatSearchBox : TextBox
     {
         public static DependencyProperty IconNameProperty;
         public static DependencyProperty WatermarkTextProperty;
 
-        static SimpleFlatTextBox()
+        static SimpleFlatSearchBox()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(SimpleFlatTextBox), new FrameworkPropertyMetadata(typeof(SimpleFlatTextBox)));
-            IconNameProperty = DependencyProperty.Register("IconName", typeof(FontAwesome.WPF.FontAwesomeIcon), typeof(SimpleFlatTextBox));
-            WatermarkTextProperty = DependencyProperty.Register("WatermarkText", typeof(string), typeof(SimpleFlatTextBox));
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(SimpleFlatSearchBox), new FrameworkPropertyMetadata(typeof(SimpleFlatSearchBox)));
+            IconNameProperty = DependencyProperty.Register("IconName", typeof(FontAwesome.WPF.FontAwesomeIcon), typeof(SimpleFlatSearchBox));
+            WatermarkTextProperty = DependencyProperty.Register("WatermarkText", typeof(string), typeof(SimpleFlatSearchBox));
         }
 
         public FontAwesome.WPF.FontAwesomeIcon IconName

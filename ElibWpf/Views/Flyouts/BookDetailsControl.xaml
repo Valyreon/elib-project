@@ -5,11 +5,18 @@
     xmlns:Components="clr-namespace:ElibWpf.CustomComponents"
     xmlns:Converters="clr-namespace:ElibWpf.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
     xmlns:local="clr-namespace:ElibWpf.Views.Flyouts"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="450"
     d:DesignWidth="1000"
     mc:Ignorable="d">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadOnlineApiCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
     <UserControl.Resources>
         <Converters:ImageConverter x:Key="ImageConverter" />
         <Converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
@@ -99,6 +106,9 @@
                                 Foreground="LightGray"
                                 Style="{DynamicResource BookDetailsSubLinkLightGrayStyle}"
                                 Text="{Binding Book.Authors, Converter={StaticResource AuthorsToStringConverter}}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="{Binding BookDescriptionText}" />
                         </StackPanel>
                     </StackPanel>
                 </Grid>

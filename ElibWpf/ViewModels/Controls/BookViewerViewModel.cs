@@ -19,12 +19,13 @@ namespace ElibWpf.ViewModels.Controls
 {
     public class BookViewerViewModel : ViewModelBase, IViewer
     {
-        public readonly Func<Book, bool> DefaultCondition;
+        public Func<Book, bool> DefaultCondition { get; }
         private static readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
         private string caption;
         private int nextPage = 1;
         private string numberOfBooks;
         private double scrollVerticalOffset;
+        private string searchToken = "";
 
         public BookViewerViewModel(string caption, Func<Book, bool> defaultQuery)
         {
@@ -85,7 +86,6 @@ namespace ElibWpf.ViewModels.Controls
                     App.Current.Dispatcher.Invoke(() => Books.Add(item));
                 };
             }
-            ;
         }
     }
 }
