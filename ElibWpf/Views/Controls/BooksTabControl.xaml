@@ -5,6 +5,7 @@
     xmlns:Components="clr-namespace:ElibWpf.CustomComponents"
     xmlns:ControlViewModels="clr-namespace:ElibWpf.ViewModels.Controls"
     xmlns:ControlViews="clr-namespace:ElibWpf.Views.Controls"
+    xmlns:CustomAnimation="clr-namespace:ElibWpf.CustomAnimations"
     xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:WindowViewModels="clr-namespace:ElibWpf.ViewModels.Windows"
     xmlns:WindowViews="clr-namespace:ElibWpf.Views.Windows"
@@ -101,7 +102,21 @@
             Panel.ZIndex="10"
             BorderThickness="0">
             <Grid Background="{StaticResource LighterBackgroundColorBrush}">
-
+                <Grid.Triggers>
+                    <EventTrigger RoutedEvent="Button.Click" SourceName="SearchOptionsButton">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <CustomAnimation:GridLengthAnimation
+                                    x:Name="SearchOptionsHeightAnimation"
+                                    Storyboard.TargetName="SearchContentRow"
+                                    Storyboard.TargetProperty="Height"
+                                    From="60"
+                                    To="60"
+                                    Duration="0:0:0.3" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Grid.Triggers>
                 <Grid.RowDefinitions>
                     <RowDefinition x:Name="SearchContentRow" Height="60" />
                     <RowDefinition Height="*" />

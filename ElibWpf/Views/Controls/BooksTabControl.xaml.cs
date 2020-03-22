@@ -17,15 +17,18 @@ namespace ElibWpf.Views.Controls
 
         private void SearchOptionsButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            
             switch (SearchContentRow.Height.Value)
             {
                 case 60:
-                    SearchContentRow.Height = new System.Windows.GridLength(150);
+                    //SearchContentRow.Height = new System.Windows.GridLength(150);
+                    SearchOptionsHeightAnimation.From = new System.Windows.GridLength(60);
+                    SearchOptionsHeightAnimation.To = new System.Windows.GridLength(150);
                     AngleDoubleAnimation.To = -180;
                     break;
                 case 150:
-                    SearchContentRow.Height = new System.Windows.GridLength(60);
+                    //SearchContentRow.Height = new System.Windows.GridLength(60);
+                    SearchOptionsHeightAnimation.From = new System.Windows.GridLength(150);
+                    SearchOptionsHeightAnimation.To = new System.Windows.GridLength(60);
                     AngleDoubleAnimation.To = 0;
                     break;
                 default:

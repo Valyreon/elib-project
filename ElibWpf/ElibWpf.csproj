@@ -139,6 +139,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Animations\GridLengthAnimation.cs" />
     <Compile Include="AttachedProperties\ScrollViewerExtensions.cs" />
     <Compile Include="Converters\ImageConverter.cs" />
     <Compile Include="Converters\StringToVisibilityConverter.cs" />

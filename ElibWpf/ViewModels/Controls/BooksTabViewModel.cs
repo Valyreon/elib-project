@@ -71,9 +71,9 @@ namespace ElibWpf.ViewModels.Controls
                     viewerHistory.Push(CurrentViewer);
                     isInSearchResults = true;
                 }
-                Func<Book, bool> condition = (Book x) => ((SearchOptions.SearchByName ? x.Title.Contains(token) : false) || 
+                Func<Book, bool> condition = (Book x) => ((SearchOptions.SearchByName ? x.Title.Contains(token) : false) ||
                                                         (SearchOptions.SearchByAuthor ? x.Authors.Where(a => a.Name.Contains(token)).Any()  : false) ||
-                                                        (SearchOptions.SearchBySeries ? x.Series != null && x.Series.Name.Contains(token) : false)) && 
+                                                        (SearchOptions.SearchBySeries ? x.Series != null && x.Series.Name.Contains(token) : false)) &&
                                                         viewerHistory.Peek().DefaultCondition(x);
                 int temp = await Task.Run(() => App.Database.Books.Where(condition).Count());
 
@@ -104,7 +104,7 @@ namespace ElibWpf.ViewModels.Controls
         public ObservableCollection<PaneMainItem> MainPaneItems { get; set; }
 
         private SearchOptions searchOptions;
-        public SearchOptions SearchOptions 
+        public SearchOptions SearchOptions
         {
             get => searchOptions;
             set => Set(() => SearchOptions, ref searchOptions, value);
@@ -201,7 +201,7 @@ namespace ElibWpf.ViewModels.Controls
 
         private void RefreshCurrent()
         {
-            if (SelectedCollection == null) SelectedCollection = Collections[0];
+            if (SelectedCollection == null && SelectedMainPaneItem == null) SelectedCollection = Collections[0];
             CurrentViewer = CurrentViewer.Clone() as IViewer;
         }
     }
