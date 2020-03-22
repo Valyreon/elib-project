@@ -3,14 +3,11 @@ using ElibWpf.Messages;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
-using OnlineBookApi.OpenLibrary;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using System.Linq;
 
 namespace ElibWpf.ViewModels.Flyouts
 {

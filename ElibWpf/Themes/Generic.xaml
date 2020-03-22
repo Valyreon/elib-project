@@ -285,66 +285,6 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type Components:SimpleFlatSearchBox}">
-        <Setter Property="Foreground" Value="GhostWhite" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type Components:SimpleFlatSearchBox}">
-                    <Grid x:Name="SearchContainer">
-                        <Border
-                            Width="{Binding ElementName=SearchBox, Path=ActualWidth}"
-                            Height="25"
-                            BorderBrush="White"
-                            BorderThickness="0,0,0,1">
-                            <Grid>
-                                <TextBox
-                                    x:Name="SearchBox"
-                                    Width="200"
-                                    Padding="22,0,0,0"
-                                    MetroControls:TextBoxHelper.ClearTextButton="True"
-                                    MetroControls:TextBoxHelper.Watermark="Search..."
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    CaretBrush="White"
-                                    FontSize="16"
-                                    Foreground="White"
-                                    MaxLength="45"
-                                    Text="{Binding SearchInputText, UpdateSourceTrigger=PropertyChanged}"
-                                    TextOptions.TextRenderingMode="Aliased">
-                                    <TextBox.Style>
-                                        <Style TargetType="{x:Type TextBox}">
-                                            <Style.Triggers>
-                                                <Trigger Property="MetroControls:TextBoxHelper.HasText" Value="True">
-                                                    <Setter Property="MetroControls:TextBoxHelper.ButtonContent" Value="r" />
-                                                    <Setter Property="MetroControls:TextBoxHelper.ButtonContentTemplate" Value="{x:Null}" />
-                                                </Trigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBox.Style>
-                                    <TextBox.InputBindings>
-                                        <KeyBinding Key="Enter" Command="{Binding SearchCommand}" />
-                                        <KeyBinding Key="Tab" Command="{Binding SearchCommand}" />
-                                    </TextBox.InputBindings>
-                                </TextBox>
-                                <TextBlock
-                                    Width="16"
-                                    Margin="0,4,0,0"
-                                    HorizontalAlignment="Left">
-                                    <fa:ImageAwesome
-                                        Height="16"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        Foreground="{TemplateBinding Foreground}"
-                                        Icon="{TemplateBinding IconName}" />
-                                </TextBlock>
-                            </Grid>
-                        </Border>
-                    </Grid>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
     <Style TargetType="{x:Type Components:CheckboxButton}">
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="CheckedIcon" Value="Check" />

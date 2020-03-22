@@ -17,6 +17,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using MahApps.Metro.Controls.Dialogs;
+using Models.Options;
+using Models;
 
 namespace ElibWpf.ViewModels.Controls
 {
@@ -48,6 +50,7 @@ namespace ElibWpf.ViewModels.Controls
             };
             SelectedMainPaneItem = MainPaneItems[0];
             PaneSelectionChanged();
+            SearchOptions = ApplicationSettings.GetInstance().SearchOptions;
         }
 
         private void HandleCollectionSelection(CollectionSelectedMessage message)
@@ -68,7 +71,10 @@ namespace ElibWpf.ViewModels.Controls
                     viewerHistory.Push(CurrentViewer);
                     isInSearchResults = true;
                 }
-                Func<Book, bool> condition = (Book x) => x.Title.Contains(token) && viewerHistory.Peek().DefaultCondition(x);
+                Func<Book, bool> condition = (Book x) => ((SearchOptions.SearchByName ? x.Title.Contains(token) : false) || 
+                                                        (SearchOptions.SearchByAuthor ? x.Authors.Where(a => a.Name.Contains(token)).Any()  : false) ||
+                                                        (SearchOptions.SearchBySeries ? x.Series != null && x.Series.Name.Contains(token) : false)) && 
+                                                        viewerHistory.Peek().DefaultCondition(x);
                 int temp = await Task.Run(() => App.Database.Books.Where(condition).Count());
 
 
@@ -97,9 +103,30 @@ namespace ElibWpf.ViewModels.Controls
 
         public ObservableCollection<PaneMainItem> MainPaneItems { get; set; }
 
+        private SearchOptions searchOptions;
+        public SearchOptions SearchOptions 
+        {
+            get => searchOptions;
+            set => Set(() => SearchOptions, ref searchOptions, value);
+        }
+
         public ICommand PaneSelectionChangedCommand { get => new RelayCommand(this.PaneSelectionChanged); }
 
         public ICommand RefreshCommand { get => new RelayCommand(this.RefreshCurrent); }
+
+        public ICommand SearchCheckboxChangedCommand { get => new RelayCommand(this.ProcessSearchCheckboxChanged); }
+
+        private void ProcessSearchCheckboxChanged()
+        {
+            if (!SearchOptions.SearchByName && !SearchOptions.SearchByAuthor && !SearchOptions.SearchBySeries)
+            {
+                SearchOptions = new SearchOptions();
+            }
+
+            ApplicationSettings.GetInstance().SearchOptions.SearchByName = SearchOptions.SearchByName;
+            ApplicationSettings.GetInstance().SearchOptions.SearchByAuthor = SearchOptions.SearchByAuthor;
+            ApplicationSettings.GetInstance().SearchOptions.SearchBySeries = SearchOptions.SearchBySeries;
+        }
 
         public UserCollection SelectedCollection
         {

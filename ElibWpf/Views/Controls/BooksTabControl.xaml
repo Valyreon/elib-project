@@ -93,7 +93,7 @@
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="250" />
+            <ColumnDefinition Width="270" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Border
@@ -101,33 +101,95 @@
             Panel.ZIndex="10"
             BorderThickness="0">
             <Grid Background="{StaticResource LighterBackgroundColorBrush}">
+
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="60" />
+                    <RowDefinition x:Name="SearchContentRow" Height="60" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
                 <Grid Grid.Row="0" Background="{StaticResource AccentColorBrush}">
-                    <!--<Components:SimpleFlatSearchBox
-                        Grid.Column="1"
-                        Width="200"
-                        Height="30"
-                        Background="Transparent"
-                        IconName="Search"
-                        WatermarkText="Search..." />-->
-                    <Components:TextBoxWithSymbol
-                        Grid.Column="1"
-                        Width="200"
-                        Height="30"
-                        Background="Transparent"
-                        EnterCommand="{Binding SearchCommand}"
-                        FontSize="14"
-                        FontWeight="Medium"
-                        Foreground="GhostWhite"
-                        IconMargin="5,10,0,0"
-                        IconName="Search"
-                        IconSize="12"
-                        TextboxPadding="17,0,0,0"
-                        WatermarkText="Search..." />
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="60" />
+                        <RowDefinition Height="90" />
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0" Orientation="Horizontal">
+                        <Components:TextBoxWithSymbol
+                            Grid.Column="0"
+                            Width="220"
+                            Height="30"
+                            Margin="10,0,0,0"
+                            Background="Transparent"
+                            EnterCommand="{Binding SearchCommand}"
+                            FontSize="14"
+                            FontWeight="Medium"
+                            Foreground="GhostWhite"
+                            IconMargin="5,10,0,0"
+                            IconName="Search"
+                            IconSize="12"
+                            TextboxPadding="17,0,0,0"
+                            WatermarkText="Search..." />
+                        <Components:SymbolButton
+                            x:Name="SearchOptionsButton"
+                            Grid.Column="1"
+                            Width="30"
+                            Height="30"
+                            Background="Transparent"
+                            Click="SearchOptionsButton_Click"
+                            Foreground="GhostWhite"
+                            IconName="ChevronDown"
+                            IconSize="11"
+                            RenderTransformOrigin="0.5, 0.5">
+                            <Components:SymbolButton.RenderTransform>
+                                <RotateTransform x:Name="SearchOptionsButtonTransform" Angle="0" />
+                            </Components:SymbolButton.RenderTransform>
+                            <Components:SymbolButton.Triggers>
+                                <EventTrigger RoutedEvent="Button.Click">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                                x:Name="AngleDoubleAnimation"
+                                                Storyboard.TargetName="SearchOptionsButtonTransform"
+                                                Storyboard.TargetProperty="(RotateTransform.Angle)"
+                                                To="-180"
+                                                Duration="0:0:0.3" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Components:SymbolButton.Triggers>
+                        </Components:SymbolButton>
+                    </StackPanel>
+                    <StackPanel
+                        x:Name="SearchOptions"
+                        Grid.Row="1"
+                        Orientation="Vertical">
+                        <CheckBox
+                            Margin="20,0,0,0"
+                            Command="{Binding SearchCheckboxChangedCommand}"
+                            Focusable="False"
+                            FontWeight="Medium"
+                            Foreground="GhostWhite"
+                            IsChecked="{Binding SearchOptions.SearchByName, UpdateSourceTrigger=PropertyChanged}">
+                            Search by title
+                        </CheckBox>
+                        <CheckBox
+                            Margin="20,10,0,0"
+                            Command="{Binding SearchCheckboxChangedCommand}"
+                            Focusable="False"
+                            FontWeight="Medium"
+                            Foreground="GhostWhite"
+                            IsChecked="{Binding SearchOptions.SearchByAuthor, UpdateSourceTrigger=PropertyChanged}">
+                            Search by author
+                        </CheckBox>
+                        <CheckBox
+                            Margin="20,10,0,0"
+                            Command="{Binding SearchCheckboxChangedCommand}"
+                            Focusable="False"
+                            FontWeight="Medium"
+                            Foreground="GhostWhite"
+                            IsChecked="{Binding SearchOptions.SearchBySeries, UpdateSourceTrigger=PropertyChanged}">
+                            Search by series
+                        </CheckBox>
+                    </StackPanel>
                 </Grid>
 
                 <Grid Grid.Row="1" Margin="10,15,10,10">

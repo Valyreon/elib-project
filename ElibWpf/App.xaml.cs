@@ -1,7 +1,8 @@
 ﻿using DataLayer;
 
 using Models;
-
+using Newtonsoft.Json;
+using System.IO;
 using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
@@ -32,6 +33,7 @@ namespace ElibWpf
         private void OnExit(object sender, ExitEventArgs e)
         {
             //Database.Vacuum(); this slows the shutdown of application
+            File.WriteAllText(ApplicationSettings.GetInstance().PropertiesPath, JsonConvert.SerializeObject(ApplicationSettings.GetInstance(), Formatting.Indented));
         }
     }
 }
