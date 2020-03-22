@@ -27,7 +27,6 @@ namespace ElibWpf.ViewModels.Controls
         private IViewer currentViewer;
         private UserCollection selectedCollection;
         private PaneMainItem selectedMainPaneItem;
-        private string searchInput;
         private bool isInSearchResults = false;
 
         public BooksTabViewModel()
@@ -49,7 +48,6 @@ namespace ElibWpf.ViewModels.Controls
             };
             SelectedMainPaneItem = MainPaneItems[0];
             PaneSelectionChanged();
-            SearchInputText = "";
         }
 
         private void HandleCollectionSelection(CollectionSelectedMessage message)
@@ -59,25 +57,23 @@ namespace ElibWpf.ViewModels.Controls
 
         public ICommand BackCommand { get => new RelayCommand(this.GoToPreviousViewer); }
 
-        public ICommand SearchInputChangedCommand { get => new RelayCommand(this.ProcessSearchInput); }
+        public ICommand SearchCommand { get => new RelayCommand<string>(this.ProcessSearchInput); }
 
-        public ICommand SearchCommand { get => new RelayCommand(this.ProcessSearchInput); }
-
-        private async void ProcessSearchInput()
+        private async void ProcessSearchInput(string token)
         {
-            if (!string.IsNullOrWhiteSpace(searchInput))
+            if (!string.IsNullOrWhiteSpace(token))
             {
                 if (!isInSearchResults)
                 {
                     viewerHistory.Push(CurrentViewer);
                     isInSearchResults = true;
                 }
-                Func<Book, bool> condition = (Book x) => x.Title.Contains(searchInput) && viewerHistory.Peek().DefaultCondition(x);
+                Func<Book, bool> condition = (Book x) => x.Title.Contains(token) && viewerHistory.Peek().DefaultCondition(x);
                 int temp = await Task.Run(() => App.Database.Books.Where(condition).Count());
 
 
                 if (temp > 0)
-                    CurrentViewer = new BookViewerViewModel($"Search results for '{searchInput}' in " + viewerHistory.Peek().Caption, condition);
+                    CurrentViewer = new BookViewerViewModel($"Search results for '{token}' in " + viewerHistory.Peek().Caption, condition);
                 else
                     MessengerInstance.Send(new ShowDialogMessage("No matches", "No books found matching the search conditions."));
             }
@@ -87,15 +83,6 @@ namespace ElibWpf.ViewModels.Controls
         {
             get => caption;
             set => Set(ref caption, value);
-        }
-
-        public string SearchInputText
-        {
-            get => searchInput;
-            set 
-            {
-                Set("SearchInputText", ref searchInput, value);
-            }
         }
 
         public List<UserCollection> Collections { get; set; } = App.Database.UserCollections.ToList();

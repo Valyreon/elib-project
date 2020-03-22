@@ -107,12 +107,26 @@
                 </Grid.RowDefinitions>
 
                 <Grid Grid.Row="0" Background="{StaticResource AccentColorBrush}">
-                    <Components:SimpleFlatSearchBox
+                    <!--<Components:SimpleFlatSearchBox
                         Grid.Column="1"
-                        Width="230"
+                        Width="200"
                         Height="30"
                         Background="Transparent"
                         IconName="Search"
+                        WatermarkText="Search..." />-->
+                    <Components:TextBoxWithSymbol
+                        Grid.Column="1"
+                        Width="200"
+                        Height="30"
+                        Background="Transparent"
+                        EnterCommand="{Binding SearchCommand}"
+                        FontSize="14"
+                        FontWeight="Medium"
+                        Foreground="GhostWhite"
+                        IconMargin="5,10,0,0"
+                        IconName="Search"
+                        IconSize="12"
+                        TextboxPadding="17,0,0,0"
                         WatermarkText="Search..." />
                 </Grid>
 

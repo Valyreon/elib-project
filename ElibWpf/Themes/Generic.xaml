@@ -14,6 +14,8 @@
 
     <Style TargetType="{x:Type Components:TextBoxWithSymbol}">
         <Setter Property="IconSize" Value="16" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="FontWeight" Value="Regular" />
         <Setter Property="TextboxPadding" Value="22,0,5,0" />
         <Setter Property="Template">
             <Setter.Value>
@@ -38,10 +40,12 @@
                                 Background="{TemplateBinding Background}"
                                 BorderThickness="0"
                                 CaretBrush="{DynamicResource IdealForegroundColorBrush}"
-                                FontSize="14"
+                                FontSize="{TemplateBinding FontSize}"
+                                FontWeight="{TemplateBinding FontWeight}"
                                 Foreground="{TemplateBinding Foreground}"
                                 MaxLength="45"
-                                Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Text}">
+                                Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Text}"
+                                TextOptions.TextRenderingMode="Aliased">
                                 <TextBox.InputBindings>
                                     <KeyBinding
                                         Key="Enter"
