@@ -34,6 +34,9 @@ namespace ElibWpf.ViewModels.Controls
         {
             MessengerInstance.Register<AuthorSelectedMessage>(this, this.HandleAuthorSelection);
             MessengerInstance.Register<SeriesSelectedMessage>(this, this.HandleSeriesSelection);
+            MessengerInstance.Register<CollectionSelectedMessage>(this, this.HandleCollectionSelection);
+            MessengerInstance.Register<GoBackMessage>(this, x => this.GoToPreviousViewer());
+            MessengerInstance.Register<RefreshSidePaneCollectionsMessage>(this, async x =>  { this.Collections = await Task.Run(() => App.Database.UserCollections.ToList()); RaisePropertyChanged("Collections"); });
 
             viewerHistory.AddHandlerOnStackChange((object sender, NotifyCollectionChangedEventArgs e) => RaisePropertyChanged("IsBackEnabled"));
 
@@ -49,6 +52,11 @@ namespace ElibWpf.ViewModels.Controls
             SearchInputText = "";
         }
 
+        private void HandleCollectionSelection(CollectionSelectedMessage message)
+        {
+            SelectedCollection = Collections.Where(c => c.Id == message.Collection.Id).FirstOrDefault();
+        }
+
         public ICommand BackCommand { get => new RelayCommand(this.GoToPreviousViewer); }
 
         public ICommand SearchInputChangedCommand { get => new RelayCommand(this.ProcessSearchInput); }
@@ -57,19 +65,22 @@ namespace ElibWpf.ViewModels.Controls
 
         private async void ProcessSearchInput()
         {
-            if(!isInSearchResults)
+            if (!string.IsNullOrWhiteSpace(searchInput))
             {
-                viewerHistory.Push(CurrentViewer);
-                isInSearchResults = true;
-            }
-            Func<Book, bool> condition = (Book x) => x.Title.Contains(searchInput) && viewerHistory.Peek().DefaultCondition(x);
-            int temp = await Task.Run(() => App.Database.Books.Where(condition).Count());
+                if (!isInSearchResults)
+                {
+                    viewerHistory.Push(CurrentViewer);
+                    isInSearchResults = true;
+                }
+                Func<Book, bool> condition = (Book x) => x.Title.Contains(searchInput) && viewerHistory.Peek().DefaultCondition(x);
+                int temp = await Task.Run(() => App.Database.Books.Where(condition).Count());
 
-               
-            if(temp > 0)
-                CurrentViewer = new BookViewerViewModel($"Search results for '{searchInput}' in " + viewerHistory.Peek().Caption, condition);
-            else
-                await ((MetroWindow)Application.Current.MainWindow).ShowMessageAsync("No matches", "No books found matching the search conditions.");
+
+                if (temp > 0)
+                    CurrentViewer = new BookViewerViewModel($"Search results for '{searchInput}' in " + viewerHistory.Peek().Caption, condition);
+                else
+                    MessengerInstance.Send(new ShowDialogMessage("No matches", "No books found matching the search conditions."));
+            }
         }
 
         public string Caption
@@ -176,6 +187,7 @@ namespace ElibWpf.ViewModels.Controls
 
         private void RefreshCurrent()
         {
+            if (SelectedCollection == null) SelectedCollection = Collections[0];
             CurrentViewer = CurrentViewer.Clone() as IViewer;
         }
     }

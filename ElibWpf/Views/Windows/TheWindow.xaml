@@ -32,6 +32,11 @@
     WindowStartupLocation="CenterScreen"
     WindowTitleBrush="#222222"
     mc:Ignorable="d">
+    <Window.InputBindings>
+        <KeyBinding Key="Esc" Command="{Binding EscKeyCommand}" />
+        <KeyBinding Key="Backspace" Command="{Binding EscKeyCommand}" />
+        <KeyBinding Key="BrowserBack" Command="{Binding EscKeyCommand}" />
+    </Window.InputBindings>
 
     <Window.Resources>
         <ResourceDictionary Source="WindowResources.xaml" />

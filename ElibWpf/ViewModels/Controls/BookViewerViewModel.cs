@@ -25,7 +25,6 @@ namespace ElibWpf.ViewModels.Controls
         private int nextPage = 1;
         private string numberOfBooks;
         private double scrollVerticalOffset;
-        private string searchToken = "";
 
         public BookViewerViewModel(string caption, Func<Book, bool> defaultQuery)
         {

@@ -5,6 +5,7 @@
     xmlns:Components="clr-namespace:ElibWpf.CustomComponents"
     xmlns:Converters="clr-namespace:ElibWpf.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:fa="http://schemas.fontawesome.io/icons/"
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
     xmlns:local="clr-namespace:ElibWpf.Views.Flyouts"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -34,6 +35,7 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="232" />
                         <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="200" />
                     </Grid.ColumnDefinitions>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -110,6 +112,79 @@
                         <StackPanel Orientation="Vertical">
                             <TextBlock Text="{Binding BookDescriptionText}" />
                         </StackPanel>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock FontSize="16" Text="Collections:" />
+                        <ItemsControl ItemsSource="{Binding UserCollections}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel
+                                        Height="28"
+                                        VerticalAlignment="Center"
+                                        Orientation="Horizontal">
+                                        <StackPanel.Triggers>
+                                            <EventTrigger RoutedEvent="MouseEnter">
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation
+                                                            Storyboard.TargetName="CloseButton"
+                                                            Storyboard.TargetProperty="(Button.Opacity)"
+                                                            To="1"
+                                                            Duration="0:0:0.3" />
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </EventTrigger>
+                                            <EventTrigger RoutedEvent="MouseLeave">
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation
+                                                            Storyboard.TargetName="CloseButton"
+                                                            Storyboard.TargetProperty="(Button.Opacity)"
+                                                            To="0"
+                                                            Duration="0:0:0.3" />
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </EventTrigger>
+                                        </StackPanel.Triggers>
+                                        <Components:TextLinkButton
+                                            Width="180"
+                                            Height="20"
+                                            VerticalAlignment="Center"
+                                            Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.GoToCollectionCommand}"
+                                            CommandParameter="{Binding .}"
+                                            FontSize="15"
+                                            Foreground="#bbb"
+                                            Style="{DynamicResource BookDetailsSubLinkLighterGrayCollectionStyle}"
+                                            Text="{Binding Tag}" />
+                                        <Components:SymbolButton
+                                            x:Name="CloseButton"
+                                            Grid.Column="3"
+                                            Width="20"
+                                            Height="20"
+                                            Background="Transparent"
+                                            Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.RemoveCollectionCommand}"
+                                            CommandParameter="{Binding Tag}"
+                                            Foreground="#484b4e"
+                                            IconName="Close"
+                                            IconSize="12"
+                                            Opacity="0"
+                                            Style="{StaticResource BlueHoverStyle}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <Components:TextBoxWithSymbol
+                            Width="200"
+                            Height="30"
+                            Background="Transparent"
+                            EnterCommand="{Binding AddCollectionCommand}"
+                            Foreground="#bbb"
+                            IconMargin="5,10,0,0"
+                            IconName="Plus"
+                            IconSize="10"
+                            Text="{Binding AddCollectionFieldText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                            TextboxPadding="17,0,0,0"
+                            WatermarkText="Add collection..." />
                     </StackPanel>
                 </Grid>
             </Grid>

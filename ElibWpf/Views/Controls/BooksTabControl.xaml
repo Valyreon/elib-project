@@ -16,9 +16,6 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
-    <UserControl.InputBindings>
-        <KeyBinding Key="Esc" Command="{Binding BackCommand}" />
-    </UserControl.InputBindings>
 
     <UserControl.Resources>
         <ResourceDictionary>

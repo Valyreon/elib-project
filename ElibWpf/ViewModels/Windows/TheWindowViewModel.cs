@@ -3,8 +3,11 @@ using ElibWpf.ViewModels.Controls;
 using ElibWpf.ViewModels.Flyouts;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-
+using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
+using System;
 using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Input;
 
 namespace ElibWpf.ViewModels.Windows
@@ -18,7 +21,8 @@ namespace ElibWpf.ViewModels.Windows
         public TheWindowViewModel()
         {
             MessengerInstance.Register<ShowBookDetailsMessage>(this, this.HandleBookFlyout);
-            MessengerInstance.Register(this, (CloseFlyoutMessage m) => IsBookDetailsFlyoutOpen = false);
+            MessengerInstance.Register(this, (CloseFlyoutMessage m) => { IsBookDetailsFlyoutOpen = false; FlyoutControl = null; });
+            MessengerInstance.Register(this, (ShowDialogMessage m) => ShowDialog(m.Title, m.Text));
 
             Tabs = new ObservableCollection<ITabViewModel>
             {
@@ -29,7 +33,26 @@ namespace ElibWpf.ViewModels.Windows
             SelectedTab = Tabs[0];
         }
 
+        private async void ShowDialog(string title, string text)
+        {
+            await ((MetroWindow)Application.Current.MainWindow).ShowMessageAsync(title, text);
+        }
+
         public ICommand CloseDetailsCommand { get => new RelayCommand(() => { IsBookDetailsFlyoutOpen = false; FlyoutControl = null; }); }
+
+        public ICommand EscKeyCommand { get => new RelayCommand(ProcessEscKey); }
+
+        private void ProcessEscKey()
+        {
+            if(IsBookDetailsFlyoutOpen)
+            {
+                IsBookDetailsFlyoutOpen = false; FlyoutControl = null;
+            }
+            else
+            {
+                MessengerInstance.Send(new GoBackMessage());
+            }
+        }
 
         public object FlyoutControl
         {

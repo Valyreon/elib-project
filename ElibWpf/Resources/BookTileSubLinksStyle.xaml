@@ -53,6 +53,31 @@
         </Style.Triggers>
     </Style>
 
+    <Style x:Key="BookDetailsSubLinkLighterGrayCollectionStyle" TargetType="{x:Type Components:TextLinkButton}">
+        <Style.Triggers>
+            <EventTrigger RoutedEvent="MouseEnter">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <ColorAnimation
+                            Storyboard.TargetProperty="(Button.Foreground).(Color)"
+                            To="CornflowerBlue"
+                            Duration="0:0:0.3" />
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+            <EventTrigger RoutedEvent="MouseLeave">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <ColorAnimation
+                            Storyboard.TargetProperty="(Button.Foreground).(Color)"
+                            To="#bbb"
+                            Duration="0:0:0.3" />
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+        </Style.Triggers>
+    </Style>
+
     <Style x:Key="BookDetailsSubLinkLightGrayStyle" TargetType="{x:Type Components:TextLinkButton}">
         <Style.Triggers>
             <EventTrigger RoutedEvent="MouseEnter">
