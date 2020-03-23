@@ -178,13 +178,36 @@
                             Height="30"
                             Background="Transparent"
                             EnterCommand="{Binding AddCollectionCommand}"
-                            Foreground="#bbb"
+                            Foreground="#666"
                             IconMargin="5,10,0,0"
                             IconName="Plus"
                             IconSize="10"
                             Text="{Binding AddCollectionFieldText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                             TextboxPadding="17,0,0,0"
-                            WatermarkText="Add collection..." />
+                            WatermarkText="Add collection...">
+                            <Components:TextBoxWithSymbol.Triggers>
+                                <EventTrigger RoutedEvent="GotFocus">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation
+                                                Storyboard.TargetProperty="(TextBox.Foreground).(Color)"
+                                                To="#bbb"
+                                                Duration="0:0:0.3" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                                <EventTrigger RoutedEvent="LostFocus">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation
+                                                Storyboard.TargetProperty="(TextBox.Foreground).(Color)"
+                                                To="#666"
+                                                Duration="0:0:0.3" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Components:TextBoxWithSymbol.Triggers>
+                        </Components:TextBoxWithSymbol>
                     </StackPanel>
                 </Grid>
             </Grid>

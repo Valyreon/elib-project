@@ -49,6 +49,7 @@
                 Margin="0.01,0,0,0"
                 AnimateOpacity="False"
                 CloseCommand="{Binding CloseDetailsCommand}"
+                Focusable="True"
                 IsOpen="{Binding IsBookDetailsFlyoutOpen}"
                 Position="Right">
                 <MetroControls:Flyout.Background>

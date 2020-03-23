@@ -1,22 +1,16 @@
 ﻿using Domain;
-
 using ElibWpf.BindingItems;
-using ElibWpf.Converters;
 using ElibWpf.DataStructures;
 using ElibWpf.Messages;
-
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using MahApps.Metro.Controls;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
-using MahApps.Metro.Controls.Dialogs;
 using Models.Options;
 using Models;
 
