@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace OnlineBookApi.OpenLibrary.Models
 {
@@ -35,9 +33,9 @@ namespace OnlineBookApi.OpenLibrary.Models
             public string cover_edition_key { get; set; }
         }
 
-            public int start { get; set; }
-            public int num_found { get; set; }
-            public int numFound { get; set; }
-            public List<Doc> docs { get; set; }
+        public int start { get; set; }
+        public int num_found { get; set; }
+        public int numFound { get; set; }
+        public List<Doc> docs { get; set; }
     }
 }

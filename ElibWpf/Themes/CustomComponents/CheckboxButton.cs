@@ -1,7 +1,7 @@
 ﻿using FontAwesome.WPF;
-using System.Windows.Media;
-using System.Windows.Controls;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace ElibWpf.CustomComponents
 {
@@ -36,6 +36,5 @@ namespace ElibWpf.CustomComponents
             get { return (Brush)base.GetValue(CheckedColorProperty); }
             set => base.SetValue(CheckedColorProperty, value);
         }
-
     }
 }

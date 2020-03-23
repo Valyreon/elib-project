@@ -143,6 +143,7 @@ namespace ElibWpf.CustomComponents
                 UpdateSelectedItem();
             }
         }
+
         private void UpdateSelectedItem()
         {
             if (ItemsHolderPanel == null)

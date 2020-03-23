@@ -91,6 +91,7 @@ namespace ElibWpf.AttachedProperties
             theSender.Unloaded -= OnScrollViewerUnloaded;
             theSender.ScrollChanged -= OnScrollViewerScrollChanged;
         }
+
         private static void OnVerticalOffsetPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (!(d is ScrollViewer scrollViewer))

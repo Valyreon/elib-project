@@ -2,7 +2,6 @@
 using Domain;
 using EbookTools;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 
@@ -31,7 +30,7 @@ namespace Models
                 NumberInSeries = seriesNumber,
                 Cover = ImageOptimizer.ResizeAndFill(parsedBook.Cover)
             };
-            
+
             Book result = database.Books.Add(book);
             database.SaveChanges();
             return result;

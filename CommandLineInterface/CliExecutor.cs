@@ -8,16 +8,10 @@ using Models.Options;
 using Models.Utilities;
 using OnlineBookApi;
 using OnlineBookApi.OpenLibrary;
-using OnlineBookApi.OpenLibrary.Models;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity.Migrations;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 
 namespace Cli
 {
@@ -77,7 +71,7 @@ namespace Cli
         ///  Starts the CLI loop until the keyword 'exit' is inputted.
         /// </summary>
         ///
-        public async void Execute()
+        public void Execute()
         {
             string command;
             do
@@ -156,7 +150,7 @@ namespace Cli
 
                             importer.ImportBook(parsedBook, bookName, authorName, seriesName, seriesNumber);
                         }
-                break;
+                        break;
 
                     case "truncate":
                         database.TruncateDatabase();
@@ -220,6 +214,7 @@ namespace Cli
                                     }
                                 }
                                 break;
+
                             case "collection":
                             case "c":
                                 if (string.IsNullOrEmpty(viewInput.Item2.Trim()))
@@ -246,6 +241,7 @@ namespace Cli
                                     }
                                 }
                                 break;
+
                             case "series":
                             case "ser":
                                 if (string.IsNullOrEmpty(viewInput.Item2.Trim()))
@@ -272,6 +268,7 @@ namespace Cli
                                     }
                                 }
                                 break;
+
                             case "selected":
                             case "s":
                                 foreach (Book book in selectedBooks)
@@ -279,6 +276,7 @@ namespace Cli
                                     Console.Write(detail.BookDetailsID(book.Id));
                                 }
                                 break;
+
                             default:
                                 Console.WriteLine("View command was incorrect");
                                 break;
@@ -294,10 +292,11 @@ namespace Cli
                             case "b":
                                 ISet<int> bookIds = selectInput.Item2.GetIDsSeperatedBySpace();
 
-                                foreach(int id in bookIds)
+                                foreach (int id in bookIds)
                                     selectedBooks.Add(database.Books.Find(id));
 
                                 break;
+
                             case "series":
                             case "s":
                                 ISet<int> seriesIds = selectInput.Item2.GetIDsSeperatedBySpace();
@@ -309,6 +308,7 @@ namespace Cli
                                 }
 
                                 break;
+
                             case "collection":
                             case "c":
                                 ISet<int> collectionIds = selectInput.Item2.GetIDsSeperatedBySpace();
@@ -320,14 +320,17 @@ namespace Cli
                                 }
 
                                 break;
+
                             case "all":
                             case "a":
                                 selectedBooks.UnionWith(database.Books);
                                 break;
+
                             case "clear":
                             case "clr":
                                 selectedBooks.Clear();
                                 break;
+
                             case "deselect":
                             case "d":
                                 ISet<int> deselectIds = selectInput.Item2.GetIDsSeperatedBySpace();
@@ -335,11 +338,13 @@ namespace Cli
                                 foreach (int id in deselectIds)
                                     selectedBooks.Remove(database.Books.Find(id));
                                 break;
+
                             default:
                                 Console.WriteLine("Select command was incorrect");
                                 break;
                         }
                         break;
+
                     case "export":
                     case "ex":
                         ISet<EFile> exportFiles = new HashSet<EFile>();
@@ -369,12 +374,15 @@ namespace Cli
                             case 0:
                                 options.GroupBySeries = true;
                                 break;
+
                             case 1:
                                 options.GroupByAuthor = true;
                                 break;
+
                             case 2:
                                 options.GroupByAuthor = options.GroupBySeries = true;
                                 break;
+
                             default:
                                 break;
                         }
@@ -383,6 +391,7 @@ namespace Cli
                         exporter.ExportBookFiles(exportFiles, options);
 
                         break;
+
                     case "delete":
                     case "d":
                         Console.WriteLine("Selected books for deletion:");
@@ -447,7 +456,6 @@ namespace Cli
                                 }
                                 catch (FormatException)
                                 {
-
                                 }
 
                                 database.Books.AddOrUpdate(book);
@@ -457,11 +465,12 @@ namespace Cli
                             }
                         }*/
                         break;
+
                     case "query":
                     case "q":
                         IOnline online = new OnlineAPI();
                         int localid = int.Parse(consoleInput.Item2);
-                        IList<byte[]> images = online.GetMultipleCoversAsync(database.Books.Include("Authors").Where(x=> x.Id == localid).FirstOrDefault()).Result;
+                        IList<byte[]> images = online.GetMultipleCoversAsync(database.Books.Include("Authors").Where(x => x.Id == localid).FirstOrDefault()).Result;
                         /*
                         foreach (byte[] img in images)
                         {

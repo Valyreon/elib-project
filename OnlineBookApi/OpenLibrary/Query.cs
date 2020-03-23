@@ -1,10 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OnlineBookApi.OpenLibrary.Models;
-using System;
-using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace OnlineBookApi.OpenLibrary
@@ -23,7 +20,7 @@ namespace OnlineBookApi.OpenLibrary
             queryString = queryString.Trim().Replace(' ', '+');
             string searchLink = null;
 
-            switch(searchType)
+            switch (searchType)
             {
                 case SearchType.Title:
                     searchLink = "http://openlibrary.org/search.json?title=";

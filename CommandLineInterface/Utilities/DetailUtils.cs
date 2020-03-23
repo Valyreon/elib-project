@@ -27,7 +27,7 @@ namespace CommandLineInterface.Utilities
                 .FirstOrDefault();
 
             if (book == null)
-                throw new KeyNotFoundException();   
+                throw new KeyNotFoundException();
 
             const string formatString = "{0, -12} {1}\n";
 
@@ -46,8 +46,7 @@ namespace CommandLineInterface.Utilities
                 stringBuilder.Append(string.Format(formatString, "Series:", series.Name))
                     .Append(string.Format(formatString, "Number:", book.NumberInSeries));
 
-            if (book.IsRead != null)
-                stringBuilder.Append(string.Format(formatString, "Read:", (bool)book.IsRead ? "Yes" : "No"));
+            stringBuilder.Append(string.Format(formatString, "Read:", (bool)book.IsRead ? "Yes" : "No"));
 
             if (collections != null && collections.Count > 0)
                 stringBuilder.Append(string.Format(formatString, collections.Count > 1 ? "Collections:" : "Collection:", string.Join(", ", collections)));
@@ -122,6 +121,5 @@ namespace CommandLineInterface.Utilities
 
             return stringBuilder.ToString();
         }
-
     }
 }

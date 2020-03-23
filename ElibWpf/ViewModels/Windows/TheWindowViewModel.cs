@@ -5,7 +5,6 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
-using System;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
@@ -44,7 +43,7 @@ namespace ElibWpf.ViewModels.Windows
 
         private void ProcessEscKey()
         {
-            if(IsBookDetailsFlyoutOpen)
+            if (IsBookDetailsFlyoutOpen)
             {
                 IsBookDetailsFlyoutOpen = false; FlyoutControl = null;
             }

@@ -6,7 +6,6 @@ using Models;
 using Models.Options;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 
@@ -58,7 +57,7 @@ namespace DatabaseTests
                 Title = parsedBook.Title,
                 Authors = new List<Author> { context.Authors.Where(au => au.Name.Equals(parsedBook.Author)).FirstOrDefault() ?? new Author() { Name = parsedBook.Author } },
                 Cover = ImageOptimizer.ResizeAndFill(parsedBook.Cover),
-                Files = new List<EFile>{ new EFile { Format = parsedBook.Format, RawContent = parsedBook.RawData } }
+                Files = new List<EFile> { new EFile { Format = parsedBook.Format, RawContent = parsedBook.RawData } }
             };
             context.Books.Add(newBook);
             context.SaveChanges();

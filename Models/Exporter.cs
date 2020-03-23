@@ -2,7 +2,6 @@
 using Domain;
 using Models.Options;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,7 +24,7 @@ namespace Models
 
             // there can be more than one author
             int index = 1;
-            fileNameBuilder.Append($"{eFile.Book.Title}{((eFile.Book.SeriesId == null) ?(""):($"({eFile.Book.Series.Name} #{eFile.Book.NumberInSeries})"))} by {eFile.Book.Authors.ElementAt(0).Name}");
+            fileNameBuilder.Append($"{eFile.Book.Title}{((eFile.Book.SeriesId == null) ? ("") : ($"({eFile.Book.Series.Name} #{eFile.Book.NumberInSeries})"))} by {eFile.Book.Authors.ElementAt(0).Name}");
             while (index < eFile.Book.Authors.Count)
             {
                 if (index == eFile.Book.Authors.Count - 1)
@@ -99,11 +98,11 @@ namespace Models
             {
                 ExportAllInList(files, destFolder);
             }
-            else if(!options.GroupByAuthor && options.GroupBySeries)
+            else if (!options.GroupByAuthor && options.GroupBySeries)
             {
                 ProcessBySeries(files, destFolder);
             }
-            else if(options.GroupByAuthor && !options.GroupBySeries)
+            else if (options.GroupByAuthor && !options.GroupBySeries)
             {
                 var groups = files.GroupBy(f => f.Book.Authors.Select(a => a.Name).Aggregate((i, j) => i + ", " + j));
 
@@ -119,7 +118,7 @@ namespace Models
             {
                 // first group by authors
                 var authorGroups = files.GroupBy(f => f.Book.Authors.Select(a => a.Name).Aggregate((i, j) => i + ", " + j));
-                foreach(var authorGroup in authorGroups)
+                foreach (var authorGroup in authorGroups)
                 {
                     // create directory for this author
                     string thisAuthorsDestPath = Path.Combine(destFolder, $"{authorGroup.Key}");

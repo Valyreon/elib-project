@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
-using Domain;
+﻿using Domain;
 using OnlineBookApi.OpenLibrary.Models;
-using System.Drawing;
-using System.Drawing.Imaging;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace OnlineBookApi.OpenLibrary
 {
@@ -21,8 +17,7 @@ namespace OnlineBookApi.OpenLibrary
         public Task<byte[]> GetCoverAsync(Book book)
         {
             // TODO: Isbn check
-            
-            
+
             throw new NotImplementedException();
         }
 

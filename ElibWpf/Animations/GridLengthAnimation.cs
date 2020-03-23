@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Animation;
 
@@ -27,6 +23,7 @@ namespace ElibWpf.CustomAnimations
         }
 
         public static readonly DependencyProperty FromProperty;
+
         public GridLength From
         {
             get => (GridLength)GetValue(GridLengthAnimation.FromProperty);
@@ -34,6 +31,7 @@ namespace ElibWpf.CustomAnimations
         }
 
         public static readonly DependencyProperty ToProperty;
+
         public GridLength To
         {
             get => (GridLength)GetValue(GridLengthAnimation.ToProperty);

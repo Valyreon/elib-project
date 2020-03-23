@@ -40,9 +40,8 @@ namespace Models.Helpers
                 {
                     result.Add(int.Parse(x));
                 }
-                catch (FormatException fe)
+                catch (FormatException)
                 {
-                    
                 }
             }
 

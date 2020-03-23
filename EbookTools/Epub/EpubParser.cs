@@ -64,7 +64,7 @@ namespace EbookTools.Epub
                 foreach (XmlNode identifier in identifiers)
                 {
                     var innerValue = identifier.InnerText.Trim();
-                    if (innerValue.Length == 13 || (identifier.Attributes["opf:scheme"]!= null && identifier.Attributes["opf:scheme"].Value.ToUpper().Equals("ISBN")))
+                    if (innerValue.Length == 13 || (identifier.Attributes["opf:scheme"] != null && identifier.Attributes["opf:scheme"].Value.ToUpper().Equals("ISBN")))
                     {
                         isbn = innerValue;
                         break;

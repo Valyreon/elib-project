@@ -1,21 +1,21 @@
 ﻿using Domain;
+using EbookTools;
 using ElibWpf.BindingItems;
 using ElibWpf.DataStructures;
+using ElibWpf.Extensions;
 using ElibWpf.Messages;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using Models;
+using Models.Options;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Input;
-using Models.Options;
-using Models;
 using System.Windows.Forms;
-using EbookTools;
-using ElibWpf.Extensions;
+using System.Windows.Input;
 
 namespace ElibWpf.ViewModels.Controls
 {
@@ -34,7 +34,7 @@ namespace ElibWpf.ViewModels.Controls
             MessengerInstance.Register<SeriesSelectedMessage>(this, this.HandleSeriesSelection);
             MessengerInstance.Register<CollectionSelectedMessage>(this, this.HandleCollectionSelection);
             MessengerInstance.Register<GoBackMessage>(this, x => this.GoToPreviousViewer());
-            MessengerInstance.Register<RefreshSidePaneCollectionsMessage>(this, async x =>  { this.Collections = await Task.Run(() => App.Database.UserCollections.ToList()); RaisePropertyChanged("Collections"); });
+            MessengerInstance.Register<RefreshSidePaneCollectionsMessage>(this, async x => { this.Collections = await Task.Run(() => App.Database.UserCollections.ToList()); RaisePropertyChanged("Collections"); });
 
             viewerHistory.AddHandlerOnStackChange((object sender, NotifyCollectionChangedEventArgs e) => RaisePropertyChanged("IsBackEnabled"));
 
@@ -102,11 +102,10 @@ namespace ElibWpf.ViewModels.Controls
                     isInSearchResults = true;
                 }
                 Func<Book, bool> condition = (Book x) => ((SearchOptions.SearchByName ? x.Title.Contains(token) : false) ||
-                                                        (SearchOptions.SearchByAuthor ? x.Authors.Where(a => a.Name.Contains(token)).Any()  : false) ||
+                                                        (SearchOptions.SearchByAuthor ? x.Authors.Where(a => a.Name.Contains(token)).Any() : false) ||
                                                         (SearchOptions.SearchBySeries ? x.Series != null && x.Series.Name.Contains(token) : false)) &&
                                                         viewerHistory.Peek().DefaultCondition(x);
                 int temp = await Task.Run(() => App.Database.Books.Where(condition).Count());
-
 
                 if (temp > 0)
                     CurrentViewer = new BookViewerViewModel($"Search results for '{token}' in " + viewerHistory.Peek().Caption, condition);
@@ -134,6 +133,7 @@ namespace ElibWpf.ViewModels.Controls
         public ObservableCollection<PaneMainItem> MainPaneItems { get; set; }
 
         private SearchOptions searchOptions;
+
         public SearchOptions SearchOptions
         {
             get => searchOptions;

@@ -1,11 +1,7 @@
-﻿using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using ImageProcessor.Imaging.Filters;
-using System.IO;
-using ImageProcessor;
+﻿using ImageProcessor;
 using ImageProcessor.Imaging;
+using System.Drawing;
+using System.IO;
 
 namespace Models
 {
@@ -23,7 +19,7 @@ namespace Models
             using MemoryStream outStream = new MemoryStream();
             using ImageFactory imageFactory = new ImageFactory(preserveExifData: false);
 
-            CropLayer cropLayer = new CropLayer(2, 2, imgPhoto.Width-4, imgPhoto.Height - 4, CropMode.Pixels);
+            CropLayer cropLayer = new CropLayer(2, 2, imgPhoto.Width - 4, imgPhoto.Height - 4, CropMode.Pixels);
 
             // Resize cover image and stor in outstream
             imageFactory.Load(imgPhoto)

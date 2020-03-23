@@ -9,6 +9,7 @@ namespace ElibWpf.CustomComponents
     public class ConditionalEventTrigger : FrameworkContentElement
     {
         public static readonly DependencyProperty ConditionProperty = DependencyProperty.Register("Condition", typeof(bool), typeof(ConditionalEventTrigger));
+
         public static readonly DependencyProperty TriggersProperty = DependencyProperty.RegisterAttached("Triggers", typeof(ConditionalEventTriggerCollection), typeof(ConditionalEventTrigger), new PropertyMetadata
         {
             PropertyChangedCallback = (obj, e) =>
@@ -23,16 +24,19 @@ namespace ElibWpf.CustomComponents
         });
 
         private static readonly RoutedEvent _triggerActionsEvent = EventManager.RegisterRoutedEvent("", RoutingStrategy.Direct, typeof(EventHandler), typeof(ConditionalEventTrigger));
+
         public ConditionalEventTrigger()
         {
             Actions = new List<TriggerAction>();
         }
 
         public List<TriggerAction> Actions { get; set; }
+
         // Condition
         public bool Condition { get { return (bool)GetValue(ConditionProperty); } set { SetValue(ConditionProperty, value); } }
 
         public RoutedEvent RoutedEvent { get; set; }
+
         // "Triggers" attached property
         public static ConditionalEventTriggerCollection GetTriggers(DependencyObject obj) { return (ConditionalEventTriggerCollection)obj.GetValue(TriggersProperty); }
 

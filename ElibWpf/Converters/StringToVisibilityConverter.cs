@@ -9,9 +9,9 @@ namespace ElibWpf.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if(value is string str)
+            if (value is string str)
             {
-                if(string.IsNullOrWhiteSpace(str))
+                if (string.IsNullOrWhiteSpace(str))
                 {
                     return Visibility.Collapsed;
                 }

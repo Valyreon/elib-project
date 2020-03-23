@@ -48,21 +48,22 @@ namespace ElibWpf.ViewModels.Flyouts
 
             await Task.Run(() =>
             {
-                if(App.Database.Books.Where(b => b.UserCollections.Where(c => c.Tag == tag).Any()).Count() == 1)
+                if (App.Database.Books.Where(b => b.UserCollections.Where(c => c.Tag == tag).Any()).Count() == 1)
                 {
                     App.Database.UserCollections.Remove(collection);
                     App.Database.SaveChanges();
                     MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
-                } 
+                }
             });
 
             await App.Database.SaveChangesAsync();
             UserCollections.Remove(collection);
         }
 
-        string addCollectionFieldText = "";
-        public string AddCollectionFieldText 
-        { 
+        private string addCollectionFieldText = "";
+
+        public string AddCollectionFieldText
+        {
             get => addCollectionFieldText;
             set => base.Set(() => AddCollectionFieldText, ref addCollectionFieldText, value);
         }
@@ -131,7 +132,8 @@ namespace ElibWpf.ViewModels.Flyouts
             }
         }
 
-        string bookDescription;
+        private string bookDescription;
+
         public string BookDescriptionText
         {
             get => bookDescription;
