@@ -13,6 +13,9 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Models.Options;
 using Models;
+using System.Windows.Forms;
+using EbookTools;
+using ElibWpf.Extensions;
 
 namespace ElibWpf.ViewModels.Controls
 {
@@ -55,6 +58,39 @@ namespace ElibWpf.ViewModels.Controls
         public ICommand BackCommand { get => new RelayCommand(this.GoToPreviousViewer); }
 
         public ICommand SearchCommand { get => new RelayCommand<string>(this.ProcessSearchInput); }
+
+        public ICommand AddBookCommand { get => new RelayCommand(this.ProcessAddBook); }
+
+        private void ProcessAddBook()
+        {
+            using (OpenFileDialog dlg = new OpenFileDialog
+            {
+                Filter = "Epub files|*.epub|Mobi files|*.mobi|All files|*.*",
+                CheckFileExists = true,
+                CheckPathExists = true,
+                FilterIndex = 3
+            })
+            {
+                var result = dlg.ShowDialog();
+
+                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(dlg.FileName))
+                {
+                    Book book;
+                    try
+                    {
+                        book = EbookParserFactory.Create(dlg.FileName).Parse().ToBook();
+                    }
+                    catch (Exception)
+                    {
+                        book = new Book
+                        {
+                            UserCollections = new List<UserCollection>()
+                        };
+                    }
+                    MessengerInstance.Send(new ShowBookDetailsMessage(book));
+                }
+            }
+        }
 
         private async void ProcessSearchInput(string token)
         {

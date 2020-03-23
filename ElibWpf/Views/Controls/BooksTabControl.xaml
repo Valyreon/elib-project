@@ -437,6 +437,7 @@
                             Width="30"
                             Height="30"
                             Background="Transparent"
+                            Command="{Binding AddBookCommand}"
                             Foreground="#484b4e"
                             IconName="PlusCircle"
                             IconSize="24"

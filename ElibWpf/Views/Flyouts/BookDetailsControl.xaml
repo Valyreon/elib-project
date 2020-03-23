@@ -23,194 +23,196 @@
         <Converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
         <Converters:AuthorsToStringConverter x:Key="AuthorsToStringConverter" />
     </UserControl.Resources>
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="1000" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-        <StackPanel Grid.Column="1" Orientation="Vertical">
-            <Grid Width="1000">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="232" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="200" />
-                    </Grid.ColumnDefinitions>
+    <StackPanel Orientation="Vertical">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="1000" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="1" Orientation="Vertical">
+                <Grid Width="1000">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition />
+                            <ColumnDefinition Width="232" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="200" />
                         </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="308" />
-                            <RowDefinition Height="0" />
-                            <RowDefinition Height="35" />
-                        </Grid.RowDefinitions>
-                        <Border
-                            Grid.Row="0"
-                            Grid.ColumnSpan="2"
-                            Width="206"
-                            Height="306"
-                            Margin="0"
-                            BorderBrush="LightGray"
-                            BorderThickness="1">
-                            <Image
-                                Width="200"
-                                Height="300"
-                                Source="{Binding Book.Cover, Converter={StaticResource ImageConverter}}" />
-                        </Border>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="308" />
+                                <RowDefinition Height="0" />
+                                <RowDefinition Height="35" />
+                            </Grid.RowDefinitions>
+                            <Border
+                                Grid.Row="0"
+                                Grid.ColumnSpan="2"
+                                Width="206"
+                                Height="306"
+                                Margin="0"
+                                BorderBrush="LightGray"
+                                BorderThickness="1">
+                                <Image
+                                    Width="200"
+                                    Height="300"
+                                    Source="{Binding Book.Cover, Converter={StaticResource ImageConverter}}" />
+                            </Border>
 
-                        <Components:CheckboxButton
-                            Grid.Row="2"
-                            Height="26"
-                            Margin="6,0,1,0"
-                            IsChecked="{Binding IsBookRead}"
-                            Text="Read" />
+                            <Components:CheckboxButton
+                                Grid.Row="2"
+                                Height="26"
+                                Margin="6,0,1,0"
+                                IsChecked="{Binding IsBookRead}"
+                                Text="Read" />
 
-                        <Components:CheckboxButton
-                            Grid.Row="2"
+                            <Components:CheckboxButton
+                                Grid.Row="2"
+                                Grid.Column="1"
+                                Height="26"
+                                Margin="1,0,6,0"
+                                CheckedColor="#ffff7e"
+                                CheckedIcon="Star"
+                                IsChecked="{Binding Book.IsFavorite}"
+                                Text="Favorite" />
+                        </Grid>
+                        <StackPanel
                             Grid.Column="1"
-                            Height="26"
-                            Margin="1,0,6,0"
-                            CheckedColor="#ffff7e"
-                            CheckedIcon="Star"
-                            IsChecked="{Binding Book.IsFavorite}"
-                            Text="Favorite" />
-                    </Grid>
-                    <StackPanel
-                        Grid.Column="1"
-                        Margin="0"
-                        Orientation="Vertical">
-                        <TextBlock
-                            Margin="0,-7,0,0"
-                            FontSize="22"
-                            Text="{Binding Book.Title}" />
-                        <StackPanel Orientation="Horizontal">
-                            <Components:TextLinkButton
-                                Command="{Binding GoToSeries}"
-                                CommandParameter="{Binding Book.Series}"
-                                FontSize="18"
-                                Foreground="Gray"
-                                Style="{DynamicResource BookDetailsSubLinkGrayStyle}"
-                                Text="{Binding Book.SeriesInfo}"
-                                Visibility="{Binding Book.SeriesInfo, Converter={StaticResource StringToVisibilityConverter}}" />
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal">
+                            Margin="0"
+                            Orientation="Vertical">
                             <TextBlock
-                                FontSize="16"
-                                Foreground="LightGray"
-                                Text="by " />
-                            <Components:TextLinkButton
-                                Command="{Binding GoToAuthor}"
-                                CommandParameter="{Binding Book.Authors}"
-                                FontSize="16"
-                                Foreground="LightGray"
-                                Style="{DynamicResource BookDetailsSubLinkLightGrayStyle}"
-                                Text="{Binding Book.Authors, Converter={StaticResource AuthorsToStringConverter}}" />
+                                Margin="0,-7,0,0"
+                                FontSize="22"
+                                Text="{Binding Book.Title}" />
+                            <StackPanel Orientation="Horizontal">
+                                <Components:TextLinkButton
+                                    Command="{Binding GoToSeries}"
+                                    CommandParameter="{Binding Book.Series}"
+                                    FontSize="18"
+                                    Foreground="Gray"
+                                    Style="{DynamicResource BookDetailsSubLinkGrayStyle}"
+                                    Text="{Binding Book.SeriesInfo}"
+                                    Visibility="{Binding Book.SeriesInfo, Converter={StaticResource StringToVisibilityConverter}}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock
+                                    FontSize="16"
+                                    Foreground="LightGray"
+                                    Text="by " />
+                                <Components:TextLinkButton
+                                    Command="{Binding GoToAuthor}"
+                                    CommandParameter="{Binding Book.Authors}"
+                                    FontSize="16"
+                                    Foreground="LightGray"
+                                    Style="{DynamicResource BookDetailsSubLinkLightGrayStyle}"
+                                    Text="{Binding Book.Authors, Converter={StaticResource AuthorsToStringConverter}}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Text="{Binding BookDescriptionText}" />
+                            </StackPanel>
                         </StackPanel>
-                        <StackPanel Orientation="Vertical">
-                            <TextBlock Text="{Binding BookDescriptionText}" />
-                        </StackPanel>
-                    </StackPanel>
-                    <StackPanel Grid.Column="2">
-                        <TextBlock FontSize="16" Text="Collections:" />
-                        <ItemsControl ItemsSource="{Binding UserCollections}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel
-                                        Height="28"
-                                        VerticalAlignment="Center"
-                                        Orientation="Horizontal">
-                                        <StackPanel.Triggers>
-                                            <EventTrigger RoutedEvent="MouseEnter">
-                                                <BeginStoryboard>
-                                                    <Storyboard>
-                                                        <DoubleAnimation
-                                                            Storyboard.TargetName="CloseButton"
-                                                            Storyboard.TargetProperty="(Button.Opacity)"
-                                                            To="1"
-                                                            Duration="0:0:0.3" />
-                                                    </Storyboard>
-                                                </BeginStoryboard>
-                                            </EventTrigger>
-                                            <EventTrigger RoutedEvent="MouseLeave">
-                                                <BeginStoryboard>
-                                                    <Storyboard>
-                                                        <DoubleAnimation
-                                                            Storyboard.TargetName="CloseButton"
-                                                            Storyboard.TargetProperty="(Button.Opacity)"
-                                                            To="0"
-                                                            Duration="0:0:0.3" />
-                                                    </Storyboard>
-                                                </BeginStoryboard>
-                                            </EventTrigger>
-                                        </StackPanel.Triggers>
-                                        <Components:TextLinkButton
-                                            Width="180"
-                                            Height="20"
+                        <StackPanel Grid.Column="2">
+                            <TextBlock FontSize="16" Text="Collections:" />
+                            <ItemsControl ItemsSource="{Binding UserCollections}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel
+                                            Height="28"
                                             VerticalAlignment="Center"
-                                            Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.GoToCollectionCommand}"
-                                            CommandParameter="{Binding .}"
-                                            FontSize="15"
-                                            Foreground="#bbb"
-                                            Style="{DynamicResource BookDetailsSubLinkLighterGrayCollectionStyle}"
-                                            Text="{Binding Tag}" />
-                                        <Components:SymbolButton
-                                            x:Name="CloseButton"
-                                            Grid.Column="3"
-                                            Width="20"
-                                            Height="20"
-                                            Background="Transparent"
-                                            Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.RemoveCollectionCommand}"
-                                            CommandParameter="{Binding Tag}"
-                                            Foreground="#484b4e"
-                                            IconName="Close"
-                                            IconSize="12"
-                                            Opacity="0"
-                                            Style="{StaticResource BlueHoverStyle}" />
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                        <Components:TextBoxWithSymbol
-                            Width="200"
-                            Height="30"
-                            Background="Transparent"
-                            EnterCommand="{Binding AddCollectionCommand}"
-                            Foreground="#666"
-                            IconMargin="5,10,0,0"
-                            IconName="Plus"
-                            IconSize="10"
-                            Text="{Binding AddCollectionFieldText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                            TextboxPadding="17,0,0,0"
-                            WatermarkText="Add collection...">
-                            <Components:TextBoxWithSymbol.Triggers>
-                                <EventTrigger RoutedEvent="GotFocus">
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <ColorAnimation
-                                                Storyboard.TargetProperty="(TextBox.Foreground).(Color)"
-                                                To="#bbb"
-                                                Duration="0:0:0.3" />
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </EventTrigger>
-                                <EventTrigger RoutedEvent="LostFocus">
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <ColorAnimation
-                                                Storyboard.TargetProperty="(TextBox.Foreground).(Color)"
-                                                To="#666"
-                                                Duration="0:0:0.3" />
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </EventTrigger>
-                            </Components:TextBoxWithSymbol.Triggers>
-                        </Components:TextBoxWithSymbol>
-                    </StackPanel>
+                                            Orientation="Horizontal">
+                                            <StackPanel.Triggers>
+                                                <EventTrigger RoutedEvent="MouseEnter">
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation
+                                                                Storyboard.TargetName="CloseButton"
+                                                                Storyboard.TargetProperty="(Button.Opacity)"
+                                                                To="1"
+                                                                Duration="0:0:0.3" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </EventTrigger>
+                                                <EventTrigger RoutedEvent="MouseLeave">
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation
+                                                                Storyboard.TargetName="CloseButton"
+                                                                Storyboard.TargetProperty="(Button.Opacity)"
+                                                                To="0"
+                                                                Duration="0:0:0.3" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </EventTrigger>
+                                            </StackPanel.Triggers>
+                                            <Components:TextLinkButton
+                                                Width="180"
+                                                Height="20"
+                                                VerticalAlignment="Center"
+                                                Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.GoToCollectionCommand}"
+                                                CommandParameter="{Binding .}"
+                                                FontSize="15"
+                                                Foreground="#bbb"
+                                                Style="{DynamicResource BookDetailsSubLinkLighterGrayCollectionStyle}"
+                                                Text="{Binding Tag}" />
+                                            <Components:SymbolButton
+                                                x:Name="CloseButton"
+                                                Grid.Column="3"
+                                                Width="20"
+                                                Height="20"
+                                                Background="Transparent"
+                                                Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.RemoveCollectionCommand}"
+                                                CommandParameter="{Binding Tag}"
+                                                Foreground="#484b4e"
+                                                IconName="Close"
+                                                IconSize="12"
+                                                Opacity="0"
+                                                Style="{StaticResource BlueHoverStyle}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <Components:TextBoxWithSymbol
+                                Width="200"
+                                Height="30"
+                                Background="Transparent"
+                                EnterCommand="{Binding AddCollectionCommand}"
+                                Foreground="#666"
+                                IconMargin="5,10,0,0"
+                                IconName="Plus"
+                                IconSize="10"
+                                Text="{Binding AddCollectionFieldText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                TextboxPadding="17,0,0,0"
+                                WatermarkText="Add collection...">
+                                <Components:TextBoxWithSymbol.Triggers>
+                                    <EventTrigger RoutedEvent="GotFocus">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ColorAnimation
+                                                    Storyboard.TargetProperty="(TextBox.Foreground).(Color)"
+                                                    To="#bbb"
+                                                    Duration="0:0:0.3" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                    <EventTrigger RoutedEvent="LostFocus">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ColorAnimation
+                                                    Storyboard.TargetProperty="(TextBox.Foreground).(Color)"
+                                                    To="#666"
+                                                    Duration="0:0:0.3" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </Components:TextBoxWithSymbol.Triggers>
+                            </Components:TextBoxWithSymbol>
+                        </StackPanel>
+                    </Grid>
                 </Grid>
-            </Grid>
-        </StackPanel>
-    </Grid>
+            </StackPanel>
+        </Grid>
+    </StackPanel>
 </UserControl>

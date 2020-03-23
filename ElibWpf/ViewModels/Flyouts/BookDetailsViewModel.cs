@@ -15,7 +15,7 @@ namespace ElibWpf.ViewModels.Flyouts
     {
         public Book Book { get; private set; }
 
-        public BookDetailsViewModel(Book book)
+        public BookDetailsViewModel(Book book, bool edit = false)
         {
             this.Book = book;
             UserCollections = new ObservableCollection<UserCollection>(Book.UserCollections);

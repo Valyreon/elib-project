@@ -63,9 +63,10 @@ namespace EbookTools.Epub
                 var identifiers = doc.GetElementsByTagName("dc:identifier");
                 foreach (XmlNode identifier in identifiers)
                 {
-                    if (identifier.Attributes["opf:scheme"].Value.ToUpper().Equals("ISBN"))
+                    var innerValue = identifier.InnerText.Trim();
+                    if (innerValue.Length == 13 || (identifier.Attributes["opf:scheme"]!= null && identifier.Attributes["opf:scheme"].Value.ToUpper().Equals("ISBN")))
                     {
-                        isbn = identifier.InnerText.Trim();
+                        isbn = innerValue;
                         break;
                     }
                 }
