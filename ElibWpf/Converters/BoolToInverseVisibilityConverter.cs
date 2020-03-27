@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace Popcorn.Converters
+namespace ElibWpf.Converters
 {
     /// <summary>
     /// Used to convert a boolean to a Visibility class property
@@ -24,7 +24,7 @@ namespace Popcorn.Converters
             if (targetType != typeof(Visibility))
                 throw new InvalidOperationException("The target must be a VisibilityProperty");
 
-            if ((bool)value)
+            if (!(bool)value)
                 return Visibility.Visible;
 
             return Visibility.Collapsed;

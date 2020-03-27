@@ -14,7 +14,7 @@
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="Electronic Library"
-    MinWidth="1000"
+    MinWidth="1100"
     MinHeight="800"
     IconBitmapScalingMode="HighQuality"
     IconEdgeMode="Aliased"
@@ -40,6 +40,7 @@
 
     <Window.Resources>
         <ResourceDictionary Source="WindowResources.xaml" />
+
     </Window.Resources>
 
     <MetroControls:MetroWindow.Flyouts>
@@ -47,13 +48,13 @@
             <MetroControls:Flyout
                 Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MetroWindow}, Path=ActualWidth, Mode=OneWay}"
                 Margin="0.01,0,0,0"
-                AnimateOpacity="False"
+                AnimateOpacity="True"
                 CloseCommand="{Binding CloseDetailsCommand}"
                 Focusable="True"
                 IsOpen="{Binding IsBookDetailsFlyoutOpen}"
                 Position="Right">
                 <MetroControls:Flyout.Background>
-                    <SolidColorBrush Opacity="0.95" Color="#222222" />
+                    <SolidColorBrush Opacity="0.97" Color="#222222" />
                 </MetroControls:Flyout.Background>
                 <ContentControl Content="{Binding FlyoutControl}" FontFamily="{StaticResource Font}" />
             </MetroControls:Flyout>

@@ -23,6 +23,12 @@
     <DataTemplate DataType="{x:Type FlyoutViewModels:BookDetailsViewModel}">
         <FlyoutViews:BookDetailsControl />
     </DataTemplate>
+    <DataTemplate DataType="{x:Type FlyoutViewModels:AddNewBooksViewModel}">
+        <FlyoutViews:AddNewBooksControl />
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type FlyoutViewModels:EditBookViewModel}">
+        <FlyoutViews:EditBookControl />
+    </DataTemplate>
 
     <Style TargetType="ScrollBar">
         <Setter Property="Margin" Value="0" />

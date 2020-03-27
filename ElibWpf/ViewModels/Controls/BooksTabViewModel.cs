@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -68,26 +69,32 @@ namespace ElibWpf.ViewModels.Controls
                 Filter = "Epub files|*.epub|Mobi files|*.mobi|All files|*.*",
                 CheckFileExists = true,
                 CheckPathExists = true,
-                FilterIndex = 3
+                FilterIndex = 3,
+                Multiselect = true
             })
             {
                 var result = dlg.ShowDialog();
-
-                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(dlg.FileName))
+                if (result == DialogResult.OK && dlg.FileNames.Any())
                 {
-                    Book book;
-                    try
+                    List<Book> booksToAdd = new List<Book>();
+                    foreach (string bookPath in dlg.FileNames)
                     {
-                        book = EbookParserFactory.Create(dlg.FileName).Parse().ToBook();
-                    }
-                    catch (Exception)
-                    {
-                        book = new Book
+                        try
                         {
-                            UserCollections = new List<UserCollection>()
-                        };
+                            ParsedBook pBook = EbookParserFactory.Create(bookPath).Parse();
+                            Book book = pBook.ToBook();
+                        }
+                        catch (Exception)
+                        {
+                            booksToAdd.Add(new Book
+                            {
+                                UserCollections = new List<UserCollection>(),
+                                Files = new List<EFile>() { new EFile() { Format = Path.GetExtension(bookPath), RawContent = File.ReadAllBytes(bookPath) } },
+                                Authors = new List<Author>()
+                            });
+                        }
                     }
-                    MessengerInstance.Send(new ShowBookDetailsMessage(book));
+                    MessengerInstance.Send(new OpenAddBooksFormMessage(booksToAdd)); // dont forget to add subscription in Window later
                 }
             }
         }

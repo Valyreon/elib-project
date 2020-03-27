@@ -22,6 +22,8 @@
         <Converters:ImageConverter x:Key="ImageConverter" />
         <Converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
         <Converters:AuthorsToStringConverter x:Key="AuthorsToStringConverter" />
+        <Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <Converters:BoolToInverseVisibilityConverter x:Key="BoolToInverseVisibilityConverter" />
     </UserControl.Resources>
     <StackPanel Orientation="Vertical">
         <Grid>
@@ -83,10 +85,19 @@
                             Grid.Column="1"
                             Margin="0"
                             Orientation="Vertical">
-                            <TextBlock
-                                Margin="0,-7,0,0"
-                                FontSize="22"
-                                Text="{Binding Book.Title}" />
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock
+                                    Margin="0,-7,0,0"
+                                    FontSize="22"
+                                    Text="{Binding Book.Title}" />
+                                <Components:DarkFlatSymbolButton
+                                    Width="26"
+                                    Height="23"
+                                    Margin="10,0,0,0"
+                                    Command="{Binding EditButtonCommand}"
+                                    IconName="Pencil"
+                                    IconSize="14" />
+                            </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <Components:TextLinkButton
                                     Command="{Binding GoToSeries}"
@@ -116,7 +127,8 @@
                         </StackPanel>
                         <StackPanel Grid.Column="2">
                             <TextBlock FontSize="16" Text="Collections:" />
-                            <ItemsControl ItemsSource="{Binding UserCollections}">
+
+                            <ItemsControl Margin="0,0,0,3" ItemsSource="{Binding UserCollections}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel
@@ -162,7 +174,6 @@
                                                 Grid.Column="3"
                                                 Width="20"
                                                 Height="20"
-                                                Background="Transparent"
                                                 Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.RemoveCollectionCommand}"
                                                 CommandParameter="{Binding Tag}"
                                                 Foreground="#484b4e"
@@ -174,45 +185,24 @@
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
-                            <Components:TextBoxWithSymbol
+                            <Components:BetterTextbox
                                 Width="200"
                                 Height="30"
-                                Background="Transparent"
+                                Background="#222"
                                 EnterCommand="{Binding AddCollectionCommand}"
-                                Foreground="#666"
+                                FontSize="14"
+                                Foreground="#888"
                                 IconMargin="5,10,0,0"
                                 IconName="Plus"
                                 IconSize="10"
                                 Text="{Binding AddCollectionFieldText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                 TextboxPadding="17,0,0,0"
-                                WatermarkText="Add collection...">
-                                <Components:TextBoxWithSymbol.Triggers>
-                                    <EventTrigger RoutedEvent="GotFocus">
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <ColorAnimation
-                                                    Storyboard.TargetProperty="(TextBox.Foreground).(Color)"
-                                                    To="#bbb"
-                                                    Duration="0:0:0.3" />
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </EventTrigger>
-                                    <EventTrigger RoutedEvent="LostFocus">
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <ColorAnimation
-                                                    Storyboard.TargetProperty="(TextBox.Foreground).(Color)"
-                                                    To="#666"
-                                                    Duration="0:0:0.3" />
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </EventTrigger>
-                                </Components:TextBoxWithSymbol.Triggers>
-                            </Components:TextBoxWithSymbol>
+                                WatermarkText="Add collection..." />
                         </StackPanel>
                     </Grid>
                 </Grid>
             </StackPanel>
         </Grid>
+
     </StackPanel>
 </UserControl>

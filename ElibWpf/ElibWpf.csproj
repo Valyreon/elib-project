@@ -148,7 +148,9 @@
     <Compile Include="Messages\AuthorSelectedMessage.cs" />
     <Compile Include="Messages\CloseFlyoutMessage.cs" />
     <Compile Include="Messages\CollectionSelectedMessage.cs" />
+    <Compile Include="Messages\EditBookMessage.cs" />
     <Compile Include="Messages\GoBackMessage.cs" />
+    <Compile Include="Messages\OpenAddBooksFormMessage.cs" />
     <Compile Include="Messages\RefreshSidePaneCollectionsMessage.cs" />
     <Compile Include="Messages\SeriesSelectedMessage.cs" />
     <Compile Include="Messages\ShowBookDetailsMessage.cs" />
@@ -160,9 +162,11 @@
     <Compile Include="Themes\CustomComponents\ConditionalEventTrigger.cs" />
     <Compile Include="Themes\CustomComponents\CheckboxButton.cs" />
     <Compile Include="Themes\CustomComponents\SimpleFlatTextBox.cs" />
+    <Compile Include="Themes\CustomComponents\DarkFlatSymbolButton.cs" />
     <Compile Include="Themes\CustomComponents\SymbolButton.cs" />
     <Compile Include="BindingItems\PaneMainItem.cs" />
     <Compile Include="Themes\CustomComponents\TabControlWithCache.cs" />
+    <Compile Include="Themes\CustomComponents\BetterTextbox.cs" />
     <Compile Include="Themes\CustomComponents\TextBoxWithSymbol.cs" />
     <Compile Include="AttachedProperties\UI.cs" />
     <Compile Include="Converters\AuthorsToStringConverter.cs" />
@@ -175,12 +179,17 @@
     <Compile Include="Themes\CustomComponents\TextLinkButton.cs" />
     <Compile Include="ViewModels\Controls\BooksTabViewModel.cs" />
     <Compile Include="ViewModels\Controls\BookViewerViewModel.cs" />
+    <Compile Include="ViewModels\Flyouts\AddNewBooksViewModel.cs" />
     <Compile Include="ViewModels\Flyouts\BookDetailsViewModel.cs" />
+    <Compile Include="ViewModels\Flyouts\EditBookViewModel.cs" />
     <Compile Include="ViewModels\IPageViewModel.cs" />
     <Compile Include="ViewModels\Controls\QuotesTabViewModel.cs" />
     <Compile Include="ViewModels\Controls\SettingsTabViewModel.cs" />
     <Compile Include="ViewModels\IViewer.cs" />
     <Compile Include="ViewModels\Windows\TheWindowViewModel.cs" />
+    <Compile Include="Views\Flyouts\AddNewBooksControl.xaml.cs">
+      <DependentUpon>AddNewBooksControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Controls\BooksTabControl.xaml.cs">
       <DependentUpon>BooksTabControl.xaml</DependentUpon>
     </Compile>
@@ -196,6 +205,9 @@
     <Compile Include="Views\Flyouts\BookDetailsControl.xaml.cs">
       <DependentUpon>BookDetailsControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Flyouts\EditBookControl.xaml.cs">
+      <DependentUpon>EditBookControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Windows\SplashScreen.xaml.cs">
       <DependentUpon>SplashScreen.xaml</DependentUpon>
     </Compile>
@@ -207,6 +219,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Resources\BookTileSubLinksStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\CustomDarkCheckbox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -226,6 +242,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Flyouts\AddNewBooksControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Controls\BooksTabControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -235,6 +255,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Flyouts\BookDetailsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Flyouts\EditBookControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

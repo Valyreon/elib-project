@@ -3,6 +3,7 @@ using ElibWpf.Messages;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace ElibWpf.ViewModels.Flyouts
     {
         public Book Book { get; private set; }
 
-        public BookDetailsViewModel(Book book, bool edit = false)
+        public BookDetailsViewModel(Book book)
         {
             this.Book = book;
             UserCollections = new ObservableCollection<UserCollection>(Book.UserCollections);
@@ -116,7 +117,7 @@ namespace ElibWpf.ViewModels.Flyouts
             set
             {
                 Book.IsRead = value;
-                this.RaisePropertyChanged("IsBookRead");
+                this.RaisePropertyChanged(() => IsBookRead);
                 App.Database.SaveChangesAsync();
             }
         }
@@ -127,7 +128,7 @@ namespace ElibWpf.ViewModels.Flyouts
             set
             {
                 Book.IsFavorite = value;
-                this.RaisePropertyChanged("IsBookFavorite");
+                this.RaisePropertyChanged(() => IsBookFavorite);
                 App.Database.SaveChangesAsync();
             }
         }
@@ -138,6 +139,13 @@ namespace ElibWpf.ViewModels.Flyouts
         {
             get => bookDescription;
             set => Set(ref bookDescription, value);
+        }
+
+        public ICommand EditButtonCommand { get => new RelayCommand(this.HandleEditButton); }
+
+        private void HandleEditButton()
+        {
+            MessengerInstance.Send(new EditBookMessage(Book));
         }
     }
 }

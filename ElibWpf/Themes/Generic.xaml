@@ -9,6 +9,7 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary>
             <Converters:ImageConverter x:Key="ImageConverter" />
+            <Converters:BoolToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         </ResourceDictionary>
     </ResourceDictionary.MergedDictionaries>
 
@@ -77,9 +78,98 @@
         </Setter>
     </Style>
 
+    <Style TargetType="{x:Type Components:BetterTextbox}">
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="IconVisible" Value="True" />
+        <Setter Property="Foreground" Value="GhostWhite" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Components:BetterTextbox}">
+                    <Border
+                        x:Name="TheBorder"
+                        Margin="{TemplateBinding Margin}"
+                        Components:UI.Elevation="0"
+                        BorderBrush="#888"
+                        BorderThickness="0,0,0,2"
+                        CornerRadius="0">
+                        <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
+                            <TextBox
+                                x:Name="SearchBox"
+                                Width="{TemplateBinding Width}"
+                                Height="{TemplateBinding Height}"
+                                Padding="{TemplateBinding TextboxPadding}"
+                                VerticalContentAlignment="Center"
+                                MetroControls:TextBoxHelper.ClearTextButton="False"
+                                MetroControls:TextBoxHelper.TextButton="False"
+                                MetroControls:TextBoxHelper.Watermark="{TemplateBinding WatermarkText}"
+                                Background="{TemplateBinding Background}"
+                                BorderThickness="0"
+                                CaretBrush="{DynamicResource IdealForegroundColorBrush}"
+                                FontSize="{TemplateBinding FontSize}"
+                                FontWeight="{TemplateBinding FontWeight}"
+                                Foreground="{TemplateBinding Foreground}"
+                                MaxLength="45"
+                                SelectionBrush="CornflowerBlue"
+                                Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Text}"
+                                TextOptions.TextRenderingMode="Aliased">
+                                <TextBox.InputBindings>
+                                    <KeyBinding
+                                        Key="Enter"
+                                        Command="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=EnterCommand}"
+                                        CommandParameter="{Binding Text, ElementName=SearchBox}" />
+                                </TextBox.InputBindings>
+                            </TextBox>
+                            <TextBlock
+                                Width="{TemplateBinding IconSize}"
+                                Margin="{TemplateBinding IconMargin}"
+                                HorizontalAlignment="Left"
+                                Background="Transparent"
+                                Visibility="{TemplateBinding IconVisible,
+                                                             Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <fa:ImageAwesome
+                                    x:Name="TheIcon"
+                                    Width="{TemplateBinding IconSize}"
+                                    Height="{TemplateBinding IconSize}"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Foreground="{TemplateBinding Foreground}"
+                                    Icon="{TemplateBinding IconName}" />
+                            </TextBlock>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <DataTrigger Binding="{Binding Text, ElementName=SearchBox}" Value="">
+                            <Setter TargetName="SearchBox" Property="Foreground" Value="#888" />
+                            <Setter TargetName="TheIcon" Property="Foreground" Value="#888" />
+                            <Setter TargetName="TheBorder" Property="BorderBrush" Value="#666" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Text, ElementName=SearchBox}" Value="{x:Null}">
+                            <Setter TargetName="SearchBox" Property="Foreground" Value="#888" />
+                            <Setter TargetName="TheIcon" Property="Foreground" Value="#888" />
+                            <Setter TargetName="TheBorder" Property="BorderBrush" Value="#666" />
+                        </DataTrigger>
+                        <Trigger SourceName="SearchBox" Property="IsFocused" Value="True">
+                            <!--<Setter TargetName="TheBorder" Property="Components:UI.Elevation" Value="5" />-->
+                            <Setter TargetName="TheBorder" Property="BorderBrush" Value="CornflowerBlue" />
+                            <!--<Setter TargetName="SearchBox" Property="Background" Value="#222" />-->
+                            <Setter TargetName="SearchBox" Property="Foreground" Value="GhostWhite" />
+                            <Setter TargetName="TheIcon" Property="Foreground" Value="GhostWhite" />
+                        </Trigger>
+                        <Trigger SourceName="SearchBox" Property="IsFocused" Value="False">
+                            <!--<Setter TargetName="SearchBox" Property="Foreground" Value="#888" />
+                            <Setter TargetName="TheIcon" Property="Foreground" Value="#888" />-->
+                        </Trigger>
+
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="{x:Type Components:SymbolButton}">
         <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="Background" Value="GhostWhite" />
+        <Setter Property="Background" Value="Transparent" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Components:SymbolButton}">
@@ -89,6 +179,72 @@
                                 x:Name="AweImg"
                                 Width="{TemplateBinding IconSize}"
                                 Height="{TemplateBinding IconSize}"
+                                Foreground="{TemplateBinding Foreground}"
+                                Icon="{TemplateBinding IconName}"
+                                RenderTransformOrigin="0.5,0.5">
+                                <fa:ImageAwesome.RenderTransform>
+                                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                                </fa:ImageAwesome.RenderTransform>
+                            </fa:ImageAwesome>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <EventTrigger RoutedEvent="MouseDown" SourceName="Enveloper">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation
+                                        Storyboard.TargetName="AweImg"
+                                        Storyboard.TargetProperty="(RenderTransform).(ScaleTransform.ScaleX)"
+                                        To="0.9"
+                                        Duration="0:0:0.1" />
+                                    <DoubleAnimation
+                                        Storyboard.TargetName="AweImg"
+                                        Storyboard.TargetProperty="(RenderTransform).(ScaleTransform.ScaleY)"
+                                        To="0.9"
+                                        Duration="0:0:0.1" />
+                                    <DoubleAnimation
+                                        BeginTime="0:0:0.1"
+                                        Storyboard.TargetName="AweImg"
+                                        Storyboard.TargetProperty="(RenderTransform).(ScaleTransform.ScaleX)"
+                                        To="1"
+                                        Duration="0:0:0.1" />
+                                    <DoubleAnimation
+                                        BeginTime="0:0:0.1"
+                                        Storyboard.TargetName="AweImg"
+                                        Storyboard.TargetProperty="(RenderTransform).(ScaleTransform.ScaleY)"
+                                        To="1"
+                                        Duration="0:0:0.1" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="AweImg" Property="Foreground" Value="LightGray" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type Components:DarkFlatSymbolButton}">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Background" Value="#4a4a4a" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Components:DarkFlatSymbolButton}">
+                    <Border
+                        x:Name="Enveloper"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="#515151"
+                        BorderThickness="1"
+                        CornerRadius="1">
+                        <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
+                            <fa:ImageAwesome
+                                x:Name="AweImg"
+                                Width="{TemplateBinding IconSize}"
+                                Height="{TemplateBinding IconSize}"
+                                Margin="0,0,0,3"
                                 Foreground="{TemplateBinding Foreground}"
                                 Icon="{TemplateBinding IconName}"
                                 RenderTransformOrigin="0.5,0.5">
@@ -354,4 +510,5 @@
             </Setter.Value>
         </Setter>
     </Style>
+
 </ResourceDictionary>

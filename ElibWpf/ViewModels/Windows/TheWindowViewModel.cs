@@ -1,10 +1,13 @@
-﻿using ElibWpf.Messages;
+﻿using Domain;
+using ElibWpf.Messages;
 using ElibWpf.ViewModels.Controls;
 using ElibWpf.ViewModels.Flyouts;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
@@ -20,8 +23,10 @@ namespace ElibWpf.ViewModels.Windows
         public TheWindowViewModel()
         {
             MessengerInstance.Register<ShowBookDetailsMessage>(this, this.HandleBookFlyout);
-            MessengerInstance.Register(this, (CloseFlyoutMessage m) => { IsBookDetailsFlyoutOpen = false; FlyoutControl = null; });
             MessengerInstance.Register(this, (ShowDialogMessage m) => ShowDialog(m.Title, m.Text));
+            MessengerInstance.Register(this, (CloseFlyoutMessage m) => { IsBookDetailsFlyoutOpen = false; FlyoutControl = null; });
+            MessengerInstance.Register(this, (OpenAddBooksFormMessage m) => { this.HandleAddBooksFlyout(m.BooksToAdd); });
+            MessengerInstance.Register(this, (EditBookMessage m) => { this.HandleEditBookFlyout(m.Book); });
 
             Tabs = new ObservableCollection<ITabViewModel>
             {
@@ -30,6 +35,18 @@ namespace ElibWpf.ViewModels.Windows
                 new SettingsTabViewModel()
             };
             SelectedTab = Tabs[0];
+        }
+
+        private void HandleEditBookFlyout(Book book)
+        {
+            FlyoutControl = new EditBookViewModel(book);
+            IsBookDetailsFlyoutOpen = true;
+        }
+
+        private void HandleAddBooksFlyout(IEnumerable<Book> booksToAdd)
+        {
+            FlyoutControl = new AddNewBooksViewModel(booksToAdd);
+            IsBookDetailsFlyoutOpen = true;
         }
 
         private async void ShowDialog(string title, string text)

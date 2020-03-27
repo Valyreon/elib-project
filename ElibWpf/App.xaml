@@ -23,6 +23,7 @@
                 <ResourceDictionary Source="Resources/DashboardTabControlStyles.xaml" />
                 <ResourceDictionary Source="Resources/BookTileSubLinksStyle.xaml" />
                 <ResourceDictionary Source="Resources/SymbolButtonResources.xaml" />
+                <ResourceDictionary Source="Resources/CustomDarkCheckbox.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
