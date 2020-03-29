@@ -165,6 +165,23 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="Validation.ErrorTemplate">
+            <Setter.Value>
+                <ControlTemplate>
+                    <DockPanel HorizontalAlignment="Right">
+                        <Grid HorizontalAlignment="Stretch">
+                            <AdornedElementPlaceholder x:Name="errorControl" />
+                        </Grid>
+                        <Image
+                            Width="16"
+                            Height="16"
+                            Margin="-30,0,0,0"
+                            Source="Resources/error-image.png"
+                            ToolTip="{Binding [0].ErrorContent}" />
+                    </DockPanel>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style TargetType="{x:Type Components:SymbolButton}">
@@ -244,7 +261,7 @@
                                 x:Name="AweImg"
                                 Width="{TemplateBinding IconSize}"
                                 Height="{TemplateBinding IconSize}"
-                                Margin="0,0,0,3"
+                                Margin="0,0,2,2"
                                 Foreground="{TemplateBinding Foreground}"
                                 Icon="{TemplateBinding IconName}"
                                 RenderTransformOrigin="0.5,0.5">
@@ -268,6 +285,13 @@
                                         Storyboard.TargetProperty="(RenderTransform).(ScaleTransform.ScaleY)"
                                         To="0.9"
                                         Duration="0:0:0.1" />
+
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="MouseUp" SourceName="Enveloper">
+                            <BeginStoryboard>
+                                <Storyboard>
                                     <DoubleAnimation
                                         BeginTime="0:0:0.1"
                                         Storyboard.TargetName="AweImg"
@@ -286,6 +310,10 @@
 
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="AweImg" Property="Foreground" Value="LightGray" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Enveloper" Property="Background" Value="#424242" />
+                            <Setter TargetName="Enveloper" Property="BorderBrush" Value="#4a4a4a" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

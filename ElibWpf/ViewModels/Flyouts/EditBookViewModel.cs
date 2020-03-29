@@ -5,6 +5,7 @@ using GalaSoft.MvvmLight.Command;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ using System.Windows.Input;
 
 namespace ElibWpf.ViewModels.Flyouts
 {
-    public class EditBookViewModel : ViewModelBase
+    public class EditBookViewModel : ViewModelWithValidation
     {
         public Book Book { get; private set; }
 
@@ -34,6 +35,8 @@ namespace ElibWpf.ViewModels.Flyouts
         }
 
         private string titleFieldText;
+
+        [Required(ErrorMessage = "Book title can't be empty.")]
         public string TitleFieldText
         {
             get => titleFieldText;
@@ -105,6 +108,7 @@ namespace ElibWpf.ViewModels.Flyouts
 
         private void HandleRevert()
         {
+            this.ClearErrors();
             AuthorsCollection = new ObservableCollection<Author>(Book.Authors);
             SeriesFieldText = Book.Series?.Name;
             TitleFieldText = Book.Title;
@@ -119,22 +123,26 @@ namespace ElibWpf.ViewModels.Flyouts
 
         private async void HandleSave()
         {
-            Book.Title = TitleFieldText;
-            if(!string.IsNullOrWhiteSpace(SeriesFieldText))
+            this.Validate();
+            if (!this.HasErrors)
             {
-                if(Book.Series == null)
+                Book.Title = TitleFieldText;
+                if (!string.IsNullOrWhiteSpace(SeriesFieldText))
                 {
-                    Book.Series = new BookSeries();
+                    if (Book.Series == null)
+                    {
+                        Book.Series = new BookSeries();
+                    }
+                    Book.Series.Name = SeriesFieldText;
+                    Book.NumberInSeries = decimal.Parse(SeriesNumberFieldText);
                 }
-                Book.Series.Name = SeriesFieldText;
-                Book.NumberInSeries = decimal.Parse(SeriesNumberFieldText);
+                Book.IsFavorite = IsFavoriteCheck;
+                Book.IsRead = IsReadCheck;
+                Book.Authors = new List<Author>(AuthorsCollection);
+                Book.Files = new List<EFile>(FilesCollection);
+                await App.Database.SaveChangesAsync();
+                MessengerInstance.Send(new ShowBookDetailsMessage(Book));
             }
-            Book.IsFavorite = IsFavoriteCheck;
-            Book.IsRead = IsReadCheck;
-            Book.Authors = new List<Author>(AuthorsCollection);
-            Book.Files = new List<EFile>(FilesCollection);
-            await App.Database.SaveChangesAsync();
-            MessengerInstance.Send(new ShowBookDetailsMessage(Book));
         }
 
         public ICommand CancelButtonCommand { get => new RelayCommand(this.HandleCancel); }

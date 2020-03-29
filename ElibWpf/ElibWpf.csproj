@@ -186,6 +186,7 @@
     <Compile Include="ViewModels\Controls\QuotesTabViewModel.cs" />
     <Compile Include="ViewModels\Controls\SettingsTabViewModel.cs" />
     <Compile Include="ViewModels\IViewer.cs" />
+    <Compile Include="ViewModels\ViewModelWithValidation.cs" />
     <Compile Include="ViewModels\Windows\TheWindowViewModel.cs" />
     <Compile Include="Views\Flyouts\AddNewBooksControl.xaml.cs">
       <DependentUpon>AddNewBooksControl.xaml</DependentUpon>
@@ -297,6 +298,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Resource Include="Resources\error-image.png" />
     <Resource Include="Images\book.png" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

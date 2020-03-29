@@ -199,18 +199,12 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </ScrollViewer>
-                    <Components:BetterTextbox
-                        Height="30"
-                        Background="#222"
-                        EnterCommand="{Binding AddAuthorCommand}"
-                        FontSize="14"
-                        Foreground="#888"
-                        IconMargin="5,10,0,0"
+                    <Components:DarkFlatSymbolButton
+                        Width="26"
+                        Height="26"
+                        Command="{Binding AddAuthorButtonCommand}"
                         IconName="Plus"
-                        IconSize="10"
-                        Text="{Binding AddAuthorFieldText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                        TextboxPadding="17,0,0,0"
-                        WatermarkText="Add author.." />
+                        IconSize="14" />
                 </StackPanel>
             </Grid>
             <Grid Grid.Row="1" Grid.Column="5">
