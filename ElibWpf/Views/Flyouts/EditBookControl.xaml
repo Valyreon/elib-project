@@ -21,404 +21,355 @@
         <Converters:BoolToInverseVisibilityConverter x:Key="BoolToInverseVisibilityConverter" />
     </UserControl.Resources>
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="150" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="10" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="40" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="40" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="200" />
-        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="4*" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
+            <RowDefinition Height="2*" />
         </Grid.RowDefinitions>
-
-        <Grid Grid.Row="1" Grid.Column="1">
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition />
+                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="210" />
+                <ColumnDefinition Width="40" />
+                <ColumnDefinition Width="4*" />
+                <ColumnDefinition Width="40" />
+                <ColumnDefinition Width="4*" />
+                <ColumnDefinition Width="3*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="308" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="4*" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <Border
-                Width="206"
-                Height="306"
-                Margin="0"
-                BorderBrush="LightGray"
-                BorderThickness="1">
-                <Image
-                    Width="200"
-                    Height="300"
-                    Source="{Binding Book.Cover, Converter={StaticResource ImageConverter}}" />
-            </Border>
-        </Grid>
-        <Grid Grid.Row="1" Grid.Column="3">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="50" />
-                <RowDefinition Height="50" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-            <Components:BetterTextbox
-                Grid.Row="0"
-                Height="35"
-                Background="#222"
-                FontSize="14"
-                IconMargin="8,11,0,0"
-                IconName="Book"
-                IconSize="12"
-                Text="{Binding TitleFieldText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                TextboxPadding="22,0,0,0"
-                WatermarkText="Title">
-                <Components:BetterTextbox.ToolTip>
-                    <ToolTip>
-                        Title of the book
-                    </ToolTip>
-                </Components:BetterTextbox.ToolTip>
-            </Components:BetterTextbox>
-            <Grid Grid.Row="1">
+
+            <Grid Grid.Row="1" Grid.Column="1">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="7" />
-                    <ColumnDefinition Width="40" />
+                    <ColumnDefinition />
                 </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="308" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Border
+                    Width="206"
+                    Height="306"
+                    Margin="0"
+                    BorderBrush="LightGray"
+                    BorderThickness="1">
+                    <Image
+                        Width="200"
+                        Height="300"
+                        Source="{Binding Book.Cover, Converter={StaticResource ImageConverter}}" />
+                </Border>
+            </Grid>
+            <Grid Grid.Row="1" Grid.Column="3">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50" />
+                    <RowDefinition Height="50" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
                 <Components:BetterTextbox
-                    Grid.Column="0"
+                    Grid.Row="0"
                     Height="35"
                     Background="#222"
                     FontSize="14"
                     IconMargin="8,11,0,0"
-                    IconName="Chain"
+                    IconName="Book"
                     IconSize="12"
-                    Text="{Binding SeriesFieldText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                    Text="{Binding TitleFieldText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                     TextboxPadding="22,0,0,0"
-                    WatermarkText="Series">
+                    WatermarkText="Title">
                     <Components:BetterTextbox.ToolTip>
                         <ToolTip>
-                            Book series
+                            Title of the book
                         </ToolTip>
                     </Components:BetterTextbox.ToolTip>
                 </Components:BetterTextbox>
-                <Components:BetterTextbox
-                    Grid.Column="2"
-                    Height="35"
-                    Background="#222"
-                    FontSize="14"
-                    IconVisible="False"
-                    Text="{Binding SeriesNumberFieldText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                    WatermarkText="#">
-                    <Components:BetterTextbox.ToolTip>
-                        <ToolTip>
-                            Number in the series
-                        </ToolTip>
-                    </Components:BetterTextbox.ToolTip>
-                </Components:BetterTextbox>
-            </Grid>
-            <StackPanel
-                x:Name="AuthorsPart"
-                Grid.Row="3"
-                Margin="0,20,0,0">
-                <StackPanel Orientation="Horizontal">
-                    <fa:ImageAwesome
-                        x:Name="TheIcon"
-                        Width="15"
-                        Height="15"
-                        Margin="0,0,10,0"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Foreground="WhiteSmoke"
-                        Icon="User" />
-                    <TextBlock FontSize="16" Text="Authors:" />
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="7" />
+                        <ColumnDefinition Width="40" />
+                    </Grid.ColumnDefinitions>
+                    <Components:BetterTextbox
+                        Grid.Column="0"
+                        Height="35"
+                        Background="#222"
+                        FontSize="14"
+                        IconMargin="8,11,0,0"
+                        IconName="Chain"
+                        IconSize="12"
+                        Text="{Binding SeriesFieldText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                        TextboxPadding="22,0,0,0"
+                        WatermarkText="Series">
+                        <Components:BetterTextbox.ToolTip>
+                            <ToolTip>
+                                Book series
+                            </ToolTip>
+                        </Components:BetterTextbox.ToolTip>
+                    </Components:BetterTextbox>
+                    <Components:BetterTextbox
+                        Grid.Column="2"
+                        Height="35"
+                        Background="#222"
+                        FontSize="14"
+                        IconVisible="False"
+                        Text="{Binding SeriesNumberFieldText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                        WatermarkText="#">
+                        <Components:BetterTextbox.ToolTip>
+                            <ToolTip>
+                                Number in the series
+                            </ToolTip>
+                        </Components:BetterTextbox.ToolTip>
+                    </Components:BetterTextbox>
+                </Grid>
+                <StackPanel
+                    x:Name="AuthorsPart"
+                    Grid.Row="3"
+                    Margin="0,20,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <fa:ImageAwesome
+                            x:Name="TheIcon"
+                            Width="15"
+                            Height="15"
+                            Margin="0,0,10,0"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Foreground="WhiteSmoke"
+                            Icon="User" />
+                        <TextBlock FontSize="16" Text="Authors:" />
+                    </StackPanel>
+                    <ScrollViewer MaxHeight="130px" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl Margin="0,0,0,3" ItemsSource="{Binding AuthorsCollection}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Height="32" VerticalAlignment="Center">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="20" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.Triggers>
+                                            <EventTrigger RoutedEvent="MouseEnter">
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation
+                                                            Storyboard.TargetName="CloseButton"
+                                                            Storyboard.TargetProperty="(Button.Opacity)"
+                                                            To="1"
+                                                            Duration="0:0:0.3" />
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </EventTrigger>
+                                            <EventTrigger RoutedEvent="MouseLeave">
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation
+                                                            Storyboard.TargetName="CloseButton"
+                                                            Storyboard.TargetProperty="(Button.Opacity)"
+                                                            To="0"
+                                                            Duration="0:0:0.3" />
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </EventTrigger>
+                                        </Grid.Triggers>
+
+                                        <TextBlock
+                                            Grid.Column="0"
+                                            Height="24"
+                                            VerticalAlignment="Center"
+                                            FontSize="16"
+                                            Foreground="#bbb"
+                                            Text="{Binding Name}" />
+                                        <Components:SymbolButton
+                                            x:Name="CloseButton"
+                                            Grid.Column="1"
+                                            Width="20"
+                                            Height="20"
+                                            Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.RemoveAuthorCommand}"
+                                            CommandParameter="{Binding Id}"
+                                            Foreground="#484b4e"
+                                            IconName="Close"
+                                            IconSize="12"
+                                            Opacity="0"
+                                            Style="{StaticResource BlueHoverStyle}" />
+
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                    <Components:BetterTextbox
+                        Height="30"
+                        Background="#222"
+                        EnterCommand="{Binding AddAuthorCommand}"
+                        FontSize="14"
+                        Foreground="#888"
+                        IconMargin="5,10,0,0"
+                        IconName="Plus"
+                        IconSize="10"
+                        Text="{Binding AddAuthorFieldText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                        TextboxPadding="17,0,0,0"
+                        WatermarkText="Add author.." />
                 </StackPanel>
-                <ScrollViewer MaxHeight="100px" VerticalScrollBarVisibility="Auto">
-                    <ItemsControl Margin="0,0,0,3" ItemsSource="{Binding AuthorsCollection}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Height="32" VerticalAlignment="Center">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="20" />
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.Triggers>
-                                        <EventTrigger RoutedEvent="MouseEnter">
-                                            <BeginStoryboard>
-                                                <Storyboard>
-                                                    <DoubleAnimation
-                                                        Storyboard.TargetName="CloseButton"
-                                                        Storyboard.TargetProperty="(Button.Opacity)"
-                                                        To="1"
-                                                        Duration="0:0:0.3" />
-                                                </Storyboard>
-                                            </BeginStoryboard>
-                                        </EventTrigger>
-                                        <EventTrigger RoutedEvent="MouseLeave">
-                                            <BeginStoryboard>
-                                                <Storyboard>
-                                                    <DoubleAnimation
-                                                        Storyboard.TargetName="CloseButton"
-                                                        Storyboard.TargetProperty="(Button.Opacity)"
-                                                        To="0"
-                                                        Duration="0:0:0.3" />
-                                                </Storyboard>
-                                            </BeginStoryboard>
-                                        </EventTrigger>
-                                    </Grid.Triggers>
+            </Grid>
+            <Grid Grid.Row="1" Grid.Column="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30px" />
+                    <RowDefinition Height="30px" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="30" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
 
-                                    <TextBlock
-                                        Grid.Column="0"
-                                        Height="24"
-                                        VerticalAlignment="Center"
-                                        FontSize="16"
-                                        Foreground="#bbb"
-                                        Text="{Binding Name}" />
-                                    <Components:SymbolButton
-                                        x:Name="CloseButton"
-                                        Grid.Column="1"
-                                        Width="20"
-                                        Height="20"
-                                        Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.RemoveCollectionCommand}"
-                                        CommandParameter="{Binding Tag}"
-                                        Foreground="#484b4e"
-                                        IconName="Close"
-                                        IconSize="12"
-                                        Opacity="0"
-                                        Style="{StaticResource BlueHoverStyle}" />
+                <CheckBox
+                    Focusable="False"
+                    IsChecked="{Binding IsReadCheck, UpdateSourceTrigger=PropertyChanged}"
+                    Style="{StaticResource CustomDarkCheckbox}" />
+                <Label
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    FontSize="15">
+                    Read
+                </Label>
 
-                                </Grid>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
-                <Components:BetterTextbox
-                    Height="30"
-                    Background="#222"
-                    EnterCommand="{Binding AddCollectionCommand}"
-                    FontSize="14"
-                    Foreground="#888"
-                    IconMargin="5,10,0,0"
-                    IconName="Plus"
-                    IconSize="10"
-                    Text="{Binding AddCollectionFieldText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                    TextboxPadding="17,0,0,0"
-                    WatermarkText="Add author.." />
-            </StackPanel>
+                <CheckBox
+                    Grid.Row="1"
+                    Focusable="False"
+                    IsChecked="{Binding IsFavoriteCheck, UpdateSourceTrigger=PropertyChanged}"
+                    Style="{StaticResource CustomDarkCheckbox}" />
+                <Label
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    FontSize="15">
+                    Favorite
+                </Label>
+
+                <StackPanel
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Margin="0,10,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <fa:ImageAwesome
+                            Width="15"
+                            Height="15"
+                            Margin="0,0,10,0"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Foreground="WhiteSmoke"
+                            Icon="File" />
+                        <TextBlock FontSize="16" Text="Files:" />
+                    </StackPanel>
+                    <ScrollViewer MaxHeight="100px" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl Margin="0,0,0,3" ItemsSource="{Binding FilesCollection}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Height="32" VerticalAlignment="Center">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="20" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.Triggers>
+                                            <EventTrigger RoutedEvent="MouseEnter">
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation
+                                                            Storyboard.TargetName="CloseButton"
+                                                            Storyboard.TargetProperty="(Button.Opacity)"
+                                                            To="1"
+                                                            Duration="0:0:0.3" />
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </EventTrigger>
+                                            <EventTrigger RoutedEvent="MouseLeave">
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation
+                                                            Storyboard.TargetName="CloseButton"
+                                                            Storyboard.TargetProperty="(Button.Opacity)"
+                                                            To="0"
+                                                            Duration="0:0:0.3" />
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </EventTrigger>
+                                        </Grid.Triggers>
+
+                                        <TextBlock
+                                            Grid.Column="0"
+                                            Height="24"
+                                            VerticalAlignment="Center"
+                                            FontSize="16"
+                                            Foreground="#bbb"
+                                            Text="{Binding Format}" />
+                                        <Components:SymbolButton
+                                            x:Name="CloseButton"
+                                            Grid.Column="1"
+                                            Width="20"
+                                            Height="20"
+                                            Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.RemoveCollectionCommand}"
+                                            CommandParameter="{Binding Id}"
+                                            Foreground="#484b4e"
+                                            IconName="Close"
+                                            IconSize="12"
+                                            Opacity="0"
+                                            Style="{StaticResource BlueHoverStyle}" />
+
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                    <Components:BetterTextbox
+                        Height="30"
+                        Background="#222"
+                        EnterCommand="{Binding AddFileCommand}"
+                        FontSize="14"
+                        Foreground="#888"
+                        IconMargin="5,10,0,0"
+                        IconName="Plus"
+                        IconSize="10"
+                        Text="{Binding AddFileFieldText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                        TextboxPadding="17,0,0,0"
+                        WatermarkText="Add file..." />
+                </StackPanel>
+            </Grid>
         </Grid>
-        <Grid Grid.Row="1" Grid.Column="5">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="30px" />
-                <RowDefinition Height="30px" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="30" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="200" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <CheckBox
-                Focusable="False"
-                Foreground="Wheat"
-                Style="{StaticResource CustomDarkCheckbox}" />
-            <Label
+            <Button
                 Grid.Column="1"
-                VerticalAlignment="Center"
-                FontSize="15">
-                Read
-            </Label>
-
-            <CheckBox
-                Grid.Row="1"
-                Focusable="False"
-                Foreground="Wheat"
-                Style="{StaticResource CustomDarkCheckbox}" />
-            <Label
-                Grid.Row="1"
-                Grid.Column="1"
-                VerticalAlignment="Center"
-                FontSize="15">
-                Favorite
-            </Label>
-
-            <StackPanel
-                Grid.Row="2"
-                Grid.ColumnSpan="2"
-                Margin="0,20,0,0">
-                <StackPanel Orientation="Horizontal">
-                    <fa:ImageAwesome
-                        Width="15"
-                        Height="15"
-                        Margin="0,0,10,0"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Foreground="WhiteSmoke"
-                        Icon="ThList" />
-                    <TextBlock FontSize="16" Text="Collections:" />
-                </StackPanel>
-                <ScrollViewer MaxHeight="100px" VerticalScrollBarVisibility="Auto">
-                    <ItemsControl Margin="0,0,0,3" ItemsSource="{Binding UserCollections}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Height="32" VerticalAlignment="Center">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="20" />
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.Triggers>
-                                        <EventTrigger RoutedEvent="MouseEnter">
-                                            <BeginStoryboard>
-                                                <Storyboard>
-                                                    <DoubleAnimation
-                                                        Storyboard.TargetName="CloseButton"
-                                                        Storyboard.TargetProperty="(Button.Opacity)"
-                                                        To="1"
-                                                        Duration="0:0:0.3" />
-                                                </Storyboard>
-                                            </BeginStoryboard>
-                                        </EventTrigger>
-                                        <EventTrigger RoutedEvent="MouseLeave">
-                                            <BeginStoryboard>
-                                                <Storyboard>
-                                                    <DoubleAnimation
-                                                        Storyboard.TargetName="CloseButton"
-                                                        Storyboard.TargetProperty="(Button.Opacity)"
-                                                        To="0"
-                                                        Duration="0:0:0.3" />
-                                                </Storyboard>
-                                            </BeginStoryboard>
-                                        </EventTrigger>
-                                    </Grid.Triggers>
-
-                                    <TextBlock
-                                        Grid.Column="0"
-                                        Height="24"
-                                        VerticalAlignment="Center"
-                                        FontSize="16"
-                                        Foreground="#bbb"
-                                        Text="{Binding Tag}" />
-                                    <Components:SymbolButton
-                                        x:Name="CloseButton"
-                                        Grid.Column="1"
-                                        Width="20"
-                                        Height="20"
-                                        Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.RemoveCollectionCommand}"
-                                        CommandParameter="{Binding Tag}"
-                                        Foreground="#484b4e"
-                                        IconName="Close"
-                                        IconSize="12"
-                                        Opacity="0"
-                                        Style="{StaticResource BlueHoverStyle}" />
-
-                                </Grid>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
-                <Components:BetterTextbox
-                    Height="30"
-                    Background="#222"
-                    EnterCommand="{Binding AddCollectionCommand}"
-                    FontSize="14"
-                    Foreground="#888"
-                    IconMargin="5,10,0,0"
-                    IconName="Plus"
-                    IconSize="10"
-                    Text="{Binding AddCollectionFieldText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                    TextboxPadding="17,0,0,0"
-                    WatermarkText="Add collection..." />
-            </StackPanel>
-        </Grid>
-        <Grid Grid.Row="1" Grid.Column="7">
-            <StackPanel
-                Grid.Row="0"
-                Grid.ColumnSpan="2"
-                Margin="0,10,0,0">
-                <StackPanel Orientation="Horizontal">
-                    <fa:ImageAwesome
-                        Width="15"
-                        Height="15"
-                        Margin="0,0,10,0"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Foreground="WhiteSmoke"
-                        Icon="File" />
-                    <TextBlock FontSize="16" Text="Files:" />
-                </StackPanel>
-                <ScrollViewer MaxHeight="100px" VerticalScrollBarVisibility="Auto">
-                    <ItemsControl Margin="0,0,0,3" ItemsSource="{Binding FilesCollection}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Height="32" VerticalAlignment="Center">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="20" />
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.Triggers>
-                                        <EventTrigger RoutedEvent="MouseEnter">
-                                            <BeginStoryboard>
-                                                <Storyboard>
-                                                    <DoubleAnimation
-                                                        Storyboard.TargetName="CloseButton"
-                                                        Storyboard.TargetProperty="(Button.Opacity)"
-                                                        To="1"
-                                                        Duration="0:0:0.3" />
-                                                </Storyboard>
-                                            </BeginStoryboard>
-                                        </EventTrigger>
-                                        <EventTrigger RoutedEvent="MouseLeave">
-                                            <BeginStoryboard>
-                                                <Storyboard>
-                                                    <DoubleAnimation
-                                                        Storyboard.TargetName="CloseButton"
-                                                        Storyboard.TargetProperty="(Button.Opacity)"
-                                                        To="0"
-                                                        Duration="0:0:0.3" />
-                                                </Storyboard>
-                                            </BeginStoryboard>
-                                        </EventTrigger>
-                                    </Grid.Triggers>
-
-                                    <TextBlock
-                                        Grid.Column="0"
-                                        Height="24"
-                                        VerticalAlignment="Center"
-                                        FontSize="16"
-                                        Foreground="#bbb"
-                                        Text="{Binding Format}" />
-                                    <Components:SymbolButton
-                                        x:Name="CloseButton"
-                                        Grid.Column="1"
-                                        Width="20"
-                                        Height="20"
-                                        Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.RemoveCollectionCommand}"
-                                        CommandParameter="{Binding Id}"
-                                        Foreground="#484b4e"
-                                        IconName="Close"
-                                        IconSize="12"
-                                        Opacity="0"
-                                        Style="{StaticResource BlueHoverStyle}" />
-
-                                </Grid>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
-                <Components:BetterTextbox
-                    Height="30"
-                    Background="#222"
-                    EnterCommand="{Binding AddFileCommand}"
-                    FontSize="14"
-                    Foreground="#888"
-                    IconMargin="5,10,0,0"
-                    IconName="Plus"
-                    IconSize="10"
-                    Text="{Binding AddFileFieldText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                    TextboxPadding="17,0,0,0"
-                    WatermarkText="Add file..." />
-            </StackPanel>
+                Width="200"
+                Height="40"
+                Command="{Binding RevertButtonCommand}">
+                REVERT
+            </Button>
+            <Button
+                Grid.Column="3"
+                Width="200"
+                Height="40"
+                Command="{Binding SaveButtonCommand}">
+                SAVE
+            </Button>
+            <Button
+                Grid.Column="5"
+                Width="200"
+                Height="40"
+                Command="{Binding CancelButtonCommand}">
+                CANCEL
+            </Button>
         </Grid>
     </Grid>
 </UserControl>

@@ -64,38 +64,36 @@ namespace ElibWpf.ViewModels.Controls
 
         private void ProcessAddBook()
         {
-            using (OpenFileDialog dlg = new OpenFileDialog
+            using OpenFileDialog dlg = new OpenFileDialog
             {
                 Filter = "Epub files|*.epub|Mobi files|*.mobi|All files|*.*",
                 CheckFileExists = true,
                 CheckPathExists = true,
                 FilterIndex = 3,
                 Multiselect = true
-            })
+            };
+            var result = dlg.ShowDialog();
+            if (result == DialogResult.OK && dlg.FileNames.Any())
             {
-                var result = dlg.ShowDialog();
-                if (result == DialogResult.OK && dlg.FileNames.Any())
+                List<Book> booksToAdd = new List<Book>();
+                foreach (string bookPath in dlg.FileNames)
                 {
-                    List<Book> booksToAdd = new List<Book>();
-                    foreach (string bookPath in dlg.FileNames)
+                    try
                     {
-                        try
-                        {
-                            ParsedBook pBook = EbookParserFactory.Create(bookPath).Parse();
-                            Book book = pBook.ToBook();
-                        }
-                        catch (Exception)
-                        {
-                            booksToAdd.Add(new Book
-                            {
-                                UserCollections = new List<UserCollection>(),
-                                Files = new List<EFile>() { new EFile() { Format = Path.GetExtension(bookPath), RawContent = File.ReadAllBytes(bookPath) } },
-                                Authors = new List<Author>()
-                            });
-                        }
+                        ParsedBook pBook = EbookParserFactory.Create(bookPath).Parse();
+                        Book book = pBook.ToBook();
                     }
-                    MessengerInstance.Send(new OpenAddBooksFormMessage(booksToAdd)); // dont forget to add subscription in Window later
+                    catch (Exception)
+                    {
+                        booksToAdd.Add(new Book
+                        {
+                            UserCollections = new List<UserCollection>(),
+                            Files = new List<EFile>() { new EFile() { Format = Path.GetExtension(bookPath), RawContent = File.ReadAllBytes(bookPath) } },
+                            Authors = new List<Author>()
+                        });
+                    }
                 }
+                MessengerInstance.Send(new OpenAddBooksFormMessage(booksToAdd)); // dont forget to add subscription in Window later
             }
         }
 

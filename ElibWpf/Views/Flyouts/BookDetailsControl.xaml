@@ -195,7 +195,6 @@
                                 IconMargin="5,10,0,0"
                                 IconName="Plus"
                                 IconSize="10"
-                                Text="{Binding AddCollectionFieldText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                 TextboxPadding="17,0,0,0"
                                 WatermarkText="Add collection..." />
                         </StackPanel>
