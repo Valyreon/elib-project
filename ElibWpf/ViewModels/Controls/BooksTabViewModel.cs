@@ -82,6 +82,7 @@ namespace ElibWpf.ViewModels.Controls
                     {
                         ParsedBook pBook = EbookParserFactory.Create(bookPath).Parse();
                         Book book = pBook.ToBook();
+                        booksToAdd.Add(book);
                     }
                     catch (Exception)
                     {
@@ -93,7 +94,7 @@ namespace ElibWpf.ViewModels.Controls
                         });
                     }
                 }
-                MessengerInstance.Send(new OpenAddBooksFormMessage(booksToAdd)); // dont forget to add subscription in Window later
+                MessengerInstance.Send(new OpenAddBooksFormMessage(booksToAdd)); // TODO: dont forget to add subscription in Window later
             }
         }
 

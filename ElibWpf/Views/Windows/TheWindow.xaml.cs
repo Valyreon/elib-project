@@ -1,6 +1,7 @@
 ﻿using ElibWpf.ViewModels.Windows;
 
 using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace ElibWpf.Views.Windows
 {
@@ -12,7 +13,7 @@ namespace ElibWpf.Views.Windows
         public TheWindow()
         {
             InitializeComponent();
-            this.DataContext = new TheWindowViewModel();
+            this.DataContext = new TheWindowViewModel(new DialogCoordinator());
         }
     }
 }

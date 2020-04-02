@@ -1,4 +1,5 @@
 ﻿using Domain;
+using EbookTools;
 using ElibWpf.Messages;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -6,9 +7,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Windows.Input;
 
 namespace ElibWpf.ViewModels.Flyouts
@@ -71,7 +74,7 @@ namespace ElibWpf.ViewModels.Flyouts
             set => Set(() => IsFavoriteCheck, ref isFavorite, value);
         }
 
-        public ICommand AddAuthorCommand { get => new RelayCommand<string>(this.HandleAddAuthor); }
+        public ICommand AddAuthorButtonCommand { get => new RelayCommand(() => { MessengerInstance.Send(new ShowInputDialogMessage("Adding New Author", "Author's name:", this.HandleAddAuthor)); }); }
 
         private async void HandleAddAuthor(string name)
         {
@@ -80,7 +83,7 @@ namespace ElibWpf.ViewModels.Flyouts
                 name = name.Trim();
                 if (AuthorsCollection.Where(c => c.Name == name).Any()) // check if book is already in that collection
                 {
-                    MessengerInstance.Send(new ShowDialogMessage("", $"This book is already in the '{name}' collection"));
+                    MessengerInstance.Send(new ShowDialogMessage("", $"This author is already added."));
                 }
                 else // if not
                 {
@@ -152,6 +155,27 @@ namespace ElibWpf.ViewModels.Flyouts
             MessengerInstance.Send(new ShowBookDetailsMessage(Book));
         }
 
+        public ICommand AddFileButtonCommand { get => new RelayCommand(this.HandleAddFileButton); }
 
+        private void HandleAddFileButton()
+        {
+            using OpenFileDialog dlg = new OpenFileDialog
+            {
+                Filter = "Epub files|*.epub|Mobi files|*.mobi|All files|*.*",
+                CheckFileExists = true,
+                CheckPathExists = true,
+                FilterIndex = 3,
+                Multiselect = true
+            };
+            var result = dlg.ShowDialog();
+            if (result == DialogResult.OK && dlg.FileNames.Any())
+            {
+                List<EFile> booksToAdd = new List<EFile>();
+                foreach (string bookPath in dlg.FileNames)
+                {
+                    this.FilesCollection.Add(new EFile { Format = Path.GetExtension(bookPath), RawContent = File.ReadAllBytes(bookPath) });
+                }
+            }
+        }
     }
 }

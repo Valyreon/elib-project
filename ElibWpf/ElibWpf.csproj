@@ -155,12 +155,14 @@
     <Compile Include="Messages\SeriesSelectedMessage.cs" />
     <Compile Include="Messages\ShowBookDetailsMessage.cs" />
     <Compile Include="Messages\ShowDialogMessage.cs" />
+    <Compile Include="Messages\ShowInputDialogMessage.cs" />
     <Compile Include="Resources\DashboardTabControlStyles.xaml.cs">
       <DependentUpon>DashboardTabControlStyles.xaml</DependentUpon>
     </Compile>
     <Compile Include="Themes\CustomComponents\BookTile.cs" />
     <Compile Include="Themes\CustomComponents\ConditionalEventTrigger.cs" />
     <Compile Include="Themes\CustomComponents\CheckboxButton.cs" />
+    <Compile Include="Themes\CustomComponents\DarkFlatTextButton.cs" />
     <Compile Include="Themes\CustomComponents\SimpleFlatTextBox.cs" />
     <Compile Include="Themes\CustomComponents\DarkFlatSymbolButton.cs" />
     <Compile Include="Themes\CustomComponents\SymbolButton.cs" />

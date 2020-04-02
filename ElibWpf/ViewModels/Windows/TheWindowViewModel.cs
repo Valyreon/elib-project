@@ -19,11 +19,13 @@ namespace ElibWpf.ViewModels.Windows
         private object flyoutControl;
         private bool isBookDetailsFlyoutOpen;
         private ITabViewModel selectedTab;
+        private IDialogCoordinator dialogCoordinator;
 
-        public TheWindowViewModel()
+        public TheWindowViewModel(IDialogCoordinator dialogCoordinator)
         {
             MessengerInstance.Register<ShowBookDetailsMessage>(this, this.HandleBookFlyout);
             MessengerInstance.Register(this, (ShowDialogMessage m) => ShowDialog(m.Title, m.Text));
+            MessengerInstance.Register<ShowInputDialogMessage>(this, this.HandleInputDialog);
             MessengerInstance.Register(this, (CloseFlyoutMessage m) => { IsBookDetailsFlyoutOpen = false; FlyoutControl = null; });
             MessengerInstance.Register(this, (OpenAddBooksFormMessage m) => { this.HandleAddBooksFlyout(m.BooksToAdd); });
             MessengerInstance.Register(this, (EditBookMessage m) => { this.HandleEditBookFlyout(m.Book); });
@@ -35,6 +37,13 @@ namespace ElibWpf.ViewModels.Windows
                 new SettingsTabViewModel()
             };
             SelectedTab = Tabs[0];
+            this.dialogCoordinator = dialogCoordinator;
+        }
+
+        private async void HandleInputDialog(ShowInputDialogMessage obj)
+        {
+            string input = await dialogCoordinator.ShowInputAsync(this, obj.Title, obj.Text);
+            obj.CallOnResult(input);
         }
 
         private void HandleEditBookFlyout(Book book)
@@ -51,7 +60,8 @@ namespace ElibWpf.ViewModels.Windows
 
         private async void ShowDialog(string title, string text)
         {
-            await ((MetroWindow)Application.Current.MainWindow).ShowMessageAsync(title, text);
+            //await ((MetroWindow)Application.Current.MainWindow).ShowMessageAsync(title, text);
+            await dialogCoordinator.ShowMessageAsync(this, title, text);
         }
 
         public ICommand CloseDetailsCommand { get => new RelayCommand(() => { IsBookDetailsFlyoutOpen = false; FlyoutControl = null; }); }
