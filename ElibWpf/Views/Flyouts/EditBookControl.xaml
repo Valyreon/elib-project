@@ -48,20 +48,56 @@
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="308" />
+                    <RowDefinition MinHeight="260" MaxHeight="308" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <Border
-                    Width="206"
-                    Height="306"
                     Margin="0"
+                    HorizontalAlignment="Left"
                     BorderBrush="LightGray"
                     BorderThickness="1">
-                    <Image
-                        Width="200"
-                        Height="300"
-                        Source="{Binding Book.Cover, Converter={StaticResource ImageConverter}}" />
+                    <Image Margin="1" Source="{Binding Cover, Converter={StaticResource ImageConverter}, UpdateSourceTrigger=PropertyChanged}" />
                 </Border>
+                <Grid Margin="0,6,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="60*" />
+                        <ColumnDefinition Width="28" />
+                        <ColumnDefinition Width="4" />
+                        <ColumnDefinition Width="28" />
+                        <ColumnDefinition Width="23*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="28" />
+                    </Grid.RowDefinitions>
+                    <Components:DarkFlatSymbolButton
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Width="26"
+                        Height="26"
+                        Command="{Binding ChangeCoverButtonCommand}"
+                        IconName="FilePhotoOutline"
+                        IconSize="14">
+                        <Components:DarkFlatSymbolButton.ToolTip>
+                            <ToolTip>
+                                Change cover
+                            </ToolTip>
+                        </Components:DarkFlatSymbolButton.ToolTip>
+                    </Components:DarkFlatSymbolButton>
+                    <Components:DarkFlatSymbolButton
+                        Grid.Row="0"
+                        Grid.Column="3"
+                        Width="26"
+                        Height="26"
+                        Command="{Binding RemoveCoverButtonCommand}"
+                        IconName="Close"
+                        IconSize="14">
+                        <Components:DarkFlatSymbolButton.ToolTip>
+                            <ToolTip>
+                                Remove cover
+                            </ToolTip>
+                        </Components:DarkFlatSymbolButton.ToolTip>
+                    </Components:DarkFlatSymbolButton>
+                </Grid>
             </Grid>
             <Grid Grid.Row="1" Grid.Column="3">
                 <Grid.RowDefinitions>

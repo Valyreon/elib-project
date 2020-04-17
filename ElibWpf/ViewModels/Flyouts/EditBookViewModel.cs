@@ -3,6 +3,7 @@ using EbookTools;
 using ElibWpf.Messages;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -74,6 +75,13 @@ namespace ElibWpf.ViewModels.Flyouts
             set => Set(() => IsFavoriteCheck, ref isFavorite, value);
         }
 
+        private byte[] coverImage;
+        public byte[] Cover
+        {
+            get => coverImage;
+            set => Set(() => Cover, ref coverImage, value);
+        }
+
         public ICommand AddAuthorButtonCommand { get => new RelayCommand(() => { MessengerInstance.Send(new ShowInputDialogMessage("Adding New Author", "Author's name:", this.HandleAddAuthor)); }); }
 
         private async void HandleAddAuthor(string name)
@@ -120,6 +128,7 @@ namespace ElibWpf.ViewModels.Flyouts
             FilesCollection = new ObservableCollection<EFile>(Book.Files);
             IsFavoriteCheck = Book.IsFavorite;
             IsReadCheck = Book.IsRead;
+            Cover = Book.Cover;
         }
 
         public ICommand SaveButtonCommand { get => new RelayCommand(this.HandleSave); }
@@ -143,6 +152,7 @@ namespace ElibWpf.ViewModels.Flyouts
                 Book.IsRead = IsReadCheck;
                 Book.Authors = new List<Author>(AuthorsCollection);
                 Book.Files = new List<EFile>(FilesCollection);
+                Book.Cover = Cover;
                 await App.Database.SaveChangesAsync();
                 MessengerInstance.Send(new ShowBookDetailsMessage(Book));
             }
@@ -177,5 +187,26 @@ namespace ElibWpf.ViewModels.Flyouts
                 }
             }
         }
+
+        public ICommand ChangeCoverButtonCommand { get => new RelayCommand(this.HandleChangeCoverButton); }
+
+        private void HandleChangeCoverButton()
+        {
+            using OpenFileDialog dlg = new OpenFileDialog
+            {
+                Filter = "All files|*.*|jpg|*.jpg|png|*.png",
+                CheckFileExists = true,
+                CheckPathExists = true,
+                FilterIndex = 0,
+                Multiselect = false
+            };
+            var result = dlg.ShowDialog();
+            if (result == DialogResult.OK && dlg.FileName != null)
+            {
+                this.Cover = ImageOptimizer.ResizeAndFill(File.ReadAllBytes(dlg.FileName));
+            }
+        }
+
+        public ICommand RemoveCoverButtonCommand { get => new RelayCommand(() => this.Cover = null); }
     }
 }
