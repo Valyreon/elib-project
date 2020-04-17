@@ -1,16 +1,13 @@
 ﻿using Domain;
-using EbookTools;
 using ElibWpf.Messages;
-using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using Models;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
@@ -146,7 +143,8 @@ namespace ElibWpf.ViewModels.Flyouts
                         Book.Series = new BookSeries();
                     }
                     Book.Series.Name = SeriesFieldText;
-                    Book.NumberInSeries = decimal.Parse(SeriesNumberFieldText);
+                    if(Regex.IsMatch(SeriesNumberFieldText, @"\d+(\.\d+)?"))
+                        Book.NumberInSeries = decimal.Parse(SeriesNumberFieldText);
                 }
                 Book.IsFavorite = IsFavoriteCheck;
                 Book.IsRead = IsReadCheck;

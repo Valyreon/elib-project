@@ -4,12 +4,9 @@ using ElibWpf.ViewModels.Controls;
 using ElibWpf.ViewModels.Flyouts;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Windows;
 using System.Windows.Input;
 
 namespace ElibWpf.ViewModels.Windows
@@ -52,7 +49,7 @@ namespace ElibWpf.ViewModels.Windows
             IsBookDetailsFlyoutOpen = true;
         }
 
-        private void HandleAddBooksFlyout(IEnumerable<Book> booksToAdd)
+        private void HandleAddBooksFlyout(IList<Book> booksToAdd)
         {
             FlyoutControl = new AddNewBooksViewModel(booksToAdd);
             IsBookDetailsFlyoutOpen = true;

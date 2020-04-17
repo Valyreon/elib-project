@@ -31,7 +31,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -93,6 +93,10 @@
     <ProjectReference Include="..\EbookTools\EbookTools.csproj">
       <Project>{E3621A3E-7F43-4150-9689-9B7C43040688}</Project>
       <Name>EbookTools</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ElibWpf\ElibWpf.csproj">
+      <Project>{5b9af72f-537b-4c76-9ea0-51b4d24162ac}</Project>
+      <Name>ElibWpf</Name>
     </ProjectReference>
     <ProjectReference Include="..\Models\Models.csproj">
       <Project>{A35ECB0D-7185-4C6B-82A4-F2A70258F0B5}</Project>

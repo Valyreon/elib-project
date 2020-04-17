@@ -7,7 +7,7 @@ namespace Models
 {
     public static class ImageOptimizer
     {
-        public static byte[] ResizeAndFill(byte[] imgBytes, int Width = 200, int Height = 300)
+        public static byte[] ResizeAndFill(byte[] imgBytes, int Width = 400, int Height = 600)
         {
             using Image imgPhoto = Image.FromStream(new MemoryStream(imgBytes));
 
@@ -25,6 +25,7 @@ namespace Models
             imageFactory.Load(imgPhoto)
                 .Crop(cropLayer)
                 .Resize(resizeLayer)
+                .Quality(100)
                 .Save(outStream);
 
             using Image resizePhoto = Image.FromStream(outStream);
@@ -43,6 +44,7 @@ namespace Models
                 .GaussianBlur(10)
                 .Overlay(resizedImage)
                 .Resize(resizeCropLayer)
+                .Quality(100)
                 .Save(outStream);
 
             return outStream.ToArray();

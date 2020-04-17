@@ -10,9 +10,9 @@ namespace ElibWpf.Messages
 {
     public class OpenAddBooksFormMessage : MessageBase
     {
-        public IEnumerable<Book> BooksToAdd { get; }
+        public IList<Book> BooksToAdd { get; }
 
-        public OpenAddBooksFormMessage(IEnumerable<Book> booksToAdd)
+        public OpenAddBooksFormMessage(IList<Book> booksToAdd)
         {
             BooksToAdd = booksToAdd;
         }

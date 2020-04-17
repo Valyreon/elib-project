@@ -1,6 +1,7 @@
 ﻿using DataLayer;
 using Domain;
 using EbookTools;
+using ElibWpf.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Models;
 using Models.Options;
@@ -103,7 +104,7 @@ namespace DatabaseTests
         [TestMethod]
         public void AddBookSeriesFromMyComputer()
         {
-            string bookSeriesPath = @"F:\Documents\Ebooks\Book Series";
+            string bookSeriesPath = @"D:\Documents\Ebooks\Book Series";
             using ElibContext context = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
             context.TruncateDatabase();
 
@@ -123,17 +124,7 @@ namespace DatabaseTests
                                 if (f.EndsWith(".epub"))
                                 {
                                     var parsedBook = EbookParserFactory.Create(f).Parse();
-                                    Book newBook = new Book
-                                    {
-                                        Title = parsedBook.Title,
-                                        Authors = new List<Author> { context.Authors.Where(au => au.Name.Equals(parsedBook.Author)).FirstOrDefault() ?? new Author() { Name = parsedBook.Author } },
-                                        Series = seriesName == null ? null : (context.Series.Where(x => x.Name == seriesName).FirstOrDefault() ?? new BookSeries { Name = seriesName }),
-                                        Cover = parsedBook.Cover,
-                                        Files = new List<EFile>
-                                        {
-                                            new EFile { Format = parsedBook.Format, RawContent = parsedBook.RawData }
-                                        }
-                                    };
+                                    Book newBook = parsedBook.ToBook();
                                     context.Books.Add(newBook);
                                     context.SaveChanges();
                                 }
@@ -141,9 +132,10 @@ namespace DatabaseTests
                             DirSearch(d);
                         }
                     }
-                    catch (System.Exception excpt)
+                    catch (Exception e)
                     {
-                        Console.WriteLine(excpt.Message);
+                        Console.WriteLine(e.StackTrace);
+                        Console.WriteLine(e.Message);
                     }
                 }
 
