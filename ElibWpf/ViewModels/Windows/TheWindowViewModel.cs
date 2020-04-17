@@ -32,7 +32,7 @@ namespace ElibWpf.ViewModels.Windows
 
             Tabs = new ObservableCollection<ITabViewModel>
             {
-                new BooksTabViewModel(),
+                new BooksTabViewModel(dialogCoordinator),
                 new QuotesTabViewModel(),
                 new SettingsTabViewModel()
             };

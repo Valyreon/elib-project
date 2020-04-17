@@ -49,12 +49,11 @@ namespace EbookTools.Epub
         public override ParsedBook Parse()
         {
             MemoryStream ms = new MemoryStream(this._rawFile);
-            string title, author, publisher, isbn = null, htmlBook;
-            XmlDocument doc = null;
+            string title, author, publisher, isbn = null;
             byte[] cover;
             using (var zip = new ZipArchive(ms, ZipArchiveMode.Read))
             {
-                doc = GetRootfileDocument(zip);
+                var doc = GetRootfileDocument(zip);
 
                 // Getting metadata
                 title = GetFirstElementByTagName(doc, "dc:title")?.InnerText.Trim();
@@ -70,10 +69,17 @@ namespace EbookTools.Epub
                         break;
                     }
                 }
-                htmlBook = this.GenerateHtml(doc, zip);
                 cover = GetCover(zip);
             }
-            return new ParsedBook(title, author, isbn, publisher, htmlBook, cover, ".epub", _rawFile);
+            return new ParsedBook(title, author, isbn, publisher, cover, ".epub", _rawFile);
+        }
+
+        public override string GenerateHtml()
+        {
+            MemoryStream ms = new MemoryStream(this._rawFile);
+            using var zip = new ZipArchive(ms, ZipArchiveMode.Read);
+            var doc = GetRootfileDocument(zip);
+            return this.FormHtml(doc, zip);
         }
 
         public byte[] GetCover(ZipArchive zip)
@@ -96,7 +102,7 @@ namespace EbookTools.Epub
         /// <param name="opf">XmlDocument that contains metadata and other info.</param>
         /// <param name="zip">Opened epub archive.</param>
         /// <returns>Html string.</returns>
-        private string GenerateHtml(XmlDocument opf, ZipArchive zip)
+        private string FormHtml(XmlDocument opf, ZipArchive zip)
         {
             StringBuilder builder = new StringBuilder();
             Dictionary<string, string> linkList = new Dictionary<string, string>();

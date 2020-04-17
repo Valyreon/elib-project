@@ -1,5 +1,7 @@
 ﻿using Domain;
 using EbookTools;
+using EbookTools.Epub;
+using EbookTools.Mobi;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,6 +21,18 @@ namespace ElibWpf.Extensions
             };
 
             return newBook;
+        }
+
+        public static string GenerateHtml(this EFile book)
+        {
+            EbookParser parser = (book.Format) switch
+            {
+                ".epub" => new EpubParser(book.RawContent),
+                ".mobi" => new MobiParser(book.RawContent),
+                _ => throw new System.ArgumentException($"The file has an unkown extension.")
+            };
+
+            return parser.GenerateHtml();
         }
     }
 }

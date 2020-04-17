@@ -16,7 +16,7 @@ namespace EbookTools
             {
                 ".epub" => new EpubParser(File.ReadAllBytes(path)),
                 ".mobi" => new MobiParser(File.ReadAllBytes(path)),
-                _ => throw new ArgumentException($"{path} has an unkown extension."),
+                _ => throw new ArgumentException($"{path} has an unkown extension.")
             };
         }
     }

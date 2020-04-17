@@ -1,35 +1,39 @@
-﻿using Domain;
-using EbookTools;
-using ElibWpf.BindingItems;
-using ElibWpf.DataStructures;
-using ElibWpf.Extensions;
-using ElibWpf.Messages;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
-using Models;
-using Models.Options;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
+using Domain;
+using EbookTools;
+using ElibWpf.BindingItems;
+using ElibWpf.DataStructures;
+using ElibWpf.Extensions;
+using ElibWpf.Messages;
+using ElibWpf.Views.Windows;
+using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
+using MahApps.Metro.Controls.Dialogs;
+using Models;
+using Models.Options;
 
 namespace ElibWpf.ViewModels.Controls
 {
     public class BooksTabViewModel : ViewModelBase, ITabViewModel
     {
         private readonly ObservableStack<IViewer> viewerHistory = new ObservableStack<IViewer>();
+        private readonly IDialogCoordinator dialogCoordinator;
         private string caption = "Books";
         private IViewer currentViewer;
         private UserCollection selectedCollection;
         private PaneMainItem selectedMainPaneItem;
         private bool isInSearchResults = false;
 
-        public BooksTabViewModel()
+        public BooksTabViewModel(IDialogCoordinator dialogCoordinator)
         {
             MessengerInstance.Register<AuthorSelectedMessage>(this, this.HandleAuthorSelection);
             MessengerInstance.Register<SeriesSelectedMessage>(this, this.HandleSeriesSelection);
@@ -49,6 +53,7 @@ namespace ElibWpf.ViewModels.Controls
             SelectedMainPaneItem = MainPaneItems[0];
             PaneSelectionChanged();
             SearchOptions = ApplicationSettings.GetInstance().SearchOptions;
+            this.dialogCoordinator = dialogCoordinator;
         }
 
         private void HandleCollectionSelection(CollectionSelectedMessage message)
@@ -62,7 +67,7 @@ namespace ElibWpf.ViewModels.Controls
 
         public ICommand AddBookCommand { get => new RelayCommand(this.ProcessAddBook); }
 
-        private void ProcessAddBook()
+        private async void ProcessAddBook()
         {
             using OpenFileDialog dlg = new OpenFileDialog
             {
@@ -76,24 +81,37 @@ namespace ElibWpf.ViewModels.Controls
             if (result == DialogResult.OK && dlg.FileNames.Any())
             {
                 List<Book> booksToAdd = new List<Book>();
-                foreach (string bookPath in dlg.FileNames)
+                var controller = await dialogCoordinator.ShowProgressAsync(App.Current.MainWindow.DataContext, "Please wait...", "");
+                controller.Maximum = dlg.FileNames.Length;
+                controller.Minimum = 1;
+                for (int i = 0; i< dlg.FileNames.Length; i++)
                 {
+                    await Task.Run(() =>
+                    {
+                        controller.SetMessage($"Parsing book: {i + 1}");
+                        controller.SetProgress(i + 1);
+                    });
                     try
                     {
-                        ParsedBook pBook = EbookParserFactory.Create(bookPath).Parse();
-                        Book book = pBook.ToBook();
-                        booksToAdd.Add(book);
+                        await Task.Run(() =>
+                        {
+                            ParsedBook pBook = EbookParserFactory.Create(dlg.FileNames[i]).Parse();
+                            Book book = pBook.ToBook();
+                            booksToAdd.Add(book);
+                        });
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
+                        Logger.Log("BOOK_PARSE_ERROR", $"\nMESSAGE:{e.Message}\nSTACK:{e.StackTrace}");
                         booksToAdd.Add(new Book
                         {
                             UserCollections = new List<UserCollection>(),
-                            Files = new List<EFile>() { new EFile() { Format = Path.GetExtension(bookPath), RawContent = File.ReadAllBytes(bookPath) } },
+                            Files = new List<EFile>() { new EFile() { Format = Path.GetExtension(dlg.FileNames[i]), RawContent = File.ReadAllBytes(dlg.FileNames[i]) } },
                             Authors = new List<Author>()
                         });
                     }
                 }
+                await controller.CloseAsync();
                 MessengerInstance.Send(new OpenAddBooksFormMessage(booksToAdd)); // TODO: dont forget to add subscription in Window later
             }
         }

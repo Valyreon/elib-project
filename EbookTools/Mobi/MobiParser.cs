@@ -42,6 +42,15 @@ namespace EbookTools.Mobi
         /// </summary>
         public override ParsedBook Parse()
         {
+            MobiFile mf = MobiFile.LoadFile(this._rawFile);
+            string html = mf.BookText;
+            HtmlDocument doc = new HtmlDocument();
+            doc.LoadHtml(html);
+            return new ParsedBook(mf.Name, null, null, null, null, ".mobi", _rawFile);
+        }
+
+        public override string GenerateHtml()
+        {
             StringBuilder build = new StringBuilder();
             MobiFile mf = MobiFile.LoadFile(this._rawFile);
             build.Append(GenerateHeader());
@@ -53,7 +62,7 @@ namespace EbookTools.Mobi
 
             build.Append(bodyContent.InnerHtml);
             build.Append("</body>");
-            return new ParsedBook(mf.Name, null, null, null, build.ToString(), null, ".mobi", _rawFile);
+            return build.ToString();
         }
     }
 }

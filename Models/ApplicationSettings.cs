@@ -41,5 +41,8 @@ namespace Models
 
         [JsonProperty("SearchOptions")]
         public SearchOptions SearchOptions { get; set; } = new SearchOptions { SearchByName = true, SearchByAuthor = false, SearchBySeries = false };
+
+        [JsonProperty("LogFilePath")]
+        public string LogFilePath { get; set; } = "log.txt";
     }
 }
