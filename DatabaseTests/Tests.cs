@@ -125,6 +125,7 @@ namespace DatabaseTests
                                 {
                                     var parsedBook = EbookParserFactory.Create(f).Parse();
                                     Book newBook = parsedBook.ToBook();
+                                    newBook.Series = seriesName == null ? null : (context.Series.Where(x => x.Name == seriesName).FirstOrDefault() ?? new BookSeries { Name = seriesName });
                                     context.Books.Add(newBook);
                                     context.SaveChanges();
                                 }

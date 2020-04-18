@@ -179,6 +179,7 @@
     <Compile Include="Paging\PagedList.cs" />
     <Compile Include="Paging\PagedListExtensions.cs" />
     <Compile Include="Themes\CustomComponents\TextLinkButton.cs" />
+    <Compile Include="ValidationAttributes\NotEmpty.cs" />
     <Compile Include="ViewModels\Controls\BooksTabViewModel.cs" />
     <Compile Include="ViewModels\Controls\BookViewerViewModel.cs" />
     <Compile Include="ViewModels\Flyouts\AddNewBooksViewModel.cs" />

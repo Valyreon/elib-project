@@ -1,5 +1,6 @@
 ﻿using Domain;
 using ElibWpf.Messages;
+using ElibWpf.ValidationAttributes;
 using GalaSoft.MvvmLight.Command;
 using Models;
 using System.Collections.Generic;
@@ -24,8 +25,10 @@ namespace ElibWpf.ViewModels.Flyouts
             HandleRevert();
         }
 
+        [NotEmpty(ErrorMessage = "Book has to have at least one author.")]
         public ObservableCollection<Author> AuthorsCollection { get; private set; }
 
+        [NotEmpty(ErrorMessage = "Book has to have at least one file.")]
         public ObservableCollection<EFile> FilesCollection { get; private set; }
 
         private string seriesFieldText;
@@ -143,7 +146,7 @@ namespace ElibWpf.ViewModels.Flyouts
                         Book.Series = new BookSeries();
                     }
                     Book.Series.Name = SeriesFieldText;
-                    if(Regex.IsMatch(SeriesNumberFieldText, @"\d+(\.\d+)?"))
+                    if (Regex.IsMatch(SeriesNumberFieldText, @"\d+(\.\d+)?"))
                         Book.NumberInSeries = decimal.Parse(SeriesNumberFieldText);
                 }
                 Book.IsFavorite = IsFavoriteCheck;
@@ -176,13 +179,9 @@ namespace ElibWpf.ViewModels.Flyouts
                 Multiselect = true
             };
             var result = dlg.ShowDialog();
-            if (result == DialogResult.OK && dlg.FileNames.Any())
+            if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(dlg.FileName))
             {
-                List<EFile> booksToAdd = new List<EFile>();
-                foreach (string bookPath in dlg.FileNames)
-                {
-                    this.FilesCollection.Add(new EFile { Format = Path.GetExtension(bookPath), RawContent = File.ReadAllBytes(bookPath) });
-                }
+                this.FilesCollection.Add(new EFile { Format = Path.GetExtension(dlg.FileName), RawContent = File.ReadAllBytes(dlg.FileName) });
             }
         }
 
