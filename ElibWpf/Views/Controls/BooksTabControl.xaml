@@ -426,10 +426,10 @@
                     <Grid Grid.Column="8" HorizontalAlignment="Right">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="20" />
-                            <ColumnDefinition Width="240" />
+                            <ColumnDefinition Width="30" />
                             <ColumnDefinition Width="5" />
                             <ColumnDefinition Width="30" />
-                            <ColumnDefinition Width="15" />
+                            <ColumnDefinition Width="10" />
                         </Grid.ColumnDefinitions>
 
                         <Components:SymbolButton

@@ -69,6 +69,7 @@
     <Compile Include="Importer.cs" />
     <Compile Include="Options\SearchOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Selector.cs" />
     <Compile Include="Updater.cs" />
   </ItemGroup>
   <ItemGroup>

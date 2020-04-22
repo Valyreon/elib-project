@@ -391,6 +391,18 @@
                                         Panel.ZIndex="100"
                                         Source="{Binding Cover, Converter={StaticResource ImageConverter}}"
                                         Stretch="Fill" />
+                                    <CheckBox
+                                        x:Name="SelectedCheckbox"
+                                        Margin="0,0,0,6"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Bottom"
+                                        Panel.ZIndex="150"
+                                        Command="{TemplateBinding SelectCommand}"
+                                        CommandParameter="{TemplateBinding TileParameter}"
+                                        Focusable="False"
+                                        IsChecked="{Binding IsMarked}"
+                                        Opacity="0"
+                                        Style="{DynamicResource CustomDarkCheckbox}" />
                                 </Grid>
                             </MetroControls:Tile>
                         </Border>
@@ -428,6 +440,73 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Cursor" Value="Hand" />
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation
+                                            Storyboard.TargetName="TileBorder"
+                                            Storyboard.TargetProperty="(Border.BorderBrush).(Color)"
+                                            To="CornflowerBlue"
+                                            Duration="0:0:0.3" />
+                                        <ColorAnimation
+                                            Storyboard.TargetName="TheBookTitle"
+                                            Storyboard.TargetProperty="(Foreground).(Color)"
+                                            To="CornflowerBlue"
+                                            Duration="0:0:0.3" />
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="SelectedCheckbox"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="1"
+                                            Duration="0:0:0.3" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation
+                                            Storyboard.TargetName="TileBorder"
+                                            Storyboard.TargetProperty="(Border.BorderBrush).(Color)"
+                                            To="LightGray"
+                                            Duration="0:0:0.3" />
+                                        <ColorAnimation
+                                            Storyboard.TargetName="TheBookTitle"
+                                            Storyboard.TargetProperty="(Foreground).(Color)"
+                                            To="Black"
+                                            Duration="0:0:0.3" />
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="SelectedCheckbox"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="0"
+                                            Duration="0:0:0.3" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger SourceName="SelectedCheckbox" Property="IsChecked" Value="True">
+                            <Setter TargetName="SelectedCheckbox" Property="Opacity" Value="1" />
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="SelectedCheckbox"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="1"
+                                            Duration="0:0:0.1" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="SelectedCheckbox"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="1"
+                                            Duration="0:0:0.1" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
                         </Trigger>
                         <EventTrigger RoutedEvent="Loaded">
                             <BeginStoryboard>
@@ -437,38 +516,6 @@
                                         Storyboard.TargetProperty="Opacity"
                                         To="1"
                                         Duration="0:0:0.4" />
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                        <EventTrigger RoutedEvent="MouseEnter">
-                            <BeginStoryboard>
-                                <Storyboard>
-                                    <ColorAnimation
-                                        Storyboard.TargetName="TileBorder"
-                                        Storyboard.TargetProperty="(Border.BorderBrush).(Color)"
-                                        To="CornflowerBlue"
-                                        Duration="0:0:0.3" />
-                                    <ColorAnimation
-                                        Storyboard.TargetName="TheBookTitle"
-                                        Storyboard.TargetProperty="(Foreground).(Color)"
-                                        To="CornflowerBlue"
-                                        Duration="0:0:0.3" />
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                        <EventTrigger RoutedEvent="MouseLeave">
-                            <BeginStoryboard>
-                                <Storyboard>
-                                    <ColorAnimation
-                                        Storyboard.TargetName="TileBorder"
-                                        Storyboard.TargetProperty="(Border.BorderBrush).(Color)"
-                                        To="LightGray"
-                                        Duration="0:0:0.3" />
-                                    <ColorAnimation
-                                        Storyboard.TargetName="TheBookTitle"
-                                        Storyboard.TargetProperty="(Foreground).(Color)"
-                                        To="Black"
-                                        Duration="0:0:0.3" />
                                 </Storyboard>
                             </BeginStoryboard>
                         </EventTrigger>

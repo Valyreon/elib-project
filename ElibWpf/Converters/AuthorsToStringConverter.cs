@@ -1,5 +1,5 @@
 ﻿using Domain;
-
+using Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -14,8 +14,10 @@ namespace ElibWpf.Converters
         {
             if (value is IEnumerable<Author> authorList)
             {
-                return authorList.Select(a => a.Name).Aggregate((i, j) => i + ", " + j);
+                if(authorList.Count() > 0)
+                    return authorList.Select(a => a.Name).Aggregate((i, j) => i + ", " + j);
             }
+            Logger.Log("AUTHORS_ERROR", "AuthorList is null or count is 0. All books should have at least one author.");
             return null;
         }
 

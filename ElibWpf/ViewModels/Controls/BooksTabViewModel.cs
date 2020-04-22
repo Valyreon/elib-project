@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
@@ -14,7 +13,6 @@ using ElibWpf.BindingItems;
 using ElibWpf.DataStructures;
 using ElibWpf.Extensions;
 using ElibWpf.Messages;
-using ElibWpf.Views.Windows;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using MahApps.Metro.Controls.Dialogs;
@@ -33,12 +31,17 @@ namespace ElibWpf.ViewModels.Controls
         private PaneMainItem selectedMainPaneItem;
         private bool isInSearchResults = false;
 
+        private readonly PaneMainItem selectedMainItem = new PaneMainItem("Selected", "MapMarker", "Selected Books", (Book x) => App.Selector.SelectedIds.Contains(x.Id), true);
+        private bool isSelectedMainAdded = false;
+
         public BooksTabViewModel(IDialogCoordinator dialogCoordinator)
         {
             MessengerInstance.Register<AuthorSelectedMessage>(this, this.HandleAuthorSelection);
+            MessengerInstance.Register(this, (BookSelectedMessage m) => { if (App.Selector.Count > 0 && !isSelectedMainAdded) { MainPaneItems.Add(selectedMainItem); isSelectedMainAdded = true; } else if(App.Selector.Count == 0) { MainPaneItems.Remove(selectedMainItem); isSelectedMainAdded = false; } });
             MessengerInstance.Register<SeriesSelectedMessage>(this, this.HandleSeriesSelection);
             MessengerInstance.Register<CollectionSelectedMessage>(this, this.HandleCollectionSelection);
             MessengerInstance.Register<GoBackMessage>(this, x => this.GoToPreviousViewer());
+            MessengerInstance.Register<ResetPaneSelectionMessage>(this, x => { SelectedMainPaneItem = MainPaneItems[0]; PaneSelectionChanged(); });
             MessengerInstance.Register<RefreshSidePaneCollectionsMessage>(this, async x => { this.Collections = await Task.Run(() => App.Database.UserCollections.ToList()); RaisePropertyChanged("Collections"); });
 
             viewerHistory.AddHandlerOnStackChange((object sender, NotifyCollectionChangedEventArgs e) => RaisePropertyChanged("IsBackEnabled"));
@@ -249,7 +252,7 @@ namespace ElibWpf.ViewModels.Controls
             if (SelectedMainPaneItem != null)
             {
                 viewerHistory.Clear();
-                CurrentViewer = new BookViewerViewModel(SelectedMainPaneItem.ViewerCaption, SelectedMainPaneItem.Condition);
+                CurrentViewer = new BookViewerViewModel(SelectedMainPaneItem.ViewerCaption, SelectedMainPaneItem.Condition, SelectedMainPaneItem.IsSelectedBooksPane);
             }
         }
 

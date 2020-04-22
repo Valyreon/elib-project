@@ -40,6 +40,7 @@
                 VerticalAlignment="Top"
                 ItemsSource="{Binding Books, Mode=OneWay, IsAsync=True}"
                 ScrollViewer.CanContentScroll="True"
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                 VirtualizingStackPanel.IsVirtualizing="True"
                 VirtualizingStackPanel.VirtualizationMode="Recycling">
                 <ItemsControl.ContextMenu>
@@ -59,6 +60,7 @@
                             AuthorParameter="{Binding Authors}"
                             Authors="{Binding Authors, Converter={StaticResource AuthorsToStringConverter}}"
                             Cover="{Binding Cover}"
+                            SelectCommand="{Binding DataContext.SelectBookCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                             SeriesCommand="{Binding DataContext.GoToSeries, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                             SeriesInfo="{Binding SeriesInfo}"
                             SeriesParameter="{Binding Series}"

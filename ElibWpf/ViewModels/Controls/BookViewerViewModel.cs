@@ -6,7 +6,6 @@ using ElibWpf.Paging;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
-
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -25,12 +24,14 @@ namespace ElibWpf.ViewModels.Controls
         private int nextPage = 1;
         private string numberOfBooks;
         private double scrollVerticalOffset;
+        private readonly bool isSelectedBookView;
 
-        public BookViewerViewModel(string caption, Func<Book, bool> defaultQuery)
+        public BookViewerViewModel(string caption, Func<Book, bool> defaultQuery, bool isSelectedView = false)
         {
             Caption = caption;
             this.DefaultCondition = defaultQuery;
             Books = new ObservableCollection<Book>();
+            isSelectedBookView = isSelectedView;
         }
 
         public ObservableCollection<Book> Books { get; set; }
@@ -43,6 +44,25 @@ namespace ElibWpf.ViewModels.Controls
 
         public ICommand GoToAuthor { get => new RelayCommand<ICollection<Author>>((ICollection<Author> a) => Messenger.Default.Send(new AuthorSelectedMessage(a))); }
         public ICommand GoToSeries { get => new RelayCommand<BookSeries>((BookSeries a) => Messenger.Default.Send(new SeriesSelectedMessage(a))); }
+        public ICommand SelectBookCommand { get => new RelayCommand<Book>(this.HandleSelectBook); }
+
+        private void HandleSelectBook(Book obj)
+        {
+            bool isSelected = App.Selector.Select(obj);
+            if (isSelectedBookView && !isSelected && Books.Count == 1)
+            {
+                MessengerInstance.Send(new BookSelectedMessage());
+                MessengerInstance.Send(new ResetPaneSelectionMessage());
+            }
+            else if (isSelectedBookView && !isSelected && Books.Count >1)
+            {
+                MessengerInstance.Send(new BookSelectedMessage());
+                Books.Remove(obj);
+            }
+            else
+                MessengerInstance.Send(new BookSelectedMessage());
+        }
+
         public ICommand LoadMoreCommand { get => new RelayCommand(this.LoadMore); }
 
         public string NumberOfBooks
@@ -70,7 +90,7 @@ namespace ElibWpf.ViewModels.Controls
             await semaphoreSlim.WaitAsync();
             try
             {
-                bookList = await Task.Run(() => App.Database.Books.Include("Authors").Include("Series").Include("UserCollections").Where(DefaultCondition).AsQueryable().ToPagedList(nextPage++, 30));
+                bookList = await Task.Run(() => App.Database.Books.Include("Authors").Include("Series").Include("UserCollections").Where(DefaultCondition).Select(b => App.Selector.SetMarked(b)).AsQueryable().ToPagedList(nextPage++, 30));
             }
             finally
             {

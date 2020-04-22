@@ -46,7 +46,7 @@ namespace ElibWpf.ViewModels.Flyouts
             books = newBooks;
             CurrentBook = books[0];
             TitleText = $"Book 1 of {books.Count}";
-            ProceedButtonText = "SAVE & NEXT";
+            ProceedButtonText = books.Count == 1 ? "SAVE & FINISH" :"SAVE & NEXT";
         }
 
         [NotEmpty(ErrorMessage = "Book has to have at least one author.")]

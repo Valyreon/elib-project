@@ -146,12 +146,14 @@
     <Compile Include="DataStructures\ObservableStack.cs" />
     <Compile Include="Extensions\DomainExtensions.cs" />
     <Compile Include="Messages\AuthorSelectedMessage.cs" />
+    <Compile Include="Messages\BookSelectedMessage.cs" />
     <Compile Include="Messages\CloseFlyoutMessage.cs" />
     <Compile Include="Messages\CollectionSelectedMessage.cs" />
     <Compile Include="Messages\EditBookMessage.cs" />
     <Compile Include="Messages\GoBackMessage.cs" />
     <Compile Include="Messages\OpenAddBooksFormMessage.cs" />
     <Compile Include="Messages\RefreshSidePaneCollectionsMessage.cs" />
+    <Compile Include="Messages\ResetPaneSelectionMessage.cs" />
     <Compile Include="Messages\SeriesSelectedMessage.cs" />
     <Compile Include="Messages\ShowBookDetailsMessage.cs" />
     <Compile Include="Messages\ShowDialogMessage.cs" />

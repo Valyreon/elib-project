@@ -29,6 +29,9 @@ namespace Domain
         public ICollection<Quote> Quotes { get; set; }
         public ICollection<UserCollection> UserCollections { get; set; }
 
+        [NotMapped]
+        public bool IsMarked { get; set; } = false;
+
         public string SeriesInfo
         {
             get => Series != null ? $"{Series.Name} {((NumberInSeries != null) ? ($"#{NumberInSeries}") : (""))}" : "";

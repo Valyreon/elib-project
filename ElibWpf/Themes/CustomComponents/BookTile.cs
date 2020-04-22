@@ -18,7 +18,9 @@ namespace ElibWpf.CustomComponents
         public static DependencyProperty SeriesParameterProperty;
         public static DependencyProperty TileCommandProperty;
         public static DependencyProperty TileParameterProperty;
+        public static DependencyProperty SelectCommandProperty;
         public static DependencyProperty TitleProperty;
+        public static DependencyProperty IsMarkedProperty;
 
         static BookTile()
         {
@@ -27,10 +29,12 @@ namespace ElibWpf.CustomComponents
             TitleProperty = DependencyProperty.Register("Title", typeof(string), typeof(BookTile));
             AuthorsProperty = DependencyProperty.Register("Authors", typeof(string), typeof(BookTile));
             SeriesInfoProperty = DependencyProperty.Register("SeriesInfo", typeof(string), typeof(BookTile));
+            IsMarkedProperty = DependencyProperty.Register("IsMarked", typeof(bool), typeof(BookTile));
 
             TileCommandProperty = DependencyProperty.Register("TileCommand", typeof(ICommand), typeof(BookTile));
             AuthorCommandProperty = DependencyProperty.Register("AuthorCommand", typeof(ICommand), typeof(BookTile));
             SeriesCommandProperty = DependencyProperty.Register("SeriesCommand", typeof(ICommand), typeof(BookTile));
+            SelectCommandProperty = DependencyProperty.Register("SelectCommand", typeof(ICommand), typeof(BookTile));
 
             TileParameterProperty = DependencyProperty.Register("TileParameter", typeof(Book), typeof(BookTile));
             AuthorParameterProperty = DependencyProperty.Register("AuthorParameter", typeof(ICollection<Author>), typeof(BookTile));
@@ -91,10 +95,22 @@ namespace ElibWpf.CustomComponents
             set => base.SetValue(TileParameterProperty, value);
         }
 
+        public ICommand SelectCommand
+        {
+            get => (ICommand)base.GetValue(SelectCommandProperty);
+            set => base.SetValue(SelectCommandProperty, value);
+        }
+
         public string Title
         {
             get => (string)base.GetValue(TitleProperty);
             set => base.SetValue(TitleProperty, value);
+        }
+
+        public bool IsMarked
+        {
+            get => (bool)base.GetValue(IsMarkedProperty);
+            set => base.SetValue(IsMarkedProperty, value);
         }
     }
 }
