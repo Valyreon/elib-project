@@ -1,6 +1,5 @@
 ﻿using ImageProcessor;
 using ImageProcessor.Imaging;
-using System;
 using System.Drawing;
 using System.IO;
 

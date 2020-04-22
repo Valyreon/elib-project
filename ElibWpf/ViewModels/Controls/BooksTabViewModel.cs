@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Windows.Input;
-using Domain;
+﻿using Domain;
 using EbookTools;
 using ElibWpf.BindingItems;
 using ElibWpf.DataStructures;
@@ -18,6 +9,15 @@ using GalaSoft.MvvmLight.Command;
 using MahApps.Metro.Controls.Dialogs;
 using Models;
 using Models.Options;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Windows.Input;
 
 namespace ElibWpf.ViewModels.Controls
 {
@@ -37,7 +37,7 @@ namespace ElibWpf.ViewModels.Controls
         public BooksTabViewModel(IDialogCoordinator dialogCoordinator)
         {
             MessengerInstance.Register<AuthorSelectedMessage>(this, this.HandleAuthorSelection);
-            MessengerInstance.Register(this, (BookSelectedMessage m) => { if (App.Selector.Count > 0 && !isSelectedMainAdded) { MainPaneItems.Add(selectedMainItem); isSelectedMainAdded = true; } else if(App.Selector.Count == 0) { MainPaneItems.Remove(selectedMainItem); isSelectedMainAdded = false; } });
+            MessengerInstance.Register(this, (BookSelectedMessage m) => { if (App.Selector.Count > 0 && !isSelectedMainAdded) { MainPaneItems.Add(selectedMainItem); isSelectedMainAdded = true; } else if (App.Selector.Count == 0) { MainPaneItems.Remove(selectedMainItem); isSelectedMainAdded = false; } });
             MessengerInstance.Register<SeriesSelectedMessage>(this, this.HandleSeriesSelection);
             MessengerInstance.Register<CollectionSelectedMessage>(this, this.HandleCollectionSelection);
             MessengerInstance.Register<GoBackMessage>(this, x => this.GoToPreviousViewer());
@@ -87,7 +87,7 @@ namespace ElibWpf.ViewModels.Controls
                 var controller = await dialogCoordinator.ShowProgressAsync(App.Current.MainWindow.DataContext, "Please wait...", "");
                 controller.Maximum = dlg.FileNames.Length;
                 controller.Minimum = 1;
-                for (int i = 0; i< dlg.FileNames.Length; i++)
+                for (int i = 0; i < dlg.FileNames.Length; i++)
                 {
                     await Task.Run(() =>
                     {

@@ -265,7 +265,6 @@
                                                 IconSize="12"
                                                 Opacity="0"
                                                 Style="{StaticResource BlueHoverStyle}" />
-
                                         </Grid>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
@@ -399,13 +398,11 @@
                                             IconSize="12"
                                             Opacity="0"
                                             Style="{StaticResource BlueHoverStyle}" />
-
                                     </Grid>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </ScrollViewer>
-
                 </StackPanel>
             </Grid>
         </Grid>

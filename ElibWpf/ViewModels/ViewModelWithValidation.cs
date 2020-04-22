@@ -9,7 +9,7 @@ using System.Runtime.CompilerServices;
 
 namespace ElibWpf.ViewModels
 {
-    public abstract class ViewModelWithValidation: ViewModelBase, INotifyDataErrorInfo
+    public abstract class ViewModelWithValidation : ViewModelBase, INotifyDataErrorInfo
     {
         private readonly Dictionary<string, List<string>> errors = new Dictionary<string, List<string>>();
 
@@ -25,47 +25,9 @@ namespace ElibWpf.ViewModels
             }
         }
 
-        public void OnErrorsChanged(string propertyName)
+        public void ClearErrors()
         {
-            this.ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
-        }
-
-        public void ValidateProperty(object value, [CallerMemberName] string propertyName = null)
-        {
-            lock (this.lockObject)
-            {
-                var validationContext = new ValidationContext(this, null, null)
-                {
-                    MemberName = propertyName
-                };
-                var validationResults = new List<ValidationResult>();
-                Validator.TryValidateProperty(value, validationContext, validationResults);
-
-                //clear previous _errors from tested property  
-                if (this.errors.ContainsKey(propertyName))
-                {
-                    this.errors.Remove(propertyName);
-                }
-
-                this.OnErrorsChanged(propertyName);
-                this.HandleValidationResults(validationResults);
-            }
-        }
-
-        public void Validate()
-        {
-            lock (this.lockObject)
-            {
-                var validationContext = new ValidationContext(this, null, null);
-                var validationResults = new List<ValidationResult>();
-                Validator.TryValidateObject(this, validationContext, validationResults, true);
-
-                //clear all previous _errors  
-                var propNames = this.errors.Keys.ToList();
-                this.errors.Clear();
-                propNames.ForEach(pn => this.OnErrorsChanged(pn));
-                this.HandleValidationResults(validationResults);
-            }
+            this.errors.Clear();
         }
 
         public IEnumerable GetErrors(string propertyName = null)
@@ -87,11 +49,48 @@ namespace ElibWpf.ViewModels
             }
         }
 
-        public void ClearErrors()
+        public void OnErrorsChanged(string propertyName)
         {
-            this.errors.Clear();
+            this.ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
         }
 
+        public void Validate()
+        {
+            lock (this.lockObject)
+            {
+                var validationContext = new ValidationContext(this, null, null);
+                var validationResults = new List<ValidationResult>();
+                Validator.TryValidateObject(this, validationContext, validationResults, true);
+
+                //clear all previous _errors
+                var propNames = this.errors.Keys.ToList();
+                this.errors.Clear();
+                propNames.ForEach(pn => this.OnErrorsChanged(pn));
+                this.HandleValidationResults(validationResults);
+            }
+        }
+
+        public void ValidateProperty(object value, [CallerMemberName] string propertyName = null)
+        {
+            lock (this.lockObject)
+            {
+                var validationContext = new ValidationContext(this, null, null)
+                {
+                    MemberName = propertyName
+                };
+                var validationResults = new List<ValidationResult>();
+                Validator.TryValidateProperty(value, validationContext, validationResults);
+
+                //clear previous _errors from tested property
+                if (this.errors.ContainsKey(propertyName))
+                {
+                    this.errors.Remove(propertyName);
+                }
+
+                this.OnErrorsChanged(propertyName);
+                this.HandleValidationResults(validationResults);
+            }
+        }
         private void HandleValidationResults(List<ValidationResult> validationResults)
         {
             var resultsByPropNames = from res in validationResults

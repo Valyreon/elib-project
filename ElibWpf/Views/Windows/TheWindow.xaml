@@ -42,7 +42,6 @@
 
     <Window.Resources>
         <ResourceDictionary Source="WindowResources.xaml" />
-
     </Window.Resources>
 
     <MetroControls:MetroWindow.Flyouts>

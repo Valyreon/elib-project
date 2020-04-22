@@ -1,7 +1,6 @@
 ﻿using Domain;
 using ElibWpf.Messages;
 using ElibWpf.ValidationAttributes;
-using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using Models;
 using System.Collections.Generic;
@@ -22,6 +21,7 @@ namespace ElibWpf.ViewModels.Flyouts
         private int counter = 0;
 
         private Book currentBook;
+
         private Book CurrentBook
         {
             get => currentBook;
@@ -46,7 +46,7 @@ namespace ElibWpf.ViewModels.Flyouts
             books = newBooks;
             CurrentBook = books[0];
             TitleText = $"Book 1 of {books.Count}";
-            ProceedButtonText = books.Count == 1 ? "SAVE & FINISH" :"SAVE & NEXT";
+            ProceedButtonText = books.Count == 1 ? "SAVE & FINISH" : "SAVE & NEXT";
         }
 
         [NotEmpty(ErrorMessage = "Book has to have at least one author.")]
@@ -56,6 +56,7 @@ namespace ElibWpf.ViewModels.Flyouts
         public ObservableCollection<EFile> FilesCollection { get; private set; }
 
         private string seriesFieldText;
+
         public string SeriesFieldText
         {
             get => seriesFieldText;
@@ -72,6 +73,7 @@ namespace ElibWpf.ViewModels.Flyouts
         }
 
         private string seriesNumberFieldText;
+
         public string SeriesNumberFieldText
         {
             get => seriesNumberFieldText;
@@ -79,6 +81,7 @@ namespace ElibWpf.ViewModels.Flyouts
         }
 
         private string titleText;
+
         public string TitleText
         {
             get => titleText;
@@ -86,6 +89,7 @@ namespace ElibWpf.ViewModels.Flyouts
         }
 
         private string proceedButtonText;
+
         public string ProceedButtonText
         {
             get => proceedButtonText;
@@ -93,6 +97,7 @@ namespace ElibWpf.ViewModels.Flyouts
         }
 
         private string addAuthorFieldText;
+
         public string AddAuthorFieldText
         {
             get => addAuthorFieldText;
@@ -100,6 +105,7 @@ namespace ElibWpf.ViewModels.Flyouts
         }
 
         private bool isRead;
+
         public bool IsReadCheck
         {
             get => isRead;
@@ -107,6 +113,7 @@ namespace ElibWpf.ViewModels.Flyouts
         }
 
         private bool isFavorite;
+
         public bool IsFavoriteCheck
         {
             get => isFavorite;
@@ -114,6 +121,7 @@ namespace ElibWpf.ViewModels.Flyouts
         }
 
         private byte[] coverImage;
+
         public byte[] Cover
         {
             get => coverImage;
@@ -194,14 +202,14 @@ namespace ElibWpf.ViewModels.Flyouts
                 App.Database.Books.Add(CurrentBook);
                 await App.Database.SaveChangesAsync();
 
-                TitleText = $"Book {counter+2} of {books.Count}";
+                TitleText = $"Book {counter + 2} of {books.Count}";
                 if (counter >= books.Count - 1)
                 {
                     MessengerInstance.Send(new CloseFlyoutMessage());
                 }
                 else
                 {
-                    if(counter == books.Count - 2)
+                    if (counter == books.Count - 2)
                     {
                         ProceedButtonText = "SAVE & FINISH";
                     }

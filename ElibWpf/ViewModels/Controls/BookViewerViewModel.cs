@@ -54,7 +54,7 @@ namespace ElibWpf.ViewModels.Controls
                 MessengerInstance.Send(new BookSelectedMessage());
                 MessengerInstance.Send(new ResetPaneSelectionMessage());
             }
-            else if (isSelectedBookView && !isSelected && Books.Count >1)
+            else if (isSelectedBookView && !isSelected && Books.Count > 1)
             {
                 MessengerInstance.Send(new BookSelectedMessage());
                 Books.Remove(obj);

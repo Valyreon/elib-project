@@ -1,13 +1,9 @@
-﻿using Domain;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace ElibWpf.ValidationAttributes
 {
     public class NotEmpty : ValidationAttribute
     {
-
         public NotEmpty()
         {
         }

@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataLayer", "DataLayer\Data
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseTests", "DatabaseTests\DatabaseTests.csproj", "{24FBE310-9082-4A99-B3D5-0D128D4C42CB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineBookApi", "OnlineBookApi\OnlineBookApi.csproj", "{4802D3B7-F3FB-4057-AA1E-D17E12DA161F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineBookApi", "OnlineBookApi\OnlineBookApi.csproj", "{4802D3B7-F3FB-4057-AA1E-D17E12DA161F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{1A7E4187-0A14-4B7F-BA7E-A5E618C0BFC8} = {1A7E4187-0A14-4B7F-BA7E-A5E618C0BFC8}
 	EndProjectSection

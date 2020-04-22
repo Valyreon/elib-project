@@ -32,6 +32,7 @@ namespace ElibWpf.ViewModels.Flyouts
         public ObservableCollection<EFile> FilesCollection { get; private set; }
 
         private string seriesFieldText;
+
         public string SeriesFieldText
         {
             get => seriesFieldText;
@@ -48,6 +49,7 @@ namespace ElibWpf.ViewModels.Flyouts
         }
 
         private string seriesNumberFieldText;
+
         public string SeriesNumberFieldText
         {
             get => seriesNumberFieldText;
@@ -55,6 +57,7 @@ namespace ElibWpf.ViewModels.Flyouts
         }
 
         private string addAuthorFieldText;
+
         public string AddAuthorFieldText
         {
             get => addAuthorFieldText;
@@ -62,6 +65,7 @@ namespace ElibWpf.ViewModels.Flyouts
         }
 
         private bool isRead;
+
         public bool IsReadCheck
         {
             get => isRead;
@@ -69,6 +73,7 @@ namespace ElibWpf.ViewModels.Flyouts
         }
 
         private bool isFavorite;
+
         public bool IsFavoriteCheck
         {
             get => isFavorite;
@@ -76,6 +81,7 @@ namespace ElibWpf.ViewModels.Flyouts
         }
 
         private byte[] coverImage;
+
         public byte[] Cover
         {
             get => coverImage;

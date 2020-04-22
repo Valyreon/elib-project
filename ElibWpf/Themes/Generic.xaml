@@ -160,7 +160,6 @@
                             <!--<Setter TargetName="SearchBox" Property="Foreground" Value="#888" />
                             <Setter TargetName="TheIcon" Property="Foreground" Value="#888" />-->
                         </Trigger>
-
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
@@ -285,7 +284,6 @@
                                         Storyboard.TargetProperty="(RenderTransform).(ScaleTransform.ScaleY)"
                                         To="0.9"
                                         Duration="0:0:0.1" />
-
                                 </Storyboard>
                             </BeginStoryboard>
                         </EventTrigger>
@@ -615,5 +613,4 @@
             </Setter.Value>
         </Setter>
     </Style>
-
 </ResourceDictionary>

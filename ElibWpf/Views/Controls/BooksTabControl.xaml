@@ -448,6 +448,23 @@
                                 </ToolTip>
                             </Button.ToolTip>
                         </Components:SymbolButton>
+
+                        <Components:SymbolButton
+                            Grid.Column="1"
+                            Width="30"
+                            Height="30"
+                            Background="Transparent"
+                            Command="{Binding AddBookCommand}"
+                            Foreground="#484b4e"
+                            IconName="PlusCircle"
+                            IconSize="24"
+                            Style="{StaticResource BlueHoverStyle}">
+                            <Button.ToolTip>
+                                <ToolTip>
+                                    Add New Book
+                                </ToolTip>
+                            </Button.ToolTip>
+                        </Components:SymbolButton>
                     </Grid>
                 </Grid>
             </Border>

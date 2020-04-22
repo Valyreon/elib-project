@@ -27,7 +27,7 @@ namespace Models
 
         public bool Select(Book book)
         {
-            if(book.IsMarked)
+            if (book.IsMarked)
             {
                 selectedBookIds.Add(book.Id);
                 return true;

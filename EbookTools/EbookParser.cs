@@ -5,6 +5,7 @@
         public StyleSettings StyleSettings { get; set; }
 
         abstract public ParsedBook Parse();
+
         abstract public string GenerateHtml();
 
         /// <summary>

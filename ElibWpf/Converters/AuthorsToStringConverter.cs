@@ -14,7 +14,7 @@ namespace ElibWpf.Converters
         {
             if (value is IEnumerable<Author> authorList)
             {
-                if(authorList.Count() > 0)
+                if (authorList.Count() > 0)
                     return authorList.Select(a => a.Name).Aggregate((i, j) => i + ", " + j);
             }
             Logger.Log("AUTHORS_ERROR", "AuthorList is null or count is 0. All books should have at least one author.");
