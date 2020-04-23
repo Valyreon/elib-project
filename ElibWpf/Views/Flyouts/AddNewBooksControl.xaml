@@ -7,6 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:fa="http://schemas.fontawesome.io/icons/"
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:local="clr-namespace:ElibWpf.Views.Flyouts"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -90,7 +91,7 @@
                         Width="26"
                         Height="26"
                         Command="{Binding ChangeCoverButtonCommand}"
-                        IconName="FilePhotoOutline"
+                        Icon="{x:Static iconPacks:PackIconMaterialKind.FileImage}"
                         IconSize="14">
                         <Components:DarkFlatSymbolButton.ToolTip>
                             <ToolTip>
@@ -104,7 +105,7 @@
                         Width="26"
                         Height="26"
                         Command="{Binding RemoveCoverButtonCommand}"
-                        IconName="Close"
+                        Icon="{x:Static iconPacks:PackIconJamIconsKind.Close}"
                         IconSize="14">
                         <Components:DarkFlatSymbolButton.ToolTip>
                             <ToolTip>
@@ -125,9 +126,9 @@
                     Height="35"
                     Background="#222"
                     FontSize="14"
+                    Icon="{x:Static iconPacks:PackIconUniconsKind.BookAlt}"
                     IconMargin="8,11,0,0"
-                    IconName="Book"
-                    IconSize="12"
+                    IconSize="14"
                     Text="{Binding TitleFieldText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                     TextboxPadding="22,0,0,0"
                     WatermarkText="Title">
@@ -148,9 +149,9 @@
                         Height="35"
                         Background="#222"
                         FontSize="14"
+                        Icon="{x:Static iconPacks:PackIconUniconsKind.Link}"
                         IconMargin="8,11,0,0"
-                        IconName="Chain"
-                        IconSize="12"
+                        IconSize="14"
                         Text="{Binding SeriesFieldText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                         TextboxPadding="22,0,0,0"
                         WatermarkText="Series">
@@ -182,18 +183,18 @@
                     <StackPanel x:Name="AuthorsPart">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="20" />
+                                <ColumnDefinition Width="30" />
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="26" />
                             </Grid.ColumnDefinitions>
-                            <fa:ImageAwesome
-                                Width="15"
+                            <iconPacks:PackIconFontAwesome
+                                Width="20"
                                 Height="15"
-                                Margin="0,0,10,0"
+                                Margin="0,0,10,3"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 Foreground="WhiteSmoke"
-                                Icon="File" />
+                                Kind="UsersSolid" />
                             <TextBlock
                                 Grid.Column="1"
                                 FontSize="16"
@@ -203,7 +204,7 @@
                                 Width="26"
                                 Height="26"
                                 Command="{Binding AddAuthorButtonCommand}"
-                                IconName="Plus"
+                                Icon="{x:Static iconPacks:PackIconEvaIconsKind.Plus}"
                                 IconSize="14">
                                 <Components:DarkFlatSymbolButton.ToolTip>
                                     <ToolTip>
@@ -261,7 +262,7 @@
                                                 Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.RemoveAuthorCommand}"
                                                 CommandParameter="{Binding Id}"
                                                 Foreground="#484b4e"
-                                                IconName="Close"
+                                                Icon="{x:Static iconPacks:PackIconJamIconsKind.Close}"
                                                 IconSize="12"
                                                 Opacity="0"
                                                 Style="{StaticResource BlueHoverStyle}" />
@@ -319,14 +320,14 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="26" />
                         </Grid.ColumnDefinitions>
-                        <fa:ImageAwesome
+                        <iconPacks:PackIconFontAwesome
                             Width="15"
                             Height="15"
                             Margin="0,0,10,0"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             Foreground="WhiteSmoke"
-                            Icon="File" />
+                            Kind="FileSolid" />
                         <TextBlock
                             Grid.Column="1"
                             FontSize="16"
@@ -336,7 +337,7 @@
                             Width="26"
                             Height="26"
                             Command="{Binding AddFileButtonCommand}"
-                            IconName="Plus"
+                            Icon="{x:Static iconPacks:PackIconEvaIconsKind.Plus}"
                             IconSize="14">
                             <Components:DarkFlatSymbolButton.ToolTip>
                                 <ToolTip>
@@ -394,7 +395,7 @@
                                             Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.RemoveCollectionCommand}"
                                             CommandParameter="{Binding Id}"
                                             Foreground="#484b4e"
-                                            IconName="Close"
+                                            Icon="{x:Static iconPacks:PackIconJamIconsKind.Close}"
                                             IconSize="12"
                                             Opacity="0"
                                             Style="{StaticResource BlueHoverStyle}" />

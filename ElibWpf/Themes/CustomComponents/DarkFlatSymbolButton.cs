@@ -1,5 +1,4 @@
-﻿using FontAwesome.WPF;
-
+﻿using System;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -7,20 +6,20 @@ namespace ElibWpf.CustomComponents
 {
     public class DarkFlatSymbolButton : Button
     {
-        public static DependencyProperty IconNameProperty;
+        public static DependencyProperty IconProperty;
         public static DependencyProperty IconSizeProperty;
 
         static DarkFlatSymbolButton()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(DarkFlatSymbolButton), new FrameworkPropertyMetadata(typeof(DarkFlatSymbolButton)));
-            IconNameProperty = DependencyProperty.Register("IconName", typeof(FontAwesomeIcon), typeof(DarkFlatSymbolButton));
+            IconProperty = DependencyProperty.Register("Icon", typeof(Enum), typeof(DarkFlatSymbolButton));
             IconSizeProperty = DependencyProperty.Register("IconSize", typeof(double), typeof(DarkFlatSymbolButton));
         }
 
-        public FontAwesomeIcon IconName
+        public Enum Icon
         {
-            get { return (FontAwesomeIcon)base.GetValue(IconNameProperty); }
-            set { base.SetValue(IconNameProperty, value); }
+            get { return (Enum)base.GetValue(IconProperty); }
+            set { base.SetValue(IconProperty, value); }
         }
 
         public double IconSize

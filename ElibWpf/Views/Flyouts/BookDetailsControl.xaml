@@ -7,6 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:fa="http://schemas.fontawesome.io/icons/"
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:local="clr-namespace:ElibWpf.Views.Flyouts"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="450"
@@ -77,7 +78,7 @@
                                 Height="26"
                                 Margin="1,0,6,0"
                                 CheckedColor="#ffff7e"
-                                CheckedIcon="Star"
+                                CheckedIcon="{x:Static iconPacks:PackIconFontAwesomeKind.StarSolid}"
                                 IsChecked="{Binding Book.IsFavorite}"
                                 Text="Favorite" />
                         </Grid>
@@ -95,7 +96,7 @@
                                     Height="23"
                                     Margin="10,0,0,0"
                                     Command="{Binding EditButtonCommand}"
-                                    IconName="Pencil"
+                                    Icon="{x:Static iconPacks:PackIconIoniconsKind.CreateMD}"
                                     IconSize="14" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
@@ -177,7 +178,7 @@
                                                 Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.RemoveCollectionCommand}"
                                                 CommandParameter="{Binding Tag}"
                                                 Foreground="#484b4e"
-                                                IconName="Close"
+                                                Icon="Close"
                                                 IconSize="12"
                                                 Opacity="0"
                                                 Style="{StaticResource BlueHoverStyle}" />
@@ -192,8 +193,8 @@
                                 EnterCommand="{Binding AddCollectionCommand}"
                                 FontSize="14"
                                 Foreground="#888"
+                                Icon="{x:Static iconPacks:PackIconEntypoKind.Link}"
                                 IconMargin="5,10,0,0"
-                                IconName="Plus"
                                 IconSize="10"
                                 TextboxPadding="17,0,0,0"
                                 WatermarkText="Add collection..." />

@@ -4,7 +4,7 @@
     xmlns:Components="clr-namespace:ElibWpf.CustomComponents"
     xmlns:Converters="clr-namespace:ElibWpf.Converters"
     xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
-    xmlns:fa="http://schemas.fontawesome.io/icons/">
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks">
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary>
@@ -58,13 +58,13 @@
                                 Width="{TemplateBinding IconSize}"
                                 Margin="{TemplateBinding IconMargin}"
                                 HorizontalAlignment="Left">
-                                <fa:ImageAwesome
+                                <iconPacks:PackIconControl
                                     Width="{TemplateBinding IconSize}"
                                     Height="{TemplateBinding IconSize}"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     Foreground="{TemplateBinding Foreground}"
-                                    Icon="{TemplateBinding IconName}" />
+                                    Kind="{TemplateBinding IconName}" />
                             </TextBlock>
                         </Grid>
                     </Border>
@@ -127,14 +127,14 @@
                                 Background="Transparent"
                                 Visibility="{TemplateBinding IconVisible,
                                                              Converter={StaticResource BooleanToVisibilityConverter}}">
-                                <fa:ImageAwesome
+                                <iconPacks:PackIconControl
                                     x:Name="TheIcon"
                                     Width="{TemplateBinding IconSize}"
                                     Height="{TemplateBinding IconSize}"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     Foreground="{TemplateBinding Foreground}"
-                                    Icon="{TemplateBinding IconName}" />
+                                    Kind="{TemplateBinding Icon}" />
                             </TextBlock>
                         </Grid>
                     </Border>
@@ -191,17 +191,19 @@
                 <ControlTemplate TargetType="{x:Type Components:SymbolButton}">
                     <Border x:Name="Enveloper" Background="{TemplateBinding Background}">
                         <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
-                            <fa:ImageAwesome
+                            <iconPacks:PackIconControl
                                 x:Name="AweImg"
                                 Width="{TemplateBinding IconSize}"
                                 Height="{TemplateBinding IconSize}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
                                 Foreground="{TemplateBinding Foreground}"
-                                Icon="{TemplateBinding IconName}"
+                                Kind="{TemplateBinding Icon}"
                                 RenderTransformOrigin="0.5,0.5">
-                                <fa:ImageAwesome.RenderTransform>
+                                <iconPacks:PackIconControl.RenderTransform>
                                     <ScaleTransform ScaleX="1" ScaleY="1" />
-                                </fa:ImageAwesome.RenderTransform>
-                            </fa:ImageAwesome>
+                                </iconPacks:PackIconControl.RenderTransform>
+                            </iconPacks:PackIconControl>
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
@@ -256,18 +258,20 @@
                         BorderThickness="1"
                         CornerRadius="1">
                         <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
-                            <fa:ImageAwesome
+                            <iconPacks:PackIconControl
                                 x:Name="AweImg"
                                 Width="{TemplateBinding IconSize}"
                                 Height="{TemplateBinding IconSize}"
                                 Margin="0,0,2,2"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
                                 Foreground="{TemplateBinding Foreground}"
-                                Icon="{TemplateBinding IconName}"
+                                Kind="{TemplateBinding Icon}"
                                 RenderTransformOrigin="0.5,0.5">
-                                <fa:ImageAwesome.RenderTransform>
+                                <iconPacks:PackIconControl.RenderTransform>
                                     <ScaleTransform ScaleX="1" ScaleY="1" />
-                                </fa:ImageAwesome.RenderTransform>
-                            </fa:ImageAwesome>
+                                </iconPacks:PackIconControl.RenderTransform>
+                            </iconPacks:PackIconControl>
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
@@ -546,7 +550,7 @@
 
     <Style TargetType="{x:Type Components:CheckboxButton}">
         <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="CheckedIcon" Value="Check" />
+        <Setter Property="CheckedIcon" Value="CheckSolid" />
         <Setter Property="CheckedColor" Value="CornflowerBlue" />
         <Setter Property="Template">
             <Setter.Value>
@@ -573,7 +577,7 @@
                                 Width="14"
                                 Height="14"
                                 VerticalAlignment="Center">
-                                <fa:ImageAwesome
+                                <iconPacks:PackIconFontAwesome
                                     x:Name="CheckImage"
                                     Width="14"
                                     Height="14"
@@ -581,7 +585,7 @@
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     Foreground="#555"
-                                    Icon="Times" />
+                                    Kind="TimesSolid" />
                             </Grid>
                             <TextBlock
                                 x:Name="Label"
@@ -597,7 +601,7 @@
                         <Trigger Property="IsChecked" Value="True">
                             <Trigger.Setters>
                                 <Setter TargetName="CheckImage" Property="Foreground" Value="{Binding Path=CheckedColor, RelativeSource={RelativeSource AncestorType={x:Type Components:CheckboxButton}}}" />
-                                <Setter TargetName="CheckImage" Property="Icon" Value="{Binding Path=CheckedIcon, RelativeSource={RelativeSource AncestorType={x:Type Components:CheckboxButton}}}" />
+                                <Setter TargetName="CheckImage" Property="Kind" Value="{Binding Path=CheckedIcon, RelativeSource={RelativeSource AncestorType={x:Type Components:CheckboxButton}}}" />
                                 <Setter TargetName="Label" Property="Foreground" Value="#c3c3c3" />
                                 <Setter TargetName="Enveloper" Property="BorderBrush" Value="#c3c3c3" />
                             </Trigger.Setters>

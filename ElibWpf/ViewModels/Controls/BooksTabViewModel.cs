@@ -7,6 +7,7 @@ using ElibWpf.Messages;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using MahApps.Metro.Controls.Dialogs;
+using MahApps.Metro.IconPacks;
 using Models;
 using Models.Options;
 using System;
@@ -31,7 +32,7 @@ namespace ElibWpf.ViewModels.Controls
         private PaneMainItem selectedMainPaneItem;
         private bool isInSearchResults = false;
 
-        private readonly PaneMainItem selectedMainItem = new PaneMainItem("Selected", "MapMarker", "Selected Books", (Book x) => App.Selector.SelectedIds.Contains(x.Id), true);
+        private readonly PaneMainItem selectedMainItem = new PaneMainItem("Selected", PackIconFontAwesomeKind.CheckDoubleSolid, "Selected Books", (Book x) => App.Selector.SelectedIds.Contains(x.Id), true);
         private bool isSelectedMainAdded = false;
 
         public BooksTabViewModel(IDialogCoordinator dialogCoordinator)
@@ -48,10 +49,10 @@ namespace ElibWpf.ViewModels.Controls
 
             MainPaneItems = new ObservableCollection<PaneMainItem>
             {
-                new PaneMainItem("All", "Book", "All Books", (Book x) => true),
-                new PaneMainItem("Favorite", "Star", "Favorite Books", (Book x) => x.IsFavorite),
-                new PaneMainItem("Read", "Check", "Read Books", (Book x) => x.IsRead),
-                new PaneMainItem("Not Read", "TimesCircle", "Not Read Books", (Book x) => !x.IsRead)
+                new PaneMainItem("All", PackIconUniconsKind.Books, "All Books", (Book x) => true),
+                new PaneMainItem("Favorite", PackIconFontAwesomeKind.StarSolid, "Favorite Books", (Book x) => x.IsFavorite),
+                new PaneMainItem("Read", PackIconFontAwesomeKind.CheckSolid, "Read Books", (Book x) => x.IsRead),
+                new PaneMainItem("Not Read", PackIconJamIconsKind.CloseCircle, "Not Read Books", (Book x) => !x.IsRead)
             };
             SelectedMainPaneItem = MainPaneItems[0];
             PaneSelectionChanged();

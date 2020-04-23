@@ -1,11 +1,12 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace ElibWpf.CustomComponents
 {
     public class BetterTextbox : TextBox
     {
-        public static DependencyProperty IconNameProperty;
+        public static DependencyProperty IconProperty;
         public static DependencyProperty IconSizeProperty;
         public static DependencyProperty IconMarginProperty;
         public static DependencyProperty TextboxPaddingProperty;
@@ -16,7 +17,7 @@ namespace ElibWpf.CustomComponents
         static BetterTextbox()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(BetterTextbox), new FrameworkPropertyMetadata(typeof(BetterTextbox)));
-            IconNameProperty = DependencyProperty.Register("IconName", typeof(FontAwesome.WPF.FontAwesomeIcon), typeof(BetterTextbox));
+            IconProperty = DependencyProperty.Register("Icon", typeof(Enum), typeof(BetterTextbox));
             IconSizeProperty = DependencyProperty.Register("IconSize", typeof(double), typeof(BetterTextbox));
             WatermarkTextProperty = DependencyProperty.Register("WatermarkText", typeof(string), typeof(BetterTextbox));
             IconMarginProperty = DependencyProperty.Register("IconMargin", typeof(System.Windows.Thickness), typeof(BetterTextbox));
@@ -25,10 +26,10 @@ namespace ElibWpf.CustomComponents
             IconVisibleProperty = DependencyProperty.Register("IconVisible", typeof(bool), typeof(BetterTextbox));
         }
 
-        public FontAwesome.WPF.FontAwesomeIcon IconName
+        public Enum Icon
         {
-            get { return (FontAwesome.WPF.FontAwesomeIcon)base.GetValue(IconNameProperty); }
-            set { base.SetValue(IconNameProperty, value); }
+            get { return (Enum)base.GetValue(IconProperty); }
+            set { base.SetValue(IconProperty, value); }
         }
 
         public double IconSize

@@ -11,8 +11,8 @@
     xmlns:WindowViews="clr-namespace:ElibWpf.Views.Windows"
     xmlns:cmd="http://www.galasoft.ch/mvvmlight"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:fa="http://schemas.fontawesome.io/icons/"
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -147,7 +147,7 @@
                             FontWeight="Medium"
                             Foreground="GhostWhite"
                             IconMargin="5,10,0,0"
-                            IconName="Search"
+                            IconName="{x:Static iconPacks:PackIconFontAwesomeKind.SearchSolid}"
                             IconSize="12"
                             TextboxPadding="17,0,0,0"
                             WatermarkText="Search..." />
@@ -159,7 +159,7 @@
                             Background="Transparent"
                             Click="SearchOptionsButton_Click"
                             Foreground="GhostWhite"
-                            IconName="ChevronDown"
+                            Icon="{x:Static iconPacks:PackIconFontAwesomeKind.ChevronDownSolid}"
                             IconSize="11"
                             RenderTransformOrigin="0.5, 0.5">
                             <Components:SymbolButton.RenderTransform>
@@ -252,12 +252,13 @@
                                     IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Path=IsSelected}"
                                     Style="{StaticResource FlatButton}">
                                     <StackPanel Margin="10,0,0,0" Orientation="Horizontal">
-                                        <fa:ImageAwesome
-                                            Height="12"
+                                        <iconPacks:PackIconControl
+                                            Width="15"
+                                            Height="15"
                                             HorizontalAlignment="Center"
                                             VerticalAlignment="Center"
                                             Foreground="White"
-                                            Icon="{Binding FaIconName}" />
+                                            Kind="{Binding Icon}" />
                                         <TextBlock
                                             Margin="10,0,0,2"
                                             VerticalAlignment="Center"
@@ -356,7 +357,7 @@
                             Background="GhostWhite"
                             Command="{Binding BackCommand}"
                             Foreground="#484b4e"
-                            IconName="ChevronLeft"
+                            Icon="{x:Static iconPacks:PackIconFontAwesomeKind.ChevronLeftSolid}"
                             IconSize="20"
                             IsEnabled="{Binding IsBackEnabled}">
                             <Components:ConditionalEventTrigger.Triggers>
@@ -413,7 +414,7 @@
                         Height="30"
                         Command="{Binding RefreshCommand}"
                         Foreground="#484b4e"
-                        IconName="Refresh"
+                        Icon="{x:Static iconPacks:PackIconFontAwesomeKind.SyncAltSolid}"
                         IconSize="16"
                         Style="{StaticResource BlueHoverStyle}">
                         <Button.ToolTip>
@@ -433,13 +434,13 @@
                         </Grid.ColumnDefinitions>
 
                         <Components:SymbolButton
-                            Grid.Column="3"
+                            Grid.Column="1"
                             Width="30"
                             Height="30"
                             Background="Transparent"
                             Command="{Binding AddBookCommand}"
                             Foreground="#484b4e"
-                            IconName="PlusCircle"
+                            Icon="{x:Static iconPacks:PackIconFontAwesomeKind.BookMedicalSolid}"
                             IconSize="24"
                             Style="{StaticResource BlueHoverStyle}">
                             <Button.ToolTip>
@@ -450,18 +451,18 @@
                         </Components:SymbolButton>
 
                         <Components:SymbolButton
-                            Grid.Column="1"
+                            Grid.Column="3"
                             Width="30"
                             Height="30"
                             Background="Transparent"
-                            Command="{Binding AddBookCommand}"
+                            Command="{Binding ExportSelectedBooksCommand}"
                             Foreground="#484b4e"
-                            IconName="PlusCircle"
+                            Icon="{x:Static iconPacks:PackIconFontAwesomeKind.DownloadSolid}"
                             IconSize="24"
                             Style="{StaticResource BlueHoverStyle}">
                             <Button.ToolTip>
                                 <ToolTip>
-                                    Add New Book
+                                    Export selected books
                                 </ToolTip>
                             </Button.ToolTip>
                         </Components:SymbolButton>

@@ -1,5 +1,5 @@
-﻿using FontAwesome.WPF;
-
+﻿using MahApps.Metro.IconPacks;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -7,20 +7,20 @@ namespace ElibWpf.CustomComponents
 {
     public class SymbolButton : Button
     {
-        public static DependencyProperty IconNameProperty;
+        public static DependencyProperty IconProperty;
         public static DependencyProperty IconSizeProperty;
 
         static SymbolButton()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(SymbolButton), new FrameworkPropertyMetadata(typeof(SymbolButton)));
-            IconNameProperty = DependencyProperty.Register("IconName", typeof(FontAwesomeIcon), typeof(SymbolButton));
+            IconProperty = DependencyProperty.Register("Icon", typeof(Enum), typeof(SymbolButton));
             IconSizeProperty = DependencyProperty.Register("IconSize", typeof(double), typeof(SymbolButton));
         }
 
-        public FontAwesomeIcon IconName
+        public Enum Icon
         {
-            get { return (FontAwesomeIcon)base.GetValue(IconNameProperty); }
-            set { base.SetValue(IconNameProperty, value); }
+            get { return (Enum)base.GetValue(IconProperty); }
+            set { base.SetValue(IconProperty, value); }
         }
 
         public double IconSize

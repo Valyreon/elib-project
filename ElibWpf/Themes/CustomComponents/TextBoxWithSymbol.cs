@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using MahApps.Metro.IconPacks;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace ElibWpf.CustomComponents
@@ -15,7 +16,7 @@ namespace ElibWpf.CustomComponents
         static TextBoxWithSymbol()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(TextBoxWithSymbol), new FrameworkPropertyMetadata(typeof(TextBoxWithSymbol)));
-            IconNameProperty = DependencyProperty.Register("IconName", typeof(FontAwesome.WPF.FontAwesomeIcon), typeof(TextBoxWithSymbol));
+            IconNameProperty = DependencyProperty.Register("IconName", typeof(PackIconFontAwesomeKind), typeof(TextBoxWithSymbol));
             IconSizeProperty = DependencyProperty.Register("IconSize", typeof(double), typeof(TextBoxWithSymbol));
             WatermarkTextProperty = DependencyProperty.Register("WatermarkText", typeof(string), typeof(TextBoxWithSymbol));
             IconMarginProperty = DependencyProperty.Register("IconMargin", typeof(System.Windows.Thickness), typeof(TextBoxWithSymbol));
@@ -23,9 +24,9 @@ namespace ElibWpf.CustomComponents
             EnterCommandProperty = DependencyProperty.Register("EnterCommand", typeof(System.Windows.Input.ICommand), typeof(TextBoxWithSymbol));
         }
 
-        public FontAwesome.WPF.FontAwesomeIcon IconName
+        public PackIconFontAwesomeKind IconName
         {
-            get { return (FontAwesome.WPF.FontAwesomeIcon)base.GetValue(IconNameProperty); }
+            get { return (PackIconFontAwesomeKind)base.GetValue(IconNameProperty); }
             set { base.SetValue(IconNameProperty, value); }
         }
 
