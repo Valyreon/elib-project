@@ -202,6 +202,7 @@
     </ApplicationDefinition>
     <Compile Include="Animations\GridLengthAnimation.cs" />
     <Compile Include="AttachedProperties\ScrollViewerExtensions.cs" />
+    <Compile Include="Converters\BookTileConverters\TitleToVisibilityConverter.cs" />
     <Compile Include="Converters\ImageConverter.cs" />
     <Compile Include="Converters\StringToVisibilityConverter.cs" />
     <Compile Include="DataStructures\ObservableStack.cs" />
