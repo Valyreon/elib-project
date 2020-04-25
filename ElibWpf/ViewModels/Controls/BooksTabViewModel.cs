@@ -4,6 +4,8 @@ using ElibWpf.BindingItems;
 using ElibWpf.DataStructures;
 using ElibWpf.Extensions;
 using ElibWpf.Messages;
+using ElibWpf.ViewModels.Dialogs;
+using ElibWpf.Views.Dialogs;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using MahApps.Metro.Controls.Dialogs;
@@ -70,6 +72,15 @@ namespace ElibWpf.ViewModels.Controls
         public ICommand SearchCommand { get => new RelayCommand<string>(this.ProcessSearchInput); }
 
         public ICommand AddBookCommand { get => new RelayCommand(this.ProcessAddBook); }
+
+        public ICommand ExportSelectedBooksCommand { get => new RelayCommand(this.HandleExport); }
+
+        private async void HandleExport()
+        {
+            var dialog = new ExportOptionsDialog();
+            dialog.DataContext = new ExportOptionsDialogViewModel(await App.Selector.GetSelectedBooks(), dialogCoordinator, dialog);
+            await dialogCoordinator.ShowMetroDialogAsync(App.Current.MainWindow.DataContext, dialog);
+        }
 
         private async void ProcessAddBook()
         {
@@ -207,6 +218,11 @@ namespace ElibWpf.ViewModels.Controls
             set => Set("SelectedMainPaneItem", ref selectedMainPaneItem, value);
         }
 
+        public bool IsSelectedBooksViewer
+        {
+            get => SelectedMainPaneItem == selectedMainItem;
+        }
+
         private void GoToPreviousViewer()
         {
             if (IsBackEnabled)
@@ -252,6 +268,7 @@ namespace ElibWpf.ViewModels.Controls
         {
             if (SelectedMainPaneItem != null)
             {
+                RaisePropertyChanged(() => IsSelectedBooksViewer);
                 viewerHistory.Clear();
                 CurrentViewer = new BookViewerViewModel(SelectedMainPaneItem.ViewerCaption, SelectedMainPaneItem.Condition, SelectedMainPaneItem.IsSelectedBooksPane);
             }

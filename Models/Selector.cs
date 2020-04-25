@@ -2,6 +2,7 @@
 using Domain;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Models
 {
@@ -20,9 +21,9 @@ namespace Models
             this.selectedBookIds = new HashSet<int>();
         }
 
-        public List<Book> GetSelectedBooks()
+        public async Task<IList<Book>> GetSelectedBooks()
         {
-            return context.Books.Where(b => selectedBookIds.Contains(b.Id)).ToList();
+            return await Task.Run(() => context.Books.Where(b => selectedBookIds.Contains(b.Id)).ToList());
         }
 
         public bool Select(Book book)

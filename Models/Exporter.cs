@@ -39,17 +39,30 @@ namespace Models
                 ++index;
             }
             fileNameBuilder.Append(eFile.Format);
+            string fileName = fileNameBuilder.ToString();
 
-            using FileStream fs = File.Create(Path.Combine(destinationFolder, fileNameBuilder.ToString()));
+            foreach(char invalid in Path.GetInvalidFileNameChars())
+            {
+                fileName = fileName.Replace(char.ToString(invalid), "");
+            }
+
+            using FileStream fs = File.Create(Path.Combine(destinationFolder, fileName));
             fs.Write(eFile.RawContent, 0, eFile.RawContent.Length);
         }
 
-        public void ExportBookFiles(IEnumerable<EFile> files, ExporterOptions options)
+        public void ExportBookFiles(IEnumerable<EFile> files, ExporterOptions options, Action<string> progressSet = null)
         {
-            void ExportAllInList(IEnumerable<EFile> list, string outPath) { foreach (var file in list) ExportFile(file, outPath); };
+            void ExportAllInList(IEnumerable<EFile> list, string outPath)
+            {
+                foreach (var file in list)
+                {
+                    progressSet(file.Book.Title);
+                    ExportFile(file, outPath);
+                }
+            };
             void ProcessBySeries(IEnumerable<EFile> list, string outPath)
             {
-                var groups = files.GroupBy(f => f.Book.Series?.Name);
+                var groups = list.GroupBy(f => f.Book.Series?.Name);
                 foreach (var group in groups)
                 {
                     // create directory for this series
@@ -81,26 +94,16 @@ namespace Models
                 database.Entry(file.Book).Collection(b => b.Authors).Load();
             }
 
-            string destFolder = null;
-            if (options.CreateNewDirectory && string.IsNullOrWhiteSpace(options.NewDirectoryName))
-                throw new ArgumentException("If CreateNewDirectory option is true, NewDirectoryName can't be empty.");
-
-            // create the directory if needed
-            if (options.CreateNewDirectory)
-                destFolder = Path.Combine(options.DestinationDirectory, options.NewDirectoryName);
-            else
-                destFolder = options.DestinationDirectory;
-
-            Directory.CreateDirectory(destFolder);
+            Directory.CreateDirectory(options.DestinationDirectory);
 
             // Split in groups according to options
             if (!options.GroupByAuthor && !options.GroupBySeries)
             {
-                ExportAllInList(files, destFolder);
+                ExportAllInList(files, options.DestinationDirectory);
             }
             else if (!options.GroupByAuthor && options.GroupBySeries)
             {
-                ProcessBySeries(files, destFolder);
+                ProcessBySeries(files, options.DestinationDirectory);
             }
             else if (options.GroupByAuthor && !options.GroupBySeries)
             {
@@ -109,7 +112,7 @@ namespace Models
                 foreach (var group in groups)
                 {
                     // create directory for this author
-                    string thisGroupsDestPath = Path.Combine(destFolder, $"{group.Key}");
+                    string thisGroupsDestPath = Path.Combine(options.DestinationDirectory, $"{group.Key}");
                     Directory.CreateDirectory(thisGroupsDestPath);
                     ExportAllInList(group, thisGroupsDestPath);
                 }
@@ -121,7 +124,7 @@ namespace Models
                 foreach (var authorGroup in authorGroups)
                 {
                     // create directory for this author
-                    string thisAuthorsDestPath = Path.Combine(destFolder, $"{authorGroup.Key}");
+                    string thisAuthorsDestPath = Path.Combine(options.DestinationDirectory, $"{authorGroup.Key}");
                     Directory.CreateDirectory(thisAuthorsDestPath);
 
                     // then we group one authors(that is combination of authors) by series

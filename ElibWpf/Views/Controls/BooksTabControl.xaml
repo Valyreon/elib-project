@@ -5,6 +5,7 @@
     xmlns:Components="clr-namespace:ElibWpf.CustomComponents"
     xmlns:ControlViewModels="clr-namespace:ElibWpf.ViewModels.Controls"
     xmlns:ControlViews="clr-namespace:ElibWpf.Views.Controls"
+    xmlns:Converters="clr-namespace:ElibWpf.Converters"
     xmlns:CustomAnimation="clr-namespace:ElibWpf.CustomAnimations"
     xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:WindowViewModels="clr-namespace:ElibWpf.ViewModels.Windows"
@@ -20,6 +21,13 @@
 
     <UserControl.Resources>
         <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary>
+                    <Converters:ImageConverter x:Key="ImageConverter" />
+                    <Converters:BoolToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+                    <Converters:BoolToInverseVisibilityConverter x:Key="BooleanToInverseVisibilityConverter" />
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
             <Style
                 x:Key="ListBoxItemContainerStyle"
                 BasedOn="{StaticResource MetroListBoxItem}"
@@ -430,11 +438,11 @@
                             <ColumnDefinition Width="30" />
                             <ColumnDefinition Width="5" />
                             <ColumnDefinition Width="30" />
-                            <ColumnDefinition Width="10" />
+                            <ColumnDefinition Width="15" />
                         </Grid.ColumnDefinitions>
 
                         <Components:SymbolButton
-                            Grid.Column="1"
+                            Grid.Column="3"
                             Width="30"
                             Height="30"
                             Background="Transparent"
@@ -442,7 +450,8 @@
                             Foreground="#484b4e"
                             Icon="{x:Static iconPacks:PackIconFontAwesomeKind.BookMedicalSolid}"
                             IconSize="24"
-                            Style="{StaticResource BlueHoverStyle}">
+                            Style="{StaticResource BlueHoverStyle}"
+                            Visibility="{Binding IsSelectedBooksViewer, Converter={StaticResource BooleanToInverseVisibilityConverter}}">
                             <Button.ToolTip>
                                 <ToolTip>
                                     Add New Book
@@ -459,7 +468,8 @@
                             Foreground="#484b4e"
                             Icon="{x:Static iconPacks:PackIconFontAwesomeKind.DownloadSolid}"
                             IconSize="24"
-                            Style="{StaticResource BlueHoverStyle}">
+                            Style="{StaticResource BlueHoverStyle}"
+                            Visibility="{Binding IsSelectedBooksViewer, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <Button.ToolTip>
                                 <ToolTip>
                                     Export selected books

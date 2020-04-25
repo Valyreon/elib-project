@@ -4,6 +4,8 @@
     xmlns:ControlViewModels="clr-namespace:ElibWpf.ViewModels.Controls"
     xmlns:ControlViews="clr-namespace:ElibWpf.Views.Controls"
     xmlns:Converters="clr-namespace:ElibWpf.Converters"
+    xmlns:DialogViewModels="clr-namespace:ElibWpf.ViewModels.Dialogs"
+    xmlns:DialogViews="clr-namespace:ElibWpf.Views.Dialogs"
     xmlns:FlyoutViewModels="clr-namespace:ElibWpf.ViewModels.Flyouts"
     xmlns:FlyoutViews="clr-namespace:ElibWpf.Views.Flyouts"
     xmlns:WindowViewModels="clr-namespace:ElibWpf.ViewModels.Windows"
@@ -28,6 +30,9 @@
     </DataTemplate>
     <DataTemplate DataType="{x:Type FlyoutViewModels:EditBookViewModel}">
         <FlyoutViews:EditBookControl />
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type DialogViewModels:ExportOptionsDialogViewModel}">
+        <DialogViews:ExportOptionsDialog />
     </DataTemplate>
 
     <Style TargetType="ScrollBar">

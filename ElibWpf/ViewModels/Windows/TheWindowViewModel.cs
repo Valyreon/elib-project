@@ -16,7 +16,7 @@ namespace ElibWpf.ViewModels.Windows
         private object flyoutControl;
         private bool isBookDetailsFlyoutOpen;
         private ITabViewModel selectedTab;
-        private IDialogCoordinator dialogCoordinator;
+        private readonly IDialogCoordinator dialogCoordinator;
 
         public TheWindowViewModel(IDialogCoordinator dialogCoordinator)
         {

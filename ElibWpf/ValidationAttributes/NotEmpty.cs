@@ -8,6 +8,7 @@ namespace ElibWpf.ValidationAttributes
         {
         }
 
+        // TODO: try to implement this
         public override bool IsValid(object value)
         {
             if (value is null)
