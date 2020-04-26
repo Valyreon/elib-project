@@ -22,9 +22,11 @@ namespace Models
             {
                 Title = bookName,
                 Authors = new List<Author> { database.Authors.Where(x => x.Name == authorName).FirstOrDefault() ?? new Author { Name = authorName } },
-                Files = new List<EFile>
+                File = new EFile
                 {
-                    new EFile { Format = parsedBook.Format, RawContent = parsedBook.RawData }
+                    Format = parsedBook.Format,
+                    Signature = Signer.ComputeHash(parsedBook.RawData),
+                    RawFile = new RawFile { RawContent = parsedBook.RawData }
                 },
                 Series = string.IsNullOrEmpty(seriesName) ? null : (database.Series.Where(x => x.Name == seriesName).FirstOrDefault() ?? new BookSeries { Name = seriesName }),
                 NumberInSeries = seriesNumber,
@@ -42,9 +44,11 @@ namespace Models
             {
                 Title = parsedBook.Title,
                 Authors = new List<Author> { database.Authors.Where(x => x.Name == parsedBook.Author).FirstOrDefault() ?? new Author { Name = parsedBook.Author } },
-                Files = new List<EFile>
+                File = new EFile
                 {
-                    new EFile { Format = parsedBook.Format, RawContent = parsedBook.RawData}
+                    Format = parsedBook.Format,
+                    Signature = Signer.ComputeHash(parsedBook.RawData),
+                    RawFile = new RawFile { RawContent = parsedBook.RawData }
                 },
                 Cover = ImageOptimizer.ResizeAndFill(parsedBook.Cover)
             };

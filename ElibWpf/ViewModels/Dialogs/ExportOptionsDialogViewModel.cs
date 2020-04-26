@@ -88,11 +88,11 @@ namespace ElibWpf.ViewModels.Dialogs
             {
                 controlProgress.SetMessage("Loading book files...");
                 controlProgress.SetProgress(++counter);
-                await Task.Run(() => database.Entry(b).Collection(b => b.Files).Load());
+                await Task.Run(() => database.Entry(b).Reference(b => b.File).Load());
+                await Task.Run(() => database.Entry(b.File).Reference(f => f.RawFile).Load());
             }
-            var list = booksToExport.Select(b => b.Files.First()).ToList();
 
-            await Task.Run(() => exporter.ExportBookFiles(list, new ExporterOptions { DestinationDirectory = DestinationPath, GroupByAuthor = IsGroupByAuthorChecked, GroupBySeries = IsGroupBySeriesChecked }, SetProgress));
+            await Task.Run(() => exporter.ExportBooks(booksToExport, new ExporterOptions { DestinationDirectory = DestinationPath, GroupByAuthor = IsGroupByAuthorChecked, GroupBySeries = IsGroupBySeriesChecked }, SetProgress));
             await controlProgress.CloseAsync();
         }
 

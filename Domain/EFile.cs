@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain
 {
-    [Table("BookFiles")]
+    [Table("EBookFiles")]
     public class EFile
     {
         public int Id { get; set; }
@@ -13,12 +13,12 @@ namespace Domain
         public string Format { get; set; }
 
         [Required]
-        public byte[] RawContent { get; set; }
+        public string Signature { get; set; }
 
-        public int BookId { get; set; }
+        public int RawFileId { get; set; }
 
         [Required]
-        [ForeignKey("BookId")]
-        public Book Book { get; set; }
+        [ForeignKey("RawFileId")]
+        public RawFile RawFile { get; set; }
     }
 }

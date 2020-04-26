@@ -20,7 +20,12 @@ namespace ElibWpf.Extensions
                 Authors = new List<Author> { Database.Authors.Where(au => au.Name.Equals(parsedBook.Author)).FirstOrDefault() ?? new Author() { Name = parsedBook.Author } },
                 Cover = parsedBook.Cover != null ? ImageOptimizer.ResizeAndFill(parsedBook.Cover) : null,
                 UserCollections = new List<UserCollection>(),
-                Files = new List<EFile> { new EFile { Format = parsedBook.Format, RawContent = parsedBook.RawData } }
+                File = new EFile
+                {
+                    Format = parsedBook.Format,
+                    Signature = Signer.ComputeHash(parsedBook.RawData),
+                    RawFile = new RawFile { RawContent = parsedBook.RawData }
+                }
             };
 
             return newBook;
@@ -30,8 +35,8 @@ namespace ElibWpf.Extensions
         {
             EbookParser parser = (book.Format) switch
             {
-                ".epub" => new EpubParser(book.RawContent),
-                ".mobi" => new MobiParser(book.RawContent),
+                ".epub" => new EpubParser(book.RawFile.RawContent),
+                ".mobi" => new MobiParser(book.RawFile.RawContent),
                 _ => throw new System.ArgumentException($"The file has an unkown extension.")
             };
 

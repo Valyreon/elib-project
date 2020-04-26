@@ -18,16 +18,16 @@ namespace Models
             this.database = db;
         }
 
-        private void ExportFile(EFile eFile, string destinationFolder)
+        private void ExportBook(Book book, string destinationFolder)
         {
             StringBuilder fileNameBuilder = new StringBuilder();
 
             // there can be more than one author
             int index = 1;
-            fileNameBuilder.Append($"{eFile.Book.Title}{((eFile.Book.SeriesId == null) ? ("") : ($"({eFile.Book.Series.Name} #{eFile.Book.NumberInSeries})"))} by {eFile.Book.Authors.ElementAt(0).Name}");
-            while (index < eFile.Book.Authors.Count)
+            fileNameBuilder.Append($"{book.Title}{((book.SeriesId == null) ? ("") : ($"({book.Series.Name} #{book.NumberInSeries})"))} by {book.Authors.ElementAt(0).Name}");
+            while (index < book.Authors.Count)
             {
-                if (index == eFile.Book.Authors.Count - 1)
+                if (index == book.Authors.Count - 1)
                 {
                     fileNameBuilder.Append(" and");
                 }
@@ -35,10 +35,10 @@ namespace Models
                 {
                     fileNameBuilder.Append(",");
                 }
-                fileNameBuilder.Append($" {eFile.Book.Authors.ElementAt(index).Name}");
+                fileNameBuilder.Append($" {book.Authors.ElementAt(index).Name}");
                 ++index;
             }
-            fileNameBuilder.Append(eFile.Format);
+            fileNameBuilder.Append(book.File.Format);
             string fileName = fileNameBuilder.ToString();
 
             foreach(char invalid in Path.GetInvalidFileNameChars())
@@ -47,22 +47,22 @@ namespace Models
             }
 
             using FileStream fs = File.Create(Path.Combine(destinationFolder, fileName));
-            fs.Write(eFile.RawContent, 0, eFile.RawContent.Length);
+            fs.Write(book.File.RawFile.RawContent, 0, book.File.RawFile.RawContent.Length);
         }
 
-        public void ExportBookFiles(IEnumerable<EFile> files, ExporterOptions options, Action<string> progressSet = null)
+        public void ExportBooks(IEnumerable<Book> books, ExporterOptions options, Action<string> progressSet = null)
         {
-            void ExportAllInList(IEnumerable<EFile> list, string outPath)
+            void ExportAllInList(IEnumerable<Book> list, string outPath)
             {
-                foreach (var file in list)
+                foreach (var book in books)
                 {
-                    progressSet(file.Book.Title);
-                    ExportFile(file, outPath);
+                    progressSet(book.Title);
+                    ExportBook(book, outPath);
                 }
             };
-            void ProcessBySeries(IEnumerable<EFile> list, string outPath)
+            void ProcessBySeries(IEnumerable<Book> books, string outPath)
             {
-                var groups = list.GroupBy(f => f.Book.Series?.Name);
+                var groups = books.GroupBy(book => book.Series?.Name);
                 foreach (var group in groups)
                 {
                     // create directory for this series
@@ -81,17 +81,18 @@ namespace Models
                 }
             }
 
-            if (files == null)
+            if (books == null)
                 throw new ArgumentNullException();
-            else if (files.Count() == 0)
+            else if (books.Count() == 0)
                 return;
 
             // Load everything needed
-            foreach (EFile file in files)
+            foreach (var book in books)
             {
-                database.Entry(file).Reference(f => f.Book).Load();
-                database.Entry(file.Book).Reference(b => b.Series).Load();
-                database.Entry(file.Book).Collection(b => b.Authors).Load();
+                database.Entry(book).Reference(b => b.File).Load();
+                database.Entry(book.File).Reference(f => f.RawFile).Load();
+                database.Entry(book).Reference(b => b.Series).Load();
+                database.Entry(book).Collection(b => b.Authors).Load();
             }
 
             Directory.CreateDirectory(options.DestinationDirectory);
@@ -99,15 +100,15 @@ namespace Models
             // Split in groups according to options
             if (!options.GroupByAuthor && !options.GroupBySeries)
             {
-                ExportAllInList(files, options.DestinationDirectory);
+                ExportAllInList(books, options.DestinationDirectory);
             }
             else if (!options.GroupByAuthor && options.GroupBySeries)
             {
-                ProcessBySeries(files, options.DestinationDirectory);
+                ProcessBySeries(books, options.DestinationDirectory);
             }
             else if (options.GroupByAuthor && !options.GroupBySeries)
             {
-                var groups = files.GroupBy(f => f.Book.Authors.Select(a => a.Name).Aggregate((i, j) => i + ", " + j));
+                var groups = books.GroupBy(b => b.Authors.Select(a => a.Name).Aggregate((i, j) => i + ", " + j));
 
                 foreach (var group in groups)
                 {
@@ -120,7 +121,7 @@ namespace Models
             else // both must be true
             {
                 // first group by authors
-                var authorGroups = files.GroupBy(f => f.Book.Authors.Select(a => a.Name).Aggregate((i, j) => i + ", " + j));
+                var authorGroups = books.GroupBy(book => book.Authors.Select(a => a.Name).Aggregate((i, j) => i + ", " + j));
                 foreach (var authorGroup in authorGroups)
                 {
                     // create directory for this author

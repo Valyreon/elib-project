@@ -354,9 +354,9 @@ namespace Cli
                         foreach (Book book in selectedBooks)
                         {
                             database.Entry(book).Collection(f => f.Authors).Load();
-                            database.Entry(book).Collection(f => f.Files).Load();
+                            database.Entry(book).Reference(f => f.File).Load();
                             Console.WriteLine($"Id:{book.Id} {book.Title} by {(string.Join(", ", book.Authors.Select(x => x.Name)))}");
-                            exportFiles.UnionWith(book.Files);
+                            //exportFiles.UnionWith(book.Files); TODO: Luka je mjenjao ovo jer je promjenio strukturu baze
                         }
 
                         int exportChoice = 0;
@@ -388,7 +388,7 @@ namespace Cli
                         }
 
                         options.DestinationDirectory = consoleInput.Item2;
-                        exporter.ExportBookFiles(exportFiles, options);
+                        //exporter.ExportBooks(exportFiles, options); TODO: Luka commented this out because of a database change, needs to be fixed
 
                         break;
 
@@ -398,7 +398,7 @@ namespace Cli
                         foreach (Book book in selectedBooks)
                         {
                             database.Entry(book).Collection(f => f.Authors).Load();
-                            database.Entry(book).Collection(f => f.Files).Load();
+                            database.Entry(book).Reference(f => f.File).Load();
                             Console.WriteLine($"Id:{book.Id} {book.Title} by {(string.Join(", ", book.Authors.Select(x => x.Name)))}");
                         }
 

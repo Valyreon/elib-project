@@ -4,6 +4,7 @@ using ElibWpf.Messages;
 using ElibWpf.ValidationAttributes;
 using GalaSoft.MvvmLight.Command;
 using Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
@@ -18,7 +19,7 @@ namespace ElibWpf.ViewModels.Flyouts
 {
     public class AddNewBooksViewModel : ViewModelWithValidation
     {
-        private IList<Book> books;
+        private readonly IList<Book> books;
         private int counter = 0;
 
         private Book currentBook;
@@ -35,7 +36,6 @@ namespace ElibWpf.ViewModels.Flyouts
                 SeriesFieldText = CurrentBook.Series?.Name;
                 TitleFieldText = CurrentBook.Title;
                 SeriesNumberFieldText = CurrentBook.NumberInSeries.ToString();
-                FilesCollection = new ObservableCollection<EFile>(CurrentBook.Files);
                 IsFavoriteCheck = CurrentBook.IsFavorite;
                 IsReadCheck = CurrentBook.IsRead;
                 Cover = CurrentBook.Cover;
@@ -48,13 +48,29 @@ namespace ElibWpf.ViewModels.Flyouts
             CurrentBook = books[0];
             TitleText = $"Book 1 of {books.Count}";
             ProceedButtonText = books.Count == 1 ? "SAVE & FINISH" : "SAVE & NEXT";
+            CheckDuplicate();
+        }
+
+        private void CheckDuplicate()
+        {
+            Task.Run(() =>
+            {
+                using ElibContext database = ApplicationSettings.CreateContext();
+                if (database.BookFiles.Where(ef => ef.Signature == CurrentBook.File.Signature).Count() > 0)
+                {
+                    WarningText = "This book is a duplicate of a book already in the database.";
+                    IsCurrentBookDuplicate = true;
+                }
+                else
+                {
+                    WarningText = null;
+                    IsCurrentBookDuplicate = false;
+                }
+            });
         }
 
         [NotEmpty(ErrorMessage = "Book has to have at least one author.")]
         public ObservableCollection<Author> AuthorsCollection { get; private set; }
-
-        [NotEmpty(ErrorMessage = "Book has to have at least one file.")]
-        public ObservableCollection<EFile> FilesCollection { get; private set; }
 
         private string seriesFieldText;
 
@@ -71,6 +87,13 @@ namespace ElibWpf.ViewModels.Flyouts
         {
             get => titleFieldText;
             set => Set(() => TitleFieldText, ref titleFieldText, value);
+        }
+
+        private string warning = null;
+        public string WarningText
+        {
+            get => warning;
+            set => Set(() => WarningText, ref warning, value);
         }
 
         private string seriesNumberFieldText;
@@ -111,6 +134,13 @@ namespace ElibWpf.ViewModels.Flyouts
         {
             get => isRead;
             set => Set(() => IsReadCheck, ref isRead, value);
+        }
+
+        private bool isCurrentDuplicate = true;
+        public bool IsCurrentBookDuplicate
+        {
+            get => isCurrentDuplicate;
+            set => Set(() => IsCurrentBookDuplicate, ref isCurrentDuplicate, value);
         }
 
         private bool isFavorite;
@@ -172,7 +202,6 @@ namespace ElibWpf.ViewModels.Flyouts
             SeriesFieldText = CurrentBook.Series?.Name;
             TitleFieldText = CurrentBook.Title;
             SeriesNumberFieldText = CurrentBook.NumberInSeries.ToString();
-            FilesCollection = new ObservableCollection<EFile>(CurrentBook.Files);
             IsFavoriteCheck = CurrentBook.IsFavorite;
             IsReadCheck = CurrentBook.IsRead;
             Cover = CurrentBook.Cover;
@@ -183,6 +212,12 @@ namespace ElibWpf.ViewModels.Flyouts
         private void HandleSaveAndNext()
         {
             this.Validate();
+
+            if (warning != null)
+            {
+
+            }
+
             if (!this.HasErrors)
             {
                 CurrentBook.Title = TitleFieldText;
@@ -199,30 +234,17 @@ namespace ElibWpf.ViewModels.Flyouts
                 CurrentBook.IsFavorite = IsFavoriteCheck;
                 CurrentBook.IsRead = IsReadCheck;
                 CurrentBook.Authors = new List<Author>(AuthorsCollection);
-                CurrentBook.Files = new List<EFile>(FilesCollection);
                 CurrentBook.Cover = Cover;
 
+                Book temp = CurrentBook;
                 Task.Run(() =>
                 {
                     using ElibContext database = ApplicationSettings.CreateContext();
-                    database.Books.Add(CurrentBook);
+                    database.Books.Add(temp);
                     database.SaveChanges();
                 });
 
-                TitleText = $"Book {counter + 2} of {books.Count}";
-                if (counter >= books.Count - 1)
-                {
-                    MessengerInstance.Send(new CloseFlyoutMessage());
-                }
-                else
-                {
-                    if (counter == books.Count - 2)
-                    {
-                        ProceedButtonText = "SAVE & FINISH";
-                    }
-                    this.ClearErrors();
-                    CurrentBook = books[++counter];
-                }
+                NextBook();
             }
         }
 
@@ -231,25 +253,6 @@ namespace ElibWpf.ViewModels.Flyouts
         private void HandleCancel()
         {
             MessengerInstance.Send(new CloseFlyoutMessage());
-        }
-
-        public ICommand AddFileButtonCommand { get => new RelayCommand(this.HandleAddFileButton); }
-
-        private void HandleAddFileButton()
-        {
-            using OpenFileDialog dlg = new OpenFileDialog
-            {
-                Filter = "Epub files|*.epub|Mobi files|*.mobi|All files|*.*",
-                CheckFileExists = true,
-                CheckPathExists = true,
-                FilterIndex = 3,
-                Multiselect = true
-            };
-            var result = dlg.ShowDialog();
-            if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(dlg.FileName))
-            {
-                this.FilesCollection.Add(new EFile { Format = Path.GetExtension(dlg.FileName), RawContent = File.ReadAllBytes(dlg.FileName) });
-            }
         }
 
         public ICommand ChangeCoverButtonCommand { get => new RelayCommand(this.HandleChangeCoverButton); }
@@ -272,5 +275,27 @@ namespace ElibWpf.ViewModels.Flyouts
         }
 
         public ICommand RemoveCoverButtonCommand { get => new RelayCommand(() => this.Cover = null); }
+
+        public ICommand SkipButtonCommand { get => new RelayCommand(this.NextBook); }
+
+        private void NextBook()
+        {
+            if (counter >= books.Count - 1)
+            {
+                MessengerInstance.Send(new CloseFlyoutMessage());
+            }
+            else
+            {
+                this.ClearErrors();
+                TitleText = $"Book {counter + 2} of {books.Count}";
+                if (counter == books.Count - 2)
+                {
+                    ProceedButtonText = "SAVE & FINISH";
+                }
+
+                CurrentBook = books[++counter];
+                CheckDuplicate();
+            }
+        }
     }
 }

@@ -37,6 +37,12 @@ namespace ElibWpf.ViewModels.Controls
             Books = new ObservableCollection<Book>();
             isSelectedBookView = isSelectedView;
             this.selector = selector;
+            MessengerInstance.Register<BookEditDoneMessage>(this, this.EditedBookRefresh);
+        }
+
+        private void EditedBookRefresh(BookEditDoneMessage obj)
+        {
+            //RaisePropertyChanged(() => Books);
         }
 
         public ObservableCollection<Book> Books { get; set; }

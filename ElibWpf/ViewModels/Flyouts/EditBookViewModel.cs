@@ -31,9 +31,6 @@ namespace ElibWpf.ViewModels.Flyouts
         [NotEmpty(ErrorMessage = "Book has to have at least one author.")]
         public ObservableCollection<Author> AuthorsCollection { get; private set; }
 
-        [NotEmpty(ErrorMessage = "Book has to have at least one file.")]
-        public ObservableCollection<EFile> FilesCollection { get; private set; }
-
         private string seriesFieldText;
 
         public string SeriesFieldText
@@ -125,7 +122,7 @@ namespace ElibWpf.ViewModels.Flyouts
 
         public ICommand RevertButtonCommand { get => new RelayCommand(this.HandleRevert); }
 
-        private async void HandleRevert()
+        private void HandleRevert()
         {
             using ElibContext database = ApplicationSettings.CreateContext();
             database.Books.Attach(Book);
@@ -135,9 +132,6 @@ namespace ElibWpf.ViewModels.Flyouts
             SeriesFieldText = Book.Series?.Name;
             TitleFieldText = Book.Title;
             SeriesNumberFieldText = Book.NumberInSeries.ToString();
-            await Task.Run(() => database.Entry(Book).Collection(f => f.Files).Load());
-            FilesCollection = new ObservableCollection<EFile>(Book.Files);
-            RaisePropertyChanged(() => FilesCollection);
             IsFavoriteCheck = Book.IsFavorite;
             IsReadCheck = Book.IsRead;
             Cover = Book.Cover;
@@ -169,13 +163,13 @@ namespace ElibWpf.ViewModels.Flyouts
                     Book.IsFavorite = IsFavoriteCheck;
                     Book.IsRead = IsReadCheck;
                     Book.Authors = new List<Author>(AuthorsCollection);
-                    Book.Files = new List<EFile>(FilesCollection);
                     Book.Cover = Cover;
 
                     database.SaveChanges();
                 });
 
                 MessengerInstance.Send(new ShowBookDetailsMessage(Book));
+                MessengerInstance.Send(new BookEditDoneMessage());
             }
         }
 
@@ -184,25 +178,6 @@ namespace ElibWpf.ViewModels.Flyouts
         private void HandleCancel()
         {
             MessengerInstance.Send(new ShowBookDetailsMessage(Book));
-        }
-
-        public ICommand AddFileButtonCommand { get => new RelayCommand(this.HandleAddFileButton); }
-
-        private void HandleAddFileButton()
-        {
-            using OpenFileDialog dlg = new OpenFileDialog
-            {
-                Filter = "Epub files|*.epub|Mobi files|*.mobi|All files|*.*",
-                CheckFileExists = true,
-                CheckPathExists = true,
-                FilterIndex = 3,
-                Multiselect = true
-            };
-            var result = dlg.ShowDialog();
-            if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(dlg.FileName))
-            {
-                this.FilesCollection.Add(new EFile { Format = Path.GetExtension(dlg.FileName), RawContent = File.ReadAllBytes(dlg.FileName) });
-            }
         }
 
         public ICommand ChangeCoverButtonCommand { get => new RelayCommand(this.HandleChangeCoverButton); }

@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace Popcorn.Converters
+namespace ElibWpf.Converters
 {
     /// <summary>
     /// Convert a boolean to its inverse

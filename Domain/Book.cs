@@ -25,7 +25,14 @@ namespace Domain
         public bool IsFavorite { get; set; } = false;
         public decimal PercentageRead { get; set; } = 0;
         public ICollection<Author> Authors { get; set; }
-        public ICollection<EFile> Files { get; set; }
+
+
+        public int FileId { get; set; }
+
+        [Required]
+        [ForeignKey("FileId")]
+        public EFile File { get; set; }
+
         public ICollection<Quote> Quotes { get; set; }
         public ICollection<UserCollection> UserCollections { get; set; }
 

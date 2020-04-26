@@ -16,7 +16,6 @@ CREATE TABLE AuthorBooks (
                       NOT NULL
 );
 
-
 -- Table: Authors
 CREATE TABLE Authors (
     Id   INTEGER       PRIMARY KEY AUTOINCREMENT,
@@ -25,14 +24,19 @@ CREATE TABLE Authors (
 
 
 -- Table: BookFiles
-CREATE TABLE BookFiles (
+CREATE TABLE EBookFiles (
     Id         INTEGER      PRIMARY KEY AUTOINCREMENT,
     Format     VARCHAR (10) NOT NULL,
-    RawContent BLOB         NOT NULL,
-    BookId     INT          REFERENCES Books (Id) 
-                            NOT NULL
+    Signature  VARCHAR (64) NOT NULL,
+    RawFileId  INT          REFERENCES RawFiles(Id)
+    				        NOT NULL
 );
 
+-- Table: RawFiles
+CREATE TABLE RawFiles (
+    Id         INTEGER      PRIMARY KEY AUTOINCREMENT,
+    RawContent BLOB         NOT NULL
+);
 
 -- Table: Books
 CREATE TABLE Books (
@@ -46,7 +50,9 @@ CREATE TABLE Books (
     IsFavorite     BOOLEAN       NOT NULL
                                  DEFAULT (false),
     PercentageRead DECIMAL       NOT NULL
-                                 DEFAULT (0) 
+                                 DEFAULT (0),
+    FileId         INT           REFERENCES EBookFiles(Id)
+    							 NOT NULL
 );
 
 

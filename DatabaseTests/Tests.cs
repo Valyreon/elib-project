@@ -28,14 +28,14 @@ namespace DatabaseTests
             Book mybook = context.Books
                 .Include("Series")
                 .Include("Authors")
-                .Include("Files")
+                .Include("File")
                 .Include("Quotes")
                 .FirstOrDefault();
             Assert.IsNotNull(first.Books);
             Assert.IsNotNull(collection.Books);
             Assert.IsNotNull(mybook.Series);
             Assert.IsNotNull(mybook.Authors);
-            Assert.IsNotNull(mybook.Files);
+            Assert.IsNotNull(mybook.File);
             Assert.IsNotNull(mybook.Quotes);
         }
 
@@ -58,7 +58,12 @@ namespace DatabaseTests
                 Title = parsedBook.Title,
                 Authors = new List<Author> { context.Authors.Where(au => au.Name.Equals(parsedBook.Author)).FirstOrDefault() ?? new Author() { Name = parsedBook.Author } },
                 Cover = ImageOptimizer.ResizeAndFill(parsedBook.Cover),
-                Files = new List<EFile> { new EFile { Format = parsedBook.Format, RawContent = parsedBook.RawData } }
+                File = new EFile
+                {
+                    Format = parsedBook.Format,
+                    Signature = Signer.ComputeHash(parsedBook.RawData),
+                    RawFile = new RawFile { RawContent = parsedBook.RawData }
+                }
             };
             context.Books.Add(newBook);
             context.SaveChanges();
@@ -77,7 +82,7 @@ namespace DatabaseTests
                 DestinationDirectory = @"C:\Users\Luka\Desktop"
             };
 
-            exp.ExportBookFiles(context.BookFiles.ToList(), options);
+            exp.ExportBooks(context.Books.ToList(), options);
         }
 
         [TestMethod]
@@ -110,6 +115,7 @@ namespace DatabaseTests
             {
                 string[] splitDirName = Path.GetFileName(dirPath).Split(new string[] { " by " }, StringSplitOptions.None);
                 string seriesName = splitDirName[0];
+                string authorsName = splitDirName[1];
 
                 void DirSearch(string sDir)
                 {
@@ -124,6 +130,21 @@ namespace DatabaseTests
                                     var parsedBook = EbookParserFactory.Create(f).Parse();
                                     Book newBook = parsedBook.ToBook();
                                     newBook.Series = seriesName == null ? null : (context.Series.Where(x => x.Name == seriesName).FirstOrDefault() ?? new BookSeries { Name = seriesName });
+
+                                    var existingAuthor = context.Authors.Where(c => c.Name == authorsName).FirstOrDefault();
+                                    if (existingAuthor == null)
+                                    {
+                                        Author newAuthor = new Author
+                                        {
+                                            Name = authorsName
+                                        };
+                                        newBook.Authors = new List<Author> { newAuthor };
+                                    }
+                                    else
+                                    {
+                                        newBook.Authors = new List<Author> { existingAuthor };
+                                    }
+
                                     context.Books.Add(newBook);
                                     context.SaveChanges();
                                 }
@@ -172,6 +193,14 @@ namespace DatabaseTests
             using ElibContext context = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
 
             File.WriteAllBytes("exportcover.jpg", context.Books.Find(258).Cover);
+        }
+
+        [TestMethod]
+        public void TestHash()
+        {
+            string path = @"D:\Documents\Ebooks\Miscellaneous\The Farseer Trilogy by Robin Hobb\[Robin_Hobb]_Assassin's_Apprentice_(The_Farseer_Tr(zlibraryexau2g3p.onion).epub";
+
+            string hash = Signer.ComputeHash(File.ReadAllBytes(path));
         }
     }
 }

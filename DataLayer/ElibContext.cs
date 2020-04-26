@@ -34,7 +34,7 @@ namespace DataLayer
         {
             // Here we do schema building with Fluent API
             modelBuilder.Entity<Book>().HasMany(x => x.Authors);
-            modelBuilder.Entity<Book>().HasMany(x => x.Files);
+            //modelBuilder.Entity<Book>().Has(x => x.Files);
             modelBuilder.Entity<Book>().HasMany(x => x.Quotes);
 
             modelBuilder.Entity<AuthorBookLink>().HasKey(x => new { x.BookId, x.AuthorId });
@@ -55,9 +55,10 @@ namespace DataLayer
         {
             this.Database.ExecuteSqlCommand("DELETE FROM [AuthorBooks]");
             this.Database.ExecuteSqlCommand("DELETE FROM [Authors]");
-            this.Database.ExecuteSqlCommand("DELETE FROM [BookFiles]");
+            this.Database.ExecuteSqlCommand("DELETE FROM [EBookFiles]");
             this.Database.ExecuteSqlCommand("DELETE FROM [Books]");
             this.Database.ExecuteSqlCommand("DELETE FROM [Quotes]");
+            this.Database.ExecuteSqlCommand("DELETE FROM [RawFiles]");
             this.Database.ExecuteSqlCommand("DELETE FROM [Series]");
             this.Database.ExecuteSqlCommand("DELETE FROM [UserCollectionBooks]");
             this.Database.ExecuteSqlCommand("DELETE FROM [UserCollections]");

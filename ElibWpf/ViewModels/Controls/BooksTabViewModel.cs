@@ -52,6 +52,7 @@ namespace ElibWpf.ViewModels.Controls
             MessengerInstance.Register<ResetPaneSelectionMessage>(this, x => { SelectedMainPaneItem = MainPaneItems[0]; PaneSelectionChanged(); });
             MessengerInstance.Register<RefreshSidePaneCollectionsMessage>(this, x => { RaisePropertyChanged(() => Collections); });
 
+
             viewerHistory.AddHandlerOnStackChange((object sender, NotifyCollectionChangedEventArgs e) => RaisePropertyChanged(() => IsBackEnabled));
 
             MainPaneItems = new ObservableCollection<PaneMainItem>
@@ -66,8 +67,6 @@ namespace ElibWpf.ViewModels.Controls
             SearchOptions = ApplicationSettings.GetInstance().SearchOptions;
             this.dialogCoordinator = dialogCoordinator;
         }
-
-
 
         private void HandleCollectionSelection(CollectionSelectedMessage message)
         {
@@ -126,10 +125,16 @@ namespace ElibWpf.ViewModels.Controls
                     catch (Exception e)
                     {
                         Logger.Log("BOOK_PARSE_ERROR", $"\nMESSAGE:{e.Message}\nSTACK:{e.StackTrace}");
+                        var content = File.ReadAllBytes(dlg.FileNames[i]);
                         booksToAdd.Add(new Book
                         {
                             UserCollections = new List<UserCollection>(),
-                            Files = new List<EFile>() { new EFile() { Format = Path.GetExtension(dlg.FileNames[i]), RawContent = File.ReadAllBytes(dlg.FileNames[i]) } },
+                            File = new EFile
+                            {
+                                Format = Path.GetExtension(dlg.FileNames[i]),
+                                Signature = Signer.ComputeHash(content),
+                                RawFile = new RawFile { RawContent = content }
+                            },
                             Authors = new List<Author>()
                         });
                     }

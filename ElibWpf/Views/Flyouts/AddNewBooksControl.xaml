@@ -20,13 +20,14 @@
         <Converters:AuthorsToStringConverter x:Key="AuthorsToStringConverter" />
         <Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <Converters:BoolToInverseVisibilityConverter x:Key="BoolToInverseVisibilityConverter" />
+        <Converters:BoolToInverseBoolConverter x:Key="BoolToInverseBoolConverter" />
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="1*" />
             <RowDefinition Height="0" />
-            <RowDefinition Height="6*" />
+            <RowDefinition Height="7*" />
             <RowDefinition Height="0" />
             <RowDefinition Height="2*" />
             <RowDefinition Height="2*" />
@@ -37,11 +38,22 @@
                 <ColumnDefinition />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
             <TextBlock
                 Grid.Column="1"
                 HorizontalAlignment="Center"
                 FontSize="20"
                 Text="{Binding TitleText}" />
+            <TextBlock
+                Grid.Row="1"
+                Grid.Column="1"
+                HorizontalAlignment="Center"
+                FontSize="16"
+                Foreground="PaleVioletRed"
+                Text="{Binding WarningText}" />
         </Grid>
         <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
@@ -308,133 +320,46 @@
                     FontSize="15">
                     Favorite
                 </Label>
-
-                <StackPanel
-                    Grid.Row="2"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="2"
-                    Margin="0,15,0,0">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="20" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="26" />
-                        </Grid.ColumnDefinitions>
-                        <iconPacks:PackIconFontAwesome
-                            Width="15"
-                            Height="15"
-                            Margin="0,0,10,0"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Foreground="WhiteSmoke"
-                            Kind="FileSolid" />
-                        <TextBlock
-                            Grid.Column="1"
-                            FontSize="16"
-                            Text="Files:" />
-                        <Components:DarkFlatSymbolButton
-                            Grid.Column="2"
-                            Width="26"
-                            Height="26"
-                            Command="{Binding AddFileButtonCommand}"
-                            Icon="{x:Static iconPacks:PackIconEvaIconsKind.Plus}"
-                            IconSize="14">
-                            <Components:DarkFlatSymbolButton.ToolTip>
-                                <ToolTip>
-                                    Add another file
-                                </ToolTip>
-                            </Components:DarkFlatSymbolButton.ToolTip>
-                        </Components:DarkFlatSymbolButton>
-                    </Grid>
-                    <ScrollViewer MaxHeight="100px" VerticalScrollBarVisibility="Auto">
-                        <ItemsControl Margin="0,0,0,3" ItemsSource="{Binding FilesCollection}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid Height="32" VerticalAlignment="Center">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="20" />
-                                        </Grid.ColumnDefinitions>
-                                        <Grid.Triggers>
-                                            <EventTrigger RoutedEvent="MouseEnter">
-                                                <BeginStoryboard>
-                                                    <Storyboard>
-                                                        <DoubleAnimation
-                                                            Storyboard.TargetName="CloseButton"
-                                                            Storyboard.TargetProperty="(Button.Opacity)"
-                                                            To="1"
-                                                            Duration="0:0:0.3" />
-                                                    </Storyboard>
-                                                </BeginStoryboard>
-                                            </EventTrigger>
-                                            <EventTrigger RoutedEvent="MouseLeave">
-                                                <BeginStoryboard>
-                                                    <Storyboard>
-                                                        <DoubleAnimation
-                                                            Storyboard.TargetName="CloseButton"
-                                                            Storyboard.TargetProperty="(Button.Opacity)"
-                                                            To="0"
-                                                            Duration="0:0:0.3" />
-                                                    </Storyboard>
-                                                </BeginStoryboard>
-                                            </EventTrigger>
-                                        </Grid.Triggers>
-
-                                        <TextBlock
-                                            Grid.Column="0"
-                                            Height="24"
-                                            VerticalAlignment="Center"
-                                            FontSize="16"
-                                            Foreground="#bbb"
-                                            Text="{Binding Format}" />
-                                        <Components:SymbolButton
-                                            x:Name="CloseButton"
-                                            Grid.Column="1"
-                                            Width="20"
-                                            Height="20"
-                                            Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.RemoveCollectionCommand}"
-                                            CommandParameter="{Binding Id}"
-                                            Foreground="#484b4e"
-                                            Icon="{x:Static iconPacks:PackIconJamIconsKind.Close}"
-                                            IconSize="12"
-                                            Opacity="0"
-                                            Style="{StaticResource BlueHoverStyle}" />
-                                    </Grid>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </ScrollViewer>
-                </StackPanel>
             </Grid>
         </Grid>
         <Grid Grid.Row="5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="150" />
                 <ColumnDefinition Width="20" />
-                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="150" />
                 <ColumnDefinition Width="20" />
-                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="150" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
             <Button
                 Grid.Column="1"
-                Width="200"
+                Width="150"
                 Height="40"
                 Command="{Binding RevertButtonCommand}">
                 REVERT
             </Button>
             <Button
                 Grid.Column="3"
-                Width="200"
+                Width="150"
                 Height="40"
-                Command="{Binding NextButtonCommand}">
+                Command="{Binding NextButtonCommand}"
+                IsEnabled="{Binding IsCurrentBookDuplicate, Converter={StaticResource BoolToInverseBoolConverter}}">
                 <TextBlock Text="{Binding ProceedButtonText}" />
             </Button>
             <Button
                 Grid.Column="5"
-                Width="200"
+                Width="150"
+                Height="40"
+                Command="{Binding SkipButtonCommand}">
+                SKIP
+            </Button>
+            <Button
+                Grid.Column="7"
+                Width="150"
                 Height="40"
                 Command="{Binding CancelButtonCommand}">
                 CANCEL

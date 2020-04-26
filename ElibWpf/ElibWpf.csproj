@@ -208,6 +208,7 @@
     <Compile Include="DataStructures\ObservableStack.cs" />
     <Compile Include="Extensions\DomainExtensions.cs" />
     <Compile Include="Messages\AuthorSelectedMessage.cs" />
+    <Compile Include="Messages\BookEditDoneMessage.cs" />
     <Compile Include="Messages\BookSelectedMessage.cs" />
     <Compile Include="Messages\CloseFlyoutMessage.cs" />
     <Compile Include="Messages\CollectionSelectedMessage.cs" />
