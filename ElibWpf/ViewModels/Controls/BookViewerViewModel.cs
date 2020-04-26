@@ -101,8 +101,8 @@ namespace ElibWpf.ViewModels.Controls
             await semaphoreSlim.WaitAsync();
             try
             {
-                using ElibContext database = ApplicationSettings.CreateContext();
-                bookList = await Task.Run(() => database.Books.Include("Authors").Include("Series").Include("UserCollections").Where(DefaultCondition).Select(b => selector.SetMarked(b)).AsQueryable().ToPagedList(nextPage++, 30));
+                using ElibContext dbcontext = ApplicationSettings.CreateContext();
+                bookList = await Task.Run(() => dbcontext.Books.Include("Authors").Include("Series").Include("UserCollections").Where(DefaultCondition).Select(b => selector.SetMarked(b)).AsQueryable().ToPagedList(nextPage++, 30));
             }
             finally
             {

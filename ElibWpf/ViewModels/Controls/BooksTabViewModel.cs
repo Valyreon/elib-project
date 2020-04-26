@@ -57,7 +57,7 @@ namespace ElibWpf.ViewModels.Controls
 
             MainPaneItems = new ObservableCollection<PaneMainItem>
             {
-                new PaneMainItem("All", PackIconUniconsKind.Books, "All Books", (Book x) => true),
+                new PaneMainItem("All", PackIconBoxIconsKind.SolidBook, "All Books", (Book x) => true),
                 new PaneMainItem("Favorite", PackIconFontAwesomeKind.StarSolid, "Favorite Books", (Book x) => x.IsFavorite),
                 new PaneMainItem("Read", PackIconFontAwesomeKind.CheckSolid, "Read Books", (Book x) => x.IsRead),
                 new PaneMainItem("Not Read", PackIconJamIconsKind.CloseCircle, "Not Read Books", (Book x) => !x.IsRead)
@@ -148,18 +148,20 @@ namespace ElibWpf.ViewModels.Controls
         {
             if (!string.IsNullOrWhiteSpace(token))
             {
+                token = token.ToLower();
                 if (!isInSearchResults)
                 {
                     viewerHistory.Push(CurrentViewer);
                     isInSearchResults = true;
                 }
-                Func<Book, bool> condition = (Book x) => ((SearchOptions.SearchByName ? x.Title.Contains(token) : false) ||
-                                                        (SearchOptions.SearchByAuthor ? x.Authors.Where(a => a.Name.Contains(token)).Any() : false) ||
-                                                        (SearchOptions.SearchBySeries ? x.Series != null && x.Series.Name.Contains(token) : false)) &&
+
+                Func<Book, bool> condition = (Book x) => ((SearchOptions.SearchByName ? x.Title.ToLower().Contains(token) : false) ||
+                                                        (SearchOptions.SearchByAuthor ? x.Authors.Where(a => a.Name.ToLower().Contains(token)).Any() : false) ||
+                                                        (SearchOptions.SearchBySeries ? x.Series != null && x.Series.Name.ToLower().Contains(token) : false)) &&
                                                         viewerHistory.Peek().DefaultCondition(x);
 
-                using ElibContext Database = ApplicationSettings.CreateContext();
-                int temp = await Task.Run(() => Database.Books.Where(condition).Count());
+                using ElibContext dbcontext = ApplicationSettings.CreateContext();
+                int temp = await Task.Run(() => dbcontext.Books.Include("Series").Include("Authors").Where(condition).Count());
 
                 if (temp > 0)
                     CurrentViewer = new BookViewerViewModel($"Search results for '{token}' in " + viewerHistory.Peek().Caption, condition, Selector);
