@@ -67,7 +67,7 @@
 
                             <Components:CheckboxButton
                                 Grid.Row="2"
-                                Height="26"
+                                Height="30"
                                 Margin="6,0,1,0"
                                 IsChecked="{Binding IsBookRead}"
                                 Text="Read" />
@@ -75,11 +75,11 @@
                             <Components:CheckboxButton
                                 Grid.Row="2"
                                 Grid.Column="1"
-                                Height="26"
+                                Height="30"
                                 Margin="1,0,6,0"
                                 CheckedColor="#ffff7e"
-                                CheckedIcon="{x:Static iconPacks:PackIconFontAwesomeKind.StarSolid}"
-                                IsChecked="{Binding Book.IsFavorite}"
+                                CheckedIcon="{x:Static iconPacks:PackIconTypiconsKind.Star}"
+                                IsChecked="{Binding IsBookFavorite}"
                                 Text="Favorite" />
                         </Grid>
                         <StackPanel
@@ -178,8 +178,8 @@
                                                 Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.RemoveCollectionCommand}"
                                                 CommandParameter="{Binding Tag}"
                                                 Foreground="#484b4e"
-                                                Icon="Close"
-                                                IconSize="12"
+                                                Icon="{x:Static iconPacks:PackIconEvaIconsKind.Close}"
+                                                IconSize="10"
                                                 Opacity="0"
                                                 Style="{StaticResource BlueHoverStyle}" />
                                         </StackPanel>

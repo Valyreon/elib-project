@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using DataLayer;
+using Domain;
 using ElibWpf.Messages;
 using ElibWpf.ValidationAttributes;
 using GalaSoft.MvvmLight.Command;
@@ -141,7 +142,8 @@ namespace ElibWpf.ViewModels.Flyouts
                 }
                 else // if not
                 {
-                    var existingAuthor = await Task.Run(() => App.Database.Authors.Where(c => c.Name == name).FirstOrDefault());
+                    using ElibContext database = ApplicationSettings.CreateContext();
+                    var existingAuthor = await Task.Run(() => database.Authors.Where(c => c.Name == name).FirstOrDefault());
                     if (existingAuthor == null)
                     {
                         Author newAuthor = new Author
@@ -178,7 +180,7 @@ namespace ElibWpf.ViewModels.Flyouts
 
         public ICommand NextButtonCommand { get => new RelayCommand(this.HandleSaveAndNext); }
 
-        private async void HandleSaveAndNext()
+        private void HandleSaveAndNext()
         {
             this.Validate();
             if (!this.HasErrors)
@@ -199,8 +201,13 @@ namespace ElibWpf.ViewModels.Flyouts
                 CurrentBook.Authors = new List<Author>(AuthorsCollection);
                 CurrentBook.Files = new List<EFile>(FilesCollection);
                 CurrentBook.Cover = Cover;
-                App.Database.Books.Add(CurrentBook);
-                await App.Database.SaveChangesAsync();
+
+                Task.Run(() =>
+                {
+                    using ElibContext database = ApplicationSettings.CreateContext();
+                    database.Books.Add(CurrentBook);
+                    database.SaveChanges();
+                });
 
                 TitleText = $"Book {counter + 2} of {books.Count}";
                 if (counter >= books.Count - 1)

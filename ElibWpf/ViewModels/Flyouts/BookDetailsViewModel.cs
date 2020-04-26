@@ -1,10 +1,15 @@
-﻿using Domain;
+﻿using DataLayer;
+using Domain;
 using ElibWpf.Messages;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
+using Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -41,23 +46,25 @@ namespace ElibWpf.ViewModels.Flyouts
             MessengerInstance.Send(new CloseFlyoutMessage());
         }
 
-        private async void RemoveCollection(string tag)
+        private void RemoveCollection(string tag)
         {
             var collection = Book.UserCollections.Where(c => c.Tag == tag).FirstOrDefault();
             Book.UserCollections.Remove(collection);
+            UserCollections.Remove(collection);
 
-            await Task.Run(() =>
+            Task.Run(() =>
             {
-                if (App.Database.Books.Where(b => b.UserCollections.Where(c => c.Tag == tag).Any()).Count() == 1)
+                using ElibContext database = ApplicationSettings.CreateContext();
+                database.Books.Attach(Book);
+                Book.UserCollections.Remove(collection);
+                if (database.Books.Where(b => b.UserCollections.Where(c => c.Tag == tag).Any()).Count() == 1)
                 {
-                    App.Database.UserCollections.Remove(collection);
-                    App.Database.SaveChanges();
+                    database.Entry(collection).State = EntityState.Deleted;
                     MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
                 }
+                database.SaveChanges();
             });
 
-            await App.Database.SaveChangesAsync();
-            UserCollections.Remove(collection);
         }
 
         private string addCollectionFieldText = "";
@@ -68,7 +75,7 @@ namespace ElibWpf.ViewModels.Flyouts
             set => base.Set(() => AddCollectionFieldText, ref addCollectionFieldText, value);
         }
 
-        private async void AddCollection(string tag)
+        private void AddCollection(string tag)
         {
             if (!string.IsNullOrWhiteSpace(tag))
             {
@@ -81,26 +88,27 @@ namespace ElibWpf.ViewModels.Flyouts
                 }
                 else // if not
                 {
-                    var existingCollection = await Task.Run(() => App.Database.UserCollections.Where(c => c.Tag == tag).FirstOrDefault());
-                    if (existingCollection == null)
+                    UserCollection newCollection = new UserCollection { Tag = tag };
+                    UserCollections.Add(newCollection);
+                    Task.Run(() =>
                     {
-                        UserCollection newCollection = new UserCollection
+                        using ElibContext database = ApplicationSettings.CreateContext();
+                        database.Books.Attach(Book);
+                        var existingCollection = database.UserCollections.Where(c => c.Tag == tag).FirstOrDefault();
+                        if (existingCollection == null)
                         {
-                            Tag = tag
-                        };
-                        Book.UserCollections.Add(newCollection);
-                        UserCollections.Add(newCollection);
-                        isNew = true;
-                    }
-                    else
-                    {
-                        Book.UserCollections.Add(existingCollection);
-                        UserCollections.Add(existingCollection);
-                    }
+                            isNew = true;
+                            Book.UserCollections.Add(newCollection);
+                        }
+                        else
+                        {
+                            Book.UserCollections.Add(existingCollection);
+                        }
 
-                    await App.Database.SaveChangesAsync();
-                    if (isNew)
-                        MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
+                        database.SaveChanges();
+                        if (isNew)
+                            MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
+                    });
                 }
             }
         }
@@ -117,7 +125,13 @@ namespace ElibWpf.ViewModels.Flyouts
             {
                 Book.IsRead = value;
                 this.RaisePropertyChanged(() => IsBookRead);
-                App.Database.SaveChangesAsync();
+
+                Task.Run(() =>
+                {
+                    using ElibContext database = ApplicationSettings.CreateContext();
+                    database.Entry(Book).State = EntityState.Modified;
+                    database.SaveChanges();
+                });
             }
         }
 
@@ -128,7 +142,13 @@ namespace ElibWpf.ViewModels.Flyouts
             {
                 Book.IsFavorite = value;
                 this.RaisePropertyChanged(() => IsBookFavorite);
-                App.Database.SaveChangesAsync();
+
+                Task.Run(() =>
+                {
+                    using ElibContext database = ApplicationSettings.CreateContext();
+                    database.Entry(Book).State = EntityState.Modified;
+                    database.SaveChanges();
+                });
             }
         }
 

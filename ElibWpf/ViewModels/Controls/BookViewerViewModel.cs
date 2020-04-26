@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using DataLayer;
+using Domain;
 
 using ElibWpf.Messages;
 using ElibWpf.Paging;
@@ -6,6 +7,7 @@ using ElibWpf.Paging;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
+using Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -26,12 +28,15 @@ namespace ElibWpf.ViewModels.Controls
         private double scrollVerticalOffset;
         private readonly bool isSelectedBookView;
 
-        public BookViewerViewModel(string caption, Func<Book, bool> defaultQuery, bool isSelectedView = false)
+        private readonly Selector selector;
+
+        public BookViewerViewModel(string caption, Func<Book, bool> defaultQuery, Selector selector, bool isSelectedView = false)
         {
             Caption = caption;
             this.DefaultCondition = defaultQuery;
             Books = new ObservableCollection<Book>();
             isSelectedBookView = isSelectedView;
+            this.selector = selector;
         }
 
         public ObservableCollection<Book> Books { get; set; }
@@ -48,7 +53,7 @@ namespace ElibWpf.ViewModels.Controls
 
         private void HandleSelectBook(Book obj)
         {
-            bool isSelected = App.Selector.Select(obj);
+            bool isSelected = selector.Select(obj);
             if (isSelectedBookView && !isSelected && Books.Count == 1)
             {
                 MessengerInstance.Send(new BookSelectedMessage());
@@ -81,7 +86,7 @@ namespace ElibWpf.ViewModels.Controls
 
         public object Clone()
         {
-            return new BookViewerViewModel(this.Caption, this.DefaultCondition);
+            return new BookViewerViewModel(this.Caption, this.DefaultCondition, selector);
         }
 
         private async void LoadMore()
@@ -90,7 +95,8 @@ namespace ElibWpf.ViewModels.Controls
             await semaphoreSlim.WaitAsync();
             try
             {
-                bookList = await Task.Run(() => App.Database.Books.Include("Authors").Include("Series").Include("UserCollections").Where(DefaultCondition).Select(b => App.Selector.SetMarked(b)).AsQueryable().ToPagedList(nextPage++, 30));
+                using ElibContext database = ApplicationSettings.CreateContext();
+                bookList = await Task.Run(() => database.Books.Include("Authors").Include("Series").Include("UserCollections").Where(DefaultCondition).Select(b => selector.SetMarked(b)).AsQueryable().ToPagedList(nextPage++, 30));
             }
             finally
             {

@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using DataLayer;
+using Domain;
 using EbookTools;
 using ElibWpf.BindingItems;
 using ElibWpf.DataStructures;
@@ -33,21 +34,25 @@ namespace ElibWpf.ViewModels.Controls
         private UserCollection selectedCollection;
         private PaneMainItem selectedMainPaneItem;
         private bool isInSearchResults = false;
+        private readonly Selector Selector;
 
-        private readonly PaneMainItem selectedMainItem = new PaneMainItem("Selected", PackIconFontAwesomeKind.CheckDoubleSolid, "Selected Books", (Book x) => App.Selector.SelectedIds.Contains(x.Id), true);
+        private readonly PaneMainItem selectedMainItem;
         private bool isSelectedMainAdded = false;
 
         public BooksTabViewModel(IDialogCoordinator dialogCoordinator)
         {
+            Selector = new Selector();
+            selectedMainItem = new PaneMainItem("Selected", PackIconFontAwesomeKind.CheckDoubleSolid, "Selected Books", (Book x) => Selector.SelectedIds.Contains(x.Id), true);
+
             MessengerInstance.Register<AuthorSelectedMessage>(this, this.HandleAuthorSelection);
-            MessengerInstance.Register(this, (BookSelectedMessage m) => { if (App.Selector.Count > 0 && !isSelectedMainAdded) { MainPaneItems.Add(selectedMainItem); isSelectedMainAdded = true; } else if (App.Selector.Count == 0) { MainPaneItems.Remove(selectedMainItem); isSelectedMainAdded = false; } });
+            MessengerInstance.Register(this, (BookSelectedMessage m) => { if (Selector.Count > 0 && !isSelectedMainAdded) { MainPaneItems.Add(selectedMainItem); isSelectedMainAdded = true; } else if (Selector.Count == 0) { MainPaneItems.Remove(selectedMainItem); isSelectedMainAdded = false; } });
             MessengerInstance.Register<SeriesSelectedMessage>(this, this.HandleSeriesSelection);
             MessengerInstance.Register<CollectionSelectedMessage>(this, this.HandleCollectionSelection);
             MessengerInstance.Register<GoBackMessage>(this, x => this.GoToPreviousViewer());
             MessengerInstance.Register<ResetPaneSelectionMessage>(this, x => { SelectedMainPaneItem = MainPaneItems[0]; PaneSelectionChanged(); });
-            MessengerInstance.Register<RefreshSidePaneCollectionsMessage>(this, async x => { this.Collections = await Task.Run(() => App.Database.UserCollections.ToList()); RaisePropertyChanged("Collections"); });
+            MessengerInstance.Register<RefreshSidePaneCollectionsMessage>(this, x => { RaisePropertyChanged(() => Collections); });
 
-            viewerHistory.AddHandlerOnStackChange((object sender, NotifyCollectionChangedEventArgs e) => RaisePropertyChanged("IsBackEnabled"));
+            viewerHistory.AddHandlerOnStackChange((object sender, NotifyCollectionChangedEventArgs e) => RaisePropertyChanged(() => IsBackEnabled));
 
             MainPaneItems = new ObservableCollection<PaneMainItem>
             {
@@ -61,6 +66,8 @@ namespace ElibWpf.ViewModels.Controls
             SearchOptions = ApplicationSettings.GetInstance().SearchOptions;
             this.dialogCoordinator = dialogCoordinator;
         }
+
+
 
         private void HandleCollectionSelection(CollectionSelectedMessage message)
         {
@@ -78,7 +85,8 @@ namespace ElibWpf.ViewModels.Controls
         private async void HandleExport()
         {
             var dialog = new ExportOptionsDialog();
-            dialog.DataContext = new ExportOptionsDialogViewModel(await App.Selector.GetSelectedBooks(), dialogCoordinator, dialog);
+            using ElibContext Database = ApplicationSettings.CreateContext();
+            dialog.DataContext = new ExportOptionsDialogViewModel(await Selector.GetSelectedBooks(Database), dialogCoordinator, dialog);
             await dialogCoordinator.ShowMetroDialogAsync(App.Current.MainWindow.DataContext, dialog);
         }
 
@@ -144,10 +152,12 @@ namespace ElibWpf.ViewModels.Controls
                                                         (SearchOptions.SearchByAuthor ? x.Authors.Where(a => a.Name.Contains(token)).Any() : false) ||
                                                         (SearchOptions.SearchBySeries ? x.Series != null && x.Series.Name.Contains(token) : false)) &&
                                                         viewerHistory.Peek().DefaultCondition(x);
-                int temp = await Task.Run(() => App.Database.Books.Where(condition).Count());
+
+                using ElibContext Database = ApplicationSettings.CreateContext();
+                int temp = await Task.Run(() => Database.Books.Where(condition).Count());
 
                 if (temp > 0)
-                    CurrentViewer = new BookViewerViewModel($"Search results for '{token}' in " + viewerHistory.Peek().Caption, condition);
+                    CurrentViewer = new BookViewerViewModel($"Search results for '{token}' in " + viewerHistory.Peek().Caption, condition, Selector);
                 else
                     MessengerInstance.Send(new ShowDialogMessage("No matches", "No books found matching the search conditions."));
             }
@@ -159,7 +169,14 @@ namespace ElibWpf.ViewModels.Controls
             set => Set(ref caption, value);
         }
 
-        public List<UserCollection> Collections { get; set; } = App.Database.UserCollections.ToList();
+        public List<UserCollection> Collections
+        {
+            get
+            {
+                using ElibContext database = ApplicationSettings.CreateContext();
+                return database.UserCollections.ToList();
+            }
+        }
 
         public IViewer CurrentViewer
         {
@@ -207,7 +224,7 @@ namespace ElibWpf.ViewModels.Controls
                 if (selectedCollection != null)
                 {
                     viewerHistory.Clear();
-                    CurrentViewer = new BookViewerViewModel($"Collection {selectedCollection.Tag}", (Book x) => x.UserCollections.Where(c => c.Id == SelectedCollection.Id).Count() > 0);
+                    CurrentViewer = new BookViewerViewModel($"Collection {selectedCollection.Tag}", (Book x) => x.UserCollections.Where(c => c.Id == SelectedCollection.Id).Count() > 0, Selector);
                 }
             }
         }
@@ -238,7 +255,7 @@ namespace ElibWpf.ViewModels.Controls
             if (viewerCaption != CurrentViewer.Caption)
             {
                 viewerHistory.Push(CurrentViewer);
-                Func<Book, bool> selector = (Book x) =>
+                Func<Book, bool> condition = (Book x) =>
                 {
                     var bookAuthorsIds = x.Authors.Select(a => a.Id);
                     foreach (Author selected in obj.Authors)
@@ -250,7 +267,7 @@ namespace ElibWpf.ViewModels.Controls
                     }
                     return true;
                 };
-                CurrentViewer = new BookViewerViewModel(viewerCaption, selector);
+                CurrentViewer = new BookViewerViewModel(viewerCaption, condition, Selector);
             }
         }
 
@@ -260,7 +277,7 @@ namespace ElibWpf.ViewModels.Controls
             if (viewerCaption != CurrentViewer.Caption)
             {
                 viewerHistory.Push(CurrentViewer);
-                CurrentViewer = new BookViewerViewModel(viewerCaption, (Book x) => x.SeriesId.HasValue && x.SeriesId == obj.Series.Id);
+                CurrentViewer = new BookViewerViewModel(viewerCaption, (Book x) => x.SeriesId.HasValue && x.SeriesId == obj.Series.Id, Selector);
             }
         }
 
@@ -270,7 +287,7 @@ namespace ElibWpf.ViewModels.Controls
             {
                 RaisePropertyChanged(() => IsSelectedBooksViewer);
                 viewerHistory.Clear();
-                CurrentViewer = new BookViewerViewModel(SelectedMainPaneItem.ViewerCaption, SelectedMainPaneItem.Condition, SelectedMainPaneItem.IsSelectedBooksPane);
+                CurrentViewer = new BookViewerViewModel(SelectedMainPaneItem.ViewerCaption, SelectedMainPaneItem.Condition, Selector, SelectedMainPaneItem.IsSelectedBooksPane);
             }
         }
 

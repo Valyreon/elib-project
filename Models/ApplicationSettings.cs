@@ -1,4 +1,5 @@
-﻿using Models.Options;
+﻿using DataLayer;
+using Models.Options;
 using Newtonsoft.Json;
 using System;
 using System.IO;
@@ -44,5 +45,10 @@ namespace Models
 
         [JsonProperty("LogFilePath")]
         public string LogFilePath { get; set; } = "log.txt";
+
+        public static ElibContext CreateContext()
+        {
+            return new ElibContext(GetInstance().DatabasePath);
+        }
     }
 }

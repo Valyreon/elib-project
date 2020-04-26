@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using DataLayer;
+using Domain;
 using ElibWpf.ValidationAttributes;
 using ElibWpf.Views.Dialogs;
 using GalaSoft.MvvmLight.Command;
@@ -68,7 +69,8 @@ namespace ElibWpf.ViewModels.Dialogs
 
         private async void Export()
         {
-            Exporter exporter = new Exporter(App.Database);
+            using ElibContext database = ApplicationSettings.CreateContext();
+            Exporter exporter = new Exporter(database);
 
             await dialogCoordinator.HideMetroDialogAsync(App.Current.MainWindow.DataContext, dialog);
             var controlProgress = await dialogCoordinator.ShowProgressAsync(App.Current.MainWindow.DataContext, "Exporting books", "");
@@ -86,7 +88,7 @@ namespace ElibWpf.ViewModels.Dialogs
             {
                 controlProgress.SetMessage("Loading book files...");
                 controlProgress.SetProgress(++counter);
-                await Task.Run(() => App.Database.Entry(b).Collection(b => b.Files).Load());
+                await Task.Run(() => database.Entry(b).Collection(b => b.Files).Load());
             }
             var list = booksToExport.Select(b => b.Files.First()).ToList();
 

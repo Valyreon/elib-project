@@ -1,5 +1,6 @@
 ﻿using ImageProcessor;
 using ImageProcessor.Imaging;
+using System;
 using System.Drawing;
 using System.IO;
 
@@ -9,45 +10,53 @@ namespace Models
     {
         public static byte[] ResizeAndFill(byte[] imgBytes, int Width = 400, int Height = 600)
         {
-            using Image imgPhoto = Image.FromStream(new MemoryStream(imgBytes));
+            try
+            {
+                using Image imgPhoto = Image.FromStream(new MemoryStream(imgBytes));
 
-            Size size = new Size(Width, Height);
 
-            ResizeLayer resizeLayer = new ResizeLayer(size, ResizeMode.Max);
-            ResizeLayer resizeCropLayer = new ResizeLayer(size, ResizeMode.Crop, AnchorPosition.Center);
+                Size size = new Size(Width, Height);
 
-            using MemoryStream outStream = new MemoryStream();
-            using ImageFactory imageFactory = new ImageFactory(preserveExifData: false);
+                ResizeLayer resizeLayer = new ResizeLayer(size, ResizeMode.Max);
+                ResizeLayer resizeCropLayer = new ResizeLayer(size, ResizeMode.Crop, AnchorPosition.Center);
 
-            CropLayer cropLayer = new CropLayer(2, 2, imgPhoto.Width - 4, imgPhoto.Height - 4, CropMode.Pixels);
+                using MemoryStream outStream = new MemoryStream();
+                using ImageFactory imageFactory = new ImageFactory(preserveExifData: false);
 
-            // Resize cover image and stor in outstream
-            imageFactory.Load(imgPhoto)
-                .Crop(cropLayer)
-                .Resize(resizeLayer)
-                .Quality(100)
-                .Save(outStream);
+                CropLayer cropLayer = new CropLayer(2, 2, imgPhoto.Width - 4, imgPhoto.Height - 4, CropMode.Pixels);
 
-            using Image resizePhoto = Image.FromStream(outStream);
+                // Resize cover image and stor in outstream
+                imageFactory.Load(imgPhoto)
+                    .Crop(cropLayer)
+                    .Resize(resizeLayer)
+                    .Quality(100)
+                    .Save(outStream);
 
-            ImageLayer resizedImage = new ImageLayer() { Image = resizePhoto };
+                using Image resizePhoto = Image.FromStream(outStream);
 
-            // If the picture fits do not blur the background
-            if (resizedImage.Size == size)
+                ImageLayer resizedImage = new ImageLayer() { Image = resizePhoto };
+
+                // If the picture fits do not blur the background
+                if (resizedImage.Size == size)
+                    return outStream.ToArray();
+
+                resizeLayer = new ResizeLayer(size, ResizeMode.Min);
+
+                // Loads the original image resizes it to have the shortest side fit the dimensions, blurs it then overlays the original resized image
+                imageFactory.Load(imgPhoto)
+                    .Resize(resizeLayer)
+                    .GaussianBlur(10)
+                    .Overlay(resizedImage)
+                    .Resize(resizeCropLayer)
+                    .Quality(100)
+                    .Save(outStream);
+
                 return outStream.ToArray();
-
-            resizeLayer = new ResizeLayer(size, ResizeMode.Min);
-
-            // Loads the original image resizes it to have the shortest side fit the dimensions, blurs it then overlays the original resized image
-            imageFactory.Load(imgPhoto)
-                .Resize(resizeLayer)
-                .GaussianBlur(10)
-                .Overlay(resizedImage)
-                .Resize(resizeCropLayer)
-                .Quality(100)
-                .Save(outStream);
-
-            return outStream.ToArray();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 }

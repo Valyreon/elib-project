@@ -74,8 +74,6 @@ namespace DatabaseTests
             {
                 GroupByAuthor = true,
                 GroupBySeries = true,
-                CreateNewDirectory = true,
-                NewDirectoryName = "TESTEXPORTFOLDER",
                 DestinationDirectory = @"C:\Users\Luka\Desktop"
             };
 

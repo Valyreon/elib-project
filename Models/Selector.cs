@@ -8,20 +8,18 @@ namespace Models
 {
     public class Selector
     {
-        private readonly ElibContext context;
         private readonly HashSet<int> selectedBookIds;
 
         public IEnumerable<int> SelectedIds { get => selectedBookIds.AsEnumerable(); }
 
         public int Count { get => selectedBookIds.Count; }
 
-        public Selector(ElibContext context)
+        public Selector()
         {
-            this.context = context;
             this.selectedBookIds = new HashSet<int>();
         }
 
-        public async Task<IList<Book>> GetSelectedBooks()
+        public async Task<IList<Book>> GetSelectedBooks(ElibContext context)
         {
             return await Task.Run(() => context.Books.Where(b => selectedBookIds.Contains(b.Id)).ToList());
         }

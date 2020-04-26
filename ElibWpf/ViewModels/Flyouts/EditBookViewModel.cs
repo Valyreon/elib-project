@@ -1,11 +1,14 @@
-﻿using Domain;
+﻿using DataLayer;
+using Domain;
 using ElibWpf.Messages;
 using ElibWpf.ValidationAttributes;
 using GalaSoft.MvvmLight.Command;
 using Models;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -90,7 +93,7 @@ namespace ElibWpf.ViewModels.Flyouts
 
         public ICommand AddAuthorButtonCommand { get => new RelayCommand(() => { MessengerInstance.Send(new ShowInputDialogMessage("Adding New Author", "Author's name:", this.HandleAddAuthor)); }); }
 
-        private async void HandleAddAuthor(string name)
+        private void HandleAddAuthor(string name)
         {
             if (!string.IsNullOrWhiteSpace(name))
             {
@@ -101,19 +104,18 @@ namespace ElibWpf.ViewModels.Flyouts
                 }
                 else // if not
                 {
-                    var existingAuthor = await Task.Run(() => App.Database.Authors.Where(c => c.Name == name).FirstOrDefault());
-                    if (existingAuthor == null)
+                    Author newAuthor = new Author { Name = name };
+                    AuthorsCollection.Add(newAuthor);
+
+                    Task.Run(() =>
                     {
-                        Author newAuthor = new Author
+                        using ElibContext database = ApplicationSettings.CreateContext();
+                        var existingAuthor = database.Authors.Where(c => c.Name == name).FirstOrDefault();
+                        if (existingAuthor != null)
                         {
-                            Name = name
-                        };
-                        AuthorsCollection.Add(newAuthor);
-                    }
-                    else
-                    {
-                        AuthorsCollection.Add(existingAuthor);
-                    }
+                            newAuthor.Id = existingAuthor.Id;
+                        }
+                    });
                 }
             }
             AddAuthorFieldText = "";
@@ -123,15 +125,19 @@ namespace ElibWpf.ViewModels.Flyouts
 
         public ICommand RevertButtonCommand { get => new RelayCommand(this.HandleRevert); }
 
-        private void HandleRevert()
+        private async void HandleRevert()
         {
+            using ElibContext database = ApplicationSettings.CreateContext();
+            database.Books.Attach(Book);
+
             this.ClearErrors();
             AuthorsCollection = new ObservableCollection<Author>(Book.Authors);
             SeriesFieldText = Book.Series?.Name;
             TitleFieldText = Book.Title;
             SeriesNumberFieldText = Book.NumberInSeries.ToString();
-            App.Database.Entry(Book).Collection(f => f.Files).Load();
+            await Task.Run(() => database.Entry(Book).Collection(f => f.Files).Load());
             FilesCollection = new ObservableCollection<EFile>(Book.Files);
+            RaisePropertyChanged(() => FilesCollection);
             IsFavoriteCheck = Book.IsFavorite;
             IsReadCheck = Book.IsRead;
             Cover = Book.Cover;
@@ -139,28 +145,36 @@ namespace ElibWpf.ViewModels.Flyouts
 
         public ICommand SaveButtonCommand { get => new RelayCommand(this.HandleSave); }
 
-        private async void HandleSave()
+        private void HandleSave()
         {
             this.Validate();
             if (!this.HasErrors)
             {
-                Book.Title = TitleFieldText;
-                if (!string.IsNullOrWhiteSpace(SeriesFieldText))
+                Task.Run(() =>
                 {
-                    if (Book.Series == null)
+                    using ElibContext database = ApplicationSettings.CreateContext();
+                    database.Books.Attach(Book);
+
+                    Book.Title = TitleFieldText;
+                    if (!string.IsNullOrWhiteSpace(SeriesFieldText))
                     {
-                        Book.Series = new BookSeries();
+                        if (Book.Series == null)
+                        {
+                            Book.Series = new BookSeries();
+                        }
+                        Book.Series.Name = SeriesFieldText;
+                        if (Regex.IsMatch(SeriesNumberFieldText, @"\d+(\.\d+)?"))
+                            Book.NumberInSeries = decimal.Parse(SeriesNumberFieldText);
                     }
-                    Book.Series.Name = SeriesFieldText;
-                    if (Regex.IsMatch(SeriesNumberFieldText, @"\d+(\.\d+)?"))
-                        Book.NumberInSeries = decimal.Parse(SeriesNumberFieldText);
-                }
-                Book.IsFavorite = IsFavoriteCheck;
-                Book.IsRead = IsReadCheck;
-                Book.Authors = new List<Author>(AuthorsCollection);
-                Book.Files = new List<EFile>(FilesCollection);
-                Book.Cover = Cover;
-                await App.Database.SaveChangesAsync();
+                    Book.IsFavorite = IsFavoriteCheck;
+                    Book.IsRead = IsReadCheck;
+                    Book.Authors = new List<Author>(AuthorsCollection);
+                    Book.Files = new List<EFile>(FilesCollection);
+                    Book.Cover = Cover;
+
+                    database.SaveChanges();
+                });
+
                 MessengerInstance.Send(new ShowBookDetailsMessage(Book));
             }
         }
@@ -211,5 +225,6 @@ namespace ElibWpf.ViewModels.Flyouts
         }
 
         public ICommand RemoveCoverButtonCommand { get => new RelayCommand(() => this.Cover = null); }
+
     }
 }

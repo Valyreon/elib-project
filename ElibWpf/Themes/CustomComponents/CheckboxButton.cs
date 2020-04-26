@@ -1,4 +1,5 @@
 ﻿using MahApps.Metro.IconPacks;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -15,7 +16,7 @@ namespace ElibWpf.CustomComponents
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(CheckboxButton), new FrameworkPropertyMetadata(typeof(CheckboxButton)));
             TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(CheckboxButton));
-            CheckedIconProperty = DependencyProperty.Register("CheckedIcon", typeof(PackIconFontAwesomeKind), typeof(CheckboxButton));
+            CheckedIconProperty = DependencyProperty.Register("CheckedIcon", typeof(Enum), typeof(CheckboxButton));
             CheckedColorProperty = DependencyProperty.Register("CheckedColor", typeof(Brush), typeof(CheckboxButton));
         }
 
@@ -25,9 +26,9 @@ namespace ElibWpf.CustomComponents
             set => base.SetValue(TextProperty, value);
         }
 
-        public PackIconFontAwesomeKind CheckedIcon
+        public Enum CheckedIcon
         {
-            get { return (PackIconFontAwesomeKind)base.GetValue(CheckedIconProperty); }
+            get { return (Enum)base.GetValue(CheckedIconProperty); }
             set => base.SetValue(CheckedIconProperty, value);
         }
 

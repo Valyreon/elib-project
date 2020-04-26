@@ -564,7 +564,7 @@
 
     <Style TargetType="{x:Type Components:CheckboxButton}">
         <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="CheckedIcon" Value="CheckSolid" />
+        <Setter Property="CheckedIcon" Value="{x:Static iconPacks:PackIconUniconsKind.Check}" />
         <Setter Property="CheckedColor" Value="CornflowerBlue" />
         <Setter Property="Template">
             <Setter.Value>
@@ -588,18 +588,18 @@
                             </Grid.ColumnDefinitions>
                             <Grid
                                 Grid.Column="1"
-                                Width="14"
-                                Height="14"
+                                Width="20"
+                                Height="20"
                                 VerticalAlignment="Center">
-                                <iconPacks:PackIconFontAwesome
+                                <iconPacks:PackIconControl
                                     x:Name="CheckImage"
-                                    Width="14"
-                                    Height="14"
+                                    Width="16"
+                                    Height="16"
                                     Margin="0,1,0,0"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     Foreground="#555"
-                                    Kind="TimesSolid" />
+                                    Kind="{TemplateBinding CheckedIcon}" />
                             </Grid>
                             <TextBlock
                                 x:Name="Label"
