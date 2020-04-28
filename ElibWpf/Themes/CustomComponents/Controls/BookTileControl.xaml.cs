@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -138,6 +139,7 @@ namespace ElibWpf.Themes.CustomComponents.Controls
         TextLinkButton theBookTitle;
         SelectedBannerCheck selectedCheckbox;
         Duration duration;
+        private static readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
 
         private void BookContainer_MouseEnter(object sender, MouseEventArgs e)
         {
@@ -175,7 +177,14 @@ namespace ElibWpf.Themes.CustomComponents.Controls
             if (!selectedCheckbox.IsChecked.Value)
             {
                 DoubleAnimation opacAnim = new DoubleAnimation(0, duration, FillBehavior.Stop);
-                opacAnim.Completed += (e, s) => selectedCheckbox.Opacity = 0;
+                opacAnim.Completed += async (e, s) => {
+                    await semaphoreSlim.WaitAsync();
+
+                    if(selectedCheckbox.IsChecked.Value == false)
+                        selectedCheckbox.Opacity = 0;
+
+                    semaphoreSlim.Release();
+                };
 
                 tileBorder.BeginAnimation(Border.BorderBrushProperty, borderAnim);
                 theBookTitle.BeginAnimation(TextLinkButton.ForegroundProperty, titleAnim);
@@ -200,9 +209,11 @@ namespace ElibWpf.Themes.CustomComponents.Controls
             }
         }
 
-        private void SelectedCheckbox_Checked(object sender, RoutedEventArgs e)
+        private async void SelectedCheckbox_Checked(object sender, RoutedEventArgs e)
         {
+            await semaphoreSlim.WaitAsync();
             selectedCheckbox.Opacity = 1;
+            semaphoreSlim.Release();
         }
 
         private void SelectedCheckbox_Unchecked(object sender, RoutedEventArgs e)
