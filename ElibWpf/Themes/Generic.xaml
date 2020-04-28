@@ -355,192 +355,6 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type Components:BookTile}">
-        <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type Components:BookTile}">
-                    <StackPanel
-                        x:Name="BookContainer"
-                        Margin="15,15,15,15"
-                        HorizontalAlignment="Left"
-                        Opacity="0"
-                        Orientation="Vertical"
-                        RenderOptions.BitmapScalingMode="HighQuality"
-                        RenderOptions.ClearTypeHint="Auto"
-                        TextOptions.TextRenderingMode="Auto">
-                        <Border
-                            x:Name="TileBorder"
-                            Width="166"
-                            Height="248"
-                            Background="GhostWhite"
-                            BorderBrush="LightGray"
-                            BorderThickness="1">
-                            <MetroControls:Tile
-                                x:Name="TheTile"
-                                Width="164"
-                                Height="246"
-                                Margin="1"
-                                Background="GhostWhite"
-                                Command="{TemplateBinding TileCommand}"
-                                CommandParameter="{TemplateBinding TileParameter}"
-                                TitleFontSize="14">
-                                <Grid>
-                                    <Image
-                                        x:Name="BackgroundImage"
-                                        Width="164"
-                                        Height="246"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        Panel.ZIndex="100"
-                                        Source="{Binding Cover, Converter={StaticResource ImageConverter}}"
-                                        Stretch="Fill" />
-                                    <CheckBox
-                                        x:Name="SelectedCheckbox"
-                                        Margin="0,0,0,6"
-                                        HorizontalAlignment="Right"
-                                        VerticalAlignment="Bottom"
-                                        Panel.ZIndex="150"
-                                        Command="{TemplateBinding SelectCommand}"
-                                        CommandParameter="{TemplateBinding TileParameter}"
-                                        Focusable="False"
-                                        IsChecked="{Binding IsMarked}"
-                                        Opacity="0"
-                                        Style="{DynamicResource CustomDarkCheckbox}" />
-                                </Grid>
-                            </MetroControls:Tile>
-                        </Border>
-                        <Components:TextLinkButton
-                            x:Name="TheBookTitle"
-                            Width="166"
-                            HorizontalAlignment="Left"
-                            Command="{TemplateBinding TileCommand}"
-                            CommandParameter="{TemplateBinding TileParameter}"
-                            FontSize="14"
-                            Foreground="Black"
-                            Text="{TemplateBinding Title}"
-                            TextOptions.TextHintingMode="Auto"
-                            ToolTip="{TemplateBinding Title}"
-                            ToolTipService.IsEnabled="{TemplateBinding Title,
-                                                                       Converter={StaticResource StringToBoolConverter},
-                                                                       ConverterParameter=21}" />
-                        <Components:TextLinkButton
-                            Width="166"
-                            HorizontalAlignment="Left"
-                            Command="{TemplateBinding AuthorCommand}"
-                            CommandParameter="{TemplateBinding AuthorParameter}"
-                            FontSize="12"
-                            Foreground="Gray"
-                            Style="{DynamicResource BookViewerSubLinkStyle}"
-                            Text="{TemplateBinding Authors}"
-                            TextOptions.TextHintingMode="Fixed"
-                            ToolTip="{TemplateBinding Authors}"
-                            ToolTipService.IsEnabled="{TemplateBinding Authors,
-                                                                       Converter={StaticResource StringToBoolConverter},
-                                                                       ConverterParameter=29}" />
-                        <Components:TextLinkButton
-                            Width="166"
-                            HorizontalAlignment="Left"
-                            Command="{TemplateBinding SeriesCommand}"
-                            CommandParameter="{TemplateBinding SeriesParameter}"
-                            FontSize="12"
-                            Foreground="Gray"
-                            Style="{DynamicResource BookViewerSubLinkStyle}"
-                            Text="{TemplateBinding SeriesInfo}"
-                            TextOptions.TextHintingMode="Fixed"
-                            ToolTip="{TemplateBinding SeriesInfo}"
-                            ToolTipService.IsEnabled="{TemplateBinding SeriesInfo,
-                                                                       Converter={StaticResource StringToBoolConverter},
-                                                                       ConverterParameter=29}" />
-                    </StackPanel>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Cursor" Value="Hand" />
-                            <Trigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <ColorAnimation
-                                            Storyboard.TargetName="TileBorder"
-                                            Storyboard.TargetProperty="(Border.BorderBrush).(Color)"
-                                            To="CornflowerBlue"
-                                            Duration="0:0:0.3" />
-                                        <ColorAnimation
-                                            Storyboard.TargetName="TheBookTitle"
-                                            Storyboard.TargetProperty="(Foreground).(Color)"
-                                            To="CornflowerBlue"
-                                            Duration="0:0:0.3" />
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="SelectedCheckbox"
-                                            Storyboard.TargetProperty="Opacity"
-                                            To="1"
-                                            Duration="0:0:0.3" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.EnterActions>
-                            <Trigger.ExitActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <ColorAnimation
-                                            Storyboard.TargetName="TileBorder"
-                                            Storyboard.TargetProperty="(Border.BorderBrush).(Color)"
-                                            To="LightGray"
-                                            Duration="0:0:0.3" />
-                                        <ColorAnimation
-                                            Storyboard.TargetName="TheBookTitle"
-                                            Storyboard.TargetProperty="(Foreground).(Color)"
-                                            To="Black"
-                                            Duration="0:0:0.3" />
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="SelectedCheckbox"
-                                            Storyboard.TargetProperty="Opacity"
-                                            To="0"
-                                            Duration="0:0:0.3" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.ExitActions>
-                        </Trigger>
-                        <Trigger SourceName="SelectedCheckbox" Property="IsChecked" Value="True">
-                            <Setter TargetName="SelectedCheckbox" Property="Opacity" Value="1" />
-                            <Trigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="SelectedCheckbox"
-                                            Storyboard.TargetProperty="Opacity"
-                                            To="1"
-                                            Duration="0:0:0.1" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.EnterActions>
-                            <Trigger.ExitActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="SelectedCheckbox"
-                                            Storyboard.TargetProperty="Opacity"
-                                            To="1"
-                                            Duration="0:0:0.1" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.ExitActions>
-                        </Trigger>
-                        <EventTrigger RoutedEvent="Loaded">
-                            <BeginStoryboard>
-                                <Storyboard>
-                                    <DoubleAnimation
-                                        Storyboard.TargetName="BookContainer"
-                                        Storyboard.TargetProperty="Opacity"
-                                        To="1"
-                                        Duration="0:0:0.4" />
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
     <Style TargetType="{x:Type Components:TextLinkButton}">
         <Setter Property="Template">
             <Setter.Value>
@@ -627,6 +441,28 @@
                             </Trigger.Setters>
                         </Trigger>
                     </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type Components:SelectedBannerCheck}">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Components:SelectedBannerCheck}">
+                    <Border
+                        x:Name="Border"
+                        Width="164"
+                        Background="{DynamicResource AccentColorBrush}">
+                        <TextBlock
+                            x:Name="Label"
+                            HorizontalAlignment="Center"
+                            FontSize="14"
+                            Foreground="GhostWhite"
+                            Text="{TemplateBinding Text}"
+                            TextOptions.TextFormattingMode="Ideal" />
+                    </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

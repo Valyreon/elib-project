@@ -1,16 +1,17 @@
 ﻿using Domain;
 
 using GalaSoft.MvvmLight.Messaging;
+using Models.Observables;
 
 namespace ElibWpf.Messages
 {
     public class SeriesSelectedMessage : MessageBase
     {
-        public SeriesSelectedMessage(BookSeries series)
+        public SeriesSelectedMessage(ObservableSeries series)
         {
             this.Series = series;
         }
 
-        public BookSeries Series { get; }
+        public ObservableSeries Series { get; }
     }
 }

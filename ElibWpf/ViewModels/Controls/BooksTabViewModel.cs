@@ -2,7 +2,6 @@
 using Domain;
 using EbookTools;
 using ElibWpf.BindingItems;
-using ElibWpf.DataStructures;
 using ElibWpf.Extensions;
 using ElibWpf.Messages;
 using ElibWpf.ViewModels.Dialogs;
@@ -12,6 +11,7 @@ using GalaSoft.MvvmLight.Command;
 using MahApps.Metro.Controls.Dialogs;
 using MahApps.Metro.IconPacks;
 using Models;
+using Models.Observables;
 using Models.Options;
 using System;
 using System.Collections.Generic;
@@ -265,7 +265,7 @@ namespace ElibWpf.ViewModels.Controls
                 Func<Book, bool> condition = (Book x) =>
                 {
                     var bookAuthorsIds = x.Authors.Select(a => a.Id);
-                    foreach (Author selected in obj.Authors)
+                    foreach (ObservableAuthor selected in obj.Authors)
                     {
                         if (!bookAuthorsIds.Contains(selected.Id))
                         {

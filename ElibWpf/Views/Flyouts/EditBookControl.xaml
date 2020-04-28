@@ -17,7 +17,6 @@
     <UserControl.Resources>
         <Converters:ImageConverter x:Key="ImageConverter" />
         <Converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
-        <Converters:AuthorsToStringConverter x:Key="AuthorsToStringConverter" />
         <Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <Converters:BoolToInverseVisibilityConverter x:Key="BoolToInverseVisibilityConverter" />
     </UserControl.Resources>

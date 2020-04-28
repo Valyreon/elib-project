@@ -200,12 +200,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Animations\BrushAnimation.cs" />
     <Compile Include="Animations\GridLengthAnimation.cs" />
     <Compile Include="AttachedProperties\ScrollViewerExtensions.cs" />
     <Compile Include="Converters\BookTileConverters\TitleToVisibilityConverter.cs" />
     <Compile Include="Converters\ImageConverter.cs" />
     <Compile Include="Converters\StringToVisibilityConverter.cs" />
-    <Compile Include="DataStructures\ObservableStack.cs" />
     <Compile Include="Extensions\DomainExtensions.cs" />
     <Compile Include="Messages\AuthorSelectedMessage.cs" />
     <Compile Include="Messages\BookEditDoneMessage.cs" />
@@ -224,10 +224,13 @@
     <Compile Include="Resources\DashboardTabControlStyles.xaml.cs">
       <DependentUpon>DashboardTabControlStyles.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Themes\CustomComponents\BookTile.cs" />
     <Compile Include="Themes\CustomComponents\ConditionalEventTrigger.cs" />
     <Compile Include="Themes\CustomComponents\CheckboxButton.cs" />
+    <Compile Include="Themes\CustomComponents\Controls\BookTileControl.xaml.cs">
+      <DependentUpon>BookTileControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Themes\CustomComponents\DarkFlatTextButton.cs" />
+    <Compile Include="Themes\CustomComponents\SelectedBannerCheck.cs" />
     <Compile Include="Themes\CustomComponents\SimpleFlatTextBox.cs" />
     <Compile Include="Themes\CustomComponents\DarkFlatSymbolButton.cs" />
     <Compile Include="Themes\CustomComponents\SymbolButton.cs" />
@@ -236,7 +239,6 @@
     <Compile Include="Themes\CustomComponents\BetterTextbox.cs" />
     <Compile Include="Themes\CustomComponents\TextBoxWithSymbol.cs" />
     <Compile Include="AttachedProperties\UI.cs" />
-    <Compile Include="Converters\AuthorsToStringConverter.cs" />
     <Compile Include="Converters\BoolToInverseBoolConverter.cs" />
     <Compile Include="Converters\BoolToInverseVisibilityConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
@@ -312,6 +314,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Themes\CustomComponents\Controls\BookTileControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Themes\Generic.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -381,11 +387,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Content Include="Fonts\FontAwesome.otf" />
-    <Content Include="Fonts\fontawesome-webfont.ttf" />
-    <Content Include="Fonts\fontawesome-webfont.eot" />
-    <Content Include="Fonts\fontawesome-webfont.woff" />
-    <Content Include="Fonts\fontawesome-webfont.woff2" />
     <Resource Include="Fonts\SofiaProRegular.ttf" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -439,9 +440,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="icon.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Fonts\fontawesome-webfont.svg" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

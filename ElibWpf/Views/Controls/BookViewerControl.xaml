@@ -6,6 +6,7 @@
     xmlns:Components="clr-namespace:ElibWpf.CustomComponents"
     xmlns:Converters="clr-namespace:ElibWpf.Converters"
     xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:TileComponents="clr-namespace:ElibWpf.Themes.CustomComponents.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:fa="http://schemas.fontawesome.io/icons/"
     xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
@@ -28,7 +29,6 @@
                 <Setter Property="Width" Value="164" />
                 <Setter Property="Height" Value="262" />
             </Style>
-            <Converters:AuthorsToStringConverter x:Key="AuthorsToStringConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
@@ -53,13 +53,14 @@
                 </ItemsControl.ContextMenu>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Components:BookTile
+                        <TileComponents:BookTileControl
                             x:Name="bookTile"
                             Title="{Binding Title}"
                             AuthorCommand="{Binding DataContext.GoToAuthor, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                             AuthorParameter="{Binding Authors}"
-                            Authors="{Binding Authors, Converter={StaticResource AuthorsToStringConverter}}"
+                            Authors="{Binding AuthorsInfo}"
                             Cover="{Binding Cover}"
+                            IsSelected="{Binding IsSelected}"
                             SelectCommand="{Binding DataContext.SelectBookCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                             SeriesCommand="{Binding DataContext.GoToSeries, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                             SeriesInfo="{Binding SeriesInfo}"
@@ -96,5 +97,11 @@
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
         </Grid>
+        <Grid.CacheMode>
+            <BitmapCache
+                EnableClearType="True"
+                RenderAtScale="1"
+                SnapsToDevicePixels="False" />
+        </Grid.CacheMode>
     </Grid>
 </UserControl>

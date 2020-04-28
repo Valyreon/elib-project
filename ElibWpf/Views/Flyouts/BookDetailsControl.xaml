@@ -22,7 +22,6 @@
     <UserControl.Resources>
         <Converters:ImageConverter x:Key="ImageConverter" />
         <Converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
-        <Converters:AuthorsToStringConverter x:Key="AuthorsToStringConverter" />
         <Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <Converters:BoolToInverseVisibilityConverter x:Key="BoolToInverseVisibilityConverter" />
     </UserControl.Resources>
@@ -120,7 +119,7 @@
                                     FontSize="16"
                                     Foreground="LightGray"
                                     Style="{DynamicResource BookDetailsSubLinkLightGrayStyle}"
-                                    Text="{Binding Book.Authors, Converter={StaticResource AuthorsToStringConverter}}" />
+                                    Text="{Binding Book.AuthorsInfo}" />
                             </StackPanel>
                             <StackPanel Orientation="Vertical">
                                 <TextBlock Text="{Binding BookDescriptionText}" />

@@ -8,6 +8,7 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using Models;
+using Models.Observables;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -30,11 +31,13 @@ namespace ElibWpf.ViewModels.Controls
 
         private readonly Selector selector;
 
+        ObservableBook lastSelectedBook = null;
+
         public BookViewerViewModel(string caption, Func<Book, bool> defaultQuery, Selector selector, bool isSelectedView = false)
         {
             Caption = caption;
             this.DefaultCondition = defaultQuery;
-            Books = new ObservableCollection<Book>();
+            Books = new ObservableCollection<ObservableBook>();
             isSelectedBookView = isSelectedView;
             this.selector = selector;
             MessengerInstance.Register<BookEditDoneMessage>(this, this.EditedBookRefresh);
@@ -45,7 +48,7 @@ namespace ElibWpf.ViewModels.Controls
             //RaisePropertyChanged(() => Books);
         }
 
-        public ObservableCollection<Book> Books { get; set; }
+        public ObservableCollection<ObservableBook> Books { get; set; }
 
         public string Caption
         {
@@ -53,11 +56,11 @@ namespace ElibWpf.ViewModels.Controls
             set => Set(ref caption, value);
         }
 
-        public ICommand GoToAuthor { get => new RelayCommand<ICollection<Author>>((ICollection<Author> a) => Messenger.Default.Send(new AuthorSelectedMessage(a))); }
-        public ICommand GoToSeries { get => new RelayCommand<BookSeries>((BookSeries a) => Messenger.Default.Send(new SeriesSelectedMessage(a))); }
-        public ICommand SelectBookCommand { get => new RelayCommand<Book>(this.HandleSelectBook); }
+        public ICommand GoToAuthor { get => new RelayCommand<ICollection<ObservableAuthor>>((ICollection<ObservableAuthor> a) => Messenger.Default.Send(new AuthorSelectedMessage(a))); }
+        public ICommand GoToSeries { get => new RelayCommand<ObservableSeries>((ObservableSeries a) => Messenger.Default.Send(new SeriesSelectedMessage(a))); }
+        public ICommand SelectBookCommand { get => new RelayCommand<ObservableBook>(this.HandleSelectBook); }
 
-        private void HandleSelectBook(Book obj)
+        private void HandleSelectBook(ObservableBook obj)
         {
             bool isSelected = selector.Select(obj);
             if (isSelectedBookView && !isSelected && Books.Count == 1)
@@ -71,7 +74,10 @@ namespace ElibWpf.ViewModels.Controls
                 Books.Remove(obj);
             }
             else
+            {
+                lastSelectedBook = obj;
                 MessengerInstance.Send(new BookSelectedMessage());
+            }
         }
 
         public ICommand LoadMoreCommand { get => new RelayCommand(this.LoadMore); }
@@ -82,7 +88,36 @@ namespace ElibWpf.ViewModels.Controls
             set => Set(ref numberOfBooks, value);
         }
 
-        public ICommand OpenBookDetails { get => new RelayCommand<Book>((Book b) => Messenger.Default.Send(new ShowBookDetailsMessage(b))); }
+        public ICommand OpenBookDetails { get => new RelayCommand<ObservableBook>(this.HandleBookClick); }
+
+        private void HandleBookClick(ObservableBook arg)
+        {
+            if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
+            {
+                arg.IsSelected = !arg.IsSelected;
+                HandleSelectBook(arg);
+            }
+            else if(Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+            {
+                var lastSelectedIndex = lastSelectedBook==null ? 0 : Books.IndexOf(lastSelectedBook);
+                var currentIndex = Books.IndexOf(arg);
+                int[] ascIndexArray = new int[2];
+                ascIndexArray[0] = currentIndex > lastSelectedIndex ? lastSelectedIndex : currentIndex;
+                ascIndexArray[1] = currentIndex > lastSelectedIndex ? currentIndex : lastSelectedIndex;
+
+                for(int i=ascIndexArray[0]; i<= ascIndexArray[1]; i++)
+                {
+                    var book = Books.ElementAt(i);
+                    book.IsSelected = true;
+                    RaisePropertyChanged(() => book.IsSelected);
+                    HandleSelectBook(book);
+                }
+            }
+            else
+            {
+                Messenger.Default.Send(new ShowBookDetailsMessage(arg));
+            }
+        }
 
         public double ScrollVertical
         {
@@ -97,12 +132,12 @@ namespace ElibWpf.ViewModels.Controls
 
         private async void LoadMore()
         {
-            PagedList<Book> bookList;
+            PagedList<ObservableBook> bookList;
             await semaphoreSlim.WaitAsync();
             try
             {
                 using ElibContext dbcontext = ApplicationSettings.CreateContext();
-                bookList = await Task.Run(() => dbcontext.Books.Include("Authors").Include("Series").Include("UserCollections").Where(DefaultCondition).Select(b => selector.SetMarked(b)).AsQueryable().ToPagedList(nextPage++, 30));
+                bookList = await Task.Run(() => dbcontext.Books.Include("Authors").Include("Series").Include("UserCollections").Where(DefaultCondition).Select(b => selector.SetMarked(new ObservableBook(b))).AsQueryable().ToPagedList(nextPage++, 30));
             }
             finally
             {

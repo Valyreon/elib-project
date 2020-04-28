@@ -1,12 +1,13 @@
 ﻿using Domain;
+using Models.Observables;
 
 namespace ElibWpf.Messages
 {
     public class CollectionSelectedMessage
     {
-        public UserCollection Collection { get; }
+        public ObservableUserCollection Collection { get; }
 
-        public CollectionSelectedMessage(UserCollection collection)
+        public CollectionSelectedMessage(ObservableUserCollection collection)
         {
             this.Collection = collection;
         }

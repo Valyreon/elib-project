@@ -4,6 +4,7 @@ using ElibWpf.Messages;
 using ElibWpf.ValidationAttributes;
 using GalaSoft.MvvmLight.Command;
 using Models;
+using Models.Observables;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -20,16 +21,16 @@ namespace ElibWpf.ViewModels.Flyouts
 {
     public class EditBookViewModel : ViewModelWithValidation
     {
-        public Book Book { get; private set; }
+        public ObservableBook Book { get; private set; }
 
-        public EditBookViewModel(Book book)
+        public EditBookViewModel(ObservableBook book)
         {
             this.Book = book;
             HandleRevert();
         }
 
         [NotEmpty(ErrorMessage = "Book has to have at least one author.")]
-        public ObservableCollection<Author> AuthorsCollection { get; private set; }
+        public ObservableCollection<ObservableAuthor> AuthorsCollection { get; private set; }
 
         private string seriesFieldText;
 
@@ -102,7 +103,7 @@ namespace ElibWpf.ViewModels.Flyouts
                 else // if not
                 {
                     Author newAuthor = new Author { Name = name };
-                    AuthorsCollection.Add(newAuthor);
+                    AuthorsCollection.Add(new ObservableAuthor(newAuthor));
 
                     Task.Run(() =>
                     {
@@ -124,11 +125,8 @@ namespace ElibWpf.ViewModels.Flyouts
 
         private void HandleRevert()
         {
-            using ElibContext database = ApplicationSettings.CreateContext();
-            database.Books.Attach(Book);
-
             this.ClearErrors();
-            AuthorsCollection = new ObservableCollection<Author>(Book.Authors);
+            AuthorsCollection = new ObservableCollection<ObservableAuthor>(Book.Authors);
             SeriesFieldText = Book.Series?.Name;
             TitleFieldText = Book.Title;
             SeriesNumberFieldText = Book.NumberInSeries.ToString();
@@ -146,24 +144,27 @@ namespace ElibWpf.ViewModels.Flyouts
             {
                 Task.Run(() =>
                 {
+                    var book = Book;
                     using ElibContext database = ApplicationSettings.CreateContext();
-                    database.Books.Attach(Book);
+                    database.Books.Attach(Book.Book);
 
-                    Book.Title = TitleFieldText;
+                    book.Title = TitleFieldText;
                     if (!string.IsNullOrWhiteSpace(SeriesFieldText))
                     {
-                        if (Book.Series == null)
+                        if (book.Series == null)
                         {
-                            Book.Series = new BookSeries();
+                            book.Series = new ObservableSeries(new BookSeries());
                         }
                         Book.Series.Name = SeriesFieldText;
                         if (Regex.IsMatch(SeriesNumberFieldText, @"\d+(\.\d+)?"))
                             Book.NumberInSeries = decimal.Parse(SeriesNumberFieldText);
                     }
-                    Book.IsFavorite = IsFavoriteCheck;
-                    Book.IsRead = IsReadCheck;
-                    Book.Authors = new List<Author>(AuthorsCollection);
-                    Book.Cover = Cover;
+                    book.IsFavorite = IsFavoriteCheck;
+                    book.IsRead = IsReadCheck;
+                    book.Authors.Clear();
+                    foreach(var author in AuthorsCollection)
+                        book.Authors.Add(author);
+                    book.Cover = Cover;
 
                     database.SaveChanges();
                 });

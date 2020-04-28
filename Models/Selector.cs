@@ -1,5 +1,6 @@
 ﻿using DataLayer;
 using Domain;
+using Models.Observables;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,9 +25,9 @@ namespace Models
             return await Task.Run(() => context.Books.Where(b => selectedBookIds.Contains(b.Id)).ToList());
         }
 
-        public bool Select(Book book)
+        public bool Select(ObservableBook book)
         {
-            if (book.IsMarked)
+            if (book.IsSelected)
             {
                 selectedBookIds.Add(book.Id);
                 return true;
@@ -38,9 +39,9 @@ namespace Models
             }
         }
 
-        public Book SetMarked(Book book)
+        public ObservableBook SetMarked(ObservableBook book)
         {
-            book.IsMarked = selectedBookIds.Contains(book.Id);
+            book.IsSelected = selectedBookIds.Contains(book.Id);
             return book;
         }
     }

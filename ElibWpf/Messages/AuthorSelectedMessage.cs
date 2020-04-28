@@ -1,17 +1,18 @@
 ﻿using Domain;
 
 using GalaSoft.MvvmLight.Messaging;
+using Models.Observables;
 using System.Collections.Generic;
 
 namespace ElibWpf.Messages
 {
     public class AuthorSelectedMessage : MessageBase
     {
-        public AuthorSelectedMessage(IEnumerable<Author> selectedAuthors)
+        public AuthorSelectedMessage(IEnumerable<ObservableAuthor> selectedAuthors)
         {
             this.Authors = selectedAuthors;
         }
 
-        public IEnumerable<Author> Authors { get; }
+        public IEnumerable<ObservableAuthor> Authors { get; }
     }
 }

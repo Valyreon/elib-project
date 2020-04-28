@@ -2,7 +2,7 @@
 using System.Collections.Specialized;
 using System.Linq;
 
-namespace ElibWpf.DataStructures
+namespace Models.Observables
 {
     public class ObservableStack<T>
     {

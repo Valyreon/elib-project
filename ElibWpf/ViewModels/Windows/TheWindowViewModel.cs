@@ -5,6 +5,7 @@ using ElibWpf.ViewModels.Flyouts;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using MahApps.Metro.Controls.Dialogs;
+using Models.Observables;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
@@ -43,7 +44,7 @@ namespace ElibWpf.ViewModels.Windows
             obj.CallOnResult(input);
         }
 
-        private void HandleEditBookFlyout(Book book)
+        private void HandleEditBookFlyout(ObservableBook book)
         {
             FlyoutControl = new EditBookViewModel(book);
             IsBookDetailsFlyoutOpen = true;
