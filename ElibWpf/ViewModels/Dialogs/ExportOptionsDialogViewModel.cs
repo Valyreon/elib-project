@@ -82,12 +82,14 @@ namespace ElibWpf.ViewModels.Dialogs
             {
                 controlProgress.SetMessage("Exporting book: " + message);
                 controlProgress.SetProgress(++counter);
+                Logger.Log("TEST", message);
             }
 
             foreach (Book b in booksToExport)
             {
                 controlProgress.SetMessage("Loading book files...");
                 controlProgress.SetProgress(++counter);
+                database.Books.Attach(b);
                 await Task.Run(() => database.Entry(b).Reference(b => b.File).Load());
                 await Task.Run(() => database.Entry(b.File).Reference(f => f.RawFile).Load());
             }

@@ -129,7 +129,7 @@
                         <StackPanel Grid.Column="2">
                             <TextBlock FontSize="16" Text="Collections:" />
 
-                            <ItemsControl Margin="0,0,0,3" ItemsSource="{Binding UserCollections}">
+                            <ItemsControl Margin="0,0,0,3" ItemsSource="{Binding Book.Collections}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel

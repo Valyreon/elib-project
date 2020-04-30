@@ -1,10 +1,12 @@
-﻿using Domain;
+﻿using DataLayer;
+using Domain;
 using ElibWpf.Messages;
 using ElibWpf.ViewModels.Controls;
 using ElibWpf.ViewModels.Flyouts;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using MahApps.Metro.Controls.Dialogs;
+using Models;
 using Models.Observables;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -98,8 +100,11 @@ namespace ElibWpf.ViewModels.Windows
 
         public ObservableCollection<ITabViewModel> Tabs { get; set; }
 
-        private void HandleBookFlyout(ShowBookDetailsMessage obj)
+        private async void HandleBookFlyout(ShowBookDetailsMessage obj)
         {
+            using ElibContext context = ApplicationSettings.CreateContext();
+            context.Books.Attach(obj.Book.Book);
+            await context.Entry(obj.Book.Book).Collection(b => b.UserCollections).LoadAsync();
             FlyoutControl = new BookDetailsViewModel(obj.Book);
             IsBookDetailsFlyoutOpen = true;
         }

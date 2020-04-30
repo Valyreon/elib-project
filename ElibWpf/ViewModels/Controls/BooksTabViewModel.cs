@@ -300,7 +300,7 @@ namespace ElibWpf.ViewModels.Controls
 
         private void RefreshCurrent()
         {
-            if (SelectedCollection == null && SelectedMainPaneItem == null) SelectedCollection = Collections[0];
+            if (SelectedCollection == null && SelectedMainPaneItem == null) SelectedMainPaneItem = MainPaneItems[0];
             CurrentViewer = CurrentViewer.Clone() as IViewer;
         }
     }

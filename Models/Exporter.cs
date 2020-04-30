@@ -54,15 +54,15 @@ namespace Models
         {
             void ExportAllInList(IEnumerable<Book> list, string outPath)
             {
-                foreach (var book in books)
+                foreach (var book in list)
                 {
                     progressSet(book.Title);
                     ExportBook(book, outPath);
                 }
             };
-            void ProcessBySeries(IEnumerable<Book> books, string outPath)
+            void ProcessBySeries(IEnumerable<Book> bookList, string outPath)
             {
-                var groups = books.GroupBy(book => book.Series?.Name);
+                var groups = bookList.GroupBy(book => book.Series?.Id);
                 foreach (var group in groups)
                 {
                     // create directory for this series

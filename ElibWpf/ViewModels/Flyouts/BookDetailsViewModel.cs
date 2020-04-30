@@ -55,7 +55,7 @@ namespace ElibWpf.ViewModels.Flyouts
                 Book.Collections.Remove(collection);
                 if (database.Books.Where(b => b.UserCollections.Where(c => c.Tag == tag).Any()).Count() == 1)
                 {
-                    database.Entry(collection).State = EntityState.Deleted;
+                    database.Entry(collection.Collection).State = EntityState.Deleted;
                     MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
                 }
                 database.SaveChanges();
@@ -94,6 +94,7 @@ namespace ElibWpf.ViewModels.Flyouts
                         if (existingCollection == null)
                         {
                             isNew = true;
+                            Book.Book.UserCollections.Add(newCollection.Collection);
                         }
                         else
                         {
