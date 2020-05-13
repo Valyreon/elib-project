@@ -4,12 +4,14 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:Components="clr-namespace:ElibWpf.CustomComponents"
     xmlns:Converters="clr-namespace:ElibWpf.Converters"
+    xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:fa="http://schemas.fontawesome.io/icons/"
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:local="clr-namespace:ElibWpf.Views.Flyouts"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Dialog:DialogParticipation.Register="{Binding}"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -162,13 +164,15 @@
                 </Grid>
                 <Grid Grid.Row="3" Margin="0,20,0,0">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" MaxWidth="300px" />
+                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <StackPanel x:Name="AuthorsPart">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="30" />
                                 <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="26" />
+                                <ColumnDefinition Width="4" />
                                 <ColumnDefinition Width="26" />
                             </Grid.ColumnDefinitions>
                             <iconPacks:PackIconFontAwesome
@@ -187,8 +191,21 @@
                                 Grid.Column="2"
                                 Width="26"
                                 Height="26"
-                                Command="{Binding AddAuthorButtonCommand}"
+                                Command="{Binding AddNewAuthorButtonCommand}"
                                 Icon="{x:Static iconPacks:PackIconEvaIconsKind.Plus}"
+                                IconSize="14">
+                                <Components:DarkFlatSymbolButton.ToolTip>
+                                    <ToolTip>
+                                        Add another author
+                                    </ToolTip>
+                                </Components:DarkFlatSymbolButton.ToolTip>
+                            </Components:DarkFlatSymbolButton>
+                            <Components:DarkFlatSymbolButton
+                                Grid.Column="4"
+                                Width="26"
+                                Height="26"
+                                Command="{Binding AddExistingAuthorButtonCommand}"
+                                Icon="{x:Static iconPacks:PackIconEvaIconsKind.PersonAdd}"
                                 IconSize="14">
                                 <Components:DarkFlatSymbolButton.ToolTip>
                                     <ToolTip>

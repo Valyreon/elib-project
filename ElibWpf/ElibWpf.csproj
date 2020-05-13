@@ -244,6 +244,8 @@
     <Compile Include="ValidationAttributes\NotEmpty.cs" />
     <Compile Include="ViewModels\Controls\BooksTabViewModel.cs" />
     <Compile Include="ViewModels\Controls\BookViewerViewModel.cs" />
+    <Compile Include="ViewModels\Dialogs\ChooseAuthorDialogViewModel.cs" />
+    <Compile Include="ViewModels\Dialogs\ChooseSeriesDialogViewModel.cs" />
     <Compile Include="ViewModels\Dialogs\ExportOptionsDialogViewModel.cs" />
     <Compile Include="ViewModels\Flyouts\AddNewBooksViewModel.cs" />
     <Compile Include="ViewModels\Flyouts\BookDetailsViewModel.cs" />
@@ -254,6 +256,12 @@
     <Compile Include="ViewModels\IViewer.cs" />
     <Compile Include="ViewModels\ViewModelWithValidation.cs" />
     <Compile Include="ViewModels\Windows\TheWindowViewModel.cs" />
+    <Compile Include="Views\Dialogs\ChooseAuthorDialog.xaml.cs">
+      <DependentUpon>ChooseAuthorDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Dialogs\ChooseSeriesDialog.xaml.cs">
+      <DependentUpon>ChooseSeriesDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Dialogs\ExportOptionsDialog.xaml.cs">
       <DependentUpon>ExportOptionsDialog.xaml</DependentUpon>
     </Compile>
@@ -313,6 +321,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\Generic.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Dialogs\ChooseAuthorDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Dialogs\ChooseSeriesDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

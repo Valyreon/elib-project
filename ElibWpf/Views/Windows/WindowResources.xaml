@@ -34,6 +34,12 @@
     <DataTemplate DataType="{x:Type DialogViewModels:ExportOptionsDialogViewModel}">
         <DialogViews:ExportOptionsDialog />
     </DataTemplate>
+    <DataTemplate DataType="{x:Type DialogViewModels:ChooseAuthorDialogViewModel}">
+        <DialogViews:ChooseAuthorDialog />
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type DialogViewModels:ChooseSeriesDialogViewModel}">
+        <DialogViews:ChooseSeriesDialog />
+    </DataTemplate>
 
     <Style TargetType="ScrollBar">
         <Setter Property="Margin" Value="0" />

@@ -2,9 +2,13 @@
 using Domain;
 using ElibWpf.Messages;
 using ElibWpf.ValidationAttributes;
+using ElibWpf.ViewModels.Dialogs;
+using ElibWpf.Views.Dialogs;
 using GalaSoft.MvvmLight.Command;
+using MahApps.Metro.Controls.Dialogs;
 using Models;
 using Models.Observables;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -21,12 +25,14 @@ namespace ElibWpf.ViewModels.Flyouts
 {
     public class EditBookViewModel : ViewModelWithValidation
     {
+        private readonly IDialogCoordinator dialogCoordinator;
         public ObservableBook Book { get; private set; }
 
         public EditBookViewModel(ObservableBook book)
         {
             this.Book = book;
             HandleRevert();
+            dialogCoordinator = new DialogCoordinator();
         }
 
         [NotEmpty(ErrorMessage = "Book has to have at least one author.")]
@@ -89,10 +95,12 @@ namespace ElibWpf.ViewModels.Flyouts
             set => Set(() => Cover, ref coverImage, value);
         }
 
-        public ICommand AddAuthorButtonCommand { get => new RelayCommand(() => { MessengerInstance.Send(new ShowInputDialogMessage("Adding New Author", "Author's name:", this.HandleAddAuthor)); }); }
+        public ICommand AddNewAuthorButtonCommand { get => new RelayCommand(this.HandleAddNewAuthor); }
+        //        public ICommand AddExistingAuthorButtonCommand { get => new RelayCommand(() => { MessengerInstance.Send(new ShowInputDialogMessage("Adding New Author", "Author's name:", this.HandleAddAuthor)); }); }
 
-        private void HandleAddAuthor(string name)
+        private async void HandleAddNewAuthor()
         {
+            string name = await dialogCoordinator.ShowInputAsync(this, "Adding New Author", "Author's name:");
             if (!string.IsNullOrWhiteSpace(name))
             {
                 name = name.Trim();
@@ -105,15 +113,15 @@ namespace ElibWpf.ViewModels.Flyouts
                     Author newAuthor = new Author { Name = name };
                     AuthorsCollection.Add(new ObservableAuthor(newAuthor));
 
-                    Task.Run(() =>
-                    {
-                        using ElibContext database = ApplicationSettings.CreateContext();
-                        var existingAuthor = database.Authors.Where(c => c.Name == name).FirstOrDefault();
-                        if (existingAuthor != null)
-                        {
-                            newAuthor.Id = existingAuthor.Id;
-                        }
-                    });
+                    _ = Task.Run(() =>
+                      {
+                          using ElibContext database = ApplicationSettings.CreateContext();
+                          var existingAuthor = database.Authors.Where(c => c.Name == name).FirstOrDefault();
+                          if (existingAuthor != null)
+                          {
+                              newAuthor.Id = existingAuthor.Id;
+                          }
+                      });
                 }
             }
             AddAuthorFieldText = "";
@@ -162,7 +170,7 @@ namespace ElibWpf.ViewModels.Flyouts
                     book.IsFavorite = IsFavoriteCheck;
                     book.IsRead = IsReadCheck;
                     book.Authors.Clear();
-                    foreach(var author in AuthorsCollection)
+                    foreach (var author in AuthorsCollection)
                         book.Authors.Add(author);
                     book.Cover = Cover;
 
@@ -202,5 +210,13 @@ namespace ElibWpf.ViewModels.Flyouts
 
         public ICommand RemoveCoverButtonCommand { get => new RelayCommand(() => this.Cover = null); }
 
+        public ICommand AddExistingAuthorButtonCommand { get => new RelayCommand(this.HandleAddExistingAuthor); }
+
+        private async void HandleAddExistingAuthor()
+        {
+            var dialog = new ChooseAuthorDialog();
+            dialog.DataContext = new ChooseAuthorDialogViewModel(x => AuthorsCollection.Add(new ObservableAuthor(x)), dialogCoordinator, dialog);
+            await dialogCoordinator.ShowMetroDialogAsync(this, dialog);
+        }
     }
 }
