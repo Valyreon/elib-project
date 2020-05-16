@@ -28,7 +28,6 @@ namespace ElibWpf.ViewModels.Controls
     public class BooksTabViewModel : ViewModelBase, ITabViewModel
     {
         private readonly ObservableStack<IViewer> viewerHistory = new ObservableStack<IViewer>();
-        private readonly IDialogCoordinator dialogCoordinator;
         private string caption = "Books";
         private IViewer currentViewer;
         private UserCollection selectedCollection;
@@ -39,13 +38,13 @@ namespace ElibWpf.ViewModels.Controls
         private readonly PaneMainItem selectedMainItem;
         private bool isSelectedMainAdded = false;
 
-        public BooksTabViewModel(IDialogCoordinator dialogCoordinator)
+        public BooksTabViewModel()
         {
             Selector = new Selector();
             selectedMainItem = new PaneMainItem("Selected", PackIconFontAwesomeKind.CheckDoubleSolid, "Selected Books", (Book x) => Selector.SelectedIds.Contains(x.Id), true);
 
             MessengerInstance.Register<AuthorSelectedMessage>(this, this.HandleAuthorSelection);
-            MessengerInstance.Register(this, (BookSelectedMessage m) => { if (Selector.Count > 0 && !isSelectedMainAdded) { MainPaneItems.Add(selectedMainItem); isSelectedMainAdded = true; } else if (Selector.Count == 0) { MainPaneItems.Remove(selectedMainItem); isSelectedMainAdded = false; } });
+            MessengerInstance.Register<BookSelectedMessage>(this, this.HandleBookChecked);
             MessengerInstance.Register<SeriesSelectedMessage>(this, this.HandleSeriesSelection);
             MessengerInstance.Register<CollectionSelectedMessage>(this, this.HandleCollectionSelection);
             MessengerInstance.Register<GoBackMessage>(this, x => this.GoToPreviousViewer());
@@ -65,7 +64,19 @@ namespace ElibWpf.ViewModels.Controls
             SelectedMainPaneItem = MainPaneItems[0];
             PaneSelectionChanged();
             SearchOptions = ApplicationSettings.GetInstance().SearchOptions;
-            this.dialogCoordinator = dialogCoordinator;
+        }
+
+        private void HandleBookChecked(BookSelectedMessage obj)
+        {
+            if (Selector.Count > 0 && !isSelectedMainAdded)
+            {
+                MainPaneItems.Add(selectedMainItem);
+                isSelectedMainAdded = true;
+            }
+            else if (Selector.Count == 0)
+            {
+                MainPaneItems.Remove(selectedMainItem); isSelectedMainAdded = false;
+            }
         }
 
         private void HandleCollectionSelection(CollectionSelectedMessage message)
@@ -85,8 +96,8 @@ namespace ElibWpf.ViewModels.Controls
         {
             var dialog = new ExportOptionsDialog();
             using ElibContext Database = ApplicationSettings.CreateContext();
-            dialog.DataContext = new ExportOptionsDialogViewModel(await Selector.GetSelectedBooks(Database), dialogCoordinator, dialog);
-            await dialogCoordinator.ShowMetroDialogAsync(App.Current.MainWindow.DataContext, dialog);
+            dialog.DataContext = new ExportOptionsDialogViewModel(await Selector.GetSelectedBooks(Database), dialog);
+            await DialogCoordinator.Instance.ShowMetroDialogAsync(App.Current.MainWindow.DataContext, dialog);
         }
 
         private async void ProcessAddBook()
@@ -103,7 +114,7 @@ namespace ElibWpf.ViewModels.Controls
             if (result == DialogResult.OK && dlg.FileNames.Any())
             {
                 List<Book> booksToAdd = new List<Book>();
-                var controller = await dialogCoordinator.ShowProgressAsync(App.Current.MainWindow.DataContext, "Please wait...", "");
+                var controller = await DialogCoordinator.Instance.ShowProgressAsync(App.Current.MainWindow.DataContext, "Please wait...", "");
                 controller.Maximum = dlg.FileNames.Length;
                 controller.Minimum = 1;
                 for (int i = 0; i < dlg.FileNames.Length; i++)

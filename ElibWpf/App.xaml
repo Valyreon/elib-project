@@ -25,6 +25,7 @@
                 <ResourceDictionary Source="Resources/SymbolButtonResources.xaml" />
                 <ResourceDictionary Source="Resources/CustomDarkCheckbox.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <FontFamily x:Key="Font">/Fonts/#Sofia Pro Regular</FontFamily>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -40,12 +40,6 @@ namespace ElibWpf.ViewModels.Controls
             Books = new ObservableCollection<ObservableBook>();
             isSelectedBookView = isSelectedView;
             this.selector = selector;
-            MessengerInstance.Register<BookEditDoneMessage>(this, this.EditedBookRefresh);
-        }
-
-        private void EditedBookRefresh(BookEditDoneMessage obj)
-        {
-            //RaisePropertyChanged(() => Books);
         }
 
         public ObservableCollection<ObservableBook> Books { get; set; }
@@ -62,22 +56,22 @@ namespace ElibWpf.ViewModels.Controls
 
         private void HandleSelectBook(ObservableBook obj)
         {
+            obj.IsMarked = !obj.IsMarked;
             bool isSelected = selector.Select(obj);
             if (isSelectedBookView && !isSelected && Books.Count == 1)
             {
-                MessengerInstance.Send(new BookSelectedMessage());
                 MessengerInstance.Send(new ResetPaneSelectionMessage());
             }
             else if (isSelectedBookView && !isSelected && Books.Count > 1)
             {
-                MessengerInstance.Send(new BookSelectedMessage());
                 Books.Remove(obj);
             }
             else
             {
                 lastSelectedBook = obj;
-                MessengerInstance.Send(new BookSelectedMessage());
             }
+
+            MessengerInstance.Send(new BookSelectedMessage());
         }
 
         public ICommand LoadMoreCommand { get => new RelayCommand(this.LoadMore); }
@@ -94,7 +88,7 @@ namespace ElibWpf.ViewModels.Controls
         {
             if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
             {
-                arg.IsSelected = !arg.IsSelected;
+                arg.IsMarked = !arg.IsMarked;
                 HandleSelectBook(arg);
             }
             else if(Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
@@ -108,8 +102,8 @@ namespace ElibWpf.ViewModels.Controls
                 for(int i=ascIndexArray[0]; i<= ascIndexArray[1]; i++)
                 {
                     var book = Books.ElementAt(i);
-                    book.IsSelected = true;
-                    RaisePropertyChanged(() => book.IsSelected);
+                    book.IsMarked = true;
+                    RaisePropertyChanged(() => book.IsMarked);
                     HandleSelectBook(book);
                 }
             }

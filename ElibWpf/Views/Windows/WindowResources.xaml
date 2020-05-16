@@ -50,6 +50,4 @@
         <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
         <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
     </Style>
-
-    <FontFamily x:Key="Font">/Fonts/#Sofia Pro Regular</FontFamily>
 </ResourceDictionary>

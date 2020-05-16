@@ -52,8 +52,7 @@ namespace ElibWpf.ViewModels.Flyouts
             {
                 using ElibContext database = ApplicationSettings.CreateContext();
                 database.Books.Attach(Book.Book);
-                Book.Collections.Remove(collection);
-                if (database.Books.Where(b => b.UserCollections.Where(c => c.Tag == tag).Any()).Count() == 1)
+                if (database.Books.Where(b => b.UserCollections.Where(c => c.Tag == tag).Any()).Count() <= 1)
                 {
                     database.Entry(collection.Collection).State = EntityState.Deleted;
                     MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());

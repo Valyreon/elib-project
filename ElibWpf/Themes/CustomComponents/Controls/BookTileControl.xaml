@@ -69,7 +69,7 @@
                                 Command="{Binding SelectCommand, RelativeSource={RelativeSource TemplatedParent}}"
                                 CommandParameter="{Binding TileParameter, RelativeSource={RelativeSource TemplatedParent}}"
                                 Focusable="False"
-                                IsChecked="{Binding IsSelected, RelativeSource={RelativeSource TemplatedParent}}"
+                                IsChecked="{Binding IsSelected, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}"
                                 Opacity="0"
                                 Text="SELECT"
                                 Unchecked="SelectedCheckbox_Unchecked" />

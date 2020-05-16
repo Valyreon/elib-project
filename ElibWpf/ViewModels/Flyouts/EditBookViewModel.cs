@@ -14,36 +14,59 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
+using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace ElibWpf.ViewModels.Flyouts
 {
     public class EditBookViewModel : ViewModelWithValidation
     {
-        private readonly IDialogCoordinator dialogCoordinator;
         public ObservableBook Book { get; private set; }
 
         public EditBookViewModel(ObservableBook book)
         {
             this.Book = book;
             HandleRevert();
-            dialogCoordinator = new DialogCoordinator();
         }
 
+        private ObservableCollection<ObservableAuthor> authorCollection;
         [NotEmpty(ErrorMessage = "Book has to have at least one author.")]
-        public ObservableCollection<ObservableAuthor> AuthorsCollection { get; private set; }
-
-        private string seriesFieldText;
-
-        public string SeriesFieldText
+        public ObservableCollection<ObservableAuthor> AuthorsCollection
         {
-            get => seriesFieldText;
-            set => Set(() => SeriesFieldText, ref seriesFieldText, value);
+            get => authorCollection;
+            private set
+            {
+                Set(() => AuthorsCollection, ref authorCollection, value);
+            }
+        }
+
+        private ObservableSeries series;
+        public ObservableSeries Series
+        {
+            get => series;
+            set
+            {
+                Set(() => Series, ref series, value);
+                RaisePropertyChanged(() => IsSeriesSelected);
+                RaisePropertyChanged(() => SeriesColor);
+            }
+        }
+
+        public System.Windows.Media.Brush SeriesColor
+        {
+            get
+            {
+                if (!IsSeriesSelected)
+                    return System.Windows.Media.Brushes.Gray;
+                return (System.Windows.Media.Brush)(new BrushConverter().ConvertFrom("#bbb"));
+            }
         }
 
         private string titleFieldText;
@@ -61,14 +84,6 @@ namespace ElibWpf.ViewModels.Flyouts
         {
             get => seriesNumberFieldText;
             set => Set(() => SeriesNumberFieldText, ref seriesNumberFieldText, value);
-        }
-
-        private string addAuthorFieldText;
-
-        public string AddAuthorFieldText
-        {
-            get => addAuthorFieldText;
-            set => Set(() => AddAuthorFieldText, ref addAuthorFieldText, value);
         }
 
         private bool isRead;
@@ -95,12 +110,13 @@ namespace ElibWpf.ViewModels.Flyouts
             set => Set(() => Cover, ref coverImage, value);
         }
 
+        public bool IsSeriesSelected { get => Series != null; }
+
         public ICommand AddNewAuthorButtonCommand { get => new RelayCommand(this.HandleAddNewAuthor); }
-        //        public ICommand AddExistingAuthorButtonCommand { get => new RelayCommand(() => { MessengerInstance.Send(new ShowInputDialogMessage("Adding New Author", "Author's name:", this.HandleAddAuthor)); }); }
 
         private async void HandleAddNewAuthor()
         {
-            string name = await dialogCoordinator.ShowInputAsync(this, "Adding New Author", "Author's name:");
+            string name = await DialogCoordinator.Instance.ShowInputAsync(this, "Adding New Author", "Author's name:");
             if (!string.IsNullOrWhiteSpace(name))
             {
                 name = name.Trim();
@@ -124,10 +140,27 @@ namespace ElibWpf.ViewModels.Flyouts
                       });
                 }
             }
-            AddAuthorFieldText = "";
         }
 
-        public ICommand RemoveAuthorCommand { get => new RelayCommand<int>((x) => AuthorsCollection.Remove(AuthorsCollection.Where(c => c.Id == x).FirstOrDefault())); }
+        public ICommand RemoveAuthorCommand { get => new RelayCommand<int>(this.HandleRemoveAuthor); }
+
+        private void HandleRemoveAuthor(int id)
+        {
+            var obsAuthor = AuthorsCollection.Where(c => c.Id == id).FirstOrDefault();
+            Author toRemove = obsAuthor.Author;
+            AuthorsCollection.Remove(obsAuthor);
+
+            Task.Run(() =>
+            {
+                using ElibContext database = ApplicationSettings.CreateContext();
+                database.Authors.Attach(toRemove);
+                if (database.Books.Where(b => b.Authors.Where(c => c.Id == toRemove.Id).Any()).Count() <= 1)
+                {
+                    database.Entry(toRemove).State = EntityState.Deleted;
+                    database.SaveChanges();
+                }
+            });
+        }
 
         public ICommand RevertButtonCommand { get => new RelayCommand(this.HandleRevert); }
 
@@ -135,7 +168,7 @@ namespace ElibWpf.ViewModels.Flyouts
         {
             this.ClearErrors();
             AuthorsCollection = new ObservableCollection<ObservableAuthor>(Book.Authors);
-            SeriesFieldText = Book.Series?.Name;
+            Series = Book.Series == null ? null : new ObservableSeries(new BookSeries { Name = Book.Series.Name, Id = Book.Series.Id });
             TitleFieldText = Book.Title;
             SeriesNumberFieldText = Book.NumberInSeries.ToString();
             IsFavoriteCheck = Book.IsFavorite;
@@ -154,19 +187,29 @@ namespace ElibWpf.ViewModels.Flyouts
                 {
                     var book = Book;
                     using ElibContext database = ApplicationSettings.CreateContext();
+
                     database.Books.Attach(Book.Book);
 
-                    book.Title = TitleFieldText;
-                    if (!string.IsNullOrWhiteSpace(SeriesFieldText))
+                    if ((Book.Series == null && Series != null) || (Series != null && Book.Series.Id != Series.Id))
                     {
-                        if (book.Series == null)
-                        {
-                            book.Series = new ObservableSeries(new BookSeries());
-                        }
-                        Book.Series.Name = SeriesFieldText;
+                        Book.Series = new ObservableSeries(database.Series.Where(s => s.Id == Series.Id).FirstOrDefault());
+                    }
+                    else if (Series != null)
+                    {
+                        Book.Series.Name = Series.Name;
+                    }
+                    else
+                    {
+                        Book.Series = null;
+                    }
+
+                    if (IsSeriesSelected)
+                    {
                         if (Regex.IsMatch(SeriesNumberFieldText, @"\d+(\.\d+)?"))
                             Book.NumberInSeries = decimal.Parse(SeriesNumberFieldText);
                     }
+
+                    book.Title = TitleFieldText;
                     book.IsFavorite = IsFavoriteCheck;
                     book.IsRead = IsReadCheck;
                     book.Authors.Clear();
@@ -178,7 +221,6 @@ namespace ElibWpf.ViewModels.Flyouts
                 });
 
                 MessengerInstance.Send(new ShowBookDetailsMessage(Book));
-                MessengerInstance.Send(new BookEditDoneMessage());
             }
         }
 
@@ -215,8 +257,79 @@ namespace ElibWpf.ViewModels.Flyouts
         private async void HandleAddExistingAuthor()
         {
             var dialog = new ChooseAuthorDialog();
-            dialog.DataContext = new ChooseAuthorDialogViewModel(x => AuthorsCollection.Add(new ObservableAuthor(x)), dialogCoordinator, dialog);
-            await dialogCoordinator.ShowMetroDialogAsync(this, dialog);
+            dialog.DataContext = new ChooseAuthorDialogViewModel(
+                this.AuthorsCollection.Select(oa => oa.Author.Id),
+                x => App.Current.Dispatcher.Invoke(() => AuthorsCollection.Add(new ObservableAuthor(x))));
+            await DialogCoordinator.Instance.ShowMetroDialogAsync(this, dialog);
+        }
+
+        public ICommand ChooseExistingSeriesCommand { get => new RelayCommand(this.HandleChooseExistingSeries); }
+
+        private async void HandleChooseExistingSeries()
+        {
+            var dialog = new ChooseSeriesDialog();
+            dialog.DataContext = new ChooseSeriesDialogViewModel(x =>
+            {
+                if (Series != null && x.Id != Series.Id)
+                    CleanSeries(Series.Series);
+                Series = new ObservableSeries(x);
+            });
+            await DialogCoordinator.Instance.ShowMetroDialogAsync(this, dialog);
+        }
+
+        private void CleanSeries(BookSeries x)
+        {
+            if (x != null)
+            {
+                Task.Run(() =>
+                {
+                    using ElibContext database = ApplicationSettings.CreateContext();
+                    if (database.Books.Where(b => b.SeriesId == x.Id).Count() <= 1)
+                    {
+                        database.Series.Attach(x);
+                        database.Entry(x).State = EntityState.Deleted;
+                        database.SaveChanges();
+                    }
+                });
+            }
+        }
+
+        public ICommand CreateNewSeriesCommand { get => new RelayCommand(this.HandleCreateNewSeries); }
+
+        private async void HandleCreateNewSeries()
+        {
+            string name = await DialogCoordinator.Instance.ShowInputAsync(this, "Adding New Series", "Series name:");
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                name = name.Trim();
+                BookSeries newAuthor = new BookSeries { Name = name };
+                BookSeries temp = Series?.Series;
+                Series = new ObservableSeries(newAuthor);
+                CleanSeries(temp);
+
+                _ = Task.Run(() =>
+                {
+                    using ElibContext database = ApplicationSettings.CreateContext();
+                    database.Series.Add(newAuthor);
+                    database.SaveChanges();
+                });
+            }
+        }
+
+        public ICommand ClearSeriesCommand { get => new RelayCommand(this.HandleClearSeries); }
+
+        private void HandleClearSeries()
+        {
+            BookSeries temp = Series?.Series;
+            this.Series = null;
+            CleanSeries(temp);
+        }
+
+        public ICommand EditSeriesCommand { get => new RelayCommand(this.HandleEditSeries); }
+
+        private async void HandleEditSeries()
+        {
+            Series.Name = await DialogCoordinator.Instance.ShowInputAsync(this, "Edit Series", "Series name:", new MetroDialogSettings { DefaultText = Series.Name });
         }
     }
 }

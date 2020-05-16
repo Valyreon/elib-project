@@ -19,9 +19,8 @@ namespace ElibWpf.ViewModels.Windows
         private object flyoutControl;
         private bool isBookDetailsFlyoutOpen;
         private ITabViewModel selectedTab;
-        private readonly IDialogCoordinator dialogCoordinator;
 
-        public TheWindowViewModel(IDialogCoordinator dialogCoordinator)
+        public TheWindowViewModel()
         {
             MessengerInstance.Register<ShowBookDetailsMessage>(this, this.HandleBookFlyout);
             MessengerInstance.Register(this, (ShowDialogMessage m) => ShowDialog(m.Title, m.Text));
@@ -32,17 +31,16 @@ namespace ElibWpf.ViewModels.Windows
 
             Tabs = new ObservableCollection<ITabViewModel>
             {
-                new BooksTabViewModel(dialogCoordinator),
+                new BooksTabViewModel(),
                 new QuotesTabViewModel(),
                 new SettingsTabViewModel()
             };
             SelectedTab = Tabs[0];
-            this.dialogCoordinator = dialogCoordinator;
         }
 
         private async void HandleInputDialog(ShowInputDialogMessage obj)
         {
-            string input = await dialogCoordinator.ShowInputAsync(this, obj.Title, obj.Text);
+            string input = await DialogCoordinator.Instance.ShowInputAsync(this, obj.Title, obj.Text);
             obj.CallOnResult(input);
         }
 
@@ -61,7 +59,7 @@ namespace ElibWpf.ViewModels.Windows
         private async void ShowDialog(string title, string text)
         {
             //await ((MetroWindow)Application.Current.MainWindow).ShowMessageAsync(title, text);
-            await dialogCoordinator.ShowMessageAsync(this, title, text);
+            await DialogCoordinator.Instance.ShowMessageAsync(this, title, text);
         }
 
         public ICommand CloseDetailsCommand { get => new RelayCommand(() => { IsBookDetailsFlyoutOpen = false; FlyoutControl = null; }); }

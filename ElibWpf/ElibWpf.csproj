@@ -197,12 +197,12 @@
     <Compile Include="Animations\BrushAnimation.cs" />
     <Compile Include="Animations\GridLengthAnimation.cs" />
     <Compile Include="AttachedProperties\ScrollViewerExtensions.cs" />
+    <Compile Include="BindingItems\BindingProxy.cs" />
     <Compile Include="Converters\BookTileConverters\TitleToVisibilityConverter.cs" />
     <Compile Include="Converters\ImageConverter.cs" />
     <Compile Include="Converters\StringToVisibilityConverter.cs" />
     <Compile Include="Extensions\DomainExtensions.cs" />
     <Compile Include="Messages\AuthorSelectedMessage.cs" />
-    <Compile Include="Messages\BookEditDoneMessage.cs" />
     <Compile Include="Messages\BookSelectedMessage.cs" />
     <Compile Include="Messages\CloseFlyoutMessage.cs" />
     <Compile Include="Messages\CollectionSelectedMessage.cs" />

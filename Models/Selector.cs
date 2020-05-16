@@ -27,7 +27,7 @@ namespace Models
 
         public bool Select(ObservableBook book)
         {
-            if (book.IsSelected)
+            if (book.IsMarked)
             {
                 selectedBookIds.Add(book.Id);
                 return true;
@@ -41,7 +41,7 @@ namespace Models
 
         public ObservableBook SetMarked(ObservableBook book)
         {
-            book.IsSelected = selectedBookIds.Contains(book.Id);
+            book.IsMarked = selectedBookIds.Contains(book.Id);
             return book;
         }
     }

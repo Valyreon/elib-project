@@ -60,7 +60,7 @@
                             AuthorParameter="{Binding Authors}"
                             Authors="{Binding AuthorsInfo}"
                             Cover="{Binding Cover}"
-                            IsSelected="{Binding IsSelected}"
+                            IsSelected="{Binding IsMarked, UpdateSourceTrigger=PropertyChanged}"
                             SelectCommand="{Binding DataContext.SelectBookCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                             SeriesCommand="{Binding DataContext.GoToSeries, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                             SeriesInfo="{Binding SeriesInfo}"

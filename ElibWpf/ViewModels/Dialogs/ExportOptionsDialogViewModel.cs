@@ -19,13 +19,11 @@ namespace ElibWpf.ViewModels.Dialogs
     public class ExportOptionsDialogViewModel : ViewModelWithValidation
     {
         private readonly IList<Book> booksToExport;
-        private readonly IDialogCoordinator dialogCoordinator;
         private readonly BaseMetroDialog dialog;
 
-        public ExportOptionsDialogViewModel(IList<Book> booksToExport, IDialogCoordinator dialogCoordinator, BaseMetroDialog dialog)
+        public ExportOptionsDialogViewModel(IList<Book> booksToExport, BaseMetroDialog dialog)
         {
             this.booksToExport = booksToExport;
-            this.dialogCoordinator = dialogCoordinator;
             this.dialog = dialog;
         }
 
@@ -72,8 +70,8 @@ namespace ElibWpf.ViewModels.Dialogs
             using ElibContext database = ApplicationSettings.CreateContext();
             Exporter exporter = new Exporter(database);
 
-            await dialogCoordinator.HideMetroDialogAsync(App.Current.MainWindow.DataContext, dialog);
-            var controlProgress = await dialogCoordinator.ShowProgressAsync(App.Current.MainWindow.DataContext, "Exporting books", "");
+            await DialogCoordinator.Instance.HideMetroDialogAsync(App.Current.MainWindow.DataContext, dialog);
+            var controlProgress = await DialogCoordinator.Instance.ShowProgressAsync(App.Current.MainWindow.DataContext, "Exporting books", "");
             controlProgress.Minimum = 1;
             controlProgress.Maximum = booksToExport.Count * 2;
 
@@ -102,7 +100,7 @@ namespace ElibWpf.ViewModels.Dialogs
 
         private async void Cancel()
         {
-            await dialogCoordinator.HideMetroDialogAsync(App.Current.MainWindow.DataContext, dialog);
+            await DialogCoordinator.Instance.HideMetroDialogAsync(App.Current.MainWindow.DataContext, dialog);
         }
     }
 }

@@ -290,12 +290,6 @@
                                         Storyboard.TargetProperty="(RenderTransform).(ScaleTransform.ScaleY)"
                                         To="0.9"
                                         Duration="0:0:0.1" />
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                        <EventTrigger RoutedEvent="MouseUp" SourceName="Enveloper">
-                            <BeginStoryboard>
-                                <Storyboard>
                                     <DoubleAnimation
                                         BeginTime="0:0:0.1"
                                         Storyboard.TargetName="AweImg"
@@ -457,7 +451,9 @@
                         Background="{DynamicResource AccentColorBrush}">
                         <TextBlock
                             x:Name="Label"
+                            Margin="0,0,0,2"
                             HorizontalAlignment="Center"
+                            VerticalAlignment="Top"
                             FontSize="14"
                             Foreground="GhostWhite"
                             Text="{TemplateBinding Text}"

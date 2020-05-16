@@ -13,7 +13,7 @@ namespace ElibWpf.Views.Windows
         public TheWindow()
         {
             InitializeComponent();
-            this.DataContext = new TheWindowViewModel(new DialogCoordinator());
+            this.DataContext = new TheWindowViewModel();
         }
     }
 }

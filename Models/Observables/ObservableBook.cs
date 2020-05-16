@@ -14,7 +14,6 @@ namespace Models.Observables
         public ObservableBook(Book book)
         {
             this.book = book;
-            this.isSelected = false;
 
             this.Authors = new ObservableCollection<ObservableAuthor>(book.Authors.Select(x => new ObservableAuthor(x)));
             Authors.CollectionChanged += this.AuthorsCollectionChanged;
@@ -105,12 +104,32 @@ namespace Models.Observables
         public ObservableCollection<Quote> Quotes { get; }
         public ObservableCollection<ObservableUserCollection> Collections { get; }
 
-        public ObservableSeries Series { get; set; }
+        private ObservableSeries series;
+        public ObservableSeries Series
+        {
+            get => series;
+            set
+            {
+                Set(() => Series, ref series, value);
+                if (value != null)
+                {
+                    Book.Series = value.Series;
+                    Book.SeriesId = value.Series.Id;
+                } else
+                {
+                    Book.SeriesId = null;
+                    Book.Series = null;
+                    Book.NumberInSeries = null;
+                    RaisePropertyChanged(() => SeriesInfo);
+                }
+                RaisePropertyChanged(() => SeriesInfo);
+            }
+        }
 
-        public bool IsSelected
+        public bool IsMarked
         {
             get => isSelected;
-            set => Set(() => IsSelected, ref isSelected, value);
+            set => Set(() => IsMarked, ref isSelected, value);
         }
 
         public Book Book { get => book; }
