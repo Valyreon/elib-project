@@ -4,12 +4,12 @@ namespace ElibWpf.ViewModels.Controls
 {
     public class SettingsTabViewModel : ViewModelBase, ITabViewModel
     {
-        private string _caption = "Settings";
+        private string caption = "Settings";
 
         public string Caption
         {
-            get => _caption;
-            set => Set(ref _caption, value);
+            get => this.caption;
+            set => this.Set(ref this.caption, value);
         }
     }
 }

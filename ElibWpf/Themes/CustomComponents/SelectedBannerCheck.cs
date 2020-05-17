@@ -9,14 +9,15 @@ namespace ElibWpf.CustomComponents
 
         static SelectedBannerCheck()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(SelectedBannerCheck), new FrameworkPropertyMetadata(typeof(SelectedBannerCheck)));
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(SelectedBannerCheck),
+                new FrameworkPropertyMetadata(typeof(SelectedBannerCheck)));
             TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(SelectedBannerCheck));
         }
 
         public string Text
         {
-            get { return (string)base.GetValue(TextProperty); }
-            set => base.SetValue(TextProperty, value);
+            get => (string) this.GetValue(TextProperty);
+            set => this.SetValue(TextProperty, value);
         }
     }
 }

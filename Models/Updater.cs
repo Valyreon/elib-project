@@ -1,6 +1,4 @@
 ﻿namespace Models
 {
-    internal class Updater
-    {
-    }
+    internal class Updater { }
 }

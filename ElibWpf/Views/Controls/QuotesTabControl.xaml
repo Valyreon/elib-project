@@ -27,8 +27,7 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <Grid Grid.Row="0" Background="{StaticResource AccentColorBrush}">
-                </Grid>
+                <Grid Grid.Row="0" Background="{StaticResource AccentColorBrush}" />
 
                 <Grid Grid.Row="1" Margin="10,15,10,10">
                     <Grid.RowDefinitions>

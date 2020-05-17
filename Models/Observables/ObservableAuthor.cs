@@ -3,27 +3,25 @@ using GalaSoft.MvvmLight;
 
 namespace Models.Observables
 {
-    public class ObservableAuthor: ObservableObject
+    public class ObservableAuthor : ObservableObject
     {
-        private readonly Author author;
-
-        public Author Author { get => author; }
-
         public ObservableAuthor(Author author)
         {
-            this.author = author;
+            this.Author = author;
         }
+
+        public Author Author { get; }
+
+        public int Id => this.Author.Id;
 
         public string Name
         {
-            get => author.Name;
+            get => this.Author.Name;
             set
             {
-                this.author.Name = value;
-                RaisePropertyChanged(() => Name);
+                this.Author.Name = value;
+                this.RaisePropertyChanged(() => this.Name);
             }
         }
-
-        public int Id { get => author.Id; }
     }
 }

@@ -1,14 +1,14 @@
-﻿using DataLayer;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using DataLayer;
 using Domain;
 using EbookTools;
 using ElibWpf.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Models;
 using Models.Options;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace DatabaseTests
 {
@@ -31,9 +31,9 @@ namespace DatabaseTests
                 .Include("File")
                 .Include("Quotes")
                 .FirstOrDefault();
-            Assert.IsNotNull(first.Books);
-            Assert.IsNotNull(collection.Books);
-            Assert.IsNotNull(mybook.Series);
+            Assert.IsNotNull(first?.Books);
+            Assert.IsNotNull(collection?.Books);
+            Assert.IsNotNull(mybook?.Series);
             Assert.IsNotNull(mybook.Authors);
             Assert.IsNotNull(mybook.File);
             Assert.IsNotNull(mybook.Quotes);
@@ -42,27 +42,31 @@ namespace DatabaseTests
         [TestMethod]
         public void TestAddingToDatabase()
         {
-            string bookFilePath = @"C:\Users\luka.budrak\Downloads\[Peter_Hollins]_Finish_What_You_Start__The_Art_of_(z-lib.org).epub";
-            string[] collectionTags = new string[]
+            const string bookFilePath = @"C:\Users\luka.budrak\Downloads\[Peter_Hollins]_Finish_What_You_Start__The_Art_of_(z-lib.org).epub";
+            string[] collectionTags =
             {
                 "fantasy",
-                "adventure",
+                "adventure"
             };
 
             using ElibContext context = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
             // context.TruncateDatabase();
 
-            var parsedBook = EbookParserFactory.Create(bookFilePath).Parse();
+            ParsedBook parsedBook = EbookParserFactory.Create(bookFilePath).Parse();
             Book newBook = new Book
             {
                 Title = parsedBook.Title,
-                Authors = new List<Author> { context.Authors.Where(au => au.Name.Equals(parsedBook.Author)).FirstOrDefault() ?? new Author() { Name = parsedBook.Author } },
+                Authors = new List<Author>
+                {
+                    context.Authors.FirstOrDefault(au => au.Name.Equals(parsedBook.Author)) ??
+                    new Author {Name = parsedBook.Author}
+                },
                 Cover = ImageOptimizer.ResizeAndFill(parsedBook.Cover),
                 File = new EFile
                 {
                     Format = parsedBook.Format,
                     Signature = Signer.ComputeHash(parsedBook.RawData),
-                    RawFile = new RawFile { RawContent = parsedBook.RawData }
+                    RawFile = new RawFile {RawContent = parsedBook.RawData}
                 }
             };
             context.Books.Add(newBook);
@@ -89,18 +93,20 @@ namespace DatabaseTests
         public void MoreCollections()
         {
             Random random = new Random();
+
             string RandomString(int length)
             {
                 const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
                 return new string(Enumerable.Repeat(chars, length)
-                  .Select(s => s[random.Next(s.Length)]).ToArray());
+                    .Select(s => s[random.Next(s.Length)]).ToArray());
             }
 
             using ElibContext context = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
             for (int i = 0; i < 15; i++)
             {
-                context.UserCollections.Add(new UserCollection { Tag = RandomString(5) });
+                context.UserCollections.Add(new UserCollection {Tag = RandomString(5)});
             }
+
             context.SaveChanges();
         }
 
@@ -111,9 +117,9 @@ namespace DatabaseTests
             using ElibContext context = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
             context.TruncateDatabase();
 
-            foreach (var dirPath in Directory.GetDirectories(bookSeriesPath))
+            foreach (string dirPath in Directory.GetDirectories(bookSeriesPath))
             {
-                string[] splitDirName = Path.GetFileName(dirPath).Split(new string[] { " by " }, StringSplitOptions.None);
+                var splitDirName = Path.GetFileName(dirPath).Split(new[] {" by "}, StringSplitOptions.None);
                 string seriesName = splitDirName[0];
                 string authorsName = splitDirName[1];
 
@@ -125,30 +131,36 @@ namespace DatabaseTests
                         {
                             foreach (string f in Directory.GetFiles(d))
                             {
-                                if (f.EndsWith(".epub"))
+                                if (!f.EndsWith(".epub"))
                                 {
-                                    var parsedBook = EbookParserFactory.Create(f).Parse();
-                                    Book newBook = parsedBook.ToBook();
-                                    newBook.Series = seriesName == null ? null : (context.Series.Where(x => x.Name == seriesName).FirstOrDefault() ?? new BookSeries { Name = seriesName });
-
-                                    var existingAuthor = context.Authors.Where(c => c.Name == authorsName).FirstOrDefault();
-                                    if (existingAuthor == null)
-                                    {
-                                        Author newAuthor = new Author
-                                        {
-                                            Name = authorsName
-                                        };
-                                        newBook.Authors = new List<Author> { newAuthor };
-                                    }
-                                    else
-                                    {
-                                        newBook.Authors = new List<Author> { existingAuthor };
-                                    }
-
-                                    context.Books.Add(newBook);
-                                    context.SaveChanges();
+                                    continue;
                                 }
+
+                                ParsedBook parsedBook = EbookParserFactory.Create(f).Parse();
+                                Book newBook = parsedBook.ToBook();
+                                newBook.Series = seriesName == null
+                                    ? null
+                                    : context.Series.FirstOrDefault(x => x.Name == seriesName) ??
+                                      new BookSeries {Name = seriesName};
+
+                                Author existingAuthor = context.Authors.FirstOrDefault(c => c.Name == authorsName);
+                                if (existingAuthor == null)
+                                {
+                                    Author newAuthor = new Author
+                                    {
+                                        Name = authorsName
+                                    };
+                                    newBook.Authors = new List<Author> {newAuthor};
+                                }
+                                else
+                                {
+                                    newBook.Authors = new List<Author> {existingAuthor};
+                                }
+
+                                context.Books.Add(newBook);
+                                context.SaveChanges();
                             }
+
                             DirSearch(d);
                         }
                     }
@@ -168,7 +180,7 @@ namespace DatabaseTests
         {
             using ElibContext context = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
 
-            foreach (var book in context.Books.Where(b => true))
+            foreach (Book book in context.Books.Where(b => true))
             {
                 if (book.Cover != null)
                 {
@@ -192,15 +204,16 @@ namespace DatabaseTests
         {
             using ElibContext context = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
 
-            File.WriteAllBytes("exportcover.jpg", context.Books.Find(258).Cover);
+            File.WriteAllBytes("exportcover.jpg", context.Books.Find(258)?.Cover ?? throw new InvalidOperationException());
         }
 
         [TestMethod]
         public void TestHash()
         {
-            string path = @"D:\Documents\Ebooks\Miscellaneous\The Farseer Trilogy by Robin Hobb\[Robin_Hobb]_Assassin's_Apprentice_(The_Farseer_Tr(zlibraryexau2g3p.onion).epub";
+            string path =
+                @"D:\Documents\Ebooks\Miscellaneous\The Farseer Trilogy by Robin Hobb\[Robin_Hobb]_Assassin's_Apprentice_(The_Farseer_Tr(zlibraryexau2g3p.onion).epub";
 
-            string hash = Signer.ComputeHash(File.ReadAllBytes(path));
+            Signer.ComputeHash(File.ReadAllBytes(path));
         }
     }
 }

@@ -1,11 +1,11 @@
-﻿using GalaSoft.MvvmLight;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using GalaSoft.MvvmLight;
 
 namespace ElibWpf.ViewModels
 {
@@ -21,31 +21,37 @@ namespace ElibWpf.ViewModels
         {
             get
             {
-                return this.errors.Any(propErrors => propErrors.Value != null && propErrors.Value.Count > 0);
+                lock (this.lockObject)
+                {
+                    return this.errors.Any(propErrors => propErrors.Value != null && propErrors.Value.Count > 0);
+                }
             }
-        }
-
-        public void ClearErrors()
-        {
-            this.errors.Clear();
         }
 
         public IEnumerable GetErrors(string propertyName = null)
         {
-            if (!string.IsNullOrEmpty(propertyName))
+            lock (this.lockObject)
             {
-                if (this.errors.ContainsKey(propertyName) && (this.errors[propertyName] != null) && this.errors[propertyName].Count > 0)
+                if (string.IsNullOrEmpty(propertyName))
+                {
+                    return this.errors.SelectMany(err => err.Value.ToList());
+                }
+
+                if (this.errors.ContainsKey(propertyName) && this.errors[propertyName] != null && this.errors[propertyName].Count > 0)
                 {
                     return this.errors[propertyName].ToList();
                 }
-                else
-                {
-                    return null;
-                }
             }
-            else
+
+            return null;
+
+        }
+
+        public void ClearErrors()
+        {
+            lock (this.lockObject)
             {
-                return this.errors.SelectMany(err => err.Value.ToList());
+                this.errors.Clear();
             }
         }
 
@@ -58,7 +64,7 @@ namespace ElibWpf.ViewModels
         {
             lock (this.lockObject)
             {
-                var validationContext = new ValidationContext(this, null, null);
+                ValidationContext validationContext = new ValidationContext(this, null, null);
                 var validationResults = new List<ValidationResult>();
                 Validator.TryValidateObject(this, validationContext, validationResults, true);
 
@@ -74,7 +80,7 @@ namespace ElibWpf.ViewModels
         {
             lock (this.lockObject)
             {
-                var validationContext = new ValidationContext(this, null, null)
+                ValidationContext validationContext = new ValidationContext(this, null, null)
                 {
                     MemberName = propertyName
                 };
@@ -91,11 +97,13 @@ namespace ElibWpf.ViewModels
                 this.HandleValidationResults(validationResults);
             }
         }
-        private void HandleValidationResults(List<ValidationResult> validationResults)
+
+        private void HandleValidationResults(IEnumerable<ValidationResult> validationResults)
         {
             var resultsByPropNames = from res in validationResults
                                      from mname in res.MemberNames
-                                     group res by mname into g
+                                     group res by mname
+                                     into g
                                      select g;
             foreach (var prop in resultsByPropNames)
             {

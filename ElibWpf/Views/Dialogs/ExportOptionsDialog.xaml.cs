@@ -3,13 +3,13 @@
 namespace ElibWpf.Views.Dialogs
 {
     /// <summary>
-    /// Interaction logic for ExportOptionsDialog.xaml
+    ///     Interaction logic for ExportOptionsDialog.xaml
     /// </summary>
     public partial class ExportOptionsDialog : BaseMetroDialog
     {
         public ExportOptionsDialog()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

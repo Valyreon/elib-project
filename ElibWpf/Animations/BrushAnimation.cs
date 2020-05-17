@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -13,40 +8,53 @@ namespace ElibWpf.Animations
 {
     public class BrushAnimation : AnimationTimeline
     {
-        public BrushAnimation()
-        {
+        public static readonly DependencyProperty FromProperty =
+            DependencyProperty.Register("From", typeof(Brush), typeof(BrushAnimation));
 
-        }
+        public static readonly DependencyProperty ToProperty =
+            DependencyProperty.Register("To", typeof(Brush), typeof(BrushAnimation));
 
-        public BrushAnimation(System.Windows.Media.Brush to, Duration duration)
+        public BrushAnimation() { }
+
+        public BrushAnimation(Brush to, Duration duration)
         {
             this.To = to;
             this.Duration = duration;
             this.FillBehavior = FillBehavior.Stop;
         }
 
-        public override Type TargetPropertyType
+        //we must define From and To, AnimationTimeline does not have this properties
+        public Brush From
         {
-            get
-            {
-                return typeof(System.Windows.Media.Brush);
-            }
+            get => (Brush) this.GetValue(FromProperty);
+            set => this.SetValue(FromProperty, value);
+        }
+
+        public override Type TargetPropertyType => typeof(Brush);
+
+        public Brush To
+        {
+            get => (Brush) this.GetValue(ToProperty);
+            set => this.SetValue(ToProperty, value);
         }
 
         public override object GetCurrentValue(object defaultOriginValue,
-                                               object defaultDestinationValue,
-                                               AnimationClock animationClock)
+            object defaultDestinationValue,
+            AnimationClock animationClock)
         {
-            return GetCurrentValue(defaultOriginValue as System.Windows.Media.Brush,
-                                   defaultDestinationValue as System.Windows.Media.Brush,
-                                   animationClock);
+            return this.GetCurrentValue(defaultOriginValue as Brush,
+                defaultDestinationValue as Brush,
+                animationClock);
         }
-        public object GetCurrentValue(System.Windows.Media.Brush defaultOriginValue,
-                                      System.Windows.Media.Brush defaultDestinationValue,
-                                      AnimationClock animationClock)
+
+        public object GetCurrentValue(Brush defaultOriginValue,
+            Brush defaultDestinationValue,
+            AnimationClock animationClock)
         {
             if (!animationClock.CurrentProgress.HasValue)
-                return System.Windows.Media.Brushes.Transparent;
+            {
+                return Brushes.Transparent;
+            }
 
             //use the standard values if From and To are not set
             //(it is the value of the given property)
@@ -54,19 +62,24 @@ namespace ElibWpf.Animations
             defaultDestinationValue = this.To ?? defaultDestinationValue;
 
             if (animationClock.CurrentProgress.Value == 0)
+            {
                 return defaultOriginValue;
-            if (animationClock.CurrentProgress.Value == 1)
-                return defaultDestinationValue;
+            }
 
-            return new VisualBrush(new Border()
+            if (animationClock.CurrentProgress.Value == 1)
+            {
+                return defaultDestinationValue;
+            }
+
+            return new VisualBrush(new Border
             {
                 Width = 1,
                 Height = 1,
                 Background = defaultOriginValue,
-                Child = new Border()
+                Child = new Border
                 {
                     Background = defaultDestinationValue,
-                    Opacity = animationClock.CurrentProgress.Value,
+                    Opacity = animationClock.CurrentProgress.Value
                 }
             });
         }
@@ -75,22 +88,5 @@ namespace ElibWpf.Animations
         {
             return new BrushAnimation();
         }
-
-        //we must define From and To, AnimationTimeline does not have this properties
-        public System.Windows.Media.Brush From
-        {
-            get { return (System.Windows.Media.Brush)GetValue(FromProperty); }
-            set { SetValue(FromProperty, value); }
-        }
-        public System.Windows.Media.Brush To
-        {
-            get { return (System.Windows.Media.Brush)GetValue(ToProperty); }
-            set { SetValue(ToProperty, value); }
-        }
-
-        public static readonly DependencyProperty FromProperty =
-            DependencyProperty.Register("From", typeof(System.Windows.Media.Brush), typeof(BrushAnimation));
-        public static readonly DependencyProperty ToProperty =
-            DependencyProperty.Register("To", typeof(System.Windows.Media.Brush), typeof(BrushAnimation));
     }
 }

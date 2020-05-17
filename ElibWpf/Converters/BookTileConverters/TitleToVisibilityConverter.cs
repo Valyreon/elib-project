@@ -5,13 +5,12 @@ using System.Windows.Data;
 namespace ElibWpf.Converters.BookTileConverters
 {
     /// <summary>
-    /// Used to specify is tooltip enabled based on string length.
+    ///     Used to specify is tooltip enabled based on string length.
     /// </summary>
     public class StringToBoolConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-
             if (value is string str && parameter is string maxLengthStr)
             {
                 try
@@ -21,16 +20,15 @@ namespace ElibWpf.Converters.BookTileConverters
                     {
                         return true;
                     }
-                    else
-                    {
-                        return false;
-                    }
+
+                    return false;
                 }
-                catch(Exception)
+                catch (Exception)
                 {
                     return false;
                 }
             }
+
             return false;
         }
 

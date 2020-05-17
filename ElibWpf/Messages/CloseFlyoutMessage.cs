@@ -2,7 +2,5 @@
 
 namespace ElibWpf.Messages
 {
-    public class CloseFlyoutMessage : MessageBase
-    {
-    }
+    public class CloseFlyoutMessage : MessageBase { }
 }

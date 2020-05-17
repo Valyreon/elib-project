@@ -1,9 +1,9 @@
-﻿using DataLayer;
-using Domain;
-using EbookTools;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using DataLayer;
+using Domain;
+using EbookTools;
 
 namespace Models
 {
@@ -16,45 +16,56 @@ namespace Models
             this.database = db;
         }
 
-        public Book ImportBook(ParsedBook parsedBook, string bookName, string authorName, string seriesName = null, decimal? seriesNumber = null)
+        public Book ImportBook(ParsedBook parsedBook, string bookName, string authorName, string seriesName = null,
+            decimal? seriesNumber = null)
         {
-            Book book = new Book()
+            Book book = new Book
             {
                 Title = bookName,
-                Authors = new List<Author> { database.Authors.Where(x => x.Name == authorName).FirstOrDefault() ?? new Author { Name = authorName } },
+                Authors = new List<Author>
+                {
+                    this.database.Authors.FirstOrDefault(x => x.Name == authorName) ?? new Author {Name = authorName}
+                },
                 File = new EFile
                 {
                     Format = parsedBook.Format,
                     Signature = Signer.ComputeHash(parsedBook.RawData),
-                    RawFile = new RawFile { RawContent = parsedBook.RawData }
+                    RawFile = new RawFile {RawContent = parsedBook.RawData}
                 },
-                Series = string.IsNullOrEmpty(seriesName) ? null : (database.Series.Where(x => x.Name == seriesName).FirstOrDefault() ?? new BookSeries { Name = seriesName }),
+                Series = string.IsNullOrEmpty(seriesName)
+                    ? null
+                    : this.database.Series.FirstOrDefault(x => x.Name == seriesName) ??
+                      new BookSeries {Name = seriesName},
                 NumberInSeries = seriesNumber,
                 Cover = ImageOptimizer.ResizeAndFill(parsedBook.Cover)
             };
 
-            Book result = database.Books.Add(book);
-            database.SaveChanges();
+            Book result = this.database.Books.Add(book);
+            this.database.SaveChanges();
             return result;
         }
 
         public Book ImportBook(ParsedBook parsedBook)
         {
-            Book book = new Book()
+            Book book = new Book
             {
                 Title = parsedBook.Title,
-                Authors = new List<Author> { database.Authors.Where(x => x.Name == parsedBook.Author).FirstOrDefault() ?? new Author { Name = parsedBook.Author } },
+                Authors = new List<Author>
+                {
+                    this.database.Authors.FirstOrDefault(x => x.Name == parsedBook.Author) ??
+                    new Author {Name = parsedBook.Author}
+                },
                 File = new EFile
                 {
                     Format = parsedBook.Format,
                     Signature = Signer.ComputeHash(parsedBook.RawData),
-                    RawFile = new RawFile { RawContent = parsedBook.RawData }
+                    RawFile = new RawFile {RawContent = parsedBook.RawData}
                 },
                 Cover = ImageOptimizer.ResizeAndFill(parsedBook.Cover)
             };
 
-            book = database.Books.Add(book);
-            database.SaveChanges();
+            book = this.database.Books.Add(book);
+            this.database.SaveChanges();
             return book;
         }
 
@@ -63,16 +74,20 @@ namespace Models
             ICollection<Book> result = new List<Book>();
 
             if (!Directory.Exists(path))
+            {
                 throw new DirectoryNotFoundException();
+            }
 
-            List<string> validFileList = new List<string>();
+            var validFileList = new List<string>();
             foreach (string ext in EbookParserFactory.SupportedExtensions)
             {
                 validFileList.AddRange(Directory.GetFiles(path, "*" + ext));
             }
 
             foreach (string filePath in validFileList)
-                result.Add(ImportBook(EbookParserFactory.Create(filePath).Parse()));
+            {
+                result.Add(this.ImportBook(EbookParserFactory.Create(filePath).Parse()));
+            }
 
             return result;
         }

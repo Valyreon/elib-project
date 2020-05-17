@@ -8,33 +8,33 @@ namespace Models.Observables
     {
         private readonly ObservableCollection<T> list = new ObservableCollection<T>();
 
-        public int Count { get => list.Count; }
+        public int Count => this.list.Count;
 
         public void AddHandlerOnStackChange(NotifyCollectionChangedEventHandler x)
         {
-            list.CollectionChanged += x;
+            this.list.CollectionChanged += x;
         }
 
         public void Clear()
         {
-            list.Clear();
+            this.list.Clear();
         }
 
         public T Peek()
         {
-            return list.Last();
+            return this.list.Last();
         }
 
         public T Pop()
         {
-            var res = list.Last();
-            list.RemoveAt(list.Count - 1);
+            T res = this.list.Last();
+            this.list.RemoveAt(this.list.Count - 1);
             return res;
         }
 
         public void Push(T element)
         {
-            list.Add(element);
+            this.list.Add(element);
         }
     }
 }

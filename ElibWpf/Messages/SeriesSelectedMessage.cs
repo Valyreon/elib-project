@@ -1,6 +1,4 @@
-﻿using Domain;
-
-using GalaSoft.MvvmLight.Messaging;
+﻿using GalaSoft.MvvmLight.Messaging;
 using Models.Observables;
 
 namespace ElibWpf.Messages

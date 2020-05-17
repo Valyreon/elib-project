@@ -2,14 +2,14 @@
 {
     public class ShowDialogMessage
     {
-        public string Title { get; }
+        public ShowDialogMessage(string title, string text)
+        {
+            this.Title = title;
+            this.Text = text;
+        }
 
         public string Text { get; }
 
-        public ShowDialogMessage(string title, string text)
-        {
-            Title = title;
-            Text = text;
-        }
+        public string Title { get; }
     }
 }

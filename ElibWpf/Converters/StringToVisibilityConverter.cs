@@ -15,11 +15,10 @@ namespace ElibWpf.Converters
                 {
                     return Visibility.Collapsed;
                 }
-                else
-                {
-                    return Visibility.Visible;
-                }
+
+                return Visibility.Visible;
             }
+
             return Visibility.Collapsed;
         }
 

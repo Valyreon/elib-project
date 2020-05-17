@@ -5,6 +5,7 @@
     xmlns:Components="clr-namespace:ElibWpf.CustomComponents"
     xmlns:Converters="clr-namespace:ElibWpf.Converters"
     xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:attachedProperties="clr-namespace:ElibWpf.AttachedProperties"
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks">
 
     <ResourceDictionary.MergedDictionaries>
@@ -26,7 +27,7 @@
                     <Border
                         x:Name="TheBorder"
                         Margin="{TemplateBinding Margin}"
-                        Components:UI.Elevation="0"
+                        attachedProperties:UI.Elevation="0"
                         BorderBrush="{TemplateBinding Foreground}"
                         BorderThickness="0,0,0,1"
                         CornerRadius="0">
@@ -72,7 +73,7 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger SourceName="SearchBox" Property="IsFocused" Value="True">
-                            <Setter TargetName="TheBorder" Property="Components:UI.Elevation" Value="5" />
+                            <Setter TargetName="TheBorder" Property="attachedProperties:UI.Elevation" Value="5" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -91,7 +92,7 @@
                     <Border
                         x:Name="TheBorder"
                         Margin="{TemplateBinding Margin}"
-                        Components:UI.Elevation="0"
+                        attachedProperties:UI.Elevation="0"
                         BorderBrush="#888"
                         BorderThickness="0,0,0,2"
                         CornerRadius="0">

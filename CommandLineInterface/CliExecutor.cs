@@ -1,4 +1,8 @@
-﻿using CommandLineInterface.Utilities;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using CommandLineInterface.Utilities;
 using DataLayer;
 using Domain;
 using EbookTools;
@@ -8,10 +12,6 @@ using Models.Options;
 using Models.Utilities;
 using OnlineBookApi;
 using OnlineBookApi.OpenLibrary;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace Cli
 {
@@ -20,26 +20,29 @@ namespace Cli
     /// </summary>
     public class CliExecutor : IDisposable
     {
-        private ElibContext database;
-        private Importer importer;
-        private Exporter exporter;
-        private DetailUtils detail;
-        private ISet<Book> selectedBooks;
+        private readonly ElibContext database;
+        private readonly DetailUtils detail;
+        private readonly Importer importer;
+        private readonly ISet<Book> selectedBooks;
+
+        public CliExecutor()
+        {
+            this.database = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
+            this.importer = new Importer(this.database);
+            this.selectedBooks = new HashSet<Book>();
+            this.detail = new DetailUtils(this.database);
+            Console.WriteLine("Starting eLIB in CLI mode.\nWELCOME TO ELIB COMMAND LINE.\n");
+        }
+
+        public void Dispose()
+        {
+            this.database.Dispose();
+        }
 
         public static void Main(string[] args)
         {
             using CliExecutor cliExecutor = new CliExecutor();
             cliExecutor.Execute();
-        }
-
-        public CliExecutor()
-        {
-            database = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
-            importer = new Importer(database);
-            exporter = new Exporter(database);
-            selectedBooks = new HashSet<Book>();
-            detail = new DetailUtils(database);
-            Console.WriteLine("Starting eLIB in CLI mode.\nWELCOME TO ELIB COMMAND LINE.\n");
         }
 
         private bool ConsoleQuestion(string question, bool inverted)
@@ -59,12 +62,9 @@ namespace Cli
 
         private string GetNewOrDefaultInput(string def)
         {
-            string newString = Console.ReadLine().Trim();
+            string newString = Console.ReadLine()?.Trim();
 
-            if (string.IsNullOrEmpty(newString))
-                return def;
-
-            return newString;
+            return string.IsNullOrEmpty(newString) ? def : newString;
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace Cli
             do
             {
                 Console.Write(">> ");
-                Tuple<string, string> consoleInput = Console.ReadLine().Trim().SplitOnFirstBlank();
+                var consoleInput = Console.ReadLine().Trim().SplitOnFirstBlank();
                 command = consoleInput.Item1.ToLower();
                 switch (command)
                 {
@@ -96,12 +96,15 @@ namespace Cli
                             else
                             {
                                 // TODO: Check if book exists
-                                IEnumerable<string> fileList = consoleInput.Item2.GetFilePathsFromString();
-                                validFileList = ImportUtils.GetValidBookPaths(fileList);
-                                IEnumerable<string> invalidFileList = ImportUtils.GetInvalidBookPaths(fileList);
+                                var fileList = consoleInput.Item2.GetFilePathsFromString();
+                                var enumerable = fileList as string[] ?? fileList.ToArray();
+                                validFileList = ImportUtils.GetValidBookPaths(enumerable);
+                                var invalidFileList = ImportUtils.GetInvalidBookPaths(enumerable);
 
                                 foreach (string invalidFilePath in invalidFileList)
+                                {
                                     Console.WriteLine($"File {invalidFilePath} is not valid or does not exist.");
+                                }
                             }
                         }
                         catch (DirectoryNotFoundException)
@@ -109,18 +112,23 @@ namespace Cli
                             Console.WriteLine("Invalid directory.");
                         }
 
-                        int validFileCount = validFileList.Count();
+                        var list = validFileList as string[] ?? validFileList.ToArray();
+                        int validFileCount = list.Length;
                         Console.WriteLine($"Found {validFileCount} book{(validFileCount == 1 ? "" : "s")}");
 
                         Console.WriteLine("\nFound books:");
                         for (int i = 1; i <= validFileCount; i++)
-                            Console.WriteLine($"{i}. {Path.GetFileName(validFileList.ElementAt(i - 1))}");
+                        {
+                            Console.WriteLine($"{i}. {Path.GetFileName(list.ElementAt(i - 1))}");
+                        }
 
-                        if (!ConsoleQuestion("Do you want to continue?", false))
+                        if (!this.ConsoleQuestion("Do you want to continue?", false))
+                        {
                             break;
+                        }
 
                         //Construct book list
-                        IEnumerable<ParsedBook> parsedBookList = ImportUtils.GetParsedBooksFromPaths(validFileList);
+                        var parsedBookList = ImportUtils.GetParsedBooksFromPaths(list);
                         IList<Book> newBookList = new List<Book>();
 
                         foreach (ParsedBook parsedBook in parsedBookList)
@@ -128,10 +136,10 @@ namespace Cli
                             Console.WriteLine($"{newBookList.Count() + 1}. {parsedBook.Title}");
 
                             Console.Write($"Title[{parsedBook.Title}]*: ");
-                            string bookName = GetNewOrDefaultInput(parsedBook.Title);
+                            string bookName = this.GetNewOrDefaultInput(parsedBook.Title);
 
                             Console.Write($"Author[{parsedBook.Author}]*: ");
-                            string authorName = GetNewOrDefaultInput(parsedBook.Author);
+                            string authorName = this.GetNewOrDefaultInput(parsedBook.Author);
 
                             Console.Write("Series: ");
                             string seriesName = Console.ReadLine().Trim();
@@ -148,17 +156,17 @@ namespace Cli
                                 seriesNumber = newNumber;
                             }
 
-                            importer.ImportBook(parsedBook, bookName, authorName, seriesName, seriesNumber);
+                            this.importer.ImportBook(parsedBook, bookName, authorName, seriesName, seriesNumber);
                         }
                         break;
 
                     case "truncate":
-                        database.TruncateDatabase();
+                        this.database.TruncateDatabase();
                         break;
 
                     case "view":
                     case "v":
-                        Tuple<string, string> viewInput = consoleInput.Item2.ToLower().Trim().SplitOnFirstBlank();
+                        var viewInput = consoleInput.Item2.ToLower().Trim().SplitOnFirstBlank();
                         switch (viewInput.Item1)
                         {
                             case "details":
@@ -167,7 +175,7 @@ namespace Cli
                                     try
                                     {
                                         int id = int.Parse(viewInput.Item2);
-                                        Console.Write(detail.BookDetailsID(id));
+                                        Console.Write(this.detail.BookDetailsId(id));
                                     }
                                     catch (FormatException)
                                     {
@@ -182,19 +190,20 @@ namespace Cli
 
                             case "all":
                             case "a":
-                                foreach (int id in database.Books.Select(x => x.Id))
+                                foreach (int id in this.database.Books.Select(x => x.Id))
                                 {
-                                    Console.WriteLine(detail.BookDetailsID(id));
+                                    Console.WriteLine(this.detail.BookDetailsId(id));
                                 }
+
                                 break;
 
                             case "author":
                             case "au":
                                 if (string.IsNullOrEmpty(viewInput.Item2.Trim()))
                                 {
-                                    foreach (int id in database.Authors.Select(x => x.Id))
+                                    foreach (int id in this.database.Authors.Select(x => x.Id))
                                     {
-                                        Console.WriteLine(detail.AuthorDetailsID(id));
+                                        Console.WriteLine(this.detail.AuthorDetailsId(id));
                                     }
                                 }
                                 else
@@ -202,7 +211,7 @@ namespace Cli
                                     try
                                     {
                                         int id = int.Parse(viewInput.Item2);
-                                        Console.Write(detail.AuthorDetailsID(id));
+                                        Console.Write(this.detail.AuthorDetailsId(id));
                                     }
                                     catch (FormatException)
                                     {
@@ -213,15 +222,16 @@ namespace Cli
                                         Console.WriteLine("Author was not found.");
                                     }
                                 }
+
                                 break;
 
                             case "collection":
                             case "c":
                                 if (string.IsNullOrEmpty(viewInput.Item2.Trim()))
                                 {
-                                    foreach (int id in database.UserCollections.Select(x => x.Id))
+                                    foreach (int id in this.database.UserCollections.Select(x => x.Id))
                                     {
-                                        Console.WriteLine(detail.UserCollectionDetailsID(id));
+                                        Console.WriteLine(this.detail.UserCollectionDetailsId(id));
                                     }
                                 }
                                 else
@@ -229,7 +239,7 @@ namespace Cli
                                     try
                                     {
                                         int id = int.Parse(viewInput.Item2);
-                                        Console.Write(detail.UserCollectionDetailsID(id));
+                                        Console.Write(this.detail.UserCollectionDetailsId(id));
                                     }
                                     catch (FormatException)
                                     {
@@ -240,15 +250,16 @@ namespace Cli
                                         Console.WriteLine("User Collection was not found.");
                                     }
                                 }
+
                                 break;
 
                             case "series":
                             case "ser":
                                 if (string.IsNullOrEmpty(viewInput.Item2.Trim()))
                                 {
-                                    foreach (int id in database.Series.Select(x => x.Id))
+                                    foreach (int id in this.database.Series.Select(x => x.Id))
                                     {
-                                        Console.WriteLine(detail.BookSeriesDetailsID(id));
+                                        Console.WriteLine(this.detail.BookSeriesDetailsId(id));
                                     }
                                 }
                                 else
@@ -256,7 +267,7 @@ namespace Cli
                                     try
                                     {
                                         int id = int.Parse(viewInput.Item2);
-                                        Console.Write(detail.BookSeriesDetailsID(id));
+                                        Console.Write(this.detail.BookSeriesDetailsId(id));
                                     }
                                     catch (FormatException)
                                     {
@@ -267,14 +278,16 @@ namespace Cli
                                         Console.WriteLine("Book Series was not found.");
                                     }
                                 }
+
                                 break;
 
                             case "selected":
                             case "s":
-                                foreach (Book book in selectedBooks)
+                                foreach (Book book in this.selectedBooks)
                                 {
-                                    Console.Write(detail.BookDetailsID(book.Id));
+                                    Console.Write(this.detail.BookDetailsId(book.Id));
                                 }
+
                                 break;
 
                             default:
@@ -285,58 +298,67 @@ namespace Cli
 
                     case "select":
                     case "s":
-                        Tuple<string, string> selectInput = consoleInput.Item2.ToLower().Trim().SplitOnFirstBlank();
+                        var selectInput = consoleInput.Item2.ToLower().Trim().SplitOnFirstBlank();
                         switch (selectInput.Item1)
                         {
                             case "book":
                             case "b":
-                                ISet<int> bookIds = selectInput.Item2.GetIDsSeperatedBySpace();
+                                var bookIds = selectInput.Item2.GetIDsSeperatedBySpace();
 
                                 foreach (int id in bookIds)
-                                    selectedBooks.Add(database.Books.Find(id));
+                                {
+                                    this.selectedBooks.Add(this.database.Books.Find(id));
+                                }
 
                                 break;
 
                             case "series":
                             case "s":
-                                ISet<int> seriesIds = selectInput.Item2.GetIDsSeperatedBySpace();
+                                var seriesIds = selectInput.Item2.GetIDsSeperatedBySpace();
 
                                 foreach (int id in seriesIds)
                                 {
-                                    foreach (Book book in database.Series.Include("Books").Where(x => x.Id == id).FirstOrDefault()?.Books)
-                                        selectedBooks.Add(book);
+                                    foreach (Book book in this.database.Series.Include("Books").FirstOrDefault(x => x.Id == id)?.Books)
+                                    {
+                                        this.selectedBooks.Add(book);
+                                    }
                                 }
 
                                 break;
 
                             case "collection":
                             case "c":
-                                ISet<int> collectionIds = selectInput.Item2.GetIDsSeperatedBySpace();
+                                var collectionIds = selectInput.Item2.GetIDsSeperatedBySpace();
 
                                 foreach (int id in collectionIds)
                                 {
-                                    foreach (Book book in database.UserCollections.Include("Books").Where(x => x.Id == id).FirstOrDefault()?.Books)
-                                        selectedBooks.Add(book);
+                                    foreach (Book book in this.database.UserCollections.Include("Books").FirstOrDefault(x => x.Id == id)?.Books)
+                                    {
+                                        this.selectedBooks.Add(book);
+                                    }
                                 }
 
                                 break;
 
                             case "all":
                             case "a":
-                                selectedBooks.UnionWith(database.Books);
+                                this.selectedBooks.UnionWith(this.database.Books);
                                 break;
 
                             case "clear":
                             case "clr":
-                                selectedBooks.Clear();
+                                this.selectedBooks.Clear();
                                 break;
 
                             case "deselect":
                             case "d":
-                                ISet<int> deselectIds = selectInput.Item2.GetIDsSeperatedBySpace();
+                                var deselectIds = selectInput.Item2.GetIDsSeperatedBySpace();
 
                                 foreach (int id in deselectIds)
-                                    selectedBooks.Remove(database.Books.Find(id));
+                                {
+                                    this.selectedBooks.Remove(this.database.Books.Find(id));
+                                }
+
                                 break;
 
                             default:
@@ -351,11 +373,11 @@ namespace Cli
 
                         Console.WriteLine("Selected books for export:");
 
-                        foreach (Book book in selectedBooks)
+                        foreach (Book book in this.selectedBooks)
                         {
-                            database.Entry(book).Collection(f => f.Authors).Load();
-                            database.Entry(book).Reference(f => f.File).Load();
-                            Console.WriteLine($"Id:{book.Id} {book.Title} by {(string.Join(", ", book.Authors.Select(x => x.Name)))}");
+                            this.database.Entry(book).Collection(f => f.Authors).Load();
+                            this.database.Entry(book).Reference(f => f.File).Load();
+                            Console.WriteLine($"Id:{book.Id} {book.Title} by {string.Join(", ", book.Authors.Select(x => x.Name))}");
                             //exportFiles.UnionWith(book.Files); TODO: Luka je mjenjao ovo jer je promjenio strukturu baze
                         }
 
@@ -382,9 +404,6 @@ namespace Cli
                             case 2:
                                 options.GroupByAuthor = options.GroupBySeries = true;
                                 break;
-
-                            default:
-                                break;
                         }
 
                         options.DestinationDirectory = consoleInput.Item2;
@@ -395,22 +414,22 @@ namespace Cli
                     case "delete":
                     case "d":
                         Console.WriteLine("Selected books for deletion:");
-                        foreach (Book book in selectedBooks)
+                        foreach (Book book in this.selectedBooks)
                         {
-                            database.Entry(book).Collection(f => f.Authors).Load();
-                            database.Entry(book).Reference(f => f.File).Load();
-                            Console.WriteLine($"Id:{book.Id} {book.Title} by {(string.Join(", ", book.Authors.Select(x => x.Name)))}");
+                            this.database.Entry(book).Collection(f => f.Authors).Load();
+                            this.database.Entry(book).Reference(f => f.File).Load();
+                            Console.WriteLine($"Id:{book.Id} {book.Title} by {string.Join(", ", book.Authors.Select(x => x.Name))}");
                         }
 
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.Write("WARNING");
                         Console.ResetColor();
                         Console.WriteLine(": This is a permanent action. Consider exporting first.");
-                        if (ConsoleQuestion("Do you want to continue?", true))
+                        if (this.ConsoleQuestion("Do you want to continue?", true))
                         {
-                            database.Books.RemoveRange(selectedBooks);
-                            selectedBooks.Clear();
-                            database.SaveChanges();
+                            this.database.Books.RemoveRange(this.selectedBooks);
+                            this.selectedBooks.Clear();
+                            this.database.SaveChanges();
                         }
                         break;
 
@@ -470,7 +489,7 @@ namespace Cli
                     case "q":
                         IOnline online = new OnlineAPI();
                         int localid = int.Parse(consoleInput.Item2);
-                        IList<byte[]> images = online.GetMultipleCoversAsync(database.Books.Include("Authors").Where(x => x.Id == localid).FirstOrDefault()).Result;
+                        var images = online.GetMultipleCoversAsync(this.database.Books.Include("Authors").Where(x => x.Id == localid).FirstOrDefault()).Result;
                         /*
                         foreach (byte[] img in images)
                         {
@@ -483,7 +502,7 @@ namespace Cli
 
                     case "exit":
                         Console.WriteLine("Exiting...");
-                        database.SaveChanges();
+                        this.database.SaveChanges();
                         break;
 
                     default:
@@ -491,11 +510,6 @@ namespace Cli
                         break;
                 }
             } while (command != "exit");
-        }
-
-        public void Dispose()
-        {
-            database.Dispose();
         }
     }
 }

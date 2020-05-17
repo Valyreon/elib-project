@@ -1,28 +1,19 @@
-﻿using Domain;
-using ElibWpf.Animations;
-using ElibWpf.CustomComponents;
-using Models.Observables;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using ElibWpf.Animations;
+using ElibWpf.CustomComponents;
+using Models.Observables;
 
 namespace ElibWpf.Themes.CustomComponents.Controls
 {
     /// <summary>
-    /// Interaction logic for BookTileControl.xaml
+    ///     Interaction logic for BookTileControl.xaml
     /// </summary>
     public partial class BookTileControl : UserControl
     {
@@ -38,6 +29,12 @@ namespace ElibWpf.Themes.CustomComponents.Controls
         public static DependencyProperty SelectCommandProperty;
         public static DependencyProperty TitleProperty;
         public static DependencyProperty IsSelectedProperty;
+        private static readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
+        private readonly Duration duration;
+        private SelectedBannerCheck selectedCheckbox;
+        private TextLinkButton theBookTitle;
+
+        private Border tileBorder;
 
         static BookTileControl()
         {
@@ -48,177 +45,177 @@ namespace ElibWpf.Themes.CustomComponents.Controls
             IsSelectedProperty = DependencyProperty.Register("IsSelected", typeof(bool), typeof(BookTileControl));
 
             TileCommandProperty = DependencyProperty.Register("TileCommand", typeof(ICommand), typeof(BookTileControl));
-            AuthorCommandProperty = DependencyProperty.Register("AuthorCommand", typeof(ICommand), typeof(BookTileControl));
-            SeriesCommandProperty = DependencyProperty.Register("SeriesCommand", typeof(ICommand), typeof(BookTileControl));
-            SelectCommandProperty = DependencyProperty.Register("SelectCommand", typeof(ICommand), typeof(BookTileControl));
+            AuthorCommandProperty =
+                DependencyProperty.Register("AuthorCommand", typeof(ICommand), typeof(BookTileControl));
+            SeriesCommandProperty =
+                DependencyProperty.Register("SeriesCommand", typeof(ICommand), typeof(BookTileControl));
+            SelectCommandProperty =
+                DependencyProperty.Register("SelectCommand", typeof(ICommand), typeof(BookTileControl));
 
-            TileParameterProperty = DependencyProperty.Register("TileParameter", typeof(ObservableBook), typeof(BookTileControl));
-            AuthorParameterProperty = DependencyProperty.Register("AuthorParameter", typeof(ICollection<ObservableAuthor>), typeof(BookTileControl));
-            SeriesParameterProperty = DependencyProperty.Register("SeriesParameter", typeof(ObservableSeries), typeof(BookTileControl));
+            TileParameterProperty =
+                DependencyProperty.Register("TileParameter", typeof(ObservableBook), typeof(BookTileControl));
+            AuthorParameterProperty = DependencyProperty.Register("AuthorParameter",
+                typeof(ICollection<ObservableAuthor>), typeof(BookTileControl));
+            SeriesParameterProperty =
+                DependencyProperty.Register("SeriesParameter", typeof(ObservableSeries), typeof(BookTileControl));
         }
 
         public BookTileControl()
         {
-            InitializeComponent();
-            duration = new Duration(new TimeSpan(0, 0, 0, 0, 300));
+            this.InitializeComponent();
+            this.duration = new Duration(new TimeSpan(0, 0, 0, 0, 300));
         }
 
         public ICommand AuthorCommand
         {
-            get => (ICommand)base.GetValue(AuthorCommandProperty);
-            set => base.SetValue(AuthorCommandProperty, value);
+            get => (ICommand) this.GetValue(AuthorCommandProperty);
+            set => this.SetValue(AuthorCommandProperty, value);
         }
 
         public ICollection<ObservableAuthor> AuthorParameter
         {
-            get => (ICollection<ObservableAuthor>)base.GetValue(AuthorParameterProperty);
-            set => base.SetValue(AuthorParameterProperty, value);
+            get => (ICollection<ObservableAuthor>) this.GetValue(AuthorParameterProperty);
+            set => this.SetValue(AuthorParameterProperty, value);
         }
 
         public string Authors
         {
-            get => (string)base.GetValue(AuthorsProperty);
-            set => base.SetValue(AuthorsProperty, value);
+            get => (string) this.GetValue(AuthorsProperty);
+            set => this.SetValue(AuthorsProperty, value);
         }
 
         public IList<byte> Cover
         {
-            get => (IList<byte>)base.GetValue(CoverProperty);
-            set => base.SetValue(CoverProperty, value);
-        }
-
-        public ICommand SeriesCommand
-        {
-            get => (ICommand)base.GetValue(SeriesCommandProperty);
-            set => base.SetValue(SeriesCommandProperty, value);
-        }
-
-        public string SeriesInfo
-        {
-            get => (string)base.GetValue(SeriesInfoProperty);
-            set => base.SetValue(SeriesInfoProperty, value);
-        }
-
-        public ObservableSeries SeriesParameter
-        {
-            get => (ObservableSeries)base.GetValue(SeriesParameterProperty);
-            set => base.SetValue(SeriesParameterProperty, value);
-        }
-
-        public ICommand TileCommand
-        {
-            get => (ICommand)base.GetValue(TileCommandProperty);
-            set => base.SetValue(TileCommandProperty, value);
-        }
-
-        public ObservableBook TileParameter
-        {
-            get => (ObservableBook)base.GetValue(TileParameterProperty);
-            set => base.SetValue(TileParameterProperty, value);
-        }
-
-        public ICommand SelectCommand
-        {
-            get => (ICommand)base.GetValue(SelectCommandProperty);
-            set => base.SetValue(SelectCommandProperty, value);
-        }
-
-        public string Title
-        {
-            get => (string)base.GetValue(TitleProperty);
-            set => base.SetValue(TitleProperty, value);
+            get => (IList<byte>) this.GetValue(CoverProperty);
+            set => this.SetValue(CoverProperty, value);
         }
 
         public bool IsSelected
         {
-            get => (bool)base.GetValue(IsSelectedProperty);
-            set => base.SetValue(IsSelectedProperty, value);
+            get => (bool) this.GetValue(IsSelectedProperty);
+            set => this.SetValue(IsSelectedProperty, value);
         }
 
-        Border tileBorder;
-        TextLinkButton theBookTitle;
-        SelectedBannerCheck selectedCheckbox;
-        Duration duration;
-        private static readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
-
-        private void BookContainer_MouseEnter(object sender, MouseEventArgs e)
+        public ICommand SelectCommand
         {
-            if (!selectedCheckbox.IsChecked.Value)
+            get => (ICommand) this.GetValue(SelectCommandProperty);
+            set => this.SetValue(SelectCommandProperty, value);
+        }
+
+        public ICommand SeriesCommand
+        {
+            get => (ICommand) this.GetValue(SeriesCommandProperty);
+            set => this.SetValue(SeriesCommandProperty, value);
+        }
+
+        public string SeriesInfo
+        {
+            get => (string) this.GetValue(SeriesInfoProperty);
+            set => this.SetValue(SeriesInfoProperty, value);
+        }
+
+        public ObservableSeries SeriesParameter
+        {
+            get => (ObservableSeries) this.GetValue(SeriesParameterProperty);
+            set => this.SetValue(SeriesParameterProperty, value);
+        }
+
+        public ICommand TileCommand
+        {
+            get => (ICommand) this.GetValue(TileCommandProperty);
+            set => this.SetValue(TileCommandProperty, value);
+        }
+
+        public ObservableBook TileParameter
+        {
+            get => (ObservableBook) this.GetValue(TileParameterProperty);
+            set => this.SetValue(TileParameterProperty, value);
+        }
+
+        public string Title
+        {
+            get => (string) this.GetValue(TitleProperty);
+            set => this.SetValue(TitleProperty, value);
+        }
+
+        private void BookContainer_MouseEnter(object sender, MouseEventArgs ev)
+        {
+            if (this.selectedCheckbox.IsChecked != null && !this.selectedCheckbox.IsChecked.Value)
             {
-                BrushAnimation borderAnim = new BrushAnimation(Brushes.CornflowerBlue,duration);
-                borderAnim.Completed += (e, s) => tileBorder.BorderBrush = Brushes.CornflowerBlue;
-                borderAnim.Completed += (e, s) => theBookTitle.Foreground = Brushes.CornflowerBlue;
+                BrushAnimation borderAnim = new BrushAnimation(Brushes.CornflowerBlue, this.duration);
+                borderAnim.Completed += (e, s) => this.tileBorder.BorderBrush = Brushes.CornflowerBlue;
+                borderAnim.Completed += (e, s) => this.theBookTitle.Foreground = Brushes.CornflowerBlue;
 
-                DoubleAnimation opacAnim = new DoubleAnimation(1, duration, FillBehavior.Stop);
-                opacAnim.Completed += (e, s) => selectedCheckbox.Opacity = 1;
+                DoubleAnimation opacAnim = new DoubleAnimation(1, this.duration, FillBehavior.Stop);
+                opacAnim.Completed += (e, s) => this.selectedCheckbox.Opacity = 1;
 
-                tileBorder.BeginAnimation(Border.BorderBrushProperty, borderAnim);
-                theBookTitle.BeginAnimation(TextLinkButton.ForegroundProperty, borderAnim);
-                selectedCheckbox.BeginAnimation(CheckBox.OpacityProperty, opacAnim);
+                this.tileBorder.BeginAnimation(Border.BorderBrushProperty, borderAnim);
+                this.theBookTitle.BeginAnimation(ForegroundProperty, borderAnim);
+                this.selectedCheckbox.BeginAnimation(OpacityProperty, opacAnim);
             }
             else
             {
-                BrushAnimation borderAnim = new BrushAnimation(Brushes.CornflowerBlue, duration);
-                borderAnim.Completed += (e, s) => tileBorder.BorderBrush = Brushes.CornflowerBlue;
-                borderAnim.Completed += (e, s) => theBookTitle.Foreground = Brushes.CornflowerBlue;
-                tileBorder.BeginAnimation(Border.BorderBrushProperty, borderAnim);
-                theBookTitle.BeginAnimation(TextLinkButton.ForegroundProperty, borderAnim);
+                BrushAnimation borderAnim = new BrushAnimation(Brushes.CornflowerBlue, this.duration);
+                borderAnim.Completed += (e, s) => this.tileBorder.BorderBrush = Brushes.CornflowerBlue;
+                borderAnim.Completed += (e, s) => this.theBookTitle.Foreground = Brushes.CornflowerBlue;
+                this.tileBorder.BeginAnimation(Border.BorderBrushProperty, borderAnim);
+                this.theBookTitle.BeginAnimation(ForegroundProperty, borderAnim);
             }
         }
 
-        private void BookContainer_MouseLeave(object sender, MouseEventArgs e)
+        private void BookContainer_MouseLeave(object sender, MouseEventArgs ev)
         {
-            BrushAnimation borderAnim = new BrushAnimation(Brushes.LightGray, duration);
-            borderAnim.Completed += (e, s) => tileBorder.BorderBrush = Brushes.LightGray;
+            BrushAnimation borderAnim = new BrushAnimation(Brushes.LightGray, this.duration);
+            borderAnim.Completed += (e, s) => this.tileBorder.BorderBrush = Brushes.LightGray;
 
-            BrushAnimation titleAnim = new BrushAnimation(Brushes.Black, duration);
-            titleAnim.Completed += (e, s) => theBookTitle.Foreground = Brushes.Black;
+            BrushAnimation titleAnim = new BrushAnimation(Brushes.Black, this.duration);
+            titleAnim.Completed += (e, s) => this.theBookTitle.Foreground = Brushes.Black;
 
-            if (!selectedCheckbox.IsChecked.Value)
+            if (this.selectedCheckbox.IsChecked != null && !this.selectedCheckbox.IsChecked.Value)
             {
-                DoubleAnimation opacAnim = new DoubleAnimation(0, duration, FillBehavior.Stop);
-                opacAnim.Completed += async (e, s) => {
+                DoubleAnimation opacAnim = new DoubleAnimation(0, this.duration, FillBehavior.Stop);
+                opacAnim.Completed += async (e, s) =>
+                {
                     await semaphoreSlim.WaitAsync();
 
-                    if(selectedCheckbox.IsChecked.Value == false)
-                        selectedCheckbox.Opacity = 0;
+                    if (this.selectedCheckbox.IsChecked.Value == false)
+                    {
+                        this.selectedCheckbox.Opacity = 0;
+                    }
 
                     semaphoreSlim.Release();
                 };
 
-                tileBorder.BeginAnimation(Border.BorderBrushProperty, borderAnim);
-                theBookTitle.BeginAnimation(TextLinkButton.ForegroundProperty, titleAnim);
-                selectedCheckbox.BeginAnimation(CheckBox.OpacityProperty, opacAnim);
+                this.tileBorder.BeginAnimation(Border.BorderBrushProperty, borderAnim);
+                this.theBookTitle.BeginAnimation(ForegroundProperty, titleAnim);
+                this.selectedCheckbox.BeginAnimation(OpacityProperty, opacAnim);
             }
             else
             {
-                tileBorder.BeginAnimation(Border.BorderBrushProperty, borderAnim);
-                theBookTitle.BeginAnimation(TextLinkButton.ForegroundProperty, titleAnim);
+                this.tileBorder.BeginAnimation(Border.BorderBrushProperty, borderAnim);
+                this.theBookTitle.BeginAnimation(ForegroundProperty, titleAnim);
             }
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            tileBorder = Template.FindName("TileBorder", this) as Border;
-            theBookTitle = Template.FindName("TheBookTitle", this) as TextLinkButton;
-            selectedCheckbox = Template.FindName("SelectedCheckbox", this) as SelectedBannerCheck;
+            this.tileBorder = this.Template.FindName("TileBorder", this) as Border;
+            this.theBookTitle = this.Template.FindName("TheBookTitle", this) as TextLinkButton;
+            this.selectedCheckbox = this.Template.FindName("SelectedCheckbox", this) as SelectedBannerCheck;
 
-            if(selectedCheckbox.IsChecked.HasValue && selectedCheckbox.IsChecked.Value)
+            if (this.selectedCheckbox?.IsChecked != null && this.selectedCheckbox.IsChecked.Value)
             {
-                selectedCheckbox.Opacity = 1;
+                this.selectedCheckbox.Opacity = 1;
             }
         }
 
         private async void SelectedCheckbox_Checked(object sender, RoutedEventArgs e)
         {
             await semaphoreSlim.WaitAsync();
-            selectedCheckbox.Opacity = 1;
+            this.selectedCheckbox.Opacity = 1;
             semaphoreSlim.Release();
         }
 
-        private void SelectedCheckbox_Unchecked(object sender, RoutedEventArgs e)
-        {
-
-        }
+        private void SelectedCheckbox_Unchecked(object sender, RoutedEventArgs e) { }
     }
 }

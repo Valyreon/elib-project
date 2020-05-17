@@ -1,7 +1,7 @@
-﻿using EbookTools;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using EbookTools;
 
 namespace Models.Utilities
 {
@@ -11,8 +11,12 @@ namespace Models.Utilities
         public static bool IsValidBookExtension(string path)
         {
             foreach (string extension in EbookParserFactory.SupportedExtensions)
+            {
                 if (Path.GetExtension(path) == extension)
+                {
                     return true;
+                }
+            }
 
             return false;
         }
@@ -25,9 +29,11 @@ namespace Models.Utilities
         public static IList<string> GetValidFilesFromDirectory(string directory)
         {
             if (!Directory.Exists(directory))
+            {
                 throw new DirectoryNotFoundException();
+            }
 
-            List<string> validFileList = new List<string>();
+            var validFileList = new List<string>();
 
             foreach (string ext in EbookParserFactory.SupportedExtensions)
             {
@@ -46,7 +52,9 @@ namespace Models.Utilities
         {
             IList<ParsedBook> result = new List<ParsedBook>();
             foreach (string file in fileList)
+            {
                 result.Add(EbookParserFactory.Create(file).Parse());
+            }
 
             return result;
         }

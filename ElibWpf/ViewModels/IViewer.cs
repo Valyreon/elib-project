@@ -1,5 +1,5 @@
-﻿using Domain;
-using System;
+﻿using System;
+using Domain;
 
 namespace ElibWpf.ViewModels
 {
@@ -9,8 +9,8 @@ namespace ElibWpf.ViewModels
 
         public abstract Func<Book, bool> DefaultCondition { get; }
 
-        public new abstract object Clone();
-
         public abstract string NumberOfBooks { get; set; }
+
+        public new abstract object Clone();
     }
 }

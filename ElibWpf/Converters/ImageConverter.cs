@@ -6,7 +6,7 @@ using System.Windows.Media.Imaging;
 namespace ElibWpf.Converters
 {
     /// <summary>
-    /// This converter is used to get the placeholder image if the cover is null.
+    ///     This converter is used to get the placeholder image if the cover is null.
     /// </summary>
     public class ImageConverter : IValueConverter
     {

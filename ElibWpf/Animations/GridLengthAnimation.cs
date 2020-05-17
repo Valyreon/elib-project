@@ -2,16 +2,13 @@
 using System.Windows;
 using System.Windows.Media.Animation;
 
-namespace ElibWpf.CustomAnimations
+namespace ElibWpf.Animations
 {
     public class GridLengthAnimation : AnimationTimeline
     {
-        protected override Freezable CreateInstanceCore()
-        {
-            return new GridLengthAnimation();
-        }
+        public static readonly DependencyProperty FromProperty;
 
-        public override Type TargetPropertyType => typeof(GridLength);
+        public static readonly DependencyProperty ToProperty;
 
         static GridLengthAnimation()
         {
@@ -22,36 +19,38 @@ namespace ElibWpf.CustomAnimations
                 typeof(GridLengthAnimation));
         }
 
-        public static readonly DependencyProperty FromProperty;
-
         public GridLength From
         {
-            get => (GridLength)GetValue(GridLengthAnimation.FromProperty);
-            set => SetValue(GridLengthAnimation.FromProperty, value);
+            get => (GridLength) this.GetValue(FromProperty);
+            set => this.SetValue(FromProperty, value);
         }
 
-        public static readonly DependencyProperty ToProperty;
+        public override Type TargetPropertyType => typeof(GridLength);
 
         public GridLength To
         {
-            get => (GridLength)GetValue(GridLengthAnimation.ToProperty);
-            set => SetValue(GridLengthAnimation.ToProperty, value);
+            get => (GridLength) this.GetValue(ToProperty);
+            set => this.SetValue(ToProperty, value);
         }
 
-        public override object GetCurrentValue(object defaultOriginValue, object defaultDestinationValue, AnimationClock animationClock)
+        protected override Freezable CreateInstanceCore()
         {
-            double fromVal = ((GridLength)GetValue(GridLengthAnimation.FromProperty)).Value;
-            double toVal = ((GridLength)GetValue(GridLengthAnimation.ToProperty)).Value;
+            return new GridLengthAnimation();
+        }
+
+        public override object GetCurrentValue(object defaultOriginValue, object defaultDestinationValue,
+            AnimationClock animationClock)
+        {
+            double fromVal = ((GridLength) this.GetValue(FromProperty)).Value;
+            double toVal = ((GridLength) this.GetValue(ToProperty)).Value;
             if (fromVal > toVal)
             {
                 return new GridLength((1 - animationClock.CurrentProgress.Value) *
                     (fromVal - toVal) + toVal, GridUnitType.Pixel);
             }
-            else
-            {
-                return new GridLength(animationClock.CurrentProgress.Value *
-                    (toVal - fromVal) + fromVal, GridUnitType.Pixel);
-            }
+
+            return new GridLength(animationClock.CurrentProgress.Value *
+                (toVal - fromVal) + fromVal, GridUnitType.Pixel);
         }
     }
 }

@@ -7,26 +7,28 @@ namespace ElibWpf.Paging
     {
         public PagedList(IQueryable<T> source, int page, int pageSize)
         {
-            TotalCount = source.Count();
-            PageCount = GetPageCount(pageSize, TotalCount);
-            Page = page < 1 ? 0 : page - 1;
-            PageSize = pageSize;
+            this.TotalCount = source.Count();
+            this.PageCount = GetPageCount(pageSize, this.TotalCount);
+            this.Page = page < 1 ? 0 : page - 1;
+            this.PageSize = pageSize;
 
-            AddRange(source.Skip(Page * PageSize).Take(PageSize).ToList());
+            this.AddRange(source.Skip(this.Page * this.PageSize).Take(this.PageSize).ToList());
         }
 
-        public int Page { get; private set; }
-        public int PageCount { get; private set; }
-        public int PageSize { get; private set; }
-        public int TotalCount { get; private set; }
+        public int Page { get; }
+        public int PageCount { get; }
+        public int PageSize { get; }
+        public int TotalCount { get; }
 
-        private int GetPageCount(int pageSize, int totalCount)
+        private static int GetPageCount(int pageSize, int totalCount)
         {
             if (pageSize == 0)
+            {
                 return 0;
+            }
 
-            var remainder = totalCount % pageSize;
-            return (totalCount / pageSize) + (remainder == 0 ? 0 : 1);
+            int remainder = totalCount % pageSize;
+            return totalCount / pageSize + (remainder == 0 ? 0 : 1);
         }
     }
 }

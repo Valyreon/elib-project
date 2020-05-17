@@ -1,33 +1,137 @@
-﻿using Domain;
-using GalaSoft.MvvmLight;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using Domain;
+using GalaSoft.MvvmLight;
 
 namespace Models.Observables
 {
     public class ObservableBook : ObservableObject
     {
-        private readonly Book book;
         private bool isSelected;
+
+        private ObservableSeries series;
 
         public ObservableBook(Book book)
         {
-            this.book = book;
+            this.Book = book;
 
             this.Authors = new ObservableCollection<ObservableAuthor>(book.Authors.Select(x => new ObservableAuthor(x)));
-            Authors.CollectionChanged += this.AuthorsCollectionChanged;
+            this.Authors.CollectionChanged += this.AuthorsCollectionChanged;
 
-            this.Quotes = book.Quotes == null ? new ObservableCollection<Quote>() : new ObservableCollection<Quote>(book.Quotes);
-            Quotes.CollectionChanged += this.QuotesCollectionChanged;
+            this.Quotes = book.Quotes == null
+                ? new ObservableCollection<Quote>()
+                : new ObservableCollection<Quote>(book.Quotes);
+            this.Quotes.CollectionChanged += this.QuotesCollectionChanged;
 
-            this.Collections = book.UserCollections == null ? new ObservableCollection<ObservableUserCollection>() : new ObservableCollection<ObservableUserCollection>(book.UserCollections.Select(b => new ObservableUserCollection(b)));
-            Quotes.CollectionChanged += this.CollectionsChanged;
+            this.Collections = book.UserCollections == null
+                ? new ObservableCollection<ObservableUserCollection>()
+                : new ObservableCollection<ObservableUserCollection>(
+                    book.UserCollections.Select(b => new ObservableUserCollection(b)));
+            this.Quotes.CollectionChanged += this.CollectionsChanged;
 
-            this.Series = (book.Series == null ? null : new ObservableSeries(book.Series));
-            if(this.Series != null)
+            this.Series = book.Series == null ? null : new ObservableSeries(book.Series);
+            if (this.Series != null)
             {
-                this.Series.PropertyChanged += (a, b) => this.RaisePropertyChanged(() => SeriesInfo);
+                this.Series.PropertyChanged += (a, b) => this.RaisePropertyChanged(() => this.SeriesInfo);
+            }
+        }
+
+        public ObservableCollection<ObservableAuthor> Authors { get; }
+
+        public string AuthorsInfo
+        {
+            get { return this.Authors.Any() ? this.Authors.Select(a => a.Name).Aggregate((i, j) => i + ", " + j) : ""; }
+        }
+
+        public Book Book { get; }
+        public ObservableCollection<ObservableUserCollection> Collections { get; }
+
+        public byte[] Cover
+        {
+            get => this.Book.Cover;
+            set
+            {
+                this.Book.Cover = value;
+                this.RaisePropertyChanged(() => this.Cover);
+            }
+        }
+
+        public int Id => this.Book.Id;
+
+        public bool IsFavorite
+        {
+            get => this.Book.IsFavorite;
+            set
+            {
+                this.Book.IsFavorite = value;
+                this.RaisePropertyChanged(() => this.IsFavorite);
+            }
+        }
+
+        public bool IsMarked
+        {
+            get => this.isSelected;
+            set => this.Set(() => this.IsMarked, ref this.isSelected, value);
+        }
+
+        public bool IsRead
+        {
+            get => this.Book.IsRead;
+            set
+            {
+                this.Book.IsRead = value;
+                this.RaisePropertyChanged(() => this.IsRead);
+            }
+        }
+
+        public decimal? NumberInSeries
+        {
+            get => this.Book.NumberInSeries;
+            set
+            {
+                this.Book.NumberInSeries = value;
+                this.RaisePropertyChanged(() => this.NumberInSeries);
+            }
+        }
+
+        public ObservableCollection<Quote> Quotes { get; }
+
+        public ObservableSeries Series
+        {
+            get => this.series;
+            set
+            {
+                this.Set(() => this.Series, ref this.series, value);
+                if (value != null)
+                {
+                    this.Book.Series = value.Series;
+                    this.Book.SeriesId = value.Series.Id;
+                }
+                else
+                {
+                    this.Book.SeriesId = null;
+                    this.Book.Series = null;
+                    this.Book.NumberInSeries = null;
+                    this.RaisePropertyChanged(() => this.SeriesInfo);
+                }
+
+                this.RaisePropertyChanged(() => this.SeriesInfo);
+            }
+        }
+
+        public string SeriesInfo =>
+            this.Book.Series != null
+                ? $"{this.Book.Series.Name} {(this.Book.NumberInSeries != null ? $"#{this.Book.NumberInSeries}" : "")}"
+                : "";
+
+        public string Title
+        {
+            get => this.Book.Title;
+            set
+            {
+                this.Book.Title = value;
+                this.RaisePropertyChanged(() => this.Title);
             }
         }
 
@@ -35,21 +139,21 @@ namespace Models.Observables
         {
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
-                foreach (var newItem in e.NewItems)
+                foreach (object newItem in e.NewItems)
                 {
-                    book.Quotes.Add((Quote)newItem);
+                    this.Book.Quotes.Add((Quote) newItem);
                 }
             }
             else if (e.Action == NotifyCollectionChangedAction.Remove)
             {
-                foreach (var oldItem in e.OldItems)
+                foreach (object oldItem in e.OldItems)
                 {
-                    book.Quotes.Add((Quote)oldItem);
+                    this.Book.Quotes.Add((Quote) oldItem);
                 }
             }
             else if (e.Action == NotifyCollectionChangedAction.Reset)
             {
-                book.Quotes.Clear();
+                this.Book.Quotes.Clear();
             }
         }
 
@@ -57,144 +161,46 @@ namespace Models.Observables
         {
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
-                foreach (var newItem in e.NewItems)
+                foreach (object newItem in e.NewItems)
                 {
-                    book.UserCollections.Add(((ObservableUserCollection)newItem).Collection);
+                    this.Book.UserCollections.Add(((ObservableUserCollection) newItem).Collection);
                 }
             }
             else if (e.Action == NotifyCollectionChangedAction.Remove)
             {
-                foreach (var oldItem in e.OldItems)
+                foreach (object oldItem in e.OldItems)
                 {
-                    book.UserCollections.Add(((ObservableUserCollection)oldItem).Collection);
+                    this.Book.UserCollections.Add(((ObservableUserCollection) oldItem).Collection);
                 }
             }
             else if (e.Action == NotifyCollectionChangedAction.Reset)
             {
-                book.Quotes.Clear();
+                this.Book.Quotes.Clear();
             }
         }
 
         private void AuthorsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if(e.Action == NotifyCollectionChangedAction.Add)
+            if (e.Action == NotifyCollectionChangedAction.Add)
             {
-                foreach(var newItem in e.NewItems)
+                foreach (object newItem in e.NewItems)
                 {
-                    book.Authors.Add(((ObservableAuthor)newItem).Author);
+                    this.Book.Authors.Add(((ObservableAuthor) newItem).Author);
                 }
             }
-            else if(e.Action == NotifyCollectionChangedAction.Remove)
+            else if (e.Action == NotifyCollectionChangedAction.Remove)
             {
-                foreach (var oldItem in e.OldItems)
+                foreach (object oldItem in e.OldItems)
                 {
-                    book.Authors.Add(((ObservableAuthor)oldItem).Author);
+                    this.Book.Authors.Add(((ObservableAuthor) oldItem).Author);
                 }
             }
-            else if(e.Action == NotifyCollectionChangedAction.Reset)
+            else if (e.Action == NotifyCollectionChangedAction.Reset)
             {
-                book.Authors.Clear();
+                this.Book.Authors.Clear();
             }
-            RaisePropertyChanged(() => AuthorsInfo);
-        }
 
-        public int Id { get => book.Id; }
-
-        public ObservableCollection<ObservableAuthor> Authors { get; }
-        public ObservableCollection<Quote> Quotes { get; }
-        public ObservableCollection<ObservableUserCollection> Collections { get; }
-
-        private ObservableSeries series;
-        public ObservableSeries Series
-        {
-            get => series;
-            set
-            {
-                Set(() => Series, ref series, value);
-                if (value != null)
-                {
-                    Book.Series = value.Series;
-                    Book.SeriesId = value.Series.Id;
-                } else
-                {
-                    Book.SeriesId = null;
-                    Book.Series = null;
-                    Book.NumberInSeries = null;
-                    RaisePropertyChanged(() => SeriesInfo);
-                }
-                RaisePropertyChanged(() => SeriesInfo);
-            }
-        }
-
-        public bool IsMarked
-        {
-            get => isSelected;
-            set => Set(() => IsMarked, ref isSelected, value);
-        }
-
-        public Book Book { get => book; }
-
-        public string Title
-        {
-            get => book.Title;
-            set
-            {
-                book.Title = value;
-                RaisePropertyChanged(() => Title);
-            }
-        }
-
-        public string SeriesInfo
-        {
-            get => book.Series != null ? $"{book.Series.Name} {((book.NumberInSeries != null) ? ($"#{book.NumberInSeries}") : (""))}" : "";
-        }
-
-        public decimal? NumberInSeries
-        {
-            get => book.NumberInSeries;
-            set
-            {
-                book.NumberInSeries = value;
-                RaisePropertyChanged(() => NumberInSeries);
-            }
-        }
-
-        public byte[] Cover
-        {
-            get => book.Cover;
-            set
-            {
-                book.Cover = value;
-                RaisePropertyChanged(() => Cover);
-            }
-        }
-
-        public bool IsRead
-        {
-            get => book.IsRead;
-            set
-            {
-                book.IsRead = value;
-                RaisePropertyChanged(() => IsRead);
-            }
-        }
-
-        public bool IsFavorite
-        {
-            get => book.IsFavorite;
-            set
-            {
-                book.IsFavorite = value;
-                RaisePropertyChanged(() => IsFavorite);
-            }
-        }
-
-        public string AuthorsInfo {
-            get {
-                if (Authors.Count() > 0)
-                    return Authors.Select(a => a.Name).Aggregate((i, j) => i + ", " + j);
-                else return "";
-            }
+            this.RaisePropertyChanged(() => this.AuthorsInfo);
         }
     }
 }

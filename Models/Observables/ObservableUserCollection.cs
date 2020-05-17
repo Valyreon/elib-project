@@ -1,36 +1,33 @@
-﻿using Domain;
+﻿using System;
+using Domain;
 using GalaSoft.MvvmLight;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Models.Observables
 {
     public class ObservableUserCollection : ObservableObject
     {
-        private readonly UserCollection collection;
-
-        public UserCollection Collection { get => collection; }
-
         public ObservableUserCollection(UserCollection collection)
         {
             if (collection is null)
+            {
                 throw new ArgumentException("Constructor argument can't be null.");
-            this.collection = collection;
+            }
+
+            this.Collection = collection;
         }
+
+        public UserCollection Collection { get; }
+
+        public int Id => this.Collection.Id;
 
         public string Tag
         {
-            get => collection.Tag;
+            get => this.Collection.Tag;
             set
             {
-                this.collection.Tag = value;
-                RaisePropertyChanged(() => Tag);
+                this.Collection.Tag = value;
+                this.RaisePropertyChanged(() => this.Tag);
             }
         }
-
-        public int Id { get => collection.Id; }
     }
 }

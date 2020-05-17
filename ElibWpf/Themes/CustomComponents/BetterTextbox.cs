@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace ElibWpf.CustomComponents
 {
@@ -16,56 +17,58 @@ namespace ElibWpf.CustomComponents
 
         static BetterTextbox()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(BetterTextbox), new FrameworkPropertyMetadata(typeof(BetterTextbox)));
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(BetterTextbox),
+                new FrameworkPropertyMetadata(typeof(BetterTextbox)));
             IconProperty = DependencyProperty.Register("Icon", typeof(Enum), typeof(BetterTextbox));
             IconSizeProperty = DependencyProperty.Register("IconSize", typeof(double), typeof(BetterTextbox));
             WatermarkTextProperty = DependencyProperty.Register("WatermarkText", typeof(string), typeof(BetterTextbox));
-            IconMarginProperty = DependencyProperty.Register("IconMargin", typeof(System.Windows.Thickness), typeof(BetterTextbox));
-            TextboxPaddingProperty = DependencyProperty.Register("TextboxPadding", typeof(System.Windows.Thickness), typeof(BetterTextbox));
-            EnterCommandProperty = DependencyProperty.Register("EnterCommand", typeof(System.Windows.Input.ICommand), typeof(BetterTextbox));
+            IconMarginProperty = DependencyProperty.Register("IconMargin", typeof(Thickness), typeof(BetterTextbox));
+            TextboxPaddingProperty =
+                DependencyProperty.Register("TextboxPadding", typeof(Thickness), typeof(BetterTextbox));
+            EnterCommandProperty = DependencyProperty.Register("EnterCommand", typeof(ICommand), typeof(BetterTextbox));
             IconVisibleProperty = DependencyProperty.Register("IconVisible", typeof(bool), typeof(BetterTextbox));
+        }
+
+        public ICommand EnterCommand
+        {
+            get => (ICommand) this.GetValue(EnterCommandProperty);
+            set => this.SetValue(EnterCommandProperty, value);
         }
 
         public Enum Icon
         {
-            get { return (Enum)base.GetValue(IconProperty); }
-            set { base.SetValue(IconProperty, value); }
+            get => (Enum) this.GetValue(IconProperty);
+            set => this.SetValue(IconProperty, value);
+        }
+
+        public Thickness IconMargin
+        {
+            get => (Thickness) this.GetValue(IconMarginProperty);
+            set => this.SetValue(IconMarginProperty, value);
         }
 
         public double IconSize
         {
-            get { return (double)base.GetValue(IconSizeProperty); }
-            set { base.SetValue(IconSizeProperty, value); }
-        }
-
-        public System.Windows.Thickness IconMargin
-        {
-            get => (System.Windows.Thickness)base.GetValue(IconMarginProperty);
-            set => base.SetValue(IconMarginProperty, value);
-        }
-
-        public System.Windows.Thickness TextboxPadding
-        {
-            get => (System.Windows.Thickness)base.GetValue(TextboxPaddingProperty);
-            set => base.SetValue(TextboxPaddingProperty, value);
-        }
-
-        public string WatermarkText
-        {
-            get { return (string)base.GetValue(WatermarkTextProperty); }
-            set { base.SetValue(WatermarkTextProperty, value); }
-        }
-
-        public System.Windows.Input.ICommand EnterCommand
-        {
-            get => (System.Windows.Input.ICommand)base.GetValue(EnterCommandProperty);
-            set => base.SetValue(EnterCommandProperty, value);
+            get => (double) this.GetValue(IconSizeProperty);
+            set => this.SetValue(IconSizeProperty, value);
         }
 
         public bool IconVisible
         {
-            get => (bool)base.GetValue(IconVisibleProperty);
-            set => base.SetValue(IconVisibleProperty, value);
+            get => (bool) this.GetValue(IconVisibleProperty);
+            set => this.SetValue(IconVisibleProperty, value);
+        }
+
+        public Thickness TextboxPadding
+        {
+            get => (Thickness) this.GetValue(TextboxPaddingProperty);
+            set => this.SetValue(TextboxPaddingProperty, value);
+        }
+
+        public string WatermarkText
+        {
+            get => (string) this.GetValue(WatermarkTextProperty);
+            set => this.SetValue(WatermarkTextProperty, value);
         }
     }
 }

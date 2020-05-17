@@ -5,11 +5,9 @@ namespace ElibWpf.ValidationAttributes
 {
     public class DirectoryExists : ValidationAttribute
     {
-        private readonly bool invert = false;
+        private readonly bool invert;
 
-        public DirectoryExists()
-        {
-        }
+        public DirectoryExists() { }
 
         public DirectoryExists(bool invert)
         {
@@ -25,7 +23,7 @@ namespace ElibWpf.ValidationAttributes
                 return true;
             }
 
-            var res = Directory.Exists(strValue);
+            bool res = Directory.Exists(strValue);
 
             if (this.invert)
             {

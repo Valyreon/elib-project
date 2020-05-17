@@ -6,7 +6,7 @@ namespace ElibWpf.Views.Controls
     {
         public BookViewerControl()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

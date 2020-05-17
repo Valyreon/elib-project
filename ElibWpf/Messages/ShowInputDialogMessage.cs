@@ -4,17 +4,17 @@ namespace ElibWpf.Messages
 {
     public class ShowInputDialogMessage
     {
-        public string Title { get; }
-
-        public string Text { get; }
+        public ShowInputDialogMessage(string title, string text, Action<string> func)
+        {
+            this.Title = title;
+            this.Text = text;
+            this.CallOnResult = func;
+        }
 
         public Action<string> CallOnResult { get; }
 
-        public ShowInputDialogMessage(string title, string text, Action<string> func)
-        {
-            Title = title;
-            Text = text;
-            this.CallOnResult = func;
-        }
+        public string Text { get; }
+
+        public string Title { get; }
     }
 }

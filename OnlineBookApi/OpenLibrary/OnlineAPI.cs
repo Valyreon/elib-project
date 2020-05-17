@@ -1,9 +1,9 @@
-﻿using Domain;
-using OnlineBookApi.OpenLibrary.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Domain;
+using OnlineBookApi.OpenLibrary.Models;
 
 namespace OnlineBookApi.OpenLibrary
 {
@@ -23,14 +23,10 @@ namespace OnlineBookApi.OpenLibrary
 
         public async Task<IList<byte[]>> GetMultipleCoversAsync(Book book)
         {
-            SearchQuery searchQuery = await Query.GeneralQueryAsync(book.Title + " " + string.Join(" ", book.Authors?.Select(x => x.Name)), Query.SearchType.Query);
+            SearchQuery searchQuery = await Query.GeneralQueryAsync(
+                book.Title + " " + string.Join(" ", book.Authors?.Select(x => x.Name)), Query.SearchType.Query);
 
-            IList<byte[]> result = new List<byte[]>();
-
-            foreach (var x in searchQuery.docs)
-                result.Add(Query.GetImageFromImageIdAsync(x.cover_i.ToString()).Result);
-
-            return result;
+            return searchQuery.docs.Select(x => Query.GetImageFromImageIdAsync(x.cover_i.ToString()).Result).ToList();
         }
     }
 }

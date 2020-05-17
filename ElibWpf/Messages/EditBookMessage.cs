@@ -1,5 +1,4 @@
-﻿using Domain;
-using Models.Observables;
+﻿using Models.Observables;
 
 namespace ElibWpf.Messages
 {

@@ -1,23 +1,26 @@
-﻿using DataLayer;
-using Domain;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
-using MahApps.Metro.Controls.Dialogs;
-using Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
+using DataLayer;
+using Domain;
+using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
+using MahApps.Metro.Controls.Dialogs;
+using Models;
 
 namespace ElibWpf.ViewModels.Dialogs
 {
     public class ChooseSeriesDialogViewModel : ViewModelBase
     {
-        private Action<BookSeries> onConfirm;
-        private List<BookSeries> allSeries { get; } = new List<BookSeries>();
+        private readonly Action<BookSeries> onConfirm;
+        private string filterText;
+
+        private BookSeries selectedItem;
 
 
         public ChooseSeriesDialogViewModel(Action<BookSeries> onConfirm)
@@ -25,65 +28,71 @@ namespace ElibWpf.ViewModels.Dialogs
             this.onConfirm = onConfirm;
         }
 
-        private BookSeries selectedItem;
-        public BookSeries SelectedItem
-        {
-            get => selectedItem;
-            set => Set(() => SelectedItem, ref selectedItem, value);
-        }
+        public ICommand CancelCommand => new RelayCommand(this.Cancel);
 
-        private string filterText;
+        public ICommand DoneCommand => new RelayCommand(this.Done);
+
+        public ICommand FilterChangedCommand => new RelayCommand(this.FilterSeries);
+
         public string FilterText
         {
-            get => filterText;
-            set => Set(() => FilterText, ref filterText, value);
+            get => this.filterText;
+            set => this.Set(() => this.FilterText, ref this.filterText, value);
         }
 
-        public ICommand FilterChangedCommand { get => new RelayCommand(this.FilterSeries); }
+        public ICommand LoadSeriesCommand => new RelayCommand(this.LoadSeries);
 
-        private void FilterSeries()
+        public BookSeries SelectedItem
         {
-            App.Current.Dispatcher.Invoke(() =>
-            {
-                //semaphore.Wait();
-                ShownSeries.Clear();
-                foreach (BookSeries a in allSeries.Where(a => a.Name.ToLower().Contains(FilterText.ToLower())))
-                {
-                    ShownSeries.Add(a);
-                }
-                //semaphore.Release();
-            });
+            get => this.selectedItem;
+            set => this.Set(() => this.SelectedItem, ref this.selectedItem, value);
         }
 
         public ObservableCollection<BookSeries> ShownSeries { get; set; } = new ObservableCollection<BookSeries>();
 
-        public ICommand LoadSeriesCommand { get => new RelayCommand(this.LoadSeries); }
+        private List<BookSeries> AllSeries { get; } = new List<BookSeries>();
+
+        private void FilterSeries()
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                //semaphore.Wait();
+                this.ShownSeries.Clear();
+                foreach (BookSeries a in this.AllSeries.Where(a => a.Name.ToLower().Contains(this.FilterText.ToLower())))
+                {
+                    this.ShownSeries.Add(a);
+                }
+
+                //semaphore.Release();
+            });
+        }
 
         private async void LoadSeries()
         {
             using ElibContext context = ApplicationSettings.CreateContext();
             var list = await context.Series.ToListAsync();
-            foreach (var series in list)
+            foreach (BookSeries series in list)
             {
-                allSeries.Add(series);
-                ShownSeries.Add(series);
+                this.AllSeries.Add(series);
+                this.ShownSeries.Add(series);
             }
         }
 
-        public ICommand CancelCommand { get => new RelayCommand(this.Cancel); }
-
         private async void Cancel()
         {
-            await DialogCoordinator.Instance.HideMetroDialogAsync(App.Current.MainWindow.DataContext, await DialogCoordinator.Instance.GetCurrentDialogAsync<BaseMetroDialog>(App.Current.MainWindow.DataContext));
+            await DialogCoordinator.Instance.HideMetroDialogAsync(Application.Current.MainWindow.DataContext,
+                await DialogCoordinator.Instance.GetCurrentDialogAsync<BaseMetroDialog>(Application.Current.MainWindow
+                    .DataContext));
         }
-
-        public ICommand DoneCommand { get => new RelayCommand(this.Done); }
 
         private async void Done()
         {
-            if(SelectedItem != null)
-                await Task.Run(() => onConfirm(SelectedItem));
-            Cancel();
+            if (this.SelectedItem != null)
+            {
+                await Task.Run(() => this.onConfirm(this.SelectedItem));
+            }
+
+            this.Cancel();
         }
     }
 }

@@ -1,15 +1,12 @@
-﻿using DataLayer;
+﻿using System.IO;
+using System.Windows;
 using Models;
 using Newtonsoft.Json;
-using System.IO;
-using System.Threading;
-using System.Windows;
-using System.Windows.Threading;
 
 namespace ElibWpf
 {
     /// <summary>
-    /// Interaction logic for App.xaml
+    ///     Interaction logic for App.xaml
     /// </summary>
     public partial class App : Application
     {
@@ -31,7 +28,8 @@ namespace ElibWpf
         {
             Logger.Log("APP_EXIT", "");
             //Database.Vacuum(); this slows the shutdown of application
-            File.WriteAllText(ApplicationSettings.GetInstance().PropertiesPath, JsonConvert.SerializeObject(ApplicationSettings.GetInstance(), Formatting.Indented));
+            File.WriteAllText(ApplicationSettings.GetInstance().PropertiesPath,
+                JsonConvert.SerializeObject(ApplicationSettings.GetInstance(), Formatting.Indented));
         }
     }
 }

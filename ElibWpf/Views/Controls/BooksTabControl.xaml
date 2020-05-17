@@ -7,10 +7,10 @@
     xmlns:ControlViewModels="clr-namespace:ElibWpf.ViewModels.Controls"
     xmlns:ControlViews="clr-namespace:ElibWpf.Views.Controls"
     xmlns:Converters="clr-namespace:ElibWpf.Converters"
-    xmlns:CustomAnimation="clr-namespace:ElibWpf.CustomAnimations"
     xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:WindowViewModels="clr-namespace:ElibWpf.ViewModels.Windows"
     xmlns:WindowViews="clr-namespace:ElibWpf.Views.Windows"
+    xmlns:animations="clr-namespace:ElibWpf.Animations"
     xmlns:cmd="http://www.galasoft.ch/mvvmlight"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
@@ -122,7 +122,7 @@
                     <EventTrigger RoutedEvent="Button.Click" SourceName="SearchOptionsButton">
                         <BeginStoryboard>
                             <Storyboard>
-                                <CustomAnimation:GridLengthAnimation
+                                <animations:GridLengthAnimation
                                     x:Name="SearchOptionsHeightAnimation"
                                     Storyboard.TargetName="SearchContentRow"
                                     Storyboard.TargetProperty="Height"

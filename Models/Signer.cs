@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Models
 {
@@ -22,7 +18,9 @@ namespace Models
             StringBuilder result = new StringBuilder();
 
             for (int i = 0; i < bytes.Length; i++)
+            {
                 result.Append(bytes[i].ToString("X2"));
+            }
 
             return result.ToString();
         }

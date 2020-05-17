@@ -2,7 +2,5 @@
 
 namespace ElibWpf.Messages
 {
-    public class RefreshSidePaneCollectionsMessage : MessageBase
-    {
-    }
+    public class RefreshSidePaneCollectionsMessage : MessageBase { }
 }

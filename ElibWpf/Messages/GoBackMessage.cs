@@ -2,7 +2,5 @@
 
 namespace ElibWpf.Messages
 {
-    public class GoBackMessage : MessageBase
-    {
-    }
+    public class GoBackMessage : MessageBase { }
 }

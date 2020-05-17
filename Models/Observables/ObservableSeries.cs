@@ -1,32 +1,33 @@
-﻿using Domain;
+﻿using System;
+using Domain;
 using GalaSoft.MvvmLight;
-using System;
 
 namespace Models.Observables
 {
     public class ObservableSeries : ObservableObject
     {
-        private readonly BookSeries series;
-
-        public BookSeries Series { get => series; }
-
         public ObservableSeries(BookSeries series)
         {
             if (series is null)
+            {
                 throw new ArgumentException("Constructor argument can't be null.");
-            this.series = series;
+            }
+
+            this.Series = series;
         }
+
+        public int Id => this.Series.Id;
 
         public string Name
         {
-            get => series.Name;
+            get => this.Series.Name;
             set
             {
-                this.series.Name = value;
-                RaisePropertyChanged(() => Name);
+                this.Series.Name = value;
+                this.RaisePropertyChanged(() => this.Name);
             }
         }
 
-        public int Id { get => series.Id; }
+        public BookSeries Series { get; }
     }
 }

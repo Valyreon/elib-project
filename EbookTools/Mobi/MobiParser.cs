@@ -1,24 +1,23 @@
-﻿using HtmlAgilityPack;
-
-using System.IO;
+﻿using System.IO;
 using System.Text;
+using HtmlAgilityPack;
 
 namespace EbookTools.Mobi
 {
     public class MobiParser : EbookParser
     {
-        private readonly byte[] _rawFile;
+        private readonly byte[] rawFile;
 
         public MobiParser(byte[] file, StyleSettings settings)
         {
             this.StyleSettings = settings;
-            this._rawFile = file;
+            this.rawFile = file;
         }
 
         public MobiParser(byte[] file)
         {
             this.StyleSettings = StyleSettings.Default;
-            this._rawFile = file;
+            this.rawFile = file;
         }
 
         public MobiParser(Stream file, StyleSettings settings)
@@ -26,7 +25,7 @@ namespace EbookTools.Mobi
             this.StyleSettings = settings;
             MemoryStream ms = new MemoryStream();
             file.CopyTo(ms);
-            this._rawFile = ms.GetBuffer();
+            this.rawFile = ms.GetBuffer();
         }
 
         public MobiParser(Stream file)
@@ -34,26 +33,26 @@ namespace EbookTools.Mobi
             this.StyleSettings = StyleSettings.Default;
             MemoryStream ms = new MemoryStream();
             file.CopyTo(ms);
-            this._rawFile = ms.GetBuffer();
+            this.rawFile = ms.GetBuffer();
         }
 
         /// <summary>
-        /// Parses the mobi file and creates ParsedBook with generated html.
+        ///     Parses the mobi file and creates ParsedBook with generated html.
         /// </summary>
         public override ParsedBook Parse()
         {
-            MobiFile mf = MobiFile.LoadFile(this._rawFile);
+            MobiFile mf = MobiFile.LoadFile(this.rawFile);
             string html = mf.BookText;
             HtmlDocument doc = new HtmlDocument();
             doc.LoadHtml(html);
-            return new ParsedBook(mf.Name, null, null, null, null, ".mobi", _rawFile);
+            return new ParsedBook(mf.Name, null, null, null, null, ".mobi", this.rawFile);
         }
 
         public override string GenerateHtml()
         {
             StringBuilder build = new StringBuilder();
-            MobiFile mf = MobiFile.LoadFile(this._rawFile);
-            build.Append(GenerateHeader());
+            MobiFile mf = MobiFile.LoadFile(this.rawFile);
+            build.Append(this.GenerateHeader());
             build.Append("<body>\n");
             string html = mf.BookText;
             HtmlDocument doc = new HtmlDocument();

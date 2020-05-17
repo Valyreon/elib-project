@@ -6,23 +6,6 @@ namespace EbookTools
     {
         public static readonly StyleSettings Default = new StyleSettings();
 
-        [RegularExpression(@"#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})", ErrorMessage = "Invalid hex color.")]
-        public string BackgroundColor { get; set; } = "#f2f1ef";
-
-        [RegularExpression(@"#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})", ErrorMessage = "Invalid hex color.")]
-        public string ForegroundColor { get; set; } = "#222222";
-
-        public uint FontSize { get; set; } = 18;
-        public string Font { get; set; } = "Bitter";
-
-        [RegularExpression(@"[0-9]{1}\.[0-9]*", ErrorMessage = "Invalid line height.")]
-        public string LineHeight { get; set; } = "1.6";
-
-        public int SideMargins { get; set; } = 25;
-
-        [RegularExpression(@"#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})", ErrorMessage = "Invalid hex color.")]
-        public string LinkColor { get; set; } = "#4169e1";
-
         public StyleSettings(string bgColor, string fgColor, uint fontSize, string font)
         {
             this.BackgroundColor = bgColor;
@@ -31,12 +14,28 @@ namespace EbookTools
             this.Font = font;
         }
 
-        public StyleSettings()
-        {
-        }
+        public StyleSettings() { }
+
+        [RegularExpression(@"#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})", ErrorMessage = "Invalid hex color.")]
+        public string BackgroundColor { get; set; } = "#f2f1ef";
+
+        public string Font { get; set; } = "Bitter";
+
+        public uint FontSize { get; set; } = 18;
+
+        [RegularExpression(@"#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})", ErrorMessage = "Invalid hex color.")]
+        public string ForegroundColor { get; set; } = "#222222";
+
+        [RegularExpression(@"[0-9]{1}\.[0-9]*", ErrorMessage = "Invalid line height.")]
+        public string LineHeight { get; set; } = "1.6";
+
+        [RegularExpression(@"#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})", ErrorMessage = "Invalid hex color.")]
+        public string LinkColor { get; set; } = "#4169e1";
+
+        public int SideMargins { get; set; } = 25;
 
         /// <summary>
-        /// Generates CSS based on current value of attributes.
+        ///     Generates CSS based on current value of attributes.
         /// </summary>
         /// <returns>String containing css styling.</returns>
         public string GenerateCss()

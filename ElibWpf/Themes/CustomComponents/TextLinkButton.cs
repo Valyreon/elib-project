@@ -9,14 +9,15 @@ namespace ElibWpf.CustomComponents
 
         static TextLinkButton()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(TextLinkButton), new FrameworkPropertyMetadata(typeof(TextLinkButton)));
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(TextLinkButton),
+                new FrameworkPropertyMetadata(typeof(TextLinkButton)));
             TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(TextLinkButton));
         }
 
         public string Text
         {
-            get { return (string)base.GetValue(TextProperty); }
-            set => base.SetValue(TextProperty, value);
+            get => (string) this.GetValue(TextProperty);
+            set => this.SetValue(TextProperty, value);
         }
     }
 }

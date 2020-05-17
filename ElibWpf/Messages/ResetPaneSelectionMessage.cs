@@ -2,7 +2,5 @@
 
 namespace ElibWpf.Messages
 {
-    public class ResetPaneSelectionMessage : MessageBase
-    {
-    }
+    public class ResetPaneSelectionMessage : MessageBase { }
 }

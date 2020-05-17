@@ -13,313 +13,227 @@ namespace EbookTools.Mobi
     {
         public uint DataOffset;
         public uint Attributes;
-        public uint UniqueID;
+        public uint UniqueId;
     }
 
     internal class PalmFile
     {
-        protected byte[] m_FileName;
-        protected string m_Name;
-
-        // Database Name
-        internal uint m_Attributes;
-
-        // bit field.
-        protected uint m_Version;
+        protected uint MAppInfoId;
+        protected uint MCompression;
 
         // File Version
-        protected DateTime m_CreationDate;
-
-        // Creation Date
-        protected DateTime m_ModificationDate;
+        protected DateTime MCreationDate;
+        protected string MCreator;
+        protected uint MCurrentPosition;
+        protected byte[] MFileName;
 
         // Modification Date
-        protected DateTime m_LastBackupDate;
+        protected DateTime MLastBackupDate;
+
+        // Creation Date
+        protected DateTime MModificationDate;
 
         // Last Backup Date
-        protected uint m_ModificationNumber;
+        protected uint MModificationNumber;
+        protected string MName;
+        protected uint MNextRecordListId;
+        protected uint MNumberOfRecords;
+        protected uint MSortInfoId;
+        protected uint MTextLength;
+        protected uint MTextRecordCount;
+        protected uint MTextRecordSize;
+        protected string MType;
+        protected uint MUniqueIdSeed;
 
-        protected uint m_AppInfoID;
-        protected uint m_SortInfoID;
-        protected string m_Type;
-        protected string m_Creator;
-        protected uint m_UniqueIDSeed;
-        protected uint m_NextRecordListID;
-        protected uint m_NumberOfRecords;
-        protected uint m_Compression;
-        protected uint m_TextLength;
-        protected uint m_TextRecordCount;
-        protected uint m_TextRecordSize;
-        protected uint m_CurrentPosition;
+        // bit field.
+        protected uint MVersion;
 
-        internal PalmRecordInfo[] m_RecordInfoList;
-        internal PalmRecord[] m_RecordList;
+        // Database Name
+        internal uint MAttributes;
 
-        public string Name
-        {
-            get { return m_Name; }
-        }
+        internal PalmRecordInfo[] MRecordInfoList;
+        internal PalmRecord[] MRecordList;
 
-        public byte[] FileName
-        {
-            get { return m_FileName; }
-        }
+        public uint AppInfoId => this.MAppInfoId;
 
-        public bool ReadOnly
-        {
-            get { return (m_Attributes & 0x0002) == 0x0002; }
-        }
+        public bool BackupThisDatabase => (this.MAttributes & 0x0008) == 0x0008;
 
-        public bool DirtyAppInfoArea
-        {
-            get { return (m_Attributes & 0x0004) == 0x0004; }
-        }
+        public uint Compression => this.MCompression;
 
-        public bool BackupThisDatabase
-        {
-            get { return (m_Attributes & 0x0008) == 0x0008; }
-        }
+        public DateTime CreationDate => this.MCreationDate;
 
-        public bool OKToInstallNewer
-        {
-            get { return (m_Attributes & 0x0010) == 0x0010; }
-        }
+        public string Creator => this.MCreator;
 
-        public bool ForceReset
-        {
-            get { return (m_Attributes & 0x0020) == 0x0020; }
-        }
+        public uint CurrentPosition => this.MCurrentPosition;
 
-        public bool NoBeam
-        {
-            get { return (m_Attributes & 0x0040) == 0x0040; }
-        }
+        public bool DirtyAppInfoArea => (this.MAttributes & 0x0004) == 0x0004;
 
-        public uint Version
-        {
-            get { return m_Version; }
-        }
+        public byte[] FileName => this.MFileName;
 
-        public DateTime CreationDate
-        {
-            get { return m_CreationDate; }
-        }
+        public bool ForceReset => (this.MAttributes & 0x0020) == 0x0020;
 
-        public DateTime ModificationDate
-        {
-            get { return m_ModificationDate; }
-        }
+        public DateTime LastBackupDate => this.MLastBackupDate;
 
-        public DateTime LastBackupDate
-        {
-            get { return m_LastBackupDate; }
-        }
+        public DateTime ModificationDate => this.MModificationDate;
 
-        public uint ModificationNumber
-        {
-            get { return m_ModificationNumber; }
-        }
+        public uint ModificationNumber => this.MModificationNumber;
 
-        public uint AppInfoID
-        {
-            get { return m_AppInfoID; }
-        }
+        public string Name => this.MName;
 
-        public uint SortInfoID
-        {
-            get { return m_SortInfoID; }
-        }
+        public uint NextRecordListId => this.MNextRecordListId;
 
-        public string Type
-        {
-            get { return m_Type; }
-        }
+        public bool NoBeam => (this.MAttributes & 0x0040) == 0x0040;
 
-        public string Creator
-        {
-            get { return m_Creator; }
-        }
+        public uint NumberOfRecords => this.MNumberOfRecords;
 
-        public uint UniqueIDSeed
-        {
-            get { return m_UniqueIDSeed; }
-        }
+        public bool OkToInstallNewer => (this.MAttributes & 0x0010) == 0x0010;
 
-        public uint NextRecordListID
-        {
-            get { return m_NextRecordListID; }
-        }
+        public bool ReadOnly => (this.MAttributes & 0x0002) == 0x0002;
 
-        public uint NumberOfRecords
-        {
-            get { return m_NumberOfRecords; }
-        }
+        public PalmRecord[] RecordList => this.MRecordList;
 
-        public PalmRecord[] RecordList
-        {
-            get { return m_RecordList; }
-        }
+        public uint SortInfoId => this.MSortInfoId;
 
-        public uint Compression
-        {
-            get { return m_Compression; }
-        }
+        public uint TextLength => this.MTextLength;
 
-        public uint TextLength
-        {
-            get { return m_TextLength; }
-        }
+        public uint TextRecordCount => this.MTextRecordCount;
 
-        public uint TextRecordCount
-        {
-            get { return m_TextRecordCount; }
-        }
+        public uint TextRecordSize => this.MTextRecordSize;
 
-        public uint TextRecordSize
-        {
-            get { return m_TextRecordSize; }
-        }
+        public string Type => this.MType;
 
-        public uint CurrentPosition
-        {
-            get { return m_CurrentPosition; }
-        }
+        public uint UniqueIdSeed => this.MUniqueIdSeed;
 
-        public PalmFile()
-        {
-        }
+        public uint Version => this.MVersion;
 
         public static PalmFile LoadFile(byte[] file)
         {
             PalmFile retval = new PalmFile
             {
-                m_FileName = file
+                MFileName = file
             };
             MemoryStream fs = new MemoryStream(file);
             StreamReader sr = null;
-            uint seconds = 0;
             DateTime startdate = new DateTime(1904, 1, 1);
 
             //startdate = new DateTime(1970, 1, 1);
             try
             {
                 sr = new StreamReader(fs);
-                Char[] buffer = new char[32];
+                var buffer = new char[32];
                 sr.Read(buffer, 0, 32);
                 fs.Seek(32, SeekOrigin.Begin);
-                retval.m_Name = new string(buffer);
-                byte[] bytebuffer = new byte[4];
+                retval.MName = new string(buffer);
+                var bytebuffer = new byte[4];
                 fs.Read(bytebuffer, 2, 2);
-                retval.m_Attributes = BytesToUint(bytebuffer);
+                retval.MAttributes = BytesToUint(bytebuffer);
                 bytebuffer = new byte[4];
                 fs.Read(bytebuffer, 2, 2);
-                retval.m_Version = BytesToUint(bytebuffer);
+                retval.MVersion = BytesToUint(bytebuffer);
                 bytebuffer = new byte[4];
                 fs.Read(bytebuffer, 0, 4);
-                seconds = BytesToUint(bytebuffer);
-                TimeSpan ts = new TimeSpan(0, (int)(seconds / 60), 0);
-                retval.m_CreationDate = startdate + ts;
+                uint seconds = BytesToUint(bytebuffer);
+                TimeSpan ts = new TimeSpan(0, (int) (seconds / 60), 0);
+                retval.MCreationDate = startdate + ts;
                 fs.Read(bytebuffer, 0, 4);
                 seconds = BytesToUint(bytebuffer);
-                ts = new TimeSpan(0, (int)(seconds / 60), 0);
-                retval.m_ModificationDate = startdate + ts;
+                ts = new TimeSpan(0, (int) (seconds / 60), 0);
+                retval.MModificationDate = startdate + ts;
                 fs.Read(bytebuffer, 0, 4);
                 seconds = BytesToUint(bytebuffer);
-                ts = new TimeSpan(0, (int)(seconds / 60), 0);
-                retval.m_LastBackupDate = startdate + ts;
+                ts = new TimeSpan(0, (int) (seconds / 60), 0);
+                retval.MLastBackupDate = startdate + ts;
                 fs.Read(bytebuffer, 0, 4);
-                retval.m_ModificationNumber = BytesToUint(bytebuffer);
+                retval.MModificationNumber = BytesToUint(bytebuffer);
                 fs.Read(bytebuffer, 0, 4);
-                retval.m_AppInfoID = BytesToUint(bytebuffer);
+                retval.MAppInfoId = BytesToUint(bytebuffer);
                 fs.Read(bytebuffer, 0, 4);
-                retval.m_SortInfoID = BytesToUint(bytebuffer);
+                retval.MSortInfoId = BytesToUint(bytebuffer);
                 buffer = new char[4];
                 sr.DiscardBufferedData();
                 sr.Read(buffer, 0, 4);
-                retval.m_Type = new string(buffer);
+                retval.MType = new string(buffer);
                 sr.Read(buffer, 0, 4);
-                retval.m_Creator = new string(buffer);
+                retval.MCreator = new string(buffer);
                 fs.Seek(68, SeekOrigin.Begin);
                 fs.Read(bytebuffer, 0, 4);
 
-                retval.m_UniqueIDSeed = BytesToUint(bytebuffer);
+                retval.MUniqueIdSeed = BytesToUint(bytebuffer);
                 fs.Read(bytebuffer, 0, 4);
 
-                retval.m_NextRecordListID = BytesToUint(bytebuffer);
+                retval.MNextRecordListId = BytesToUint(bytebuffer);
                 bytebuffer = new byte[4];
                 fs.Read(bytebuffer, 2, 2);
 
                 // Load RecordInfo
 
-                retval.m_NumberOfRecords = BytesToUint(bytebuffer);
-                retval.m_RecordInfoList = new PalmRecordInfo[retval.m_NumberOfRecords];
-                retval.m_RecordList = new PalmRecord[retval.m_NumberOfRecords];
-                for (int i = 0; i < retval.m_NumberOfRecords; i++)
+                retval.MNumberOfRecords = BytesToUint(bytebuffer);
+                retval.MRecordInfoList = new PalmRecordInfo[retval.MNumberOfRecords];
+                retval.MRecordList = new PalmRecord[retval.MNumberOfRecords];
+                for (int i = 0; i < retval.MNumberOfRecords; i++)
                 {
                     fs.Read(bytebuffer, 0, 4);
-                    retval.m_RecordInfoList[i].DataOffset = BytesToUint(bytebuffer);
+                    retval.MRecordInfoList[i].DataOffset = BytesToUint(bytebuffer);
 
                     bytebuffer = new byte[4];
                     fs.Read(bytebuffer, 3, 1);
-                    retval.m_RecordInfoList[i].Attributes = BytesToUint(bytebuffer);
+                    retval.MRecordInfoList[i].Attributes = BytesToUint(bytebuffer);
 
                     bytebuffer = new byte[4];
                     fs.Read(bytebuffer, 1, 3);
-                    retval.m_RecordInfoList[i].UniqueID = BytesToUint(bytebuffer);
+                    retval.MRecordInfoList[i].UniqueId = BytesToUint(bytebuffer);
                 }
 
                 //Load Records
 
-                uint StartOffset;
-                uint EndOffset;
-                int RecordLength;
-                for (int i = 0; i < retval.m_NumberOfRecords - 1; i++)
+                uint startOffset;
+                int recordLength;
+                for (int i = 0; i < retval.MNumberOfRecords - 1; i++)
                 {
-                    StartOffset = retval.m_RecordInfoList[i].DataOffset;
-                    EndOffset = retval.m_RecordInfoList[i + 1].DataOffset;
-                    RecordLength = ((int)(EndOffset - StartOffset));
-                    fs.Seek(StartOffset, SeekOrigin.Begin);
-                    retval.m_RecordList[i].Data = new byte[RecordLength];
-                    fs.Read(retval.m_RecordList[i].Data, 0, RecordLength);
+                    startOffset = retval.MRecordInfoList[i].DataOffset;
+                    uint endOffset = retval.MRecordInfoList[i + 1].DataOffset;
+                    recordLength = (int) (endOffset - startOffset);
+                    fs.Seek(startOffset, SeekOrigin.Begin);
+                    retval.MRecordList[i].Data = new byte[recordLength];
+                    fs.Read(retval.MRecordList[i].Data, 0, recordLength);
                 }
 
-                StartOffset = retval.m_RecordInfoList[retval.m_NumberOfRecords - 1].DataOffset;
-                RecordLength = (int)(fs.Length - ((int)StartOffset));
-                fs.Seek(StartOffset, SeekOrigin.Begin);
-                retval.m_RecordList[retval.m_NumberOfRecords - 1].Data = new byte[RecordLength];
-                fs.Read(retval.m_RecordList[retval.m_NumberOfRecords - 1].Data, 0, RecordLength);
+                startOffset = retval.MRecordInfoList[retval.MNumberOfRecords - 1].DataOffset;
+                recordLength = (int) (fs.Length - (int) startOffset);
+                fs.Seek(startOffset, SeekOrigin.Begin);
+                retval.MRecordList[retval.MNumberOfRecords - 1].Data = new byte[recordLength];
+                fs.Read(retval.MRecordList[retval.MNumberOfRecords - 1].Data, 0, recordLength);
 
                 // LoadHeader
-                List<byte> empty2 = new List<byte>();
-                List<byte> temp = new List<byte>();
+                var empty2 = new List<byte>();
+                var temp = new List<byte>();
                 empty2.Add(0);
                 empty2.Add(0);
 
-                List<byte> headerdata = new List<byte>();
+                var headerdata = new List<byte>();
 
-                headerdata.AddRange(retval.m_RecordList[0].Data);
+                headerdata.AddRange(retval.MRecordList[0].Data);
 
                 temp.AddRange(empty2);
                 temp.AddRange(headerdata.GetRange(0, 2));
-                retval.m_Compression = BytesToUint(temp.ToArray());
+                retval.MCompression = BytesToUint(temp.ToArray());
                 temp.Clear();
                 temp.AddRange(headerdata.GetRange(4, 4));
-                retval.m_TextLength = BytesToUint(temp.ToArray());
+                retval.MTextLength = BytesToUint(temp.ToArray());
 
                 temp.Clear();
                 temp.AddRange(empty2);
                 temp.AddRange(headerdata.GetRange(8, 2));
-                retval.m_TextRecordCount = BytesToUint(temp.ToArray());
+                retval.MTextRecordCount = BytesToUint(temp.ToArray());
 
                 temp.Clear();
                 temp.AddRange(empty2);
                 temp.AddRange(headerdata.GetRange(10, 2));
-                retval.m_TextRecordSize = BytesToUint(temp.ToArray());
+                retval.MTextRecordSize = BytesToUint(temp.ToArray());
 
                 temp.Clear();
                 temp.AddRange(headerdata.GetRange(12, 4));
-                retval.m_CurrentPosition = BytesToUint(temp.ToArray());
-                ;
+                retval.MCurrentPosition = BytesToUint(temp.ToArray());
             }
             finally
             {
@@ -328,29 +242,17 @@ namespace EbookTools.Mobi
                     sr.Close();
                     sr.Dispose();
                 }
-                if (fs != null)
-                {
-                    fs.Close();
-                    fs.Dispose();
-                }
-            }
-            return retval;
-        }
 
-        protected static uint Reversebytes(uint value)
-        {
-            return (value & 0x000000FFU) << 24 | (value & 0x0000FF00U) << 8 |
-            (value & 0x00FF0000U) >> 8 | (value & 0xFF000000U) >> 24;
+                fs.Close();
+                fs.Dispose();
+            }
+
+            return retval;
         }
 
         public static uint BytesToUint(byte[] bytes)
         {
-            return (uint)((bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3]);
-        }
-
-        public static uint BytesToUintR(byte[] bytes)
-        {
-            return Reversebytes((uint)((bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3]));
+            return (uint) ((bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3]);
         }
     }
 }

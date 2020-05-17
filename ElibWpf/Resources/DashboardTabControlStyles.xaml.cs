@@ -1,33 +1,38 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace ElibWpf.Resources
 {
     public partial class DashboardTabControlStyles : ResourceDictionary
     {
-        public void HandleLeftClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        public void HandleLeftClick(object sender, MouseButtonEventArgs e)
         {
-            var grid = sender as Grid;
-            var mousePosition = e.GetPosition(grid);
+            Grid grid = sender as Grid;
+            Point mousePosition = e.GetPosition(grid);
 
-            if (mousePosition.X >= 0 && mousePosition.Y >= 0 && mousePosition.X <= grid.ActualWidth && mousePosition.Y <= grid.ActualHeight)
+            if (!(mousePosition.X >= 0) || !(mousePosition.Y >= 0) || !(mousePosition.X <= grid.ActualWidth) ||
+                !(mousePosition.Y <= grid.ActualHeight))
             {
-                var thisWindow = Window.GetWindow(grid);
-                if (e.ClickCount == 2)
+                return;
+            }
+
+            Window thisWindow = Window.GetWindow(grid);
+            if (e.ClickCount == 2)
+            {
+                if (thisWindow != null)
                 {
-                    if (thisWindow.WindowState == WindowState.Maximized)
+                    thisWindow.WindowState = thisWindow.WindowState switch
                     {
-                        thisWindow.WindowState = WindowState.Normal;
-                    }
-                    else if (thisWindow.WindowState == WindowState.Normal)
-                    {
-                        thisWindow.WindowState = WindowState.Maximized;
-                    }
+                        WindowState.Maximized => WindowState.Normal,
+                        WindowState.Normal => WindowState.Maximized,
+                        _ => thisWindow.WindowState
+                    };
                 }
-                else
-                {
-                    thisWindow.DragMove();
-                }
+            }
+            else
+            {
+                thisWindow?.DragMove();
             }
         }
     }

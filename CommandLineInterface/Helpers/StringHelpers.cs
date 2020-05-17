@@ -11,16 +11,20 @@ namespace Models.Helpers
         public static Tuple<string, string> SplitOnFirstBlank(this string str)
         {
             if (string.IsNullOrEmpty(str))
+            {
                 return new Tuple<string, string>(string.Empty, string.Empty);
+            }
 
-            string[] parts = str.Split(new[] { ' ' }, 2);
+            var parts = str.Split(new[] {' '}, 2);
 
-            return parts.Length == 2 ? new Tuple<string, string>(parts[0], parts[1]) : new Tuple<string, string>(parts[0], string.Empty);
+            return parts.Length == 2
+                ? new Tuple<string, string>(parts[0], parts[1])
+                : new Tuple<string, string>(parts[0], string.Empty);
         }
 
         /// <summary>
-        /// Extracts paths from a string seperated by a space or enclosed in quotations
-        /// Input example: \path\fileA \path\fileB "\path\file C\"
+        ///     Extracts paths from a string seperated by a space or enclosed in quotations
+        ///     Input example: \path\fileA \path\fileB "\path\file C\"
         /// </summary>
         /// <param name="str">String containing one or more paths</param>
         /// <returns>IEnumerable of paths</returns>
@@ -40,9 +44,7 @@ namespace Models.Helpers
                 {
                     result.Add(int.Parse(x));
                 }
-                catch (FormatException)
-                {
-                }
+                catch (FormatException) { }
             }
 
             return result;

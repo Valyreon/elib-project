@@ -2,9 +2,9 @@
 {
     public interface IPagedList
     {
-        int TotalCount { get; }
-        int PageCount { get; }
         int Page { get; }
+        int PageCount { get; }
         int PageSize { get; }
+        int TotalCount { get; }
     }
 }

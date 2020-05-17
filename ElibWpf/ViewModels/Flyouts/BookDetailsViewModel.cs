@@ -1,4 +1,9 @@
-﻿using DataLayer;
+﻿using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using DataLayer;
 using Domain;
 using ElibWpf.Messages;
 using GalaSoft.MvvmLight;
@@ -6,68 +11,117 @@ using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using Models;
 using Models.Observables;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Data.Entity;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace ElibWpf.ViewModels.Flyouts
 {
     public class BookDetailsViewModel : ViewModelBase
     {
-        public ObservableBook Book { get; private set; }
+        private string addCollectionFieldText = "";
+
+        private string bookDescription;
 
         public BookDetailsViewModel(ObservableBook book)
         {
             this.Book = book;
         }
 
-        public ICommand GoToAuthor { get => new RelayCommand<ICollection<ObservableAuthor>>((ICollection<ObservableAuthor> a) => { Messenger.Default.Send(new AuthorSelectedMessage(a)); Messenger.Default.Send(new CloseFlyoutMessage()); }); }
+        public ICommand AddCollectionCommand => new RelayCommand<string>(this.AddCollection);
 
-        public ICommand GoToSeries { get => new RelayCommand<ObservableSeries>((ObservableSeries a) => { Messenger.Default.Send(new SeriesSelectedMessage(a)); Messenger.Default.Send(new CloseFlyoutMessage()); }); }
+        public string AddCollectionFieldText
+        {
+            get => this.addCollectionFieldText;
+            set => base.Set(() => this.AddCollectionFieldText, ref this.addCollectionFieldText, value);
+        }
 
-        public ICommand LoadOnlineApiCommand { get => new RelayCommand(this.LoadOnlineApiAsync); }
+        public ObservableBook Book { get; }
 
-        public ICommand AddCollectionCommand { get => new RelayCommand<string>(this.AddCollection); }
+        public string BookDescriptionText
+        {
+            get => this.bookDescription;
+            set => this.Set(ref this.bookDescription, value);
+        }
 
-        public ICommand RemoveCollectionCommand { get => new RelayCommand<string>(this.RemoveCollection); }
+        public ICommand EditButtonCommand => new RelayCommand(this.HandleEditButton);
 
-        public ICommand GoToCollectionCommand { get => new RelayCommand<ObservableUserCollection>(this.GoToCollection); }
+        public ICommand GoToAuthor => new RelayCommand<ICollection<ObservableAuthor>>(a =>
+        {
+            Messenger.Default.Send(new AuthorSelectedMessage(a));
+            Messenger.Default.Send(new CloseFlyoutMessage());
+        });
+
+        public ICommand GoToCollectionCommand => new RelayCommand<ObservableUserCollection>(this.GoToCollection);
+
+        public ICommand GoToSeries => new RelayCommand<ObservableSeries>(a =>
+        {
+            Messenger.Default.Send(new SeriesSelectedMessage(a));
+            Messenger.Default.Send(new CloseFlyoutMessage());
+        });
+
+        public bool IsBookFavorite
+        {
+            get => this.Book.IsFavorite;
+            set
+            {
+                this.Book.IsFavorite = value;
+                this.RaisePropertyChanged(() => this.IsBookFavorite);
+
+                Task.Run(() =>
+                {
+                    using ElibContext database = ApplicationSettings.CreateContext();
+                    database.Entry(this.Book.Book).State = EntityState.Modified;
+                    database.SaveChanges();
+                });
+            }
+        }
+
+        public bool IsBookRead
+        {
+            get => this.Book.IsRead;
+            set
+            {
+                this.Book.IsRead = value;
+                this.RaisePropertyChanged(() => this.IsBookRead);
+
+                Task.Run(() =>
+                {
+                    using ElibContext database = ApplicationSettings.CreateContext();
+                    database.Entry(this.Book.Book).State = EntityState.Modified;
+                    database.SaveChanges();
+                });
+            }
+        }
+
+        public ICommand LoadOnlineApiCommand => new RelayCommand(this.LoadOnlineApiAsync);
+
+        public ICommand RemoveCollectionCommand => new RelayCommand<string>(this.RemoveCollection);
 
         private void GoToCollection(ObservableUserCollection obj)
         {
-            MessengerInstance.Send(new CollectionSelectedMessage(obj));
-            MessengerInstance.Send(new CloseFlyoutMessage());
+            this.MessengerInstance.Send(new CollectionSelectedMessage(obj));
+            this.MessengerInstance.Send(new CloseFlyoutMessage());
         }
 
         private void RemoveCollection(string tag)
         {
-            var collection = Book.Collections.Where(c => c.Tag == tag).FirstOrDefault();
-            Book.Collections.Remove(collection);
+            ObservableUserCollection collection = this.Book.Collections.FirstOrDefault(c => c.Tag == tag);
+
+            if (collection == null)
+                return;
+
+            this.Book.Collections.Remove(collection);
 
             Task.Run(() =>
             {
                 using ElibContext database = ApplicationSettings.CreateContext();
-                database.Books.Attach(Book.Book);
-                if (database.Books.Where(b => b.UserCollections.Where(c => c.Tag == tag).Any()).Count() <= 1)
+                database.Books.Attach(this.Book.Book);
+                if (database.Books.Count(b => b.UserCollections.Any(c => c.Tag == tag)) <= 1)
                 {
                     database.Entry(collection.Collection).State = EntityState.Deleted;
-                    MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
+                    this.MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
                 }
+
                 database.SaveChanges();
             });
-
-        }
-
-        private string addCollectionFieldText = "";
-
-        public string AddCollectionFieldText
-        {
-            get => addCollectionFieldText;
-            set => base.Set(() => AddCollectionFieldText, ref addCollectionFieldText, value);
         }
 
         private void AddCollection(string tag)
@@ -76,34 +130,37 @@ namespace ElibWpf.ViewModels.Flyouts
             {
                 tag = tag.Trim();
                 bool isNew = false;
-                AddCollectionFieldText = "";
-                if (Book.Collections.Where(c => c.Tag == tag).Any()) // check if book is already in that collection
+                this.AddCollectionFieldText = "";
+                if (this.Book.Collections.Any(c => c.Tag == tag)) // check if book is already in that collection
                 {
-                    MessengerInstance.Send(new ShowDialogMessage("", $"This book is already in the '{tag}' collection"));
+                    this.MessengerInstance.Send(new ShowDialogMessage("",
+                        $"This book is already in the '{tag}' collection"));
                 }
                 else // if not
                 {
-                    ObservableUserCollection newCollection = new ObservableUserCollection(new UserCollection { Tag = tag });
-                    Book.Collections.Add(newCollection);
+                    ObservableUserCollection newCollection = new ObservableUserCollection(new UserCollection {Tag = tag});
+                    this.Book.Collections.Add(newCollection);
                     Task.Run(() =>
                     {
                         using ElibContext database = ApplicationSettings.CreateContext();
-                        database.Books.Attach(Book.Book);
-                        var existingCollection = database.UserCollections.Where(c => c.Tag == tag).FirstOrDefault();
+                        database.Books.Attach(this.Book.Book);
+                        UserCollection existingCollection = database.UserCollections.FirstOrDefault(c => c.Tag == tag);
                         if (existingCollection == null)
                         {
                             isNew = true;
-                            Book.Book.UserCollections.Add(newCollection.Collection);
+                            this.Book.Book.UserCollections.Add(newCollection.Collection);
                         }
                         else
                         {
-                            Book.Collections.Remove(newCollection);
-                            Book.Collections.Add(new ObservableUserCollection(existingCollection));
+                            this.Book.Collections.Remove(newCollection);
+                            this.Book.Collections.Add(new ObservableUserCollection(existingCollection));
                         }
 
                         database.SaveChanges();
                         if (isNew)
-                            MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
+                        {
+                            this.MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
+                        }
                     });
                 }
             }
@@ -114,53 +171,9 @@ namespace ElibWpf.ViewModels.Flyouts
             // fill here stuff from online api
         }
 
-        public bool IsBookRead
-        {
-            get => Book.IsRead;
-            set
-            {
-                Book.IsRead = value;
-                this.RaisePropertyChanged(() => IsBookRead);
-
-                Task.Run(() =>
-                {
-                    using ElibContext database = ApplicationSettings.CreateContext();
-                    database.Entry(Book.Book).State = EntityState.Modified;
-                    database.SaveChanges();
-                });
-            }
-        }
-
-        public bool IsBookFavorite
-        {
-            get => Book.IsFavorite;
-            set
-            {
-                Book.IsFavorite = value;
-                this.RaisePropertyChanged(() => IsBookFavorite);
-
-                Task.Run(() =>
-                {
-                    using ElibContext database = ApplicationSettings.CreateContext();
-                    database.Entry(Book.Book).State = EntityState.Modified;
-                    database.SaveChanges();
-                });
-            }
-        }
-
-        private string bookDescription;
-
-        public string BookDescriptionText
-        {
-            get => bookDescription;
-            set => Set(ref bookDescription, value);
-        }
-
-        public ICommand EditButtonCommand { get => new RelayCommand(this.HandleEditButton); }
-
         private void HandleEditButton()
         {
-            MessengerInstance.Send(new EditBookMessage(Book));
+            this.MessengerInstance.Send(new EditBookMessage(this.Book));
         }
     }
 }

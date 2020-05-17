@@ -3,13 +3,13 @@
 namespace ElibWpf.Views.Dialogs
 {
     /// <summary>
-    /// Interaction logic for ChooseSeriesDialog.xaml
+    ///     Interaction logic for ChooseSeriesDialog.xaml
     /// </summary>
     public partial class ChooseSeriesDialog : BaseMetroDialog
     {
         public ChooseSeriesDialog()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

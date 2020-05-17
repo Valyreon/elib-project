@@ -1,9 +1,9 @@
-﻿using DataLayer;
-using Domain;
-using Models.Observables;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DataLayer;
+using Domain;
+using Models.Observables;
 
 namespace Models
 {
@@ -11,37 +11,35 @@ namespace Models
     {
         private readonly HashSet<int> selectedBookIds;
 
-        public IEnumerable<int> SelectedIds { get => selectedBookIds.AsEnumerable(); }
-
-        public int Count { get => selectedBookIds.Count; }
-
         public Selector()
         {
             this.selectedBookIds = new HashSet<int>();
         }
 
+        public int Count => this.selectedBookIds.Count;
+
+        public IEnumerable<int> SelectedIds => this.selectedBookIds.AsEnumerable();
+
         public async Task<IList<Book>> GetSelectedBooks(ElibContext context)
         {
-            return await Task.Run(() => context.Books.Where(b => selectedBookIds.Contains(b.Id)).ToList());
+            return await Task.Run(() => context.Books.Where(b => this.selectedBookIds.Contains(b.Id)).ToList());
         }
 
         public bool Select(ObservableBook book)
         {
             if (book.IsMarked)
             {
-                selectedBookIds.Add(book.Id);
+                this.selectedBookIds.Add(book.Id);
                 return true;
             }
-            else
-            {
-                selectedBookIds.Remove(book.Id);
-                return false;
-            }
+
+            this.selectedBookIds.Remove(book.Id);
+            return false;
         }
 
         public ObservableBook SetMarked(ObservableBook book)
         {
-            book.IsMarked = selectedBookIds.Contains(book.Id);
+            book.IsMarked = this.selectedBookIds.Contains(book.Id);
             return book;
         }
     }

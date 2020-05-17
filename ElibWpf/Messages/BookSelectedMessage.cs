@@ -2,7 +2,5 @@
 
 namespace ElibWpf.Messages
 {
-    public class BookSelectedMessage : MessageBase
-    {
-    }
+    public class BookSelectedMessage : MessageBase { }
 }

@@ -10,14 +10,15 @@ namespace ElibWpf.CustomComponents
 
         static DarkFlatTextButton()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(DarkFlatTextButton), new FrameworkPropertyMetadata(typeof(DarkFlatTextButton)));
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(DarkFlatTextButton),
+                new FrameworkPropertyMetadata(typeof(DarkFlatTextButton)));
             TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(DarkFlatTextButton));
         }
 
         public string Text
         {
-            get { return (string)base.GetValue(TextProperty); }
-            set => base.SetValue(TextProperty, value);
+            get => (string) this.GetValue(TextProperty);
+            set => this.SetValue(TextProperty, value);
         }
     }
 }

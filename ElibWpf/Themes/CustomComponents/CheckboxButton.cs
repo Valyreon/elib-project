@@ -1,5 +1,4 @@
-﻿using MahApps.Metro.IconPacks;
-using System;
+﻿using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -14,28 +13,29 @@ namespace ElibWpf.CustomComponents
 
         static CheckboxButton()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(CheckboxButton), new FrameworkPropertyMetadata(typeof(CheckboxButton)));
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(CheckboxButton),
+                new FrameworkPropertyMetadata(typeof(CheckboxButton)));
             TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(CheckboxButton));
             CheckedIconProperty = DependencyProperty.Register("CheckedIcon", typeof(Enum), typeof(CheckboxButton));
             CheckedColorProperty = DependencyProperty.Register("CheckedColor", typeof(Brush), typeof(CheckboxButton));
         }
 
-        public string Text
+        public Brush CheckedColor
         {
-            get { return (string)base.GetValue(TextProperty); }
-            set => base.SetValue(TextProperty, value);
+            get => (Brush) this.GetValue(CheckedColorProperty);
+            set => this.SetValue(CheckedColorProperty, value);
         }
 
         public Enum CheckedIcon
         {
-            get { return (Enum)base.GetValue(CheckedIconProperty); }
-            set => base.SetValue(CheckedIconProperty, value);
+            get => (Enum) this.GetValue(CheckedIconProperty);
+            set => this.SetValue(CheckedIconProperty, value);
         }
 
-        public Brush CheckedColor
+        public string Text
         {
-            get { return (Brush)base.GetValue(CheckedColorProperty); }
-            set => base.SetValue(CheckedColorProperty, value);
+            get => (string) this.GetValue(TextProperty);
+            set => this.SetValue(TextProperty, value);
         }
     }
 }
