@@ -29,7 +29,7 @@ namespace EbookTools.Epub
         public EpubParser(Stream file)
         {
             this.StyleSettings = StyleSettings.Default;
-            MemoryStream ms = new MemoryStream();
+            using MemoryStream ms = new MemoryStream();
             file.CopyTo(ms);
             this.rawFile = ms.GetBuffer();
         }
@@ -37,7 +37,7 @@ namespace EbookTools.Epub
         public EpubParser(Stream file, StyleSettings settings)
         {
             this.StyleSettings = settings;
-            MemoryStream ms = new MemoryStream();
+            using MemoryStream ms = new MemoryStream();
             file.CopyTo(ms);
             this.rawFile = ms.GetBuffer();
         }
@@ -47,7 +47,7 @@ namespace EbookTools.Epub
         /// </summary>
         public override ParsedBook Parse()
         {
-            MemoryStream ms = new MemoryStream(this.rawFile);
+            using MemoryStream ms = new MemoryStream(this.rawFile);
             string title, author, publisher, isbn = null;
             byte[] cover;
             using (ZipArchive zip = new ZipArchive(ms, ZipArchiveMode.Read))
@@ -79,7 +79,7 @@ namespace EbookTools.Epub
 
         public override string GenerateHtml()
         {
-            MemoryStream ms = new MemoryStream(this.rawFile);
+            using MemoryStream ms = new MemoryStream(this.rawFile);
             using ZipArchive zip = new ZipArchive(ms, ZipArchiveMode.Read);
             XmlDocument doc = GetRootfileDocument(zip);
             return this.FormHtml(doc, zip);
@@ -91,7 +91,7 @@ namespace EbookTools.Epub
             {
                 if (entry.Name.ToLower().Contains("cover"))
                 {
-                    MemoryStream ms = new MemoryStream();
+                    using MemoryStream ms = new MemoryStream();
                     entry.Open().CopyTo(ms);
                     return ms.ToArray();
                 }
@@ -251,7 +251,7 @@ namespace EbookTools.Epub
             {
                 if (entry.FullName.Contains(href))
                 {
-                    MemoryStream ms = new MemoryStream();
+                    using MemoryStream ms = new MemoryStream();
                     entry.Open().CopyTo(ms);
                     string imageString = "data:image/" + Path.GetExtension(entry.Name) + ";base64," +
                                          ImageToBase64String(ms.GetBuffer());

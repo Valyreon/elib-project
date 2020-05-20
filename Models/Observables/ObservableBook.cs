@@ -113,7 +113,6 @@ namespace Models.Observables
                     this.Book.SeriesId = null;
                     this.Book.Series = null;
                     this.Book.NumberInSeries = null;
-                    this.RaisePropertyChanged(() => this.SeriesInfo);
                 }
 
                 this.RaisePropertyChanged(() => this.SeriesInfo);

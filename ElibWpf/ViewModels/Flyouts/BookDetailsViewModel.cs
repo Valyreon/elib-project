@@ -45,7 +45,7 @@ namespace ElibWpf.ViewModels.Flyouts
 
         public ICommand GoToAuthor => new RelayCommand<ICollection<ObservableAuthor>>(a =>
         {
-            Messenger.Default.Send(new AuthorSelectedMessage(a));
+            Messenger.Default.Send(new AuthorSelectedMessage(a.First().Id));
             Messenger.Default.Send(new CloseFlyoutMessage());
         });
 
@@ -53,7 +53,7 @@ namespace ElibWpf.ViewModels.Flyouts
 
         public ICommand GoToSeries => new RelayCommand<ObservableSeries>(a =>
         {
-            Messenger.Default.Send(new SeriesSelectedMessage(a));
+            Messenger.Default.Send(new SeriesSelectedMessage(a.Id));
             Messenger.Default.Send(new CloseFlyoutMessage());
         });
 
@@ -97,7 +97,7 @@ namespace ElibWpf.ViewModels.Flyouts
 
         private void GoToCollection(ObservableUserCollection obj)
         {
-            this.MessengerInstance.Send(new CollectionSelectedMessage(obj));
+            this.MessengerInstance.Send(new CollectionSelectedMessage(obj.Id));
             this.MessengerInstance.Send(new CloseFlyoutMessage());
         }
 

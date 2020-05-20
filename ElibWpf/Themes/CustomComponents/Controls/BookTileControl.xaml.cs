@@ -209,11 +209,9 @@ namespace ElibWpf.Themes.CustomComponents.Controls
             }
         }
 
-        private async void SelectedCheckbox_Checked(object sender, RoutedEventArgs e)
+        private void SelectedCheckbox_Checked(object sender, RoutedEventArgs e)
         {
-            await semaphoreSlim.WaitAsync();
             this.selectedCheckbox.Opacity = 1;
-            semaphoreSlim.Release();
         }
 
         private void SelectedCheckbox_Unchecked(object sender, RoutedEventArgs e) { }

@@ -287,18 +287,13 @@ namespace ElibWpf.ViewModels.Flyouts
                     using ElibContext database = ApplicationSettings.CreateContext();
 
 
-                    if (book.Series != null &&
-                        (book.Series == null && this.Series != null || this.Series != null && book.Series.Id != this.Series.Id))
+                    if ((book.Series == null && this.Series != null) || (this.Series != null && book.Series.Id != this.Series.Id))
                     {
-                        book.Series =
-                            new ObservableSeries(database.Series.FirstOrDefault(s => s.Id == this.Series.Id));
+                        book.Series = new ObservableSeries(database.Series.FirstOrDefault(s => s.Id == this.Series.Id));
                     }
-                    else if (this.Series != null)
+                    else if (this.Series != null && book.Series != null)
                     {
-                        if (book.Series != null)
-                        {
                             book.Series.Name = this.Series.Name;
-                        }
                     }
                     else
                     {
@@ -372,6 +367,18 @@ namespace ElibWpf.ViewModels.Flyouts
                 }
 
                 this.CurrentBook = this.books[++this.counter];
+
+                foreach(var author in this.CurrentBook.Authors.ToList())
+                {
+                    using ElibContext database = ApplicationSettings.CreateContext();
+                    Author x = database.Authors.FirstOrDefault(a => a.Name == author.Name);
+                    if(x != null)
+                    {
+                        CurrentBook.Authors.Remove(author);
+                        CurrentBook.Authors.Add(new ObservableAuthor(x));
+                    }
+                }
+
                 this.CheckDuplicate(this.CurrentBook);
             }
         }

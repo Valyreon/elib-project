@@ -4,11 +4,11 @@ namespace ElibWpf.Messages
 {
     public class CollectionSelectedMessage
     {
-        public CollectionSelectedMessage(ObservableUserCollection collection)
+        public CollectionSelectedMessage(int id)
         {
-            this.Collection = collection;
+            this.CollectionId = id;
         }
 
-        public ObservableUserCollection Collection { get; }
+        public int CollectionId { get; }
     }
 }

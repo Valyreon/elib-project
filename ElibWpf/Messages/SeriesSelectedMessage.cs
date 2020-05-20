@@ -5,11 +5,11 @@ namespace ElibWpf.Messages
 {
     public class SeriesSelectedMessage : MessageBase
     {
-        public SeriesSelectedMessage(ObservableSeries series)
+        public SeriesSelectedMessage(int seriesId)
         {
-            this.Series = series;
+            this.SeriesId = seriesId;
         }
 
-        public ObservableSeries Series { get; }
+        public int SeriesId { get; }
     }
 }

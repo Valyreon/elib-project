@@ -5,14 +5,11 @@ namespace ElibWpf.Messages
 {
     public class ShowBookDetailsMessage : MessageBase
     {
-        public ShowBookDetailsMessage(ObservableBook clickedBook, bool edit = false)
+        public ShowBookDetailsMessage(ObservableBook clickedBook)
         {
             this.Book = clickedBook;
-            this.ToEdit = edit;
         }
 
         public ObservableBook Book { get; }
-
-        public bool ToEdit { get; set; }
     }
 }

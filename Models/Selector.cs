@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DataLayer;
@@ -41,6 +42,11 @@ namespace Models
         {
             book.IsMarked = this.selectedBookIds.Contains(book.Id);
             return book;
+        }
+
+        public void Clear()
+        {
+            this.selectedBookIds.Clear();
         }
     }
 }

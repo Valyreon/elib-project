@@ -6,7 +6,7 @@ namespace Models.Options
     {
         [JsonProperty("SearchByAuthor")] public bool SearchByAuthor { get; set; }
         [JsonProperty("SearchByName")] public bool SearchByName { get; set; } = true;
-
         [JsonProperty("SearchBySeries")] public bool SearchBySeries { get; set; }
+        [JsonIgnore] public string Token { get; set; }
     }
 }

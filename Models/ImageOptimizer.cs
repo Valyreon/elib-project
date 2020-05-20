@@ -12,7 +12,8 @@ namespace Models
         {
             try
             {
-                using Image imgPhoto = Image.FromStream(new MemoryStream(imgBytes));
+                using var ms = new MemoryStream(imgBytes);
+                using Image imgPhoto = Image.FromStream(ms);
 
 
                 Size size = new Size(width, height);

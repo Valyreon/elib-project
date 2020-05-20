@@ -112,14 +112,13 @@ namespace EbookTools.Mobi
             {
                 MFileName = file
             };
-            MemoryStream fs = new MemoryStream(file);
-            StreamReader sr = null;
+            using MemoryStream fs = new MemoryStream(file);
+            using StreamReader sr =  new StreamReader(fs);
             DateTime startdate = new DateTime(1904, 1, 1);
 
             //startdate = new DateTime(1970, 1, 1);
             try
             {
-                sr = new StreamReader(fs);
                 var buffer = new char[32];
                 sr.Read(buffer, 0, 32);
                 fs.Seek(32, SeekOrigin.Begin);
@@ -240,11 +239,9 @@ namespace EbookTools.Mobi
                 if (sr != null)
                 {
                     sr.Close();
-                    sr.Dispose();
                 }
 
                 fs.Close();
-                fs.Dispose();
             }
 
             return retval;

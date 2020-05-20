@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
@@ -29,27 +30,28 @@ namespace ElibWpf.ViewModels.Controls
     {
         private readonly PaneMainItem selectedMainItem;
         private readonly Selector selector;
-        private readonly ObservableStack<IViewer> viewerHistory = new ObservableStack<IViewer>();
+        private readonly ObservableStack<ViewerState> viewerHistory = new ObservableStack<ViewerState>();
         private string caption = "Books";
         private IViewer currentViewer;
         private bool isInSearchResults;
         private bool isSelectedMainAdded;
 
         private SearchOptions searchOptions;
-        private UserCollection selectedCollection;
+        private ObservableUserCollection selectedCollection;
         private PaneMainItem selectedMainPaneItem;
+        private FilterOptions filterOptions;
 
         public BooksTabViewModel()
         {
             this.selector = new Selector();
-            this.selectedMainItem = new PaneMainItem("Selected", PackIconFontAwesomeKind.CheckDoubleSolid, "Selected Books",
-                x => this.selector.SelectedIds.Contains(x.Id), true);
+            this.selectedMainItem = new PaneMainItem("Selected", PackIconFontAwesomeKind.CheckDoubleSolid, "Selected Books", new Filter { Selected = true });
 
             this.MessengerInstance.Register<AuthorSelectedMessage>(this, this.HandleAuthorSelection);
             this.MessengerInstance.Register<BookSelectedMessage>(this, this.HandleBookChecked);
             this.MessengerInstance.Register<SeriesSelectedMessage>(this, this.HandleSeriesSelection);
             this.MessengerInstance.Register<CollectionSelectedMessage>(this, this.HandleCollectionSelection);
             this.MessengerInstance.Register<GoBackMessage>(this, x => this.GoToPreviousViewer());
+            this.MessengerInstance.Register<RefreshCurrentViewMessage>(this, x => this.RefreshCurrent());
             this.MessengerInstance.Register<ResetPaneSelectionMessage>(this, x =>
             {
                 this.SelectedMainPaneItem = this.MainPaneItems[0];
@@ -63,26 +65,25 @@ namespace ElibWpf.ViewModels.Controls
 
             this.MainPaneItems = new ObservableCollection<PaneMainItem>
             {
-                new PaneMainItem("All", PackIconBoxIconsKind.SolidBook, "All Books", x => true),
-                new PaneMainItem("Favorite", PackIconFontAwesomeKind.StarSolid, "Favorite Books", x => x.IsFavorite),
-                new PaneMainItem("Read", PackIconFontAwesomeKind.CheckSolid, "Read Books", x => x.IsRead),
-                new PaneMainItem("Not Read", PackIconJamIconsKind.CloseCircle, "Not Read Books", x => !x.IsRead)
+                new PaneMainItem("All", PackIconBoxIconsKind.SolidBook, "All Books", null),
+                new PaneMainItem("Favorite", PackIconFontAwesomeKind.StarSolid, "Favorite Books", new Filter { Favorite = true })
             };
             this.SelectedMainPaneItem = this.MainPaneItems[0];
             this.PaneSelectionChanged();
             this.SearchOptions = ApplicationSettings.GetInstance().SearchOptions;
+            filterOptions = new FilterOptions();
         }
 
         public ICommand AddBookCommand => new RelayCommand(this.ProcessAddBook);
 
         public ICommand BackCommand => new RelayCommand(this.GoToPreviousViewer);
 
-        public List<UserCollection> Collections
+        public ObservableCollection<ObservableUserCollection> Collections
         {
             get
             {
                 using ElibContext database = ApplicationSettings.CreateContext();
-                return database.UserCollections.ToList();
+                return new ObservableCollection<ObservableUserCollection>(database.UserCollections.ToList().Select(c => new ObservableUserCollection(c)).ToList());
             }
         }
 
@@ -108,13 +109,25 @@ namespace ElibWpf.ViewModels.Controls
 
         public ICommand SearchCommand => new RelayCommand<string>(this.ProcessSearchInput);
 
+        public ICommand FilterBooksCommand => new RelayCommand(this.HandleFilterButton);
+
+        public ICommand ClearSelectedBooksCommand => new RelayCommand(this.HandleClearSelected);
+
+        private void HandleClearSelected()
+        {
+            this.selector.Clear();
+            this.SelectedMainPaneItem = this.MainPaneItems[0];
+            MainPaneItems.Remove(selectedMainItem);
+            PaneSelectionChanged();
+        }
+
         public SearchOptions SearchOptions
         {
             get => this.searchOptions;
             set => this.Set(() => this.SearchOptions, ref this.searchOptions, value);
         }
 
-        public UserCollection SelectedCollection
+        public ObservableUserCollection SelectedCollection
         {
             get => this.selectedCollection;
 
@@ -124,8 +137,13 @@ namespace ElibWpf.ViewModels.Controls
                 if (this.selectedCollection != null)
                 {
                     this.viewerHistory.Clear();
-                    this.CurrentViewer = new BookViewerViewModel($"Collection {this.selectedCollection.Tag}",
-                        x => x.UserCollections.Any(c => c.Id == this.SelectedCollection.Id), this.selector);
+
+                    Filter filter = new Filter
+                    {
+                        CollectionIds = new List<int> { selectedCollection.Id }
+                    };
+
+                    this.CurrentViewer = new BookViewerViewModel($"Collection {this.selectedCollection.Tag}", filter, this.selector);
                 }
             }
         }
@@ -158,7 +176,7 @@ namespace ElibWpf.ViewModels.Controls
 
         private void HandleCollectionSelection(CollectionSelectedMessage message)
         {
-            this.SelectedCollection = this.Collections.FirstOrDefault(c => c.Id == message.Collection.Id);
+            this.SelectedCollection = this.Collections.FirstOrDefault(c => c.Id == message.CollectionId);
         }
 
         private async void HandleExport()
@@ -227,36 +245,24 @@ namespace ElibWpf.ViewModels.Controls
             }
         }
 
-        private async void ProcessSearchInput(string token)
+        private void ProcessSearchInput(string token)
         {
             if (!string.IsNullOrWhiteSpace(token))
             {
                 token = token.ToLower();
-                if (!this.isInSearchResults)
+                this.SearchOptions.Token = token;
+                if(this.isInSearchResults)
                 {
-                    this.viewerHistory.Push(this.CurrentViewer);
-                    this.isInSearchResults = true;
-                }
-
-                Func<Book, bool> condition = x => (this.SearchOptions.SearchByName && x.Title.ToLower().Contains(token) ||
-                                                   this.SearchOptions.SearchByAuthor &&
-                                                   x.Authors.Any(a => a.Name.ToLower().Contains(token)) || this.SearchOptions.SearchBySeries &&
-                                                   x.Series != null &&
-                                                   x.Series.Name.ToLower().Contains(token)) && this.viewerHistory.Peek().DefaultCondition(x);
-
-                using ElibContext context = ApplicationSettings.CreateContext();
-                int temp = await Task.Run(() =>
-                    context.Books.Include("Series").Include("Authors").Where(condition).Count());
-
-                if (temp > 0)
-                {
-                    this.CurrentViewer = new BookViewerViewModel(
-                        $"Search results for '{token}' in " + this.viewerHistory.Peek().Caption, condition, this.selector);
+                    this.CurrentViewer.Search(this.SearchOptions);
                 }
                 else
                 {
-                    this.MessengerInstance.Send(new ShowDialogMessage("No matches",
-                        "No books found matching the search conditions."));
+                    var viewerState = ViewerState.ToState(this.CurrentViewer);
+                    this.viewerHistory.Push(viewerState);
+
+                    this.CurrentViewer = viewerState.GetViewModel(this.selector);
+                    this.CurrentViewer.Search(this.SearchOptions);
+                    isInSearchResults = true;
                 }
             }
         }
@@ -281,37 +287,50 @@ namespace ElibWpf.ViewModels.Controls
             }
 
             this.isInSearchResults = false;
-            this.CurrentViewer = this.viewerHistory.Pop();
+            this.SearchOptions.Token = "";
+            this.CurrentViewer = this.viewerHistory.Pop().GetViewModel(selector);
+            this.CurrentViewer.Refresh();
         }
 
-        private void HandleAuthorSelection(AuthorSelectedMessage obj)
+        private async void HandleAuthorSelection(AuthorSelectedMessage obj)
         {
-            string viewerCaption = $"Books by {obj.Authors.Select(a => a.Name).Aggregate((i, j) => i + ", " + j)}";
+            using ElibContext elibContext = ApplicationSettings.CreateContext();
+            Author x = await elibContext.Authors.FindAsync(obj.AuthorId);
+
+            string viewerCaption = $"Books by {x.Name}";
             if (viewerCaption == this.CurrentViewer.Caption)
             {
                 return;
             }
 
-            this.viewerHistory.Push(this.CurrentViewer);
-            Func<Book, bool> condition = x =>
+            this.viewerHistory.Push(ViewerState.ToState(this.CurrentViewer));
+
+            Filter filter = new Filter
             {
-                var bookAuthorsIds = x.Authors.Select(a => a.Id);
-                return obj.Authors.All(selected => bookAuthorsIds.Contains(selected.Id));
+                AuthorIds = new List<int> { x.Id }
             };
-            this.CurrentViewer = new BookViewerViewModel(viewerCaption, condition, this.selector);
+
+            this.CurrentViewer = new BookViewerViewModel(viewerCaption, filter, this.selector);
         }
 
-        private void HandleSeriesSelection(SeriesSelectedMessage obj)
+        private async void HandleSeriesSelection(SeriesSelectedMessage obj)
         {
-            string viewerCaption = $"{obj.Series.Name} Series";
+            using ElibContext elibContext = ApplicationSettings.CreateContext();
+            BookSeries x = await elibContext.Series.FindAsync(obj.SeriesId);
+
+            string viewerCaption = $"{x.Name} Series";
             if (viewerCaption == this.CurrentViewer.Caption)
             {
                 return;
             }
 
-            this.viewerHistory.Push(this.CurrentViewer);
-            this.CurrentViewer = new BookViewerViewModel(viewerCaption,
-                x => x.SeriesId.HasValue && x.SeriesId == obj.Series.Id, this.selector);
+            Filter filter = new Filter
+            {
+                SeriesIds = new List<int> { x.Id }
+            };
+
+            this.viewerHistory.Push(ViewerState.ToState(this.CurrentViewer));
+            this.CurrentViewer = new BookViewerViewModel(viewerCaption, filter, this.selector);
         }
 
         private void PaneSelectionChanged()
@@ -323,18 +342,68 @@ namespace ElibWpf.ViewModels.Controls
 
             this.RaisePropertyChanged(() => this.IsSelectedBooksViewer);
             this.viewerHistory.Clear();
-            this.CurrentViewer = new BookViewerViewModel(this.SelectedMainPaneItem.ViewerCaption, this.SelectedMainPaneItem.Condition, this.selector,
-                this.SelectedMainPaneItem.IsSelectedBooksPane);
+
+            Filter filter = SelectedMainPaneItem.Filter ?? new Filter();
+
+            if (filterOptions != null && filter != null)
+            {
+                if (filterOptions.ShowAll) filter.Read = null;
+                else if (filterOptions.ShowRead) filter.Read = true;
+                else if (filterOptions.ShowUnread) filter.Read = false;
+
+                filter.SortByAuthor = filterOptions.SortByAuthor;
+                filter.SortByImportOrder = filterOptions.SortByImportTime;
+                filter.SortBySeries = filterOptions.SortBySeries;
+                filter.SortByTitle = filterOptions.SortByTitle;
+                filter.Ascending = filterOptions.Ascending;
+            }
+
+            this.CurrentViewer = new BookViewerViewModel(
+                this.SelectedMainPaneItem.ViewerCaption,
+                filter,
+                this.selector);
         }
 
-        private void RefreshCurrent()
+        private readonly SemaphoreSlim slim = new SemaphoreSlim(1, 1);
+
+        private async void RefreshCurrent()
         {
+            if (slim.CurrentCount == 0)
+                return;
+
+            await slim.WaitAsync();
             if (this.SelectedCollection == null && this.SelectedMainPaneItem == null)
             {
                 this.SelectedMainPaneItem = this.MainPaneItems[0];
             }
 
-            this.CurrentViewer = this.CurrentViewer.Clone() as IViewer;
+            if (this.CurrentViewer != null)
+            {
+                Filter newFilter = this.CurrentViewer.Filter ?? new Filter();
+
+                if (filterOptions != null)
+                {
+                    if (filterOptions.ShowAll) newFilter.Read = null;
+                    else if (filterOptions.ShowRead) newFilter.Read = true;
+                    else if (filterOptions.ShowUnread) newFilter.Read = false;
+
+                    newFilter.SortByAuthor = filterOptions.SortByAuthor;
+                    newFilter.SortByImportOrder = filterOptions.SortByImportTime;
+                    newFilter.SortBySeries = filterOptions.SortBySeries;
+                    newFilter.SortByTitle = filterOptions.SortByTitle;
+                    newFilter.Ascending = filterOptions.Ascending;
+                }
+
+                this.CurrentViewer.Refresh();
+            }
+            slim.Release();
+        }
+
+        private async void HandleFilterButton()
+        {
+            FilterOptionsDialog dialog = new FilterOptionsDialog();
+            dialog.DataContext = new FilterOptionsDialogViewModel(this.filterOptions, f => this.filterOptions = f);
+            await DialogCoordinator.Instance.ShowMetroDialogAsync(Application.Current.MainWindow.DataContext, dialog);
         }
     }
 }

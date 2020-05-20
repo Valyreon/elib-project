@@ -452,7 +452,7 @@
                         Background="{DynamicResource AccentColorBrush}">
                         <TextBlock
                             x:Name="Label"
-                            Margin="0,0,0,2"
+                            Margin="0,0,0,1"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Top"
                             FontSize="14"
@@ -460,6 +460,65 @@
                             Text="{TemplateBinding Text}"
                             TextOptions.TextFormattingMode="Ideal" />
                     </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type Components:HeaderButton}">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Background" Value="#4a4a4a" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Components:HeaderButton}">
+                    <Border
+                        x:Name="Enveloper"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="#515151"
+                        BorderThickness="1"
+                        CornerRadius="1">
+                        <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
+                            <TextBlock
+                                Margin="0,0,0,3"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                FontSize="14"
+                                Text="{TemplateBinding Text}" />
+                        </Grid>
+                        <Border.RenderTransform>
+                            <ScaleTransform CenterX="40" CenterY="15" ScaleX="1" ScaleY="1" />
+                        </Border.RenderTransform>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <EventTrigger RoutedEvent="MouseDown" SourceName="Enveloper">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation
+                                        Storyboard.TargetName="Enveloper"
+                                        Storyboard.TargetProperty="(RenderTransform).(ScaleTransform.ScaleX)"
+                                        To="0.9"
+                                        Duration="0:0:0.1" />
+                                    <DoubleAnimation
+                                        Storyboard.TargetName="Enveloper"
+                                        Storyboard.TargetProperty="(RenderTransform).(ScaleTransform.ScaleY)"
+                                        To="0.9"
+                                        Duration="0:0:0.1" />
+                                    <DoubleAnimation
+                                        BeginTime="0:0:0.1"
+                                        Storyboard.TargetName="Enveloper"
+                                        Storyboard.TargetProperty="(RenderTransform).(ScaleTransform.ScaleX)"
+                                        To="1"
+                                        Duration="0:0:0.1" />
+                                    <DoubleAnimation
+                                        BeginTime="0:0:0.1"
+                                        Storyboard.TargetName="Enveloper"
+                                        Storyboard.TargetProperty="(RenderTransform).(ScaleTransform.ScaleY)"
+                                        To="1"
+                                        Duration="0:0:0.1" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

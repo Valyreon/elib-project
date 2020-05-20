@@ -1,4 +1,5 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
 using System.Data.SQLite;
 using Domain;
 
@@ -21,6 +22,7 @@ namespace DataLayer
             DbConfiguration.SetConfiguration(new SQLiteConfiguration());
             this.Configuration.LazyLoadingEnabled = false;
             this.Database.ExecuteSqlCommand("PRAGMA foreign_keys = ON");
+            this.Database.Log = Console.WriteLine;
         }
 
         public DbSet<Author> Authors { get; set; }

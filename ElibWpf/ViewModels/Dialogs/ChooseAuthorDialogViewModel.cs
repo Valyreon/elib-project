@@ -19,9 +19,7 @@ namespace ElibWpf.ViewModels.Dialogs
     {
         private readonly Action<Author> onConfirm;
         private string filterText;
-
         private Author selectedItem;
-
 
         public ChooseAuthorDialogViewModel(IEnumerable<int> addedAuthors, Action<Author> onConfirm)
         {
@@ -58,14 +56,11 @@ namespace ElibWpf.ViewModels.Dialogs
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                //semaphore.Wait();
                 this.ShownAuthors.Clear();
                 foreach (Author a in this.AllAuthors.Where(a => a.Name.ToLower().Contains(this.FilterText.ToLower())))
                 {
                     this.ShownAuthors.Add(a);
                 }
-
-                //semaphore.Release();
             });
         }
 

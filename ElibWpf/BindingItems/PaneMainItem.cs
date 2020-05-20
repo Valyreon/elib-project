@@ -1,23 +1,20 @@
 ﻿using System;
-using Domain;
+using Models.Options;
 
 namespace ElibWpf.BindingItems
 {
     public class PaneMainItem
     {
-        public PaneMainItem(string paneCaption, Enum faIconName, string viewerCaption, Func<Book, bool> condition,
-            bool isSelectedBooksPane = false)
+        public PaneMainItem(string paneCaption, Enum faIconName, string viewerCaption, Filter filter)
         {
-            this.Condition = condition;
-            this.IsSelectedBooksPane = isSelectedBooksPane;
+            this.Filter = filter;
             this.PaneCaption = paneCaption;
             this.Icon = faIconName;
             this.ViewerCaption = viewerCaption;
         }
 
-        public Func<Book, bool> Condition { get; }
+        public Filter Filter { get; }
         public Enum Icon { get; }
-        public bool IsSelectedBooksPane { get; }
         public string PaneCaption { get; }
         public string ViewerCaption { get; }
     }

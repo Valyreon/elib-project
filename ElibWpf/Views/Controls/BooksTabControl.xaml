@@ -435,47 +435,71 @@
                     <Grid Grid.Column="8" HorizontalAlignment="Right">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="20" />
-                            <ColumnDefinition Width="30" />
+                            <ColumnDefinition Width="80" />
                             <ColumnDefinition Width="5" />
-                            <ColumnDefinition Width="30" />
+                            <ColumnDefinition Width="80" />
                             <ColumnDefinition Width="15" />
                         </Grid.ColumnDefinitions>
 
-                        <Components:SymbolButton
+                        <Components:HeaderButton
                             Grid.Column="3"
-                            Width="30"
                             Height="30"
                             Background="Transparent"
                             Command="{Binding AddBookCommand}"
                             Foreground="#484b4e"
-                            Icon="{x:Static iconPacks:PackIconFontAwesomeKind.BookMedicalSolid}"
-                            IconSize="24"
-                            Style="{StaticResource BlueHoverStyle}"
+                            Text="Import"
                             Visibility="{Binding IsSelectedBooksViewer, Converter={StaticResource BooleanToInverseVisibilityConverter}}">
                             <Button.ToolTip>
                                 <ToolTip>
-                                    Add New Book
+                                    Import new books
                                 </ToolTip>
                             </Button.ToolTip>
-                        </Components:SymbolButton>
+                        </Components:HeaderButton>
 
-                        <Components:SymbolButton
+                        <Components:HeaderButton
+                            Grid.Column="1"
+                            Height="30"
+                            Background="Transparent"
+                            Command="{Binding FilterBooksCommand}"
+                            Foreground="#484b4e"
+                            Text="Filter"
+                            Visibility="{Binding IsSelectedBooksViewer, Converter={StaticResource BooleanToInverseVisibilityConverter}}">
+                            <Button.ToolTip>
+                                <ToolTip>
+                                    Change sort and filter options
+                                </ToolTip>
+                            </Button.ToolTip>
+                        </Components:HeaderButton>
+
+                        <Components:HeaderButton
+                            Grid.Column="1"
+                            Height="30"
+                            Background="Transparent"
+                            Command="{Binding ClearSelectedBooksCommand}"
+                            Foreground="#484b4e"
+                            Text="Clear"
+                            Visibility="{Binding IsSelectedBooksViewer, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Button.ToolTip>
+                                <ToolTip>
+                                    Clear selected books
+                                </ToolTip>
+                            </Button.ToolTip>
+                        </Components:HeaderButton>
+
+                        <Components:HeaderButton
                             Grid.Column="3"
-                            Width="30"
                             Height="30"
                             Background="Transparent"
                             Command="{Binding ExportSelectedBooksCommand}"
                             Foreground="#484b4e"
-                            Icon="{x:Static iconPacks:PackIconFontAwesomeKind.DownloadSolid}"
-                            IconSize="24"
-                            Style="{StaticResource BlueHoverStyle}"
+                            Text="Export"
                             Visibility="{Binding IsSelectedBooksViewer, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <Button.ToolTip>
                                 <ToolTip>
                                     Export selected books
                                 </ToolTip>
                             </Button.ToolTip>
-                        </Components:SymbolButton>
+                        </Components:HeaderButton>
                     </Grid>
                 </Grid>
             </Border>

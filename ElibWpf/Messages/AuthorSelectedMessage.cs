@@ -6,11 +6,11 @@ namespace ElibWpf.Messages
 {
     public class AuthorSelectedMessage : MessageBase
     {
-        public AuthorSelectedMessage(IEnumerable<ObservableAuthor> selectedAuthors)
+        public AuthorSelectedMessage(int authorId)
         {
-            this.Authors = selectedAuthors;
+            this.AuthorId = authorId;
         }
 
-        public IEnumerable<ObservableAuthor> Authors { get; }
+        public int AuthorId { get; }
     }
 }

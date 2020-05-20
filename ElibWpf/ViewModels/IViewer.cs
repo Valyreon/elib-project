@@ -1,16 +1,22 @@
 ﻿using System;
 using Domain;
+using ElibWpf.Messages;
+using Models.Options;
 
 namespace ElibWpf.ViewModels
 {
-    public interface IViewer : ICloneable
+    public interface IViewer
     {
         public abstract string Caption { get; set; }
 
-        public abstract Func<Book, bool> DefaultCondition { get; }
+        public abstract Filter Filter { get; }
 
         public abstract string NumberOfBooks { get; set; }
 
-        public new abstract object Clone();
+        public abstract void Refresh();
+
+        public abstract void Clear();
+
+        public abstract void Search(SearchOptions searchOptions);
     }
 }

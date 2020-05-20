@@ -218,8 +218,7 @@ namespace ElibWpf.ViewModels.Flyouts
 
                 database.Books.Attach(this.Book.Book);
 
-                if (this.Book.Series != null && (this.Book.Series == null && this.Series != null ||
-                                                 this.Series != null && this.Book.Series.Id != this.Series.Id))
+                if ((this.Book.Series == null && this.Series != null) || (this.Series != null && this.Book.Series.Id != this.Series.Id))
                 {
                     this.Book.Series = new ObservableSeries(database.Series.FirstOrDefault(s => s.Id == this.Series.Id));
                 }

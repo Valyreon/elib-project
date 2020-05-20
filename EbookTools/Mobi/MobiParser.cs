@@ -23,7 +23,7 @@ namespace EbookTools.Mobi
         public MobiParser(Stream file, StyleSettings settings)
         {
             this.StyleSettings = settings;
-            MemoryStream ms = new MemoryStream();
+            using MemoryStream ms = new MemoryStream();
             file.CopyTo(ms);
             this.rawFile = ms.GetBuffer();
         }
@@ -31,7 +31,7 @@ namespace EbookTools.Mobi
         public MobiParser(Stream file)
         {
             this.StyleSettings = StyleSettings.Default;
-            MemoryStream ms = new MemoryStream();
+            using MemoryStream ms = new MemoryStream();
             file.CopyTo(ms);
             this.rawFile = ms.GetBuffer();
         }
