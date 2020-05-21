@@ -1,4 +1,4 @@
-﻿using GalaSoft.MvvmLight.Messaging;
+﻿using MVVMLibrary.Messaging;
 
 namespace ElibWpf.Messages
 {

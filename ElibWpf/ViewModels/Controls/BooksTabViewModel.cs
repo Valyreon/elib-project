@@ -15,13 +15,12 @@ using ElibWpf.Extensions;
 using ElibWpf.Messages;
 using ElibWpf.ViewModels.Dialogs;
 using ElibWpf.Views.Dialogs;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
 using MahApps.Metro.Controls.Dialogs;
 using MahApps.Metro.IconPacks;
 using Models;
 using Models.Observables;
 using Models.Options;
+using MVVMLibrary;
 using Application = System.Windows.Application;
 
 namespace ElibWpf.ViewModels.Controls
@@ -90,7 +89,7 @@ namespace ElibWpf.ViewModels.Controls
         public IViewer CurrentViewer
         {
             get => this.currentViewer;
-            set => this.Set(ref this.currentViewer, value);
+            set => this.Set(() => CurrentViewer, ref this.currentViewer, value);
         }
 
         public ICommand ExportSelectedBooksCommand => new RelayCommand(this.HandleExport);
@@ -133,7 +132,7 @@ namespace ElibWpf.ViewModels.Controls
 
             set
             {
-                this.Set(ref this.selectedCollection, value);
+                this.Set(() => SelectedCollection,ref this.selectedCollection, value);
                 if (this.selectedCollection != null)
                 {
                     this.viewerHistory.Clear();
@@ -151,13 +150,13 @@ namespace ElibWpf.ViewModels.Controls
         public PaneMainItem SelectedMainPaneItem
         {
             get => this.selectedMainPaneItem;
-            set => this.Set("SelectedMainPaneItem", ref this.selectedMainPaneItem, value);
+            set => this.Set(() => SelectedMainPaneItem, ref this.selectedMainPaneItem, value);
         }
 
         public string Caption
         {
             get => this.caption;
-            set => this.Set(ref this.caption, value);
+            set => this.Set(() => Caption, ref this.caption, value);
         }
 
         private void HandleBookChecked(BookSelectedMessage obj)

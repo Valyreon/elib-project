@@ -6,11 +6,10 @@ using Domain;
 using ElibWpf.Messages;
 using ElibWpf.ViewModels.Controls;
 using ElibWpf.ViewModels.Flyouts;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
 using MahApps.Metro.Controls.Dialogs;
 using Models;
 using Models.Observables;
+using MVVMLibrary;
 
 namespace ElibWpf.ViewModels.Windows
 {
@@ -53,19 +52,19 @@ namespace ElibWpf.ViewModels.Windows
         public object FlyoutControl
         {
             get => this.flyoutControl;
-            set => this.Set(ref this.flyoutControl, value);
+            set => this.Set(() => FlyoutControl, ref this.flyoutControl, value);
         }
 
         public bool IsBookDetailsFlyoutOpen
         {
             get => this.isBookDetailsFlyoutOpen;
-            set => this.Set(ref this.isBookDetailsFlyoutOpen, value);
+            set => this.Set(() => IsBookDetailsFlyoutOpen, ref this.isBookDetailsFlyoutOpen, value);
         }
 
         public ITabViewModel SelectedTab
         {
             get => this.selectedTab;
-            set => this.Set(ref this.selectedTab, value);
+            set => this.Set(() => SelectedTab, ref this.selectedTab, value);
         }
 
         public ObservableCollection<ITabViewModel> Tabs { get; set; }

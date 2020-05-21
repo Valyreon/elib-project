@@ -1,9 +1,7 @@
 ﻿using ElibWpf.Messages;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
 using MahApps.Metro.Controls.Dialogs;
-using Models;
 using Models.Options;
+using MVVMLibrary;
 using System;
 using System.Windows;
 using System.Windows.Input;

@@ -2,7 +2,7 @@
 using System.Collections.Specialized;
 using System.Linq;
 using Domain;
-using GalaSoft.MvvmLight;
+using MVVMLibrary;
 
 namespace Models.Observables
 {

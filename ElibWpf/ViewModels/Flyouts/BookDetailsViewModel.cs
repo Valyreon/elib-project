@@ -6,11 +6,10 @@ using System.Windows.Input;
 using DataLayer;
 using Domain;
 using ElibWpf.Messages;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Messaging;
 using Models;
 using Models.Observables;
+using MVVMLibrary;
+using MVVMLibrary.Messaging;
 
 namespace ElibWpf.ViewModels.Flyouts
 {
@@ -38,7 +37,7 @@ namespace ElibWpf.ViewModels.Flyouts
         public string BookDescriptionText
         {
             get => this.bookDescription;
-            set => this.Set(ref this.bookDescription, value);
+            set => this.Set(() => BookDescriptionText, ref this.bookDescription, value);
         }
 
         public ICommand EditButtonCommand => new RelayCommand(this.HandleEditButton);

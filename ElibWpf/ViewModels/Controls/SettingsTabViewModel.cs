@@ -1,4 +1,5 @@
-﻿using GalaSoft.MvvmLight;
+﻿
+using MVVMLibrary;
 
 namespace ElibWpf.ViewModels.Controls
 {
@@ -9,7 +10,7 @@ namespace ElibWpf.ViewModels.Controls
         public string Caption
         {
             get => this.caption;
-            set => this.Set(ref this.caption, value);
+            set => this.Set(() => Caption, ref this.caption, value);
         }
     }
 }

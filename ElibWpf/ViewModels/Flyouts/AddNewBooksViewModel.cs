@@ -15,10 +15,10 @@ using ElibWpf.Messages;
 using ElibWpf.ValidationAttributes;
 using ElibWpf.ViewModels.Dialogs;
 using ElibWpf.Views.Dialogs;
-using GalaSoft.MvvmLight.Command;
 using MahApps.Metro.Controls.Dialogs;
 using Models;
 using Models.Observables;
+using MVVMLibrary;
 using Application = System.Windows.Application;
 
 namespace ElibWpf.ViewModels.Flyouts

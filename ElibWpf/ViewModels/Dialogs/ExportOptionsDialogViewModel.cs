@@ -6,10 +6,10 @@ using System.Windows.Input;
 using DataLayer;
 using Domain;
 using ElibWpf.ValidationAttributes;
-using GalaSoft.MvvmLight.Command;
 using MahApps.Metro.Controls.Dialogs;
 using Models;
 using Models.Options;
+using MVVMLibrary;
 using Application = System.Windows.Application;
 
 namespace ElibWpf.ViewModels.Dialogs

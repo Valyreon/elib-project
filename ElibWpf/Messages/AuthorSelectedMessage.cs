@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using GalaSoft.MvvmLight.Messaging;
-using Models.Observables;
+﻿using MVVMLibrary.Messaging;
 
 namespace ElibWpf.Messages
 {

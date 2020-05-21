@@ -1,5 +1,5 @@
 ﻿using Domain;
-using GalaSoft.MvvmLight;
+using MVVMLibrary;
 
 namespace Models.Observables
 {

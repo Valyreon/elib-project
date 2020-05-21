@@ -12,12 +12,11 @@ using DataLayer;
 using Domain;
 using ElibWpf.Messages;
 using ElibWpf.Paging;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Messaging;
 using Models;
 using Models.Observables;
 using Models.Options;
+using MVVMLibrary;
+using MVVMLibrary.Messaging;
 
 namespace ElibWpf.ViewModels.Controls
 {
@@ -55,7 +54,7 @@ namespace ElibWpf.ViewModels.Controls
         public double ScrollVertical
         {
             get => this.scrollVerticalOffset;
-            set => this.Set(ref this.scrollVerticalOffset, value);
+            set => this.Set(() => ScrollVertical, ref this.scrollVerticalOffset, value);
         }
 
         public ICommand SelectBookCommand => new RelayCommand<ObservableBook>(b => {
@@ -68,13 +67,13 @@ namespace ElibWpf.ViewModels.Controls
         public string Caption
         {
             get => this.caption;
-            set => this.Set(ref this.caption, value);
+            set => this.Set(() => Caption, ref this.caption, value);
         }
 
         public string NumberOfBooks
         {
             get => this.numberOfBooks;
-            set => this.Set(ref this.numberOfBooks, value);
+            set => this.Set(() => NumberOfBooks, ref this.numberOfBooks, value);
         }
 
         private void HandleSelectBook(ObservableBook obj)
