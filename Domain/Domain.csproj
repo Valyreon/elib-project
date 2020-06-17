@@ -56,5 +56,11 @@
     <Compile Include="RawFile.cs" />
     <Compile Include="UserCollection.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MVVMLibrary\MVVMLibrary.csproj">
+      <Project>{814AE470-0BAF-4D21-A917-59BF7DC887AE}</Project>
+      <Name>MVVMLibrary</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

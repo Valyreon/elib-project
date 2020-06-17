@@ -8,7 +8,7 @@ using ElibWpf.ViewModels.Controls;
 using ElibWpf.ViewModels.Flyouts;
 using MahApps.Metro.Controls.Dialogs;
 using Models;
-using Models.Observables;
+
 using MVVMLibrary;
 
 namespace ElibWpf.ViewModels.Windows
@@ -75,7 +75,7 @@ namespace ElibWpf.ViewModels.Windows
             obj.CallOnResult(input);
         }
 
-        private void HandleEditBookFlyout(ObservableBook book)
+        private void HandleEditBookFlyout(Book book)
         {
             this.FlyoutControl = new EditBookViewModel(book);
             this.IsBookDetailsFlyoutOpen = true;
@@ -106,11 +106,10 @@ namespace ElibWpf.ViewModels.Windows
             }
         }
 
-        private async void HandleBookFlyout(ShowBookDetailsMessage obj)
+        private void HandleBookFlyout(ShowBookDetailsMessage obj)
         {
-            using ElibContext context = ApplicationSettings.CreateContext();
-            context.Books.Attach(obj.Book.Book);
-            await context.Entry(obj.Book.Book).Collection(b => b.UserCollections).LoadAsync();
+            using var uow = ApplicationSettings.CreateUnitOfWork();
+            obj.Book.LoadMembers(uow);
             this.FlyoutControl = new BookDetailsViewModel(obj.Book);
             this.IsBookDetailsFlyoutOpen = true;
         }

@@ -63,10 +63,11 @@ namespace ElibWpf.ViewModels.Dialogs
             });
         }
 
-        private async void LoadAuthors()
+        private void LoadAuthors()
         {
-            using ElibContext context = ApplicationSettings.CreateContext();
-            var list = await context.Authors.Where(a => !this.AddedAuthors.Contains(a.Id)).ToListAsync();
+            using UnitOfWork uow = ApplicationSettings.CreateUnitOfWork();
+            var list = uow.AuthorRepository.All().ToList();
+            list.RemoveAll(a => this.AddedAuthors.Contains(a.Id));
             foreach (Author author in list)
             {
                 this.AllAuthors.Add(author);

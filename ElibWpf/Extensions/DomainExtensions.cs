@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using DataLayer;
 using Domain;
@@ -14,17 +15,17 @@ namespace ElibWpf.Extensions
     {
         public static Book ToBook(this ParsedBook parsedBook)
         {
-            using ElibContext database = ApplicationSettings.CreateContext();
+            using UnitOfWork uow = ApplicationSettings.CreateUnitOfWork();
             Book newBook = new Book
             {
                 Title = parsedBook.Title,
-                Authors = new List<Author>
+                Authors = new ObservableCollection<Author>
                 {
-                    database.Authors.FirstOrDefault(au => au.Name.Equals(parsedBook.Author)) ??
+                    uow.AuthorRepository.GetAuthorWithName(parsedBook.Author) ??
                     new Author {Name = parsedBook.Author}
                 },
                 Cover = parsedBook.Cover != null ? ImageOptimizer.ResizeAndFill(parsedBook.Cover) : null,
-                UserCollections = new List<UserCollection>(),
+                Collections = new ObservableCollection<UserCollection>(),
                 File = new EFile
                 {
                     Format = parsedBook.Format,

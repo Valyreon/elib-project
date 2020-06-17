@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DataLayer;
 using Domain;
-using Models.Observables;
+
 
 namespace Models
 {
@@ -21,12 +21,18 @@ namespace Models
 
         public IEnumerable<int> SelectedIds => this.selectedBookIds.AsEnumerable();
 
-        public async Task<IList<Book>> GetSelectedBooks(ElibContext context)
+        public IList<Book> GetSelectedBooks(UnitOfWork uow)
         {
-            return await Task.Run(() => context.Books.Where(b => this.selectedBookIds.Contains(b.Id)).ToList());
+            // TODO: replace this with filter later
+            List<Book> result = new List<Book>();
+            foreach(int id in selectedBookIds)
+            {
+                result.Add(uow.BookRepository.Find(id).LoadMembers(uow));
+            }
+            return result;
         }
 
-        public bool Select(ObservableBook book)
+        public bool Select(Book book)
         {
             if (book.IsMarked)
             {
@@ -38,7 +44,7 @@ namespace Models
             return false;
         }
 
-        public ObservableBook SetMarked(ObservableBook book)
+        public Book SetMarked(Book book)
         {
             book.IsMarked = this.selectedBookIds.Contains(book.Id);
             return book;

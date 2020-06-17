@@ -11,9 +11,9 @@ namespace Models
 {
     public class Exporter
     {
-        private readonly ElibContext database;
+        private readonly UnitOfWork database;
 
-        public Exporter(ElibContext db)
+        public Exporter(UnitOfWork db)
         {
             this.database = db;
         }
@@ -89,10 +89,7 @@ namespace Models
             // Load everything needed
             foreach (Book book in enumerable)
             {
-                this.database.Entry(book).Reference(b => b.File).Load();
-                this.database.Entry(book.File).Reference(f => f.RawFile).Load();
-                this.database.Entry(book).Reference(b => b.Series).Load();
-                this.database.Entry(book).Collection(b => b.Authors).Load();
+                book.LoadMembers(database);
             }
 
             Directory.CreateDirectory(options.DestinationDirectory);

@@ -36,14 +36,14 @@ namespace ElibWpf.ViewModels.Controls
         private bool isSelectedMainAdded;
 
         private SearchOptions searchOptions;
-        private ObservableUserCollection selectedCollection;
+        private UserCollection selectedCollection;
         private PaneMainItem selectedMainPaneItem;
         private FilterOptions filterOptions;
 
         public BooksTabViewModel()
         {
             this.selector = new Selector();
-            this.selectedMainItem = new PaneMainItem("Selected", PackIconFontAwesomeKind.CheckDoubleSolid, "Selected Books", new Filter { Selected = true });
+            this.selectedMainItem = new PaneMainItem("Selected", PackIconFontAwesomeKind.CheckDoubleSolid, "Selected Books", new FilterAlt { Selected = true });
 
             this.MessengerInstance.Register<AuthorSelectedMessage>(this, this.HandleAuthorSelection);
             this.MessengerInstance.Register<BookSelectedMessage>(this, this.HandleBookChecked);
@@ -65,7 +65,7 @@ namespace ElibWpf.ViewModels.Controls
             this.MainPaneItems = new ObservableCollection<PaneMainItem>
             {
                 new PaneMainItem("All", PackIconBoxIconsKind.SolidBook, "All Books", null),
-                new PaneMainItem("Favorite", PackIconFontAwesomeKind.StarSolid, "Favorite Books", new Filter { Favorite = true })
+                new PaneMainItem("Favorite", PackIconFontAwesomeKind.StarSolid, "Favorite Books", new FilterAlt { Favorite = true })
             };
             this.SelectedMainPaneItem = this.MainPaneItems[0];
             this.PaneSelectionChanged();
@@ -77,12 +77,12 @@ namespace ElibWpf.ViewModels.Controls
 
         public ICommand BackCommand => new RelayCommand(this.GoToPreviousViewer);
 
-        public ObservableCollection<ObservableUserCollection> Collections
+        public ObservableCollection<UserCollection> Collections
         {
             get
             {
-                using ElibContext database = ApplicationSettings.CreateContext();
-                return new ObservableCollection<ObservableUserCollection>(database.UserCollections.ToList().Select(c => new ObservableUserCollection(c)).ToList());
+                using var uow = ApplicationSettings.CreateUnitOfWork();
+                return new ObservableCollection<UserCollection>(uow.CollectionRepository.All());
             }
         }
 
@@ -126,7 +126,7 @@ namespace ElibWpf.ViewModels.Controls
             set => this.Set(() => this.SearchOptions, ref this.searchOptions, value);
         }
 
-        public ObservableUserCollection SelectedCollection
+        public UserCollection SelectedCollection
         {
             get => this.selectedCollection;
 
@@ -137,7 +137,7 @@ namespace ElibWpf.ViewModels.Controls
                 {
                     this.viewerHistory.Clear();
 
-                    Filter filter = new Filter
+                    FilterAlt filter = new FilterAlt
                     {
                         CollectionIds = new List<int> { selectedCollection.Id }
                     };
@@ -181,8 +181,8 @@ namespace ElibWpf.ViewModels.Controls
         private async void HandleExport()
         {
             ExportOptionsDialog dialog = new ExportOptionsDialog();
-            using ElibContext database = ApplicationSettings.CreateContext();
-            dialog.DataContext = new ExportOptionsDialogViewModel(await this.selector.GetSelectedBooks(database), dialog);
+            using var uow = ApplicationSettings.CreateUnitOfWork();
+            dialog.DataContext = new ExportOptionsDialogViewModel(this.selector.GetSelectedBooks(uow), dialog);
             await DialogCoordinator.Instance.ShowMetroDialogAsync(Application.Current.MainWindow.DataContext, dialog);
         }
 
@@ -227,14 +227,14 @@ namespace ElibWpf.ViewModels.Controls
                         var content = File.ReadAllBytes(dlg.FileNames[i]);
                         booksToAdd.Add(new Book
                         {
-                            UserCollections = new List<UserCollection>(),
+                            Collections = new ObservableCollection<UserCollection>(),
                             File = new EFile
                             {
                                 Format = Path.GetExtension(dlg.FileNames[i]),
                                 Signature = Signer.ComputeHash(content),
                                 RawFile = new RawFile {RawContent = content}
                             },
-                            Authors = new List<Author>()
+                            Authors = new ObservableCollection<Author>()
                         });
                     }
                 }
@@ -291,12 +291,11 @@ namespace ElibWpf.ViewModels.Controls
             this.CurrentViewer.Refresh();
         }
 
-        private async void HandleAuthorSelection(AuthorSelectedMessage obj)
+        private void HandleAuthorSelection(AuthorSelectedMessage obj)
         {
-            using ElibContext elibContext = ApplicationSettings.CreateContext();
-            Author x = await elibContext.Authors.FindAsync(obj.AuthorId);
+            using var uow = ApplicationSettings.CreateUnitOfWork();
 
-            string viewerCaption = $"Books by {x.Name}";
+            string viewerCaption = $"Books by {obj.Author.Name}";
             if (viewerCaption == this.CurrentViewer.Caption)
             {
                 return;
@@ -304,28 +303,27 @@ namespace ElibWpf.ViewModels.Controls
 
             this.viewerHistory.Push(ViewerState.ToState(this.CurrentViewer));
 
-            Filter filter = new Filter
+            FilterAlt filter = new FilterAlt
             {
-                AuthorIds = new List<int> { x.Id }
+                AuthorIds = new List<int> { obj.Author.Id }
             };
 
             this.CurrentViewer = new BookViewerViewModel(viewerCaption, filter, this.selector);
         }
 
-        private async void HandleSeriesSelection(SeriesSelectedMessage obj)
+        private void HandleSeriesSelection(SeriesSelectedMessage obj)
         {
-            using ElibContext elibContext = ApplicationSettings.CreateContext();
-            BookSeries x = await elibContext.Series.FindAsync(obj.SeriesId);
+            using var uow = ApplicationSettings.CreateUnitOfWork();
 
-            string viewerCaption = $"{x.Name} Series";
+            string viewerCaption = $"{obj.Series.Name} Series";
             if (viewerCaption == this.CurrentViewer.Caption)
             {
                 return;
             }
 
-            Filter filter = new Filter
+            FilterAlt filter = new FilterAlt
             {
-                SeriesIds = new List<int> { x.Id }
+                SeriesIds = new List<int> { obj.Series.Id }
             };
 
             this.viewerHistory.Push(ViewerState.ToState(this.CurrentViewer));
@@ -342,7 +340,7 @@ namespace ElibWpf.ViewModels.Controls
             this.RaisePropertyChanged(() => this.IsSelectedBooksViewer);
             this.viewerHistory.Clear();
 
-            Filter filter = SelectedMainPaneItem.Filter ?? new Filter();
+            FilterAlt filter = SelectedMainPaneItem.Filter ?? new FilterAlt();
 
             if (filterOptions != null && filter != null)
             {
@@ -378,7 +376,7 @@ namespace ElibWpf.ViewModels.Controls
 
             if (this.CurrentViewer != null)
             {
-                Filter newFilter = this.CurrentViewer.Filter ?? new Filter();
+                FilterAlt newFilter = this.CurrentViewer.Filter ?? new FilterAlt();
 
                 if (filterOptions != null)
                 {

@@ -50,9 +50,9 @@ namespace Models
             throw new FileNotFoundException("Couldn't find properties.json in current or in AppData folder.");
         }
 
-        public static ElibContext CreateContext()
+        public static UnitOfWork CreateUnitOfWork()
         {
-            return new ElibContext(GetInstance().DatabasePath);
+            return new UnitOfWork(GetInstance().DatabasePath);
         }
     }
 }

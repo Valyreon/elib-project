@@ -1,14 +1,15 @@
-﻿using MVVMLibrary.Messaging;
+﻿using Domain;
+using MVVMLibrary.Messaging;
 
 namespace ElibWpf.Messages
 {
     public class AuthorSelectedMessage : MessageBase
     {
-        public AuthorSelectedMessage(int authorId)
+        public AuthorSelectedMessage(Author author)
         {
-            this.AuthorId = authorId;
+            this.Author = author;
         }
 
-        public int AuthorId { get; }
+        public Author Author { get; }
     }
 }

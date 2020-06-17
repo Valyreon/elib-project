@@ -1,6 +1,4 @@
-﻿using System;
-using Domain;
-using ElibWpf.Messages;
+﻿using DataLayer;
 using Models.Options;
 
 namespace ElibWpf.ViewModels
@@ -9,7 +7,7 @@ namespace ElibWpf.ViewModels
     {
         public abstract string Caption { get; set; }
 
-        public abstract Filter Filter { get; }
+        public abstract FilterAlt Filter { get; }
 
         public abstract string NumberOfBooks { get; set; }
 
@@ -18,5 +16,6 @@ namespace ElibWpf.ViewModels
         public abstract void Clear();
 
         public abstract void Search(SearchOptions searchOptions);
+
     }
 }

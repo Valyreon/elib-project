@@ -66,10 +66,10 @@ namespace ElibWpf.ViewModels.Dialogs
             });
         }
 
-        private async void LoadSeries()
+        private void LoadSeries()
         {
-            using ElibContext context = ApplicationSettings.CreateContext();
-            var list = await context.Series.ToListAsync();
+            using UnitOfWork uow = ApplicationSettings.CreateUnitOfWork();
+            var list = uow.SeriesRepository.All().ToList();
             foreach (BookSeries series in list)
             {
                 this.AllSeries.Add(series);

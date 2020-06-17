@@ -39,7 +39,7 @@ namespace DatabaseTests
             Assert.IsNotNull(mybook.Quotes);
         }
 
-        [TestMethod]
+        /*[TestMethod]
         public void TestAddingToDatabase()
         {
             const string bookFilePath = @"C:\Users\luka.budrak\Downloads\[Peter_Hollins]_Finish_What_You_Start__The_Art_of_(z-lib.org).epub";
@@ -71,13 +71,13 @@ namespace DatabaseTests
             };
             context.Books.Add(newBook);
             context.SaveChanges();
-        }
+        }*/
 
         [TestMethod]
         public void ExporterTest()
         {
-            using ElibContext context = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
-            Exporter exp = new Exporter(context);
+            using var uow = ApplicationSettings.CreateUnitOfWork();
+            Exporter exp = new Exporter(uow);
 
             ExporterOptions options = new ExporterOptions
             {
@@ -86,7 +86,7 @@ namespace DatabaseTests
                 DestinationDirectory = @"C:\Users\Luka\Desktop"
             };
 
-            exp.ExportBooks(context.Books.ToList(), options);
+            exp.ExportBooks(uow.BookRepository.All(), options);
         }
 
         [TestMethod]
@@ -113,7 +113,7 @@ namespace DatabaseTests
         [TestMethod]
         public void AddBookSeriesFromMyComputer()
         {
-            string bookSeriesPath = @"D:\Documents\Ebooks\Book Series";
+            /*string bookSeriesPath = @"D:\Documents\Ebooks\Book Series";
             using ElibContext context = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
             context.TruncateDatabase();
 
@@ -172,7 +172,7 @@ namespace DatabaseTests
                 }
 
                 DirSearch(dirPath);
-            }
+            }*/
         }
 
         [TestMethod]

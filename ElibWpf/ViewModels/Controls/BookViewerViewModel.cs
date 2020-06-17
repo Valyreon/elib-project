@@ -13,10 +13,11 @@ using Domain;
 using ElibWpf.Messages;
 using ElibWpf.Paging;
 using Models;
-using Models.Observables;
+
 using Models.Options;
 using MVVMLibrary;
 using MVVMLibrary.Messaging;
+using Filter = Models.Options.Filter;
 
 namespace ElibWpf.ViewModels.Controls
 {
@@ -26,30 +27,30 @@ namespace ElibWpf.ViewModels.Controls
         private readonly Selector selector;
         private string caption;
         private SearchOptions searchOptions;
-        private ObservableBook lastSelectedBook;
+        private Book lastSelectedBook;
         private int nextPage = 1;
         private string numberOfBooks;
         private double scrollVerticalOffset;
 
-        public BookViewerViewModel(string caption, Filter filter, Selector selector)
+        public BookViewerViewModel(string caption, FilterAlt filter, Selector selector)
         {
             this.Caption = caption;
             this.Filter = filter;
-            this.Books = new ObservableCollection<ObservableBook>();
+            this.Books = new ObservableCollection<Book>();
             this.selector = selector;
         }
 
-        public ObservableCollection<ObservableBook> Books { get; set; }
+        public ObservableCollection<Book> Books { get; set; }
 
         public ICommand GoToAuthor =>
-            new RelayCommand<ICollection<ObservableAuthor>>(a => Messenger.Default.Send(new AuthorSelectedMessage(a.First().Id)));
+            new RelayCommand<ICollection<Author>>(a => Messenger.Default.Send(new AuthorSelectedMessage(a.First())));
 
         public ICommand GoToSeries =>
-            new RelayCommand<ObservableSeries>(a => Messenger.Default.Send(new SeriesSelectedMessage(a.Id)));
+            new RelayCommand<BookSeries>(s => Messenger.Default.Send(new SeriesSelectedMessage(s)));
 
         public ICommand LoadMoreCommand => new RelayCommand(this.LoadMore);
 
-        public ICommand OpenBookDetails => new RelayCommand<ObservableBook>(this.HandleBookClick);
+        public ICommand OpenBookDetails => new RelayCommand<Book>(this.HandleBookClick);
 
         public double ScrollVertical
         {
@@ -57,12 +58,23 @@ namespace ElibWpf.ViewModels.Controls
             set => this.Set(() => ScrollVertical, ref this.scrollVerticalOffset, value);
         }
 
-        public ICommand SelectBookCommand => new RelayCommand<ObservableBook>(b => {
+        public ICommand SelectBookCommand => new RelayCommand<Book>(b =>
+        {
             b.IsMarked = !b.IsMarked;
             this.HandleSelectBook(b);
         });
 
-        public Filter Filter { get; }
+        private FilterAlt filter = null;
+        public FilterAlt Filter
+        {
+            get => filter;
+            set
+            {
+                filter = value;
+                if(Books != null)
+                    this.Refresh();
+            }
+        }
 
         public string Caption
         {
@@ -76,7 +88,7 @@ namespace ElibWpf.ViewModels.Controls
             set => this.Set(() => NumberOfBooks, ref this.numberOfBooks, value);
         }
 
-        private void HandleSelectBook(ObservableBook obj)
+        private void HandleSelectBook(Book obj)
         {
             bool isSelected = this.selector.Select(obj);
             bool isThisSelectedView = Filter.Selected.HasValue && Filter.Selected.Value;
@@ -96,7 +108,7 @@ namespace ElibWpf.ViewModels.Controls
             this.MessengerInstance.Send(new BookSelectedMessage());
         }
 
-        private void HandleBookClick(ObservableBook arg)
+        private void HandleBookClick(Book arg)
         {
             if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
             {
@@ -114,7 +126,7 @@ namespace ElibWpf.ViewModels.Controls
 
                 for (int i = ascIndexArray[0]; i <= ascIndexArray[1]; i++)
                 {
-                    ObservableBook book = this.Books.ElementAt(i);
+                    Book book = this.Books.ElementAt(i);
                     book.IsMarked = true;
                     this.HandleSelectBook(book);
                     this.RaisePropertyChanged(() => book.IsMarked);
@@ -126,35 +138,22 @@ namespace ElibWpf.ViewModels.Controls
             }
         }
 
-        private async void LoadMore()
+        private void LoadMore()
         {
-            PagedList<Book> bookList;
+            List<Book> bookList;
 
-            using ElibContext context = ApplicationSettings.CreateContext();
-            IQueryable<Book> query = CreateQueryFromFilter(context.Books.Include("Authors").Include("Series").Include("UserCollections"));
+            using UnitOfWork uow = ApplicationSettings.CreateUnitOfWork();
+            bookList = uow.BookRepository.FindPageByFilter(filter, Books.LastOrDefault()).ToList();
 
-            await semaphoreSlim.WaitAsync();
-            try
+            foreach (Book item in bookList)
             {
-                bookList = await Task.Run(() => query.ToPagedList(this.nextPage++, 25));
-            }
-            finally
-            {
-                semaphoreSlim.Release();
-            }
-
-            this.NumberOfBooks = bookList.TotalCount.ToString();
-            if (this.Books.Count < bookList.TotalCount)
-            {
-                foreach (Book item in bookList)
+                Application.Current.Dispatcher.Invoke(() =>
                 {
-                    Application.Current.Dispatcher.Invoke(() => {
-                        this.Books.Add(this.selector.SetMarked(new ObservableBook(item)));
-                    });
-                }
+                    this.Books.Add(this.selector.SetMarked(item).LoadMembers(uow));
+                });
             }
 
-            if(this.Books.Count == 0)
+            if (this.Books.Count == 0)
             {
                 this.MessengerInstance.Send(new ShowDialogMessage("No matches",
                         "No books found matching the search conditions."));
@@ -173,75 +172,6 @@ namespace ElibWpf.ViewModels.Controls
         public void Clear()
         {
             this.Books.Clear();
-        }
-
-        private IQueryable<Book> CreateQueryFromFilter(IQueryable<Book> initial)
-        {
-            if (Filter == null)
-                return initial;
-
-            IQueryable<Book> aggregateQuery = initial;
-            if (Filter.BookIds != null)
-            {
-                aggregateQuery = aggregateQuery.Where(b => Filter.BookIds.Contains(b.Id));
-            }
-
-            if(Filter.AuthorIds != null)
-            {
-                aggregateQuery = aggregateQuery.Where(b => b.Authors.Select(a => a.Id).Any(x => Filter.AuthorIds.Contains(x)));
-            }
-
-            if(Filter.CollectionIds != null)
-            {
-                aggregateQuery = aggregateQuery.Where(b => b.UserCollections.Select(a => a.Id).Any(x => Filter.CollectionIds.Contains(x)));
-            }
-
-            if (Filter.SeriesIds != null)
-            {
-                aggregateQuery = aggregateQuery.Where(b => b.SeriesId != null && Filter.SeriesIds.Contains(b.SeriesId.Value));
-            }
-
-            if (Filter.Read != null)
-            {
-                aggregateQuery = aggregateQuery.Where(b => b.IsRead == Filter.Read.Value);
-            }
-
-            if (Filter.Favorite != null)
-            {
-                aggregateQuery = aggregateQuery.Where(b => b.IsFavorite == Filter.Favorite.Value);
-            }
-
-            if (Filter.Selected != null)
-            {
-                aggregateQuery = aggregateQuery.Where(b => selector.SelectedIds.Contains(b.Id));
-            }
-
-            if (Filter.SortByImportOrder)
-            {
-                aggregateQuery = Filter.Ascending ? aggregateQuery.OrderBy(b => b.Id) : aggregateQuery.OrderByDescending(b => b.Id);
-            }
-            else if(Filter.SortByTitle)
-            {
-                aggregateQuery = Filter.Ascending ? aggregateQuery.OrderBy(b => b.Title) : aggregateQuery.OrderByDescending(b => b.Title);
-            }
-            else if(Filter.SortBySeries)
-            {
-                aggregateQuery = Filter.Ascending ? aggregateQuery.OrderBy(b => b.Series.Name) : aggregateQuery.OrderByDescending(b => b.Series.Name);
-            }
-            else if(Filter.SortByAuthor)
-            {
-                aggregateQuery = Filter.Ascending ? aggregateQuery.OrderBy(b => b.Authors.FirstOrDefault().Name) : aggregateQuery.OrderByDescending(b => b.Authors.FirstOrDefault().Name);
-            }
-
-            if(searchOptions != null && !string.IsNullOrEmpty(searchOptions.Token))
-            {
-                aggregateQuery = aggregateQuery.Where(x => (this.searchOptions.SearchByName && x.Title.ToLower().Contains(this.searchOptions.Token) ||
-                                                   this.searchOptions.SearchByAuthor &&
-                                                   x.Authors.Any(a => a.Name.ToLower().Contains(this.searchOptions.Token)) || this.searchOptions.SearchBySeries &&
-                                                   x.Series != null &&
-                                                   x.Series.Name.ToLower().Contains(this.searchOptions.Token)));
-            }
-            return aggregateQuery;
         }
 
         public void Search(SearchOptions searchOptions)

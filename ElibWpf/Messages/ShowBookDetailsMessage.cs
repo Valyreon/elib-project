@@ -1,15 +1,15 @@
-﻿using Models.Observables;
+﻿using Domain;
 using MVVMLibrary.Messaging;
 
 namespace ElibWpf.Messages
 {
     public class ShowBookDetailsMessage : MessageBase
     {
-        public ShowBookDetailsMessage(ObservableBook clickedBook)
+        public ShowBookDetailsMessage(Book clickedBook)
         {
             this.Book = clickedBook;
         }
 
-        public ObservableBook Book { get; }
+        public Book Book { get; }
     }
 }

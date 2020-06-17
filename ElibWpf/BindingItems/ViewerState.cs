@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using DataLayer;
+using Domain;
 using ElibWpf.ViewModels;
 using ElibWpf.ViewModels.Controls;
 using Microsoft.Xaml.Behaviors.Core;
@@ -15,7 +16,7 @@ namespace ElibWpf.BindingItems
 {
     public class ViewerState
     {
-        public Filter Filter { get; private set; }
+        public FilterAlt Filter { get; private set; }
         public string Caption { get; private set; }
 
         private ViewerState()

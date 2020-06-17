@@ -1,32 +1,84 @@
-﻿using System.Collections.Generic;
+﻿using MVVMLibrary;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace Domain
 {
     [Table("Books")]
-    public class Book
+    public class Book : ObservableObject
     {
-        public ICollection<Author> Authors { get; set; }
-        public byte[] Cover { get; set; }
+        private string title;
+        private bool isFavorite;
+        private bool isRead;
+        private bool isMarked;
+        private decimal? numberInSeries;
+        private byte[] cover;
 
-        [Required] [ForeignKey("FileId")] public EFile File { get; set; }
+        [Required]
+        public EFile File { get; set; }
 
         public int FileId { get; set; }
         public int Id { get; set; }
-        public bool IsFavorite { get; set; } = false;
-        public bool IsRead { get; set; } = false;
 
-        public decimal? NumberInSeries { get; set; }
         public decimal PercentageRead { get; set; } = 0;
-        public ICollection<Quote> Quotes { get; set; }
 
-        [ForeignKey("SeriesId")] public BookSeries Series { get; set; }
-
+        public BookSeries Series { get; set; }
         public int? SeriesId { get; set; }
 
-        [Required] [StringLength(100)] public string Title { get; set; }
-        public ICollection<UserCollection> UserCollections { get; set; }
+        public ObservableCollection<UserCollection> Collections { get; set; }
+        public ObservableCollection<Quote> Quotes { get; set; }
+        public ObservableCollection<Author> Authors { get; set; }
+
         public int? WhenRead { get; set; }
+
+        [Required]
+        public string Title
+        {
+            get => this.title;
+            set => Set(() => Title, ref title, value);
+        }
+
+        public bool IsFavorite
+        {
+            get => this.isFavorite;
+            set => Set(() => IsFavorite, ref isFavorite, value);
+        }
+
+        public bool IsRead
+        {
+            get => this.isRead;
+            set => Set(() => IsRead, ref isRead, value);
+        }
+
+        public bool IsMarked
+        {
+            get => this.isMarked;
+            set => Set(() => IsMarked, ref isMarked, value);
+        }
+
+        public decimal? NumberInSeries
+        {
+            get => this.numberInSeries;
+            set => Set(() => NumberInSeries, ref numberInSeries, value);
+        }
+
+        public byte[] Cover
+        {
+            get => this.cover;
+            set => Set(() => Cover, ref cover, value);
+        }
+
+        public string AuthorsInfo
+        {
+            get { return this.Authors.Any() ? this.Authors.Select(a => a.Name).Aggregate((i, j) => i + ", " + j) : ""; }
+        }
+
+        public string SeriesInfo =>
+            this.Series != null
+                ? $"{this.Series.Name} {(this.NumberInSeries != null ? $"#{this.NumberInSeries}" : "")}"
+                : "";
     }
 }

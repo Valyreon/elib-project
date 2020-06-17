@@ -90,6 +90,10 @@
       <Project>{a35ecb0d-7185-4c6b-82a4-f2a70258f0b5}</Project>
       <Name>Models</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MVVMLibrary\MVVMLibrary.csproj">
+      <Project>{814AE470-0BAF-4D21-A917-59BF7DC887AE}</Project>
+      <Name>MVVMLibrary</Name>
+    </ProjectReference>
     <ProjectReference Include="..\OnlineBookApi\OnlineBookApi.csproj">
       <Project>{4802d3b7-f3fb-4057-aa1e-d17e12da161f}</Project>
       <Name>OnlineBookApi</Name>

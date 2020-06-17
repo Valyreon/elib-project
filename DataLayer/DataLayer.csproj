@@ -39,6 +39,9 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Dapper, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.2.0.35\lib\net461\Dapper.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
@@ -65,21 +68,41 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataExtensions.cs" />
     <Compile Include="ElibContext.cs" />
+    <Compile Include="Filter.cs" />
+    <Compile Include="Repositories\AuthorRepository.cs" />
+    <Compile Include="Repositories\BookRepository.cs" />
+    <Compile Include="Repositories\CollectionRepository.cs" />
+    <Compile Include="Repositories\EFileRepository.cs" />
+    <Compile Include="Repositories\IAuthorRepository.cs" />
+    <Compile Include="Repositories\IBookRepository.cs" />
+    <Compile Include="Repositories\ICollectionRepository.cs" />
+    <Compile Include="Repositories\IEFileRepository.cs" />
+    <Compile Include="Repositories\IQuoteRepository.cs" />
+    <Compile Include="Repositories\IRawFileRepository.cs" />
+    <Compile Include="Repositories\ISeriesRepository.cs" />
+    <Compile Include="IUnitOfWork.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\QuoteRepository.cs" />
+    <Compile Include="Repositories\RawFileRepository.cs" />
+    <Compile Include="Repositories\RepositoryBase.cs" />
+    <Compile Include="Repositories\SeriesRepository.cs" />
     <Compile Include="SqLiteConfiguration.cs" />
+    <Compile Include="UnitOfWork.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="elib_database.sqlite">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj">
       <Project>{1A7E4187-0A14-4B7F-BA7E-A5E618C0BFC8}</Project>
       <Name>Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MVVMLibrary\MVVMLibrary.csproj">
+      <Project>{814AE470-0BAF-4D21-A917-59BF7DC887AE}</Project>
+      <Name>MVVMLibrary</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

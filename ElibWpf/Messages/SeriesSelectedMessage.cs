@@ -1,14 +1,15 @@
-﻿using MVVMLibrary.Messaging;
+﻿using Domain;
+using MVVMLibrary.Messaging;
 
 namespace ElibWpf.Messages
 {
     public class SeriesSelectedMessage : MessageBase
     {
-        public SeriesSelectedMessage(int seriesId)
+        public SeriesSelectedMessage(BookSeries series)
         {
-            this.SeriesId = seriesId;
+            this.Series = series;
         }
 
-        public int SeriesId { get; }
+        public BookSeries Series { get; }
     }
 }

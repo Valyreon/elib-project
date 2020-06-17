@@ -70,8 +70,8 @@ namespace ElibWpf.ViewModels.Dialogs
 
         private async void Export()
         {
-            using ElibContext database = ApplicationSettings.CreateContext();
-            Exporter exporter = new Exporter(database);
+            using var uow = ApplicationSettings.CreateUnitOfWork();
+            Exporter exporter = new Exporter(uow);
 
             await DialogCoordinator.Instance.HideMetroDialogAsync(Application.Current.MainWindow.DataContext, this.dialog);
             ProgressDialogController controlProgress =
@@ -93,9 +93,6 @@ namespace ElibWpf.ViewModels.Dialogs
             {
                 controlProgress.SetMessage("Loading book files...");
                 controlProgress.SetProgress(++counter);
-                database.Books.Attach(b);
-                await Task.Run(() => database.Entry(b).Reference(book => book.File).Load());
-                await Task.Run(() => database.Entry(b.File).Reference(f => f.RawFile).Load());
             }
 
             await Task.Run(() => exporter.ExportBooks(this.booksToExport,

@@ -22,10 +22,10 @@ namespace Models
             Book book = new Book
             {
                 Title = bookName,
-                Authors = new List<Author>
+                /*Authors = new List<Author>
                 {
                     this.database.Authors.FirstOrDefault(x => x.Name == authorName) ?? new Author {Name = authorName}
-                },
+                },*/
                 File = new EFile
                 {
                     Format = parsedBook.Format,
@@ -50,11 +50,11 @@ namespace Models
             Book book = new Book
             {
                 Title = parsedBook.Title,
-                Authors = new List<Author>
+                /*Authors = new List<Author>
                 {
                     this.database.Authors.FirstOrDefault(x => x.Name == parsedBook.Author) ??
                     new Author {Name = parsedBook.Author}
-                },
+                },*/
                 File = new EFile
                 {
                     Format = parsedBook.Format,

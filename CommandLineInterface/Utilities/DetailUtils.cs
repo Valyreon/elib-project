@@ -36,7 +36,7 @@ namespace CommandLineInterface.Utilities
             stringBuilder.Append(string.Format(formatString, "Title:", book.Title));
 
             var authors = book.Authors;
-            var collections = book.UserCollections;
+            var collections = book.Collections;
             BookSeries series = book.Series;
 
             if (authors != null)
@@ -83,7 +83,7 @@ namespace CommandLineInterface.Utilities
 
             if (books != null)
             {
-                stringBuilder.Append(string.Format(formatString, books.Count > 1 ? "Books:" : "Book:",
+                stringBuilder.Append(string.Format(formatString, books.Count() > 1 ? "Books:" : "Book:",
                     string.Join(", ", books.Select(x => x.Title))));
             }
 
@@ -135,7 +135,7 @@ namespace CommandLineInterface.Utilities
 
             if (books != null)
             {
-                stringBuilder.Append(string.Format(formatString, books.Count > 1 ? "Books:" : "Book:",
+                stringBuilder.Append(string.Format(formatString, books.Count() > 1 ? "Books:" : "Book:",
                     string.Join(", ", books.Select(x => x.Title))));
             }
 

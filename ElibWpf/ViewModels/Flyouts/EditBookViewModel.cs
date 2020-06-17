@@ -16,7 +16,7 @@ using ElibWpf.ViewModels.Dialogs;
 using ElibWpf.Views.Dialogs;
 using MahApps.Metro.Controls.Dialogs;
 using Models;
-using Models.Observables;
+
 using MVVMLibrary;
 using Application = System.Windows.Application;
 
@@ -24,7 +24,7 @@ namespace ElibWpf.ViewModels.Flyouts
 {
     public class EditBookViewModel : ViewModelWithValidation
     {
-        private ObservableCollection<ObservableAuthor> authorCollection;
+        private ObservableCollection<Author> authorCollection;
 
         private byte[] coverImage;
 
@@ -32,13 +32,13 @@ namespace ElibWpf.ViewModels.Flyouts
 
         private bool isRead;
 
-        private ObservableSeries series;
+        private BookSeries series;
 
         private string seriesNumberFieldText;
 
         private string titleFieldText;
 
-        public EditBookViewModel(ObservableBook book)
+        public EditBookViewModel(Book book)
         {
             this.Book = book;
             this.HandleRevert();
@@ -49,13 +49,13 @@ namespace ElibWpf.ViewModels.Flyouts
         public ICommand AddNewAuthorButtonCommand => new RelayCommand(this.HandleAddNewAuthor);
 
         [NotEmpty(ErrorMessage = "Book has to have at least one author.")]
-        public ObservableCollection<ObservableAuthor> AuthorsCollection
+        public ObservableCollection<Author> AuthorsCollection
         {
             get => this.authorCollection;
             private set { this.Set(() => this.AuthorsCollection, ref this.authorCollection, value); }
         }
 
-        public ObservableBook Book { get; }
+        public Book Book { get; }
 
         public ICommand CancelButtonCommand => new RelayCommand(this.HandleCancel);
 
@@ -97,7 +97,7 @@ namespace ElibWpf.ViewModels.Flyouts
 
         public ICommand SaveButtonCommand => new RelayCommand(this.HandleSave);
 
-        public ObservableSeries Series
+        public BookSeries Series
         {
             get => this.series;
             set
@@ -150,52 +150,45 @@ namespace ElibWpf.ViewModels.Flyouts
             else // if not
             {
                 Author newAuthor = new Author {Name = name};
-                this.AuthorsCollection.Add(new ObservableAuthor(newAuthor));
+                this.AuthorsCollection.Add(newAuthor);
 
                 _ = Task.Run(() =>
                 {
-                    using ElibContext database = ApplicationSettings.CreateContext();
-                    Author existingAuthor = database.Authors.FirstOrDefault(c => c.Name == name);
-                    if (existingAuthor != null)
-                    {
-                        newAuthor.Id = existingAuthor.Id;
-                    }
+                    using var uow = ApplicationSettings.CreateUnitOfWork();
+                    uow.AuthorRepository.AddAuthorForBook(newAuthor, this.Book.Id);
                 });
             }
         }
 
         private void HandleRemoveAuthor(int id)
         {
-            ObservableAuthor obsAuthor = this.AuthorsCollection.FirstOrDefault(c => c.Id == id);
+            Author obsAuthor = this.AuthorsCollection.FirstOrDefault(c => c.Id == id);
             if (obsAuthor == null)
             {
                 return;
             }
 
-            Author toRemove = obsAuthor.Author;
             this.AuthorsCollection.Remove(obsAuthor);
 
             Task.Run(() =>
             {
-                using ElibContext database = ApplicationSettings.CreateContext();
-                database.Authors.Attach(toRemove);
-                if (database.Books.Count(b => b.Authors.Any(c => c.Id == toRemove.Id)) > 1)
+                using var uow = ApplicationSettings.CreateUnitOfWork();
+                if (uow.AuthorRepository.CountBooksByAuthor(id) > 1)
                 {
                     return;
                 }
 
-                database.Entry(toRemove).State = EntityState.Deleted;
-                database.SaveChanges();
+                uow.AuthorRepository.Remove(id);
             });
         }
 
         private void HandleRevert()
         {
             this.ClearErrors();
-            this.AuthorsCollection = new ObservableCollection<ObservableAuthor>(this.Book.Authors);
+            this.AuthorsCollection = new ObservableCollection<Author>(this.Book.Authors);
             this.Series = this.Book.Series == null
                 ? null
-                : new ObservableSeries(new BookSeries {Name = this.Book.Series.Name, Id = this.Book.Series.Id});
+                : new BookSeries {Name = this.Book.Series.Name, Id = this.Book.Series.Id};
             this.TitleFieldText = this.Book.Title;
             this.SeriesNumberFieldText = this.Book.NumberInSeries.ToString();
             this.IsFavoriteCheck = this.Book.IsFavorite;
@@ -213,18 +206,17 @@ namespace ElibWpf.ViewModels.Flyouts
 
             Task.Run(() =>
             {
-                ObservableBook book = this.Book;
-                using ElibContext database = ApplicationSettings.CreateContext();
-
-                database.Books.Attach(this.Book.Book);
+                Book book = this.Book;
+                using var uow = ApplicationSettings.CreateUnitOfWork();
 
                 if ((this.Book.Series == null && this.Series != null) || (this.Series != null && this.Book.Series.Id != this.Series.Id))
                 {
-                    this.Book.Series = new ObservableSeries(database.Series.FirstOrDefault(s => s.Id == this.Series.Id));
+                    this.Book.Series = uow.SeriesRepository.Find(this.Series.Id);
                 }
                 else if (this.Book.Series != null && this.Series != null && this.Book.Series.Id != this.Series.Id)
                 {
                     this.Book.Series.Name = this.Series.Name;
+                    uow.SeriesRepository.Update(this.Book.Series);
                 }
                 else
                 {
@@ -243,14 +235,13 @@ namespace ElibWpf.ViewModels.Flyouts
                 book.IsFavorite = this.IsFavoriteCheck;
                 book.IsRead = this.IsReadCheck;
                 book.Authors.Clear();
-                foreach (ObservableAuthor author in this.AuthorsCollection)
+                foreach (Author author in this.AuthorsCollection)
                 {
                     book.Authors.Add(author);
                 }
 
                 book.Cover = this.Cover;
-
-                database.SaveChanges();
+                uow.BookRepository.Update(this.Book);
             });
 
             this.MessengerInstance.Send(new ShowBookDetailsMessage(this.Book));
@@ -282,8 +273,8 @@ namespace ElibWpf.ViewModels.Flyouts
         {
             ChooseAuthorDialog dialog = new ChooseAuthorDialog
             {
-                DataContext = new ChooseAuthorDialogViewModel(this.AuthorsCollection.Select(oa => oa.Author.Id),
-                    x => Application.Current.Dispatcher.Invoke(() => this.AuthorsCollection.Add(new ObservableAuthor(x))))
+                DataContext = new ChooseAuthorDialogViewModel(this.AuthorsCollection.Select(oa => oa.Id),
+                    x => Application.Current.Dispatcher.Invoke(() => this.AuthorsCollection.Add(x)))
             };
             await DialogCoordinator.Instance.ShowMetroDialogAsync(this, dialog);
         }
@@ -294,32 +285,10 @@ namespace ElibWpf.ViewModels.Flyouts
             {
                 DataContext = new ChooseSeriesDialogViewModel(x =>
                 {
-                    if (this.Series != null && x.Id != this.Series.Id)
-                    {
-                        CleanSeries(this.Series.Series);
-                    }
-
-                    this.Series = new ObservableSeries(x);
+                    this.Series = x;
                 })
             };
             await DialogCoordinator.Instance.ShowMetroDialogAsync(this, dialog);
-        }
-
-        private static void CleanSeries(BookSeries x)
-        {
-            if (x != null)
-            {
-                Task.Run(() =>
-                {
-                    using ElibContext database = ApplicationSettings.CreateContext();
-                    if (database.Books.Count(b => b.SeriesId == x.Id) <= 1)
-                    {
-                        database.Series.Attach(x);
-                        database.Entry(x).State = EntityState.Deleted;
-                        database.SaveChanges();
-                    }
-                });
-            }
         }
 
         private async void HandleCreateNewSeries()
@@ -331,24 +300,19 @@ namespace ElibWpf.ViewModels.Flyouts
             }
 
             name = name.Trim();
-            BookSeries newAuthor = new BookSeries {Name = name};
-            BookSeries temp = this.Series?.Series;
-            this.Series = new ObservableSeries(newAuthor);
-            CleanSeries(temp);
+            BookSeries newSeries = new BookSeries {Name = name};
+            this.Series = newSeries;
 
             _ = Task.Run(() =>
             {
-                using ElibContext database = ApplicationSettings.CreateContext();
-                database.Series.Add(newAuthor);
-                database.SaveChanges();
+                using var uow = ApplicationSettings.CreateUnitOfWork();
+                uow.SeriesRepository.Add(newSeries);
             });
         }
 
         private void HandleClearSeries()
         {
-            BookSeries temp = this.Series?.Series;
             this.Series = null;
-            CleanSeries(temp);
         }
 
         private async void HandleEditSeries()

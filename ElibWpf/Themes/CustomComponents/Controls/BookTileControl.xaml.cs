@@ -6,9 +6,10 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using Domain;
 using ElibWpf.Animations;
 using ElibWpf.CustomComponents;
-using Models.Observables;
+
 
 namespace ElibWpf.Themes.CustomComponents.Controls
 {
@@ -53,11 +54,11 @@ namespace ElibWpf.Themes.CustomComponents.Controls
                 DependencyProperty.Register("SelectCommand", typeof(ICommand), typeof(BookTileControl));
 
             TileParameterProperty =
-                DependencyProperty.Register("TileParameter", typeof(ObservableBook), typeof(BookTileControl));
+                DependencyProperty.Register("TileParameter", typeof(Book), typeof(BookTileControl));
             AuthorParameterProperty = DependencyProperty.Register("AuthorParameter",
-                typeof(ICollection<ObservableAuthor>), typeof(BookTileControl));
+                typeof(ICollection<Author>), typeof(BookTileControl));
             SeriesParameterProperty =
-                DependencyProperty.Register("SeriesParameter", typeof(ObservableSeries), typeof(BookTileControl));
+                DependencyProperty.Register("SeriesParameter", typeof(BookSeries), typeof(BookTileControl));
         }
 
         public BookTileControl()
@@ -72,9 +73,9 @@ namespace ElibWpf.Themes.CustomComponents.Controls
             set => this.SetValue(AuthorCommandProperty, value);
         }
 
-        public ICollection<ObservableAuthor> AuthorParameter
+        public ICollection<Author> AuthorParameter
         {
-            get => (ICollection<ObservableAuthor>) this.GetValue(AuthorParameterProperty);
+            get => (ICollection<Author>) this.GetValue(AuthorParameterProperty);
             set => this.SetValue(AuthorParameterProperty, value);
         }
 
@@ -114,9 +115,9 @@ namespace ElibWpf.Themes.CustomComponents.Controls
             set => this.SetValue(SeriesInfoProperty, value);
         }
 
-        public ObservableSeries SeriesParameter
+        public BookSeries SeriesParameter
         {
-            get => (ObservableSeries) this.GetValue(SeriesParameterProperty);
+            get => (BookSeries) this.GetValue(SeriesParameterProperty);
             set => this.SetValue(SeriesParameterProperty, value);
         }
 
@@ -126,9 +127,9 @@ namespace ElibWpf.Themes.CustomComponents.Controls
             set => this.SetValue(TileCommandProperty, value);
         }
 
-        public ObservableBook TileParameter
+        public Book TileParameter
         {
-            get => (ObservableBook) this.GetValue(TileParameterProperty);
+            get => (Book) this.GetValue(TileParameterProperty);
             set => this.SetValue(TileParameterProperty, value);
         }
 

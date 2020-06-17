@@ -1,14 +1,14 @@
-﻿using Models.Observables;
+﻿using Domain;
 
 namespace ElibWpf.Messages
 {
     public class EditBookMessage
     {
-        public EditBookMessage(ObservableBook clickedBook)
+        public EditBookMessage(Book clickedBook)
         {
             this.Book = clickedBook;
         }
 
-        public ObservableBook Book { get; }
+        public Book Book { get; }
     }
 }

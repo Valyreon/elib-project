@@ -41,10 +41,10 @@ namespace DataLayer
             modelBuilder.Entity<Book>().HasMany(x => x.Quotes);
 
             modelBuilder.Entity<AuthorBookLink>().HasKey(x => new {x.BookId, x.AuthorId});
-            modelBuilder.Entity<CollectionBookLink>().HasKey(x => new {x.BookId, x.CollectionId});
+            modelBuilder.Entity<CollectionBookLink>().HasKey(x => new {x.BookId, x.UserCollectionId});
 
-            modelBuilder.Entity<Author>().HasMany(x => x.Books);
-            modelBuilder.Entity<BookSeries>().HasMany(x => x.Books);
+            /*modelBuilder.Entity<Author>().HasMany(x => x.Books);
+            modelBuilder.Entity<BookSeries>().HasMany(x => x.Books);*/
 
             modelBuilder.Entity<UserCollection>().HasIndex(x => x.Tag).IsUnique();
         }

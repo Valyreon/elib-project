@@ -7,7 +7,7 @@ using DataLayer;
 using Domain;
 using ElibWpf.Messages;
 using Models;
-using Models.Observables;
+
 using MVVMLibrary;
 using MVVMLibrary.Messaging;
 
@@ -19,7 +19,7 @@ namespace ElibWpf.ViewModels.Flyouts
 
         private string bookDescription;
 
-        public BookDetailsViewModel(ObservableBook book)
+        public BookDetailsViewModel(Book book)
         {
             this.Book = book;
         }
@@ -32,7 +32,7 @@ namespace ElibWpf.ViewModels.Flyouts
             set => base.Set(() => this.AddCollectionFieldText, ref this.addCollectionFieldText, value);
         }
 
-        public ObservableBook Book { get; }
+        public Book Book { get; }
 
         public string BookDescriptionText
         {
@@ -42,17 +42,17 @@ namespace ElibWpf.ViewModels.Flyouts
 
         public ICommand EditButtonCommand => new RelayCommand(this.HandleEditButton);
 
-        public ICommand GoToAuthor => new RelayCommand<ICollection<ObservableAuthor>>(a =>
+        public ICommand GoToAuthor => new RelayCommand<ICollection<Author>>(a =>
         {
-            Messenger.Default.Send(new AuthorSelectedMessage(a.First().Id));
+            Messenger.Default.Send(new AuthorSelectedMessage(a.First()));
             Messenger.Default.Send(new CloseFlyoutMessage());
         });
 
-        public ICommand GoToCollectionCommand => new RelayCommand<ObservableUserCollection>(this.GoToCollection);
+        public ICommand GoToCollectionCommand => new RelayCommand<UserCollection>(this.GoToCollection);
 
-        public ICommand GoToSeries => new RelayCommand<ObservableSeries>(a =>
+        public ICommand GoToSeries => new RelayCommand<BookSeries>(a =>
         {
-            Messenger.Default.Send(new SeriesSelectedMessage(a.Id));
+            Messenger.Default.Send(new SeriesSelectedMessage(a));
             Messenger.Default.Send(new CloseFlyoutMessage());
         });
 
@@ -66,9 +66,8 @@ namespace ElibWpf.ViewModels.Flyouts
 
                 Task.Run(() =>
                 {
-                    using ElibContext database = ApplicationSettings.CreateContext();
-                    database.Entry(this.Book.Book).State = EntityState.Modified;
-                    database.SaveChanges();
+                    using var uow = ApplicationSettings.CreateUnitOfWork();
+                    uow.BookRepository.Update(this.Book);
                 });
             }
         }
@@ -83,9 +82,8 @@ namespace ElibWpf.ViewModels.Flyouts
 
                 Task.Run(() =>
                 {
-                    using ElibContext database = ApplicationSettings.CreateContext();
-                    database.Entry(this.Book.Book).State = EntityState.Modified;
-                    database.SaveChanges();
+                    using var uow = ApplicationSettings.CreateUnitOfWork();
+                    uow.BookRepository.Update(this.Book);
                 });
             }
         }
@@ -94,7 +92,7 @@ namespace ElibWpf.ViewModels.Flyouts
 
         public ICommand RemoveCollectionCommand => new RelayCommand<string>(this.RemoveCollection);
 
-        private void GoToCollection(ObservableUserCollection obj)
+        private void GoToCollection(UserCollection obj)
         {
             this.MessengerInstance.Send(new CollectionSelectedMessage(obj.Id));
             this.MessengerInstance.Send(new CloseFlyoutMessage());
@@ -102,7 +100,7 @@ namespace ElibWpf.ViewModels.Flyouts
 
         private void RemoveCollection(string tag)
         {
-            ObservableUserCollection collection = this.Book.Collections.FirstOrDefault(c => c.Tag == tag);
+            UserCollection collection = this.Book.Collections.FirstOrDefault(c => c.Tag == tag);
 
             if (collection == null)
                 return;
@@ -111,15 +109,13 @@ namespace ElibWpf.ViewModels.Flyouts
 
             Task.Run(() =>
             {
-                using ElibContext database = ApplicationSettings.CreateContext();
-                database.Books.Attach(this.Book.Book);
-                if (database.Books.Count(b => b.UserCollections.Any(c => c.Tag == tag)) <= 1)
+                using var uow = ApplicationSettings.CreateUnitOfWork();
+                uow.CollectionRepository.RemoveCollectionForBook(collection, this.Book.Id);
+                if (uow.CollectionRepository.CountBooksInUserCollection(collection.Id) <= 1)
                 {
-                    database.Entry(collection.Collection).State = EntityState.Deleted;
+                    uow.CollectionRepository.Remove(collection);
                     this.MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
                 }
-
-                database.SaveChanges();
             });
         }
 
@@ -137,25 +133,23 @@ namespace ElibWpf.ViewModels.Flyouts
                 }
                 else // if not
                 {
-                    ObservableUserCollection newCollection = new ObservableUserCollection(new UserCollection {Tag = tag});
+                    UserCollection newCollection = new UserCollection {Tag = tag};
                     this.Book.Collections.Add(newCollection);
                     Task.Run(() =>
                     {
-                        using ElibContext database = ApplicationSettings.CreateContext();
-                        database.Books.Attach(this.Book.Book);
-                        UserCollection existingCollection = database.UserCollections.FirstOrDefault(c => c.Tag == tag);
+                        using var uow = ApplicationSettings.CreateUnitOfWork();
+                        UserCollection existingCollection = uow.CollectionRepository.GetByTag(tag);
                         if (existingCollection == null)
                         {
                             isNew = true;
-                            this.Book.Book.UserCollections.Add(newCollection.Collection);
+                            uow.CollectionRepository.AddCollectionForBook(newCollection, this.Book.Id);
                         }
                         else
                         {
-                            this.Book.Collections.Remove(newCollection);
-                            this.Book.Collections.Add(new ObservableUserCollection(existingCollection));
+                            newCollection.Id = existingCollection.Id;
+                            uow.CollectionRepository.AddCollectionForBook(existingCollection, this.Book.Id);
                         }
 
-                        database.SaveChanges();
                         if (isNew)
                         {
                             this.MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
