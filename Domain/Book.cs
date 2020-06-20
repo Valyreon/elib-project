@@ -15,12 +15,13 @@ namespace Domain
         private bool isRead;
         private bool isMarked;
         private decimal? numberInSeries;
-        private byte[] cover;
+        private Cover cover;
 
         [Required]
         public EFile File { get; set; }
 
         public int FileId { get; set; }
+        public int? CoverId { get; set; }
         public int Id { get; set; }
 
         public decimal PercentageRead { get; set; } = 0;
@@ -65,7 +66,7 @@ namespace Domain
             set => Set(() => NumberInSeries, ref numberInSeries, value);
         }
 
-        public byte[] Cover
+        public Cover Cover
         {
             get => this.cover;
             set => Set(() => Cover, ref cover, value);

@@ -8,6 +8,16 @@ namespace CommandLineInterface.Utilities
 {
     public class DetailUtils
     {
+        private readonly IUnitOfWork database;
+
+        public DetailUtils(IUnitOfWork db)
+        {
+            this.database = db;
+        }
+    }
+
+    /*public class DetailUtils
+    {
         private readonly ElibContext database;
 
         public DetailUtils(ElibContext db)
@@ -141,5 +151,5 @@ namespace CommandLineInterface.Utilities
 
             return stringBuilder.ToString();
         }
-    }
+    }*/
 }

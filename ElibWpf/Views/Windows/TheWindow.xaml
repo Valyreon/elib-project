@@ -27,11 +27,7 @@
     ShowIconOnTitleBar="True"
     ShowTitleBar="True"
     TitleAlignment="Center"
-    TitleCaps="True"
     Top="0"
-    WindowCloseButtonStyle="{StaticResource CleanCloseWindowButtonStyle}"
-    WindowMaxButtonStyle="{StaticResource CleanCloseWindowButtonStyle}"
-    WindowMinButtonStyle="{StaticResource CleanCloseWindowButtonStyle}"
     WindowStartupLocation="CenterScreen"
     WindowTitleBrush="#222222"
     mc:Ignorable="d">

@@ -100,7 +100,7 @@ namespace ElibWpf.ViewModels.Dialogs
                 {
                     DestinationDirectory = this.DestinationPath, GroupByAuthor = this.IsGroupByAuthorChecked,
                     GroupBySeries = this.IsGroupBySeriesChecked
-                }, SetProgress));
+                }, uow, SetProgress));
             await controlProgress.CloseAsync();
         }
 

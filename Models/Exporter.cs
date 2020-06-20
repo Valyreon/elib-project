@@ -42,7 +42,7 @@ namespace Models
             fs.Write(book.File.RawFile.RawContent, 0, book.File.RawFile.RawContent.Length);
         }
 
-        public void ExportBooks(IEnumerable<Book> books, ExporterOptions options, Action<string> progressSet = null)
+        public void ExportBooks(IEnumerable<Book> books, ExporterOptions options, IUnitOfWork uow, Action<string> progressSet = null)
         {
             void ExportAllInList(IEnumerable<Book> list, string outPath)
             {
@@ -89,7 +89,7 @@ namespace Models
             // Load everything needed
             foreach (Book book in enumerable)
             {
-                book.LoadMembers(database);
+                book.File.RawFile = uow.RawFileRepository.Find(book.File.Id);
             }
 
             Directory.CreateDirectory(options.DestinationDirectory);

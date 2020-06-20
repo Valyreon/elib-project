@@ -11,6 +11,7 @@ namespace DataLayer
         IAuthorRepository AuthorRepository { get; }
         IEFileRepository EFileRepository { get; }
         IRawFileRepository RawFileRepository { get; }
+        ICoverRepository CoverRepository { get; }
 
         void Commit();
     }

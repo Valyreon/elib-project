@@ -39,7 +39,7 @@ namespace ElibWpf.Themes.CustomComponents.Controls
 
         static BookTileControl()
         {
-            CoverProperty = DependencyProperty.Register("Cover", typeof(IList<byte>), typeof(BookTileControl));
+            CoverProperty = DependencyProperty.Register("Cover", typeof(Cover), typeof(BookTileControl));
             TitleProperty = DependencyProperty.Register("Title", typeof(string), typeof(BookTileControl));
             AuthorsProperty = DependencyProperty.Register("Authors", typeof(string), typeof(BookTileControl));
             SeriesInfoProperty = DependencyProperty.Register("SeriesInfo", typeof(string), typeof(BookTileControl));
@@ -85,9 +85,9 @@ namespace ElibWpf.Themes.CustomComponents.Controls
             set => this.SetValue(AuthorsProperty, value);
         }
 
-        public IList<byte> Cover
+        public Cover Cover
         {
-            get => (IList<byte>) this.GetValue(CoverProperty);
+            get => (Cover) this.GetValue(CoverProperty);
             set => this.SetValue(CoverProperty, value);
         }
 

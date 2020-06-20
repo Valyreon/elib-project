@@ -98,8 +98,7 @@
                     HorizontalAlignment="Left"
                     BorderBrush="LightGray"
                     BorderThickness="1">
-                    <Image Margin="1"
-                           Source="{Binding Cover, Converter={StaticResource ImageConverter}, UpdateSourceTrigger=PropertyChanged}" />
+                    <Image Margin="1" Source="{Binding Cover.Image, Converter={StaticResource ImageConverter}, UpdateSourceTrigger=PropertyChanged}" />
                 </Border>
                 <Grid Margin="0,6,0,0">
                     <Grid.ColumnDefinitions>
@@ -208,15 +207,9 @@
                                         Command="{Binding Source={StaticResource Proxy}, Path=Data.EditSeriesCommand}"
                                         Header="Edit"
                                         IsEnabled="{Binding Source={StaticResource Proxy}, Path=Data.IsSeriesSelected}" />
-                                    <MenuItem
-                                        Command="{Binding Source={StaticResource Proxy}, Path=Data.CreateNewSeriesCommand}"
-                                        Header="Create new" />
-                                    <MenuItem
-                                        Command="{Binding Source={StaticResource Proxy}, Path=Data.ChooseExistingSeriesCommand}"
-                                        Header="Choose existing" />
-                                    <MenuItem
-                                        Command="{Binding Source={StaticResource Proxy}, Path=Data.ClearSeriesCommand}"
-                                        Header="Clear" />
+                                    <MenuItem Command="{Binding Source={StaticResource Proxy}, Path=Data.CreateNewSeriesCommand}" Header="Create new" />
+                                    <MenuItem Command="{Binding Source={StaticResource Proxy}, Path=Data.ChooseExistingSeriesCommand}" Header="Choose existing" />
+                                    <MenuItem Command="{Binding Source={StaticResource Proxy}, Path=Data.ClearSeriesCommand}" Header="Clear" />
                                 </ContextMenu>
                             </Button.ContextMenu>
                             <Button.Triggers>
@@ -224,8 +217,7 @@
                                     <EventTrigger.Actions>
                                         <BeginStoryboard>
                                             <Storyboard>
-                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="MainContextMenu"
-                                                                               Storyboard.TargetProperty="(ContextMenu.IsOpen)">
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="MainContextMenu" Storyboard.TargetProperty="(ContextMenu.IsOpen)">
                                                     <DiscreteObjectKeyFrame KeyTime="0:0:0">
                                                         <DiscreteObjectKeyFrame.Value>
                                                             <sys:Boolean>True</sys:Boolean>

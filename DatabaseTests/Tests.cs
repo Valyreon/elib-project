@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using DataLayer;
+using DataLayer.Repositories;
 using Domain;
 using EbookTools;
 using ElibWpf.Extensions;
@@ -15,64 +17,6 @@ namespace DatabaseTests
     [TestClass]
     public class Tests
     {
-        [TestMethod]
-        public void TestRetrieval()
-        {
-            using ElibContext context = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
-
-            // EntityFramework WILL NOT get items from other tables if not specifically asked to do so
-            // If you want it to pull something as a graph, you need to use Include("NameOfPropertyToInclude");
-            // See examples:
-            Author first = context.Authors.Include("Books").FirstOrDefault();
-            UserCollection collection = context.UserCollections.Include("Books").FirstOrDefault();
-            Book mybook = context.Books
-                .Include("Series")
-                .Include("Authors")
-                .Include("File")
-                .Include("Quotes")
-                .FirstOrDefault();
-            Assert.IsNotNull(first?.Books);
-            Assert.IsNotNull(collection?.Books);
-            Assert.IsNotNull(mybook?.Series);
-            Assert.IsNotNull(mybook.Authors);
-            Assert.IsNotNull(mybook.File);
-            Assert.IsNotNull(mybook.Quotes);
-        }
-
-        /*[TestMethod]
-        public void TestAddingToDatabase()
-        {
-            const string bookFilePath = @"C:\Users\luka.budrak\Downloads\[Peter_Hollins]_Finish_What_You_Start__The_Art_of_(z-lib.org).epub";
-            string[] collectionTags =
-            {
-                "fantasy",
-                "adventure"
-            };
-
-            using ElibContext context = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
-            // context.TruncateDatabase();
-
-            ParsedBook parsedBook = EbookParserFactory.Create(bookFilePath).Parse();
-            Book newBook = new Book
-            {
-                Title = parsedBook.Title,
-                Authors = new List<Author>
-                {
-                    context.Authors.FirstOrDefault(au => au.Name.Equals(parsedBook.Author)) ??
-                    new Author {Name = parsedBook.Author}
-                },
-                Cover = ImageOptimizer.ResizeAndFill(parsedBook.Cover),
-                File = new EFile
-                {
-                    Format = parsedBook.Format,
-                    Signature = Signer.ComputeHash(parsedBook.RawData),
-                    RawFile = new RawFile {RawContent = parsedBook.RawData}
-                }
-            };
-            context.Books.Add(newBook);
-            context.SaveChanges();
-        }*/
-
         [TestMethod]
         public void ExporterTest()
         {
@@ -101,25 +45,25 @@ namespace DatabaseTests
                     .Select(s => s[random.Next(s.Length)]).ToArray());
             }
 
-            using ElibContext context = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
+            using UnitOfWork context = ApplicationSettings.CreateUnitOfWork();
             for (int i = 0; i < 15; i++)
             {
-                context.UserCollections.Add(new UserCollection {Tag = RandomString(5)});
+                context.CollectionRepository.Add(new UserCollection { Tag = RandomString(5) });
             }
 
-            context.SaveChanges();
+            context.Commit();
         }
 
         [TestMethod]
         public void AddBookSeriesFromMyComputer()
         {
-            /*string bookSeriesPath = @"D:\Documents\Ebooks\Book Series";
-            using ElibContext context = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
-            context.TruncateDatabase();
-
+            string bookSeriesPath = @"D:\Documents\Ebooks\Book Series";
+            using UnitOfWork uow = ApplicationSettings.CreateUnitOfWork();
+            uow.Truncate();
+            uow.Commit();
             foreach (string dirPath in Directory.GetDirectories(bookSeriesPath))
             {
-                var splitDirName = Path.GetFileName(dirPath).Split(new[] {" by "}, StringSplitOptions.None);
+                var splitDirName = Path.GetFileName(dirPath).Split(new[] { " by " }, StringSplitOptions.None);
                 string seriesName = splitDirName[0];
                 string authorsName = splitDirName[1];
 
@@ -137,28 +81,47 @@ namespace DatabaseTests
                                 }
 
                                 ParsedBook parsedBook = EbookParserFactory.Create(f).Parse();
-                                Book newBook = parsedBook.ToBook();
-                                newBook.Series = seriesName == null
-                                    ? null
-                                    : context.Series.FirstOrDefault(x => x.Name == seriesName) ??
-                                      new BookSeries {Name = seriesName};
+                                Book newBook = parsedBook.ToBook(uow);
 
-                                Author existingAuthor = context.Authors.FirstOrDefault(c => c.Name == authorsName);
+                                if (newBook.Cover != null)
+                                {
+                                    uow.CoverRepository.Add(newBook.Cover);
+                                    newBook.CoverId = newBook.Cover.Id;
+                                }
+
+                                uow.RawFileRepository.Add(newBook.File.RawFile);
+                                newBook.File.RawFileId = newBook.File.RawFile.Id;
+                                uow.EFileRepository.Add(newBook.File);
+                                newBook.FileId = newBook.File.Id;
+
+                                if (seriesName != null)
+                                {
+                                    var existingSeries = uow.SeriesRepository.GetByName(seriesName);
+                                    if (existingSeries == null)
+                                    {
+                                        BookSeries series = new BookSeries { Name = seriesName };
+                                        uow.SeriesRepository.Add(series);
+                                        newBook.SeriesId = series.Id;
+                                    }
+                                    else
+                                    {
+                                        newBook.SeriesId = existingSeries.Id;
+                                    }
+                                }
+
+                                uow.BookRepository.Add(newBook);
+
+                                Author existingAuthor = uow.AuthorRepository.GetAuthorWithName(authorsName);
                                 if (existingAuthor == null)
                                 {
-                                    Author newAuthor = new Author
-                                    {
-                                        Name = authorsName
-                                    };
-                                    newBook.Authors = new List<Author> {newAuthor};
+                                    Author newAuthor = new Author { Name = authorsName };
+                                    uow.AuthorRepository.AddAuthorForBook(newAuthor, newBook.Id);
                                 }
                                 else
                                 {
-                                    newBook.Authors = new List<Author> {existingAuthor};
+                                    uow.AuthorRepository.AddAuthorForBook(existingAuthor, newBook.Id);
                                 }
 
-                                context.Books.Add(newBook);
-                                context.SaveChanges();
                             }
 
                             DirSearch(d);
@@ -172,23 +135,24 @@ namespace DatabaseTests
                 }
 
                 DirSearch(dirPath);
-            }*/
+            }
+            uow.Commit();
         }
 
         [TestMethod]
         public void OptimizeImages()
         {
-            using ElibContext context = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
+            using UnitOfWork context = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath);
 
-            foreach (Book book in context.Books.Where(b => true))
+            foreach (Book book in context.BookRepository.All().Select(b => b.LoadMembers(context)))
             {
                 if (book.Cover != null)
                 {
-                    book.Cover = ImageOptimizer.ResizeAndFill(book.Cover);
+                    book.Cover.Image = ImageOptimizer.ResizeAndFill(book.Cover.Image);
                 }
             }
 
-            context.SaveChanges();
+            context.Commit();
         }
 
         [TestMethod]
@@ -197,14 +161,6 @@ namespace DatabaseTests
             var imgbytes = File.ReadAllBytes("exportcover.jpg");
             var result = ImageOptimizer.ResizeAndFill(imgbytes);
             File.WriteAllBytes("fillAndResize.jpg", result);
-        }
-
-        [TestMethod]
-        public void ExportCover()
-        {
-            using ElibContext context = new ElibContext(ApplicationSettings.GetInstance().DatabasePath);
-
-            File.WriteAllBytes("exportcover.jpg", context.Books.Find(258)?.Cover ?? throw new InvalidOperationException());
         }
 
         [TestMethod]

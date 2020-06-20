@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain;
+using System;
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
@@ -22,7 +23,15 @@ namespace ElibWpf.Converters
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value ?? placeholder;
+            if (value == null)
+                return placeholder;
+            else
+            {
+                if (value is Cover)
+                    return ((Cover)value).Image;
+                else
+                    return value;
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

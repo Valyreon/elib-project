@@ -49,6 +49,7 @@
     <Compile Include="Book.cs" />
     <Compile Include="AuthorBookLink.cs" />
     <Compile Include="CollectionBookLink.cs" />
+    <Compile Include="Cover.cs" />
     <Compile Include="EFile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Quote.cs" />

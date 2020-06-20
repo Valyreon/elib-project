@@ -64,8 +64,7 @@
                     HorizontalAlignment="Left"
                     BorderBrush="LightGray"
                     BorderThickness="1">
-                    <Image Margin="1"
-                           Source="{Binding Cover, Converter={StaticResource ImageConverter}, UpdateSourceTrigger=PropertyChanged}" />
+                    <Image Margin="1" Source="{Binding Cover, Converter={StaticResource ImageConverter}, UpdateSourceTrigger=PropertyChanged}" />
                 </Border>
                 <Grid Margin="0,6,0,0">
                     <Grid.ColumnDefinitions>
@@ -118,12 +117,13 @@
                     Grid.Row="0"
                     Height="35"
                     Background="#222"
-                    FontSize="14"
+                    FontFamily="{StaticResource Font}"
+                    FontSize="13"
                     Icon="{x:Static iconPacks:PackIconUniconsKind.BookAlt}"
                     IconMargin="8,11,0,0"
                     IconSize="14"
                     Text="{Binding TitleFieldText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                    TextboxPadding="22,0,0,0"
+                    TextboxPadding="26,0,0,0"
                     WatermarkText="Title">
                     <Components:BetterTextbox.ToolTip>
                         <ToolTip>
@@ -147,7 +147,7 @@
                             <TextBlock
                                 Margin="10,0,0,0"
                                 VerticalAlignment="Center"
-                                FontSize="16"
+                                FontSize="15"
                                 Foreground="{Binding SeriesColor}"
                                 Text="{Binding Series.Name, FallbackValue='No series selected.'}">
                                 <TextBlock.ToolTip>
@@ -174,15 +174,9 @@
                                         Command="{Binding Source={StaticResource Proxy}, Path=Data.EditSeriesCommand}"
                                         Header="Edit"
                                         IsEnabled="{Binding Source={StaticResource Proxy}, Path=Data.IsSeriesSelected}" />
-                                    <MenuItem
-                                        Command="{Binding Source={StaticResource Proxy}, Path=Data.CreateNewSeriesCommand}"
-                                        Header="Create new" />
-                                    <MenuItem
-                                        Command="{Binding Source={StaticResource Proxy}, Path=Data.ChooseExistingSeriesCommand}"
-                                        Header="Choose existing" />
-                                    <MenuItem
-                                        Command="{Binding Source={StaticResource Proxy}, Path=Data.ClearSeriesCommand}"
-                                        Header="Clear" />
+                                    <MenuItem Command="{Binding Source={StaticResource Proxy}, Path=Data.CreateNewSeriesCommand}" Header="Create new" />
+                                    <MenuItem Command="{Binding Source={StaticResource Proxy}, Path=Data.ChooseExistingSeriesCommand}" Header="Choose existing" />
+                                    <MenuItem Command="{Binding Source={StaticResource Proxy}, Path=Data.ClearSeriesCommand}" Header="Clear" />
                                 </ContextMenu>
                             </Button.ContextMenu>
                             <Button.Triggers>
@@ -190,8 +184,7 @@
                                     <EventTrigger.Actions>
                                         <BeginStoryboard>
                                             <Storyboard>
-                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="MainContextMenu"
-                                                                               Storyboard.TargetProperty="(ContextMenu.IsOpen)">
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="MainContextMenu" Storyboard.TargetProperty="(ContextMenu.IsOpen)">
                                                     <DiscreteObjectKeyFrame KeyTime="0:0:0">
                                                         <DiscreteObjectKeyFrame.Value>
                                                             <sys:Boolean>True</sys:Boolean>
@@ -278,7 +271,7 @@
                             <ItemsControl Margin="0,0,0,3" ItemsSource="{Binding AuthorsCollection}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Grid Height="32" VerticalAlignment="Center">
+                                        <Grid Height="26" VerticalAlignment="Center">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="20" />
@@ -312,14 +305,14 @@
                                                 Grid.Column="0"
                                                 Height="24"
                                                 VerticalAlignment="Center"
-                                                FontSize="16"
+                                                FontSize="14"
                                                 Foreground="#bbb"
                                                 Text="{Binding Name}" />
                                             <Components:SymbolButton
                                                 x:Name="CloseButton"
                                                 Grid.Column="1"
-                                                Width="20"
-                                                Height="20"
+                                                Width="16"
+                                                Height="16"
                                                 Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.RemoveAuthorCommand}"
                                                 CommandParameter="{Binding Id}"
                                                 Foreground="#484b4e"
@@ -374,33 +367,36 @@
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="150" />
                 <ColumnDefinition Width="20" />
-                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="150" />
                 <ColumnDefinition Width="20" />
-                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="150" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
             <Button
                 Grid.Column="1"
-                Width="200"
-                Height="40"
-                Command="{Binding RevertButtonCommand}">
+                Width="150"
+                Height="30"
+                Command="{Binding RevertButtonCommand}"
+                FontSize="14">
                 REVERT
             </Button>
             <Button
                 Grid.Column="3"
-                Width="200"
-                Height="40"
-                Command="{Binding SaveButtonCommand}">
+                Width="150"
+                Height="30"
+                Command="{Binding SaveButtonCommand}"
+                FontSize="14">
                 SAVE
             </Button>
             <Button
                 Grid.Column="5"
-                Width="200"
-                Height="40"
-                Command="{Binding CancelButtonCommand}">
+                Width="150"
+                Height="30"
+                Command="{Binding CancelButtonCommand}"
+                FontSize="14">
                 CANCEL
             </Button>
         </Grid>

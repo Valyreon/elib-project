@@ -68,6 +68,7 @@ namespace ElibWpf.ViewModels.Flyouts
                 {
                     using var uow = ApplicationSettings.CreateUnitOfWork();
                     uow.BookRepository.Update(this.Book);
+                    uow.Commit();
                 });
             }
         }
@@ -84,6 +85,7 @@ namespace ElibWpf.ViewModels.Flyouts
                 {
                     using var uow = ApplicationSettings.CreateUnitOfWork();
                     uow.BookRepository.Update(this.Book);
+                    uow.Commit();
                 });
             }
         }
@@ -116,6 +118,7 @@ namespace ElibWpf.ViewModels.Flyouts
                     uow.CollectionRepository.Remove(collection);
                     this.MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
                 }
+                uow.Commit();
             });
         }
 
@@ -124,7 +127,6 @@ namespace ElibWpf.ViewModels.Flyouts
             if (!string.IsNullOrWhiteSpace(tag))
             {
                 tag = tag.Trim();
-                bool isNew = false;
                 this.AddCollectionFieldText = "";
                 if (this.Book.Collections.Any(c => c.Tag == tag)) // check if book is already in that collection
                 {
@@ -141,8 +143,8 @@ namespace ElibWpf.ViewModels.Flyouts
                         UserCollection existingCollection = uow.CollectionRepository.GetByTag(tag);
                         if (existingCollection == null)
                         {
-                            isNew = true;
                             uow.CollectionRepository.AddCollectionForBook(newCollection, this.Book.Id);
+                            this.MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
                         }
                         else
                         {
@@ -150,10 +152,7 @@ namespace ElibWpf.ViewModels.Flyouts
                             uow.CollectionRepository.AddCollectionForBook(existingCollection, this.Book.Id);
                         }
 
-                        if (isNew)
-                        {
-                            this.MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
-                        }
+                        uow.Commit();
                     });
                 }
             }

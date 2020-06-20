@@ -7,6 +7,7 @@ namespace DataLayer.Repositories
     {
         void Add(BookSeries entity);
         IEnumerable<BookSeries> All();
+        BookSeries GetByName(string name);
         BookSeries Find(int id);
         void Remove(int id);
         void Remove(BookSeries entity);

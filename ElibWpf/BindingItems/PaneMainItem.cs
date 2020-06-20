@@ -6,7 +6,7 @@ namespace ElibWpf.BindingItems
 {
     public class PaneMainItem
     {
-        public PaneMainItem(string paneCaption, Enum faIconName, string viewerCaption, FilterAlt filter)
+        public PaneMainItem(string paneCaption, Enum faIconName, string viewerCaption, Filter filter)
         {
             this.Filter = filter;
             this.PaneCaption = paneCaption;
@@ -14,7 +14,7 @@ namespace ElibWpf.BindingItems
             this.ViewerCaption = viewerCaption;
         }
 
-        public FilterAlt Filter { get; }
+        public Filter Filter { get; }
         public Enum Icon { get; }
         public string PaneCaption { get; }
         public string ViewerCaption { get; }

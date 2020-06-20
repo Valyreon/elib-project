@@ -65,9 +65,11 @@
                 AlternationCount="2"
                 AutoGenerateColumns="False"
                 CanUserResizeRows="False"
+                CellStyle="{StaticResource LightDataGridCellModified}"
                 Focusable="False"
                 IsReadOnly="True"
                 ItemsSource="{Binding ShownSeries}"
+                RowStyle="{StaticResource LightDataGridRowModified}"
                 SelectedItem="{Binding SelectedItem, UpdateSourceTrigger=PropertyChanged}"
                 SelectionMode="Single">
                 <DataGrid.Columns>
@@ -81,24 +83,6 @@
                     <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="CornflowerBlue" />
                     <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
                 </DataGrid.Resources>
-                <DataGrid.RowStyle>
-                    <Style TargetType="{x:Type DataGridRow}">
-                        <Style.Triggers>
-                            <Trigger Property="AlternationIndex" Value="0">
-                                <Setter Property="Background" Value="White" />
-                            </Trigger>
-                            <Trigger Property="AlternationIndex" Value="1">
-                                <Setter Property="Background" Value="#f9f9f9" />
-                            </Trigger>
-                            <Trigger Property="IsSelected" Value="True">
-                                <Trigger.Setters>
-                                    <Setter Property="Background" Value="CornflowerBlue" />
-                                    <Setter Property="Foreground" Value="WhiteSmoke" />
-                                </Trigger.Setters>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </DataGrid.RowStyle>
             </DataGrid>
         </Border>
 
@@ -113,13 +97,20 @@
 
             <Button
                 Grid.Column="1"
+                MinHeight="30"
                 Command="{Binding DoneCommand}"
-                Style="{StaticResource AccentedDialogSquareButton}">
+                Style="{StaticResource MahApps.Styles.Button.Dialogs.Accent}">
                 <TextBlock>
                     Done
                 </TextBlock>
             </Button>
-            <Button Grid.Column="3" Command="{Binding CancelCommand}">Cancel</Button>
+            <Button
+                Grid.Column="3"
+                MinHeight="30"
+                Command="{Binding CancelCommand}"
+                Style="{StaticResource MahApps.Styles.Button.Dialogs}">
+                Cancel
+            </Button>
         </Grid>
     </Grid>
 </dialogs:BaseMetroDialog>

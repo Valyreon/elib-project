@@ -8,11 +8,12 @@ namespace DataLayer.Repositories
         void Add(Book entity);
         IEnumerable<Book> All();
         Book Find(int id);
+        IEnumerable<Book> GetBooks(IEnumerable<int> Ids);
         IEnumerable<Book> FindBySeriesId(int seriesId);
         IEnumerable<Book> FindByCollectionId(int collectionId);
         IEnumerable<Book> FindByAuthorId(int authorId);
-        IEnumerable<Book> FindPageByFilter(FilterAlt filter, Book lastValueInPage);
-        IEnumerable<Book> GetPage(int lastId);
+        IEnumerable<Book> FindPageByFilter(Filter filter, int offset, int pageSize);
+        IEnumerable<Book> GetPage(int offset, int pageSize);
         void Remove(int id);
         void Remove(Book entity);
         void Update(Book entity);

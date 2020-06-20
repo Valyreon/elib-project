@@ -15,6 +15,7 @@ using ElibWpf.Extensions;
 using ElibWpf.Messages;
 using ElibWpf.ViewModels.Dialogs;
 using ElibWpf.Views.Dialogs;
+using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using MahApps.Metro.IconPacks;
 using Models;
@@ -43,7 +44,7 @@ namespace ElibWpf.ViewModels.Controls
         public BooksTabViewModel()
         {
             this.selector = new Selector();
-            this.selectedMainItem = new PaneMainItem("Selected", PackIconFontAwesomeKind.CheckDoubleSolid, "Selected Books", new FilterAlt { Selected = true });
+            this.selectedMainItem = new PaneMainItem("Selected", PackIconFontAwesomeKind.CheckDoubleSolid, "Selected Books", new Filter { Selected = true });
 
             this.MessengerInstance.Register<AuthorSelectedMessage>(this, this.HandleAuthorSelection);
             this.MessengerInstance.Register<BookSelectedMessage>(this, this.HandleBookChecked);
@@ -65,7 +66,7 @@ namespace ElibWpf.ViewModels.Controls
             this.MainPaneItems = new ObservableCollection<PaneMainItem>
             {
                 new PaneMainItem("All", PackIconBoxIconsKind.SolidBook, "All Books", null),
-                new PaneMainItem("Favorite", PackIconFontAwesomeKind.StarSolid, "Favorite Books", new FilterAlt { Favorite = true })
+                new PaneMainItem("Favorite", PackIconFontAwesomeKind.StarSolid, "Favorite Books", new Filter { Favorite = true })
             };
             this.SelectedMainPaneItem = this.MainPaneItems[0];
             this.PaneSelectionChanged();
@@ -117,6 +118,7 @@ namespace ElibWpf.ViewModels.Controls
             this.selector.Clear();
             this.SelectedMainPaneItem = this.MainPaneItems[0];
             MainPaneItems.Remove(selectedMainItem);
+            isSelectedMainAdded = false;
             PaneSelectionChanged();
         }
 
@@ -132,14 +134,14 @@ namespace ElibWpf.ViewModels.Controls
 
             set
             {
-                this.Set(() => SelectedCollection,ref this.selectedCollection, value);
+                this.Set(() => SelectedCollection, ref this.selectedCollection, value);
                 if (this.selectedCollection != null)
                 {
                     this.viewerHistory.Clear();
 
-                    FilterAlt filter = new FilterAlt
+                    Filter filter = new Filter
                     {
-                        CollectionIds = new List<int> { selectedCollection.Id }
+                        CollectionId = selectedCollection.Id
                     };
 
                     this.CurrentViewer = new BookViewerViewModel($"Collection {this.selectedCollection.Tag}", filter, this.selector);
@@ -217,7 +219,8 @@ namespace ElibWpf.ViewModels.Controls
                         await Task.Run(() =>
                         {
                             ParsedBook pBook = EbookParserFactory.Create(dlg.FileNames[i]).Parse();
-                            Book book = pBook.ToBook();
+                            using var uow = ApplicationSettings.CreateUnitOfWork();
+                            Book book = pBook.ToBook(uow);
                             booksToAdd.Add(book);
                         });
                     }
@@ -232,7 +235,7 @@ namespace ElibWpf.ViewModels.Controls
                             {
                                 Format = Path.GetExtension(dlg.FileNames[i]),
                                 Signature = Signer.ComputeHash(content),
-                                RawFile = new RawFile {RawContent = content}
+                                RawFile = new RawFile { RawContent = content }
                             },
                             Authors = new ObservableCollection<Author>()
                         });
@@ -250,18 +253,33 @@ namespace ElibWpf.ViewModels.Controls
             {
                 token = token.ToLower();
                 this.SearchOptions.Token = token;
-                if(this.isInSearchResults)
+
+                if (isInSearchResults)
                 {
-                    this.CurrentViewer.Search(this.SearchOptions);
+                    var save = viewerHistory.Peek();
+                    var viewModel = save.GetViewModel(this.selector);
+
+                    viewModel.Search(this.SearchOptions);
+
+                    if (viewModel.CurrentCount > 0)
+                    {
+                        CurrentViewer = viewModel;
+                        isInSearchResults = true;
+                    }
                 }
                 else
                 {
-                    var viewerState = ViewerState.ToState(this.CurrentViewer);
-                    this.viewerHistory.Push(viewerState);
+                    var save = ViewerState.ToState(this.CurrentViewer);
+                    var viewModel = save.GetViewModel(this.selector);
 
-                    this.CurrentViewer = viewerState.GetViewModel(this.selector);
-                    this.CurrentViewer.Search(this.SearchOptions);
-                    isInSearchResults = true;
+                    viewModel.Search(this.SearchOptions);
+
+                    if(viewModel.CurrentCount > 0)
+                    {
+                        viewerHistory.Push(save);
+                        CurrentViewer = viewModel;
+                        isInSearchResults = true;
+                    }
                 }
             }
         }
@@ -288,7 +306,6 @@ namespace ElibWpf.ViewModels.Controls
             this.isInSearchResults = false;
             this.SearchOptions.Token = "";
             this.CurrentViewer = this.viewerHistory.Pop().GetViewModel(selector);
-            this.CurrentViewer.Refresh();
         }
 
         private void HandleAuthorSelection(AuthorSelectedMessage obj)
@@ -303,9 +320,9 @@ namespace ElibWpf.ViewModels.Controls
 
             this.viewerHistory.Push(ViewerState.ToState(this.CurrentViewer));
 
-            FilterAlt filter = new FilterAlt
+            Filter filter = new Filter
             {
-                AuthorIds = new List<int> { obj.Author.Id }
+                AuthorId = obj.Author.Id
             };
 
             this.CurrentViewer = new BookViewerViewModel(viewerCaption, filter, this.selector);
@@ -313,6 +330,9 @@ namespace ElibWpf.ViewModels.Controls
 
         private void HandleSeriesSelection(SeriesSelectedMessage obj)
         {
+            if (obj.Series == null)
+                return;
+
             using var uow = ApplicationSettings.CreateUnitOfWork();
 
             string viewerCaption = $"{obj.Series.Name} Series";
@@ -321,9 +341,9 @@ namespace ElibWpf.ViewModels.Controls
                 return;
             }
 
-            FilterAlt filter = new FilterAlt
+            Filter filter = new Filter
             {
-                SeriesIds = new List<int> { obj.Series.Id }
+                SeriesId = obj.Series.Id
             };
 
             this.viewerHistory.Push(ViewerState.ToState(this.CurrentViewer));
@@ -340,7 +360,7 @@ namespace ElibWpf.ViewModels.Controls
             this.RaisePropertyChanged(() => this.IsSelectedBooksViewer);
             this.viewerHistory.Clear();
 
-            FilterAlt filter = SelectedMainPaneItem.Filter ?? new FilterAlt();
+            Filter filter = SelectedMainPaneItem.Filter?.Clone ?? new Filter();
 
             if (filterOptions != null && filter != null)
             {
@@ -376,7 +396,7 @@ namespace ElibWpf.ViewModels.Controls
 
             if (this.CurrentViewer != null)
             {
-                FilterAlt newFilter = this.CurrentViewer.Filter ?? new FilterAlt();
+                Filter newFilter = this.CurrentViewer.Filter ?? new Filter();
 
                 if (filterOptions != null)
                 {

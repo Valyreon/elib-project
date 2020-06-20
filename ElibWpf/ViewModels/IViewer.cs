@@ -7,7 +7,7 @@ namespace ElibWpf.ViewModels
     {
         public abstract string Caption { get; set; }
 
-        public abstract FilterAlt Filter { get; }
+        public abstract Filter Filter { get; }
 
         public abstract string NumberOfBooks { get; set; }
 

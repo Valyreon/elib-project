@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
-using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -8,7 +7,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
-using DataLayer;
 using Domain;
 using ElibWpf.Messages;
 using ElibWpf.ValidationAttributes;
@@ -41,6 +39,7 @@ namespace ElibWpf.ViewModels.Flyouts
         public EditBookViewModel(Book book)
         {
             this.Book = book;
+            this.coverImage = book.Cover?.Image;
             this.HandleRevert();
         }
 
@@ -117,7 +116,7 @@ namespace ElibWpf.ViewModels.Flyouts
                     return Brushes.Gray;
                 }
 
-                return (Brush) new BrushConverter().ConvertFrom("#bbb");
+                return (Brush)new BrushConverter().ConvertFrom("#bbb");
             }
         }
 
@@ -143,21 +142,15 @@ namespace ElibWpf.ViewModels.Flyouts
             }
 
             name = name.Trim();
-            if (this.AuthorsCollection.Any(c => c.Name == name)) // check if book is already in that collection
-            {
-                this.MessengerInstance.Send(new ShowDialogMessage("", "This author is already added."));
-            }
-            else // if not
-            {
-                Author newAuthor = new Author {Name = name};
-                this.AuthorsCollection.Add(newAuthor);
+            Author newAuthor = new Author { Name = name };
+            this.AuthorsCollection.Add(newAuthor);
 
-                _ = Task.Run(() =>
-                {
-                    using var uow = ApplicationSettings.CreateUnitOfWork();
-                    uow.AuthorRepository.AddAuthorForBook(newAuthor, this.Book.Id);
-                });
-            }
+            _ = Task.Run(() =>
+            {
+                using var uow = ApplicationSettings.CreateUnitOfWork();
+                uow.AuthorRepository.Add(newAuthor);
+                uow.Commit();
+            });
         }
 
         private void HandleRemoveAuthor(int id)
@@ -179,6 +172,7 @@ namespace ElibWpf.ViewModels.Flyouts
                 }
 
                 uow.AuthorRepository.Remove(id);
+                uow.Commit();
             });
         }
 
@@ -188,12 +182,12 @@ namespace ElibWpf.ViewModels.Flyouts
             this.AuthorsCollection = new ObservableCollection<Author>(this.Book.Authors);
             this.Series = this.Book.Series == null
                 ? null
-                : new BookSeries {Name = this.Book.Series.Name, Id = this.Book.Series.Id};
+                : new BookSeries { Name = this.Book.Series.Name, Id = this.Book.Series.Id };
             this.TitleFieldText = this.Book.Title;
             this.SeriesNumberFieldText = this.Book.NumberInSeries.ToString();
             this.IsFavoriteCheck = this.Book.IsFavorite;
             this.IsReadCheck = this.Book.IsRead;
-            this.Cover = this.Book.Cover;
+            this.Cover = this.Book.Cover?.Image;
         }
 
         private void HandleSave()
@@ -204,44 +198,70 @@ namespace ElibWpf.ViewModels.Flyouts
                 return;
             }
 
+            Book book = this.Book;
+
             Task.Run(() =>
             {
-                Book book = this.Book;
                 using var uow = ApplicationSettings.CreateUnitOfWork();
 
-                if ((this.Book.Series == null && this.Series != null) || (this.Series != null && this.Book.Series.Id != this.Series.Id))
+                if ((book.Series == null && this.Series != null) || (this.Series != null && book.Series.Id != this.Series.Id))
                 {
-                    this.Book.Series = uow.SeriesRepository.Find(this.Series.Id);
+                    book.Series = uow.SeriesRepository.Find(this.Series.Id);
+                    book.SeriesId = book.Series.Id;
                 }
-                else if (this.Book.Series != null && this.Series != null && this.Book.Series.Id != this.Series.Id)
+                else if (book.Series != null && this.Series != null && book.Series.Id == this.Series.Id)
                 {
-                    this.Book.Series.Name = this.Series.Name;
-                    uow.SeriesRepository.Update(this.Book.Series);
-                }
-                else
-                {
-                    this.Book.Series = null;
+                    book.Series.Name = this.Series.Name;
+                    uow.SeriesRepository.Update(book.Series);
                 }
 
                 if (this.IsSeriesSelected)
                 {
                     if (Regex.IsMatch(this.SeriesNumberFieldText, @"\d+(\.\d+)?"))
                     {
-                        this.Book.NumberInSeries = decimal.Parse(this.SeriesNumberFieldText);
+                        book.NumberInSeries = decimal.Parse(this.SeriesNumberFieldText);
                     }
                 }
 
                 book.Title = this.TitleFieldText;
                 book.IsFavorite = this.IsFavoriteCheck;
                 book.IsRead = this.IsReadCheck;
-                book.Authors.Clear();
+
+                var oldAndNewCommonIds = this.AuthorsCollection.Select(a => a.Id).Intersect(book.Authors.Select(a => a.Id));
+
                 foreach (Author author in this.AuthorsCollection)
                 {
-                    book.Authors.Add(author);
+                    if(!oldAndNewCommonIds.Contains(author.Id))
+                    {
+                        uow.AuthorRepository.AddAuthorForBook(author, book.Id);
+                    }
                 }
 
-                book.Cover = this.Cover;
-                uow.BookRepository.Update(this.Book);
+                foreach(Author author in book.Authors)
+                {
+                    if (!oldAndNewCommonIds.Contains(author.Id))
+                    {
+                        uow.AuthorRepository.RemoveAuthorForBook(author, book.Id);
+                    }
+                }
+
+                if (this.Cover != null)
+                {
+                    if (book.Cover == null) // add new
+                    {
+                        book.Cover = new Cover { Image = this.Cover };
+                        uow.CoverRepository.Add(book.Cover);
+                        book.CoverId = book.Cover.Id;
+                    }
+                    else // update
+                    {
+                        book.Cover.Image = this.Cover;
+                        uow.CoverRepository.Update(book.Cover);
+                    }
+                }
+
+                uow.BookRepository.Update(book);
+                uow.Commit();
             });
 
             this.MessengerInstance.Send(new ShowBookDetailsMessage(this.Book));
@@ -262,6 +282,7 @@ namespace ElibWpf.ViewModels.Flyouts
                 FilterIndex = 0,
                 Multiselect = false
             };
+
             DialogResult result = dlg.ShowDialog();
             if (result == DialogResult.OK && dlg.FileName != null)
             {
@@ -300,13 +321,14 @@ namespace ElibWpf.ViewModels.Flyouts
             }
 
             name = name.Trim();
-            BookSeries newSeries = new BookSeries {Name = name};
+            BookSeries newSeries = new BookSeries { Name = name };
             this.Series = newSeries;
 
             _ = Task.Run(() =>
             {
                 using var uow = ApplicationSettings.CreateUnitOfWork();
                 uow.SeriesRepository.Add(newSeries);
+                uow.Commit();
             });
         }
 
@@ -318,7 +340,14 @@ namespace ElibWpf.ViewModels.Flyouts
         private async void HandleEditSeries()
         {
             this.Series.Name = await DialogCoordinator.Instance.ShowInputAsync(this, "Edit Series", "Series name:",
-                new MetroDialogSettings {DefaultText = this.Series.Name});
+                new MetroDialogSettings { DefaultText = this.Series.Name });
+
+            _ = Task.Run(() =>
+            {
+                using var uow = ApplicationSettings.CreateUnitOfWork();
+                uow.SeriesRepository.Update(this.Series);
+                uow.Commit();
+            });
         }
     }
 }

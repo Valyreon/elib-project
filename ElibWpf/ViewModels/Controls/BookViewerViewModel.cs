@@ -1,23 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Data.Entity.Migrations.History;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using DataLayer;
 using Domain;
 using ElibWpf.Messages;
-using ElibWpf.Paging;
 using Models;
-
 using Models.Options;
 using MVVMLibrary;
 using MVVMLibrary.Messaging;
-using Filter = Models.Options.Filter;
 
 namespace ElibWpf.ViewModels.Controls
 {
@@ -31,8 +25,9 @@ namespace ElibWpf.ViewModels.Controls
         private int nextPage = 1;
         private string numberOfBooks;
         private double scrollVerticalOffset;
+        private bool dontLoad = false;
 
-        public BookViewerViewModel(string caption, FilterAlt filter, Selector selector)
+        public BookViewerViewModel(string caption, Filter filter, Selector selector)
         {
             this.Caption = caption;
             this.Filter = filter;
@@ -64,8 +59,8 @@ namespace ElibWpf.ViewModels.Controls
             this.HandleSelectBook(b);
         });
 
-        private FilterAlt filter = null;
-        public FilterAlt Filter
+        private Filter filter = null;
+        public Filter Filter
         {
             get => filter;
             set
@@ -87,6 +82,7 @@ namespace ElibWpf.ViewModels.Controls
             get => this.numberOfBooks;
             set => this.Set(() => NumberOfBooks, ref this.numberOfBooks, value);
         }
+        public int CurrentCount => Books.Count;
 
         private void HandleSelectBook(Book obj)
         {
@@ -140,10 +136,20 @@ namespace ElibWpf.ViewModels.Controls
 
         private void LoadMore()
         {
+            string callingMethod = (new System.Diagnostics.StackTrace()).GetFrame(1).GetMethod().Name;
+            Console.WriteLine(callingMethod);
             List<Book> bookList;
 
+            if (dontLoad) return;
+
             using UnitOfWork uow = ApplicationSettings.CreateUnitOfWork();
-            bookList = uow.BookRepository.FindPageByFilter(filter, Books.LastOrDefault()).ToList();
+            if (filter.Selected.HasValue && filter.Selected == true)
+            {
+                bookList = uow.BookRepository.GetBooks(selector.SelectedIds).ToList();
+                dontLoad = true;
+            }
+            else
+                bookList = uow.BookRepository.FindPageByFilter(filter, Books.Count, 25).ToList();
 
             foreach (Book item in bookList)
             {
@@ -177,8 +183,15 @@ namespace ElibWpf.ViewModels.Controls
         public void Search(SearchOptions searchOptions)
         {
             this.searchOptions = searchOptions;
+            this.Filter.Token = searchOptions.Token;
             if (!string.IsNullOrEmpty(searchOptions.Token))
+            {
                 this.Caption = $"Search results for '{searchOptions.Token}'";
+                this.Filter.SearchByAuthor = searchOptions.SearchByAuthor;
+                this.Filter.SearchByName = searchOptions.SearchByName;
+                this.Filter.SearchBySeries = searchOptions.SearchBySeries;
+            }
+
             this.Refresh();
         }
     }

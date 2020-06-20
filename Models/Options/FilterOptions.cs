@@ -98,7 +98,7 @@ namespace Models.Options
             }
         }
 
-        private bool ascending = true;
+        private bool ascending = false;
         public bool Ascending
         {
             get => ascending;

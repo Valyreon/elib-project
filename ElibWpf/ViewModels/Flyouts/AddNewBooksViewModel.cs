@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using DataLayer;
 using Domain;
 using ElibWpf.Messages;
@@ -31,7 +32,7 @@ namespace ElibWpf.ViewModels.Flyouts
 
         private int counter;
 
-        private byte[] coverImage;
+        private Cover coverImage;
 
         private Book currentBook;
 
@@ -85,7 +86,7 @@ namespace ElibWpf.ViewModels.Flyouts
 
         public ICommand ClearSeriesCommand => new RelayCommand(this.HandleClearSeries);
 
-        public byte[] Cover
+        public Cover Cover
         {
             get => this.coverImage;
             set => this.Set(() => this.Cover, ref this.coverImage, value);
@@ -204,6 +205,7 @@ namespace ElibWpf.ViewModels.Flyouts
                 if (this.currentBook != null)
                 {
                     this.AuthorsCollection = new ObservableCollection<Author>(this.CurrentBook.Authors);
+
                     if (this.CurrentBook.Series != null)
                     {
                         this.Series = new BookSeries() { Id = this.CurrentBook.Series.Id, Name = this.CurrentBook.Series.Name };
@@ -217,7 +219,15 @@ namespace ElibWpf.ViewModels.Flyouts
                     this.SeriesNumberFieldText = this.CurrentBook.NumberInSeries.ToString();
                     this.IsFavoriteCheck = this.CurrentBook.IsFavorite;
                     this.IsReadCheck = this.CurrentBook.IsRead;
-                    this.Cover = this.CurrentBook.Cover;
+
+                    if (this.CurrentBook.Cover != null)
+                    {
+                        this.Cover = new Cover() { Id = this.CurrentBook.Cover.Id, Image = this.CurrentBook.Cover.Image };
+                    }
+                    else
+                    {
+                        this.Cover = null;
+                    }
                 }
             }
         }
@@ -259,7 +269,7 @@ namespace ElibWpf.ViewModels.Flyouts
             this.SeriesNumberFieldText = this.CurrentBook.NumberInSeries.ToString();
             this.IsFavoriteCheck = this.CurrentBook.IsFavorite;
             this.IsReadCheck = this.CurrentBook.IsRead;
-            this.Cover = this.CurrentBook.Cover;
+            this.Cover = new Cover() { Id = this.CurrentBook.Cover.Id, Image = this.CurrentBook.Cover.Image };
         }
 
         private async void HandleSaveAndNext()
@@ -271,7 +281,19 @@ namespace ElibWpf.ViewModels.Flyouts
                 Book book = this.CurrentBook;
                 await Task.Run(() =>
                 {
-                    using UnitOfWork uow = ApplicationSettings.CreateUnitOfWork();
+                    using var uow = ApplicationSettings.CreateUnitOfWork();
+
+                    book.Series = this.Series;
+                    if (this.Series != null && this.Series.Id == 0)
+                    {
+                        uow.SeriesRepository.Add(book.Series);
+                        book.SeriesId = book.Series.Id;
+                    }
+                    else if (this.Series != null && this.Series.Id != 0)
+                    {
+                        uow.SeriesRepository.Update(book.Series);
+                        book.SeriesId = book.SeriesId;
+                    }
 
                     if (this.IsSeriesSelected)
                     {
@@ -284,15 +306,27 @@ namespace ElibWpf.ViewModels.Flyouts
                     book.Title = this.TitleFieldText;
                     book.IsFavorite = this.IsFavoriteCheck;
                     book.IsRead = this.IsReadCheck;
-                    book.Authors.Clear();
-                    foreach (Author author in this.AuthorsCollection)
+
+                    uow.RawFileRepository.Add(book.File.RawFile);
+                    book.File.RawFileId = book.File.RawFile.Id;
+                    uow.EFileRepository.Add(book.File);
+                    book.FileId = book.File.Id;
+
+                    if (this.Cover != null && Cover.Id == 0 && Cover.Image != null)
                     {
-                        book.Authors.Add(author);
+                        book.Cover = this.Cover;
+                        uow.CoverRepository.Add(book.Cover);
+                        book.CoverId = book.Cover.Id;
                     }
 
-                    book.Cover = this.Cover;
-
                     uow.BookRepository.Add(book);
+
+                    foreach (Author author in this.AuthorsCollection)
+                    {
+                        uow.AuthorRepository.AddAuthorForBook(author, book.Id);
+                    }
+
+                    uow.Commit();
                 });
 
                 this.NextBook();
@@ -319,7 +353,7 @@ namespace ElibWpf.ViewModels.Flyouts
             DialogResult result = dlg.ShowDialog();
             if (result == DialogResult.OK && dlg.FileName != null)
             {
-                this.Cover = ImageOptimizer.ResizeAndFill(File.ReadAllBytes(dlg.FileName));
+                this.Cover.Image = ImageOptimizer.ResizeAndFill(File.ReadAllBytes(dlg.FileName));
             }
         }
 
@@ -339,17 +373,6 @@ namespace ElibWpf.ViewModels.Flyouts
                 }
 
                 this.CurrentBook = this.books[++this.counter];
-
-                foreach (var author in this.CurrentBook.Authors.ToList())
-                {
-                    using var uow = ApplicationSettings.CreateUnitOfWork();
-                    Author x = uow.AuthorRepository.GetAuthorWithName(author.Name);
-                    if (x != null)
-                    {
-                        CurrentBook.Authors.Remove(author);
-                        CurrentBook.Authors.Add(x);
-                    }
-                }
 
                 this.CheckDuplicate(this.CurrentBook);
             }

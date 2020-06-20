@@ -58,6 +58,13 @@ namespace DataLayer.Repositories
                 Transaction).FirstOrDefault();
         }
 
+        public BookSeries GetByName(string name)
+        {
+            return Connection.Query<BookSeries>("SELECT * FROM Series WHERE Name = @Name LIMIT 1",
+                new { Name = name },
+                Transaction).FirstOrDefault();
+        }
+
         public void Remove(int id)
         {
             Connection.Execute("DELETE FROM Series WHERE Id = @RemoveId", new { RemoveId = id }, Transaction);

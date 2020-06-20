@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using DataLayer;
 using Domain;
 using EbookTools;
@@ -13,18 +11,16 @@ namespace ElibWpf.Extensions
 {
     public static class DomainExtensions
     {
-        public static Book ToBook(this ParsedBook parsedBook)
+        public static Book ToBook(this ParsedBook parsedBook, IUnitOfWork uow)
         {
-            using UnitOfWork uow = ApplicationSettings.CreateUnitOfWork();
             Book newBook = new Book
             {
                 Title = parsedBook.Title,
                 Authors = new ObservableCollection<Author>
                 {
-                    uow.AuthorRepository.GetAuthorWithName(parsedBook.Author) ??
-                    new Author {Name = parsedBook.Author}
+                    uow.AuthorRepository.GetAuthorWithName(parsedBook.Author) ?? new Author {Name = parsedBook.Author}
                 },
-                Cover = parsedBook.Cover != null ? ImageOptimizer.ResizeAndFill(parsedBook.Cover) : null,
+                Cover = parsedBook.Cover != null ? new Cover { Image = ImageOptimizer.ResizeAndFill(parsedBook.Cover) } : null,
                 Collections = new ObservableCollection<UserCollection>(),
                 File = new EFile
                 {

@@ -9,11 +9,11 @@ namespace Models
 {
     public class Importer
     {
-        private readonly ElibContext database;
+        private readonly UnitOfWork database;
 
-        public Importer(ElibContext db)
+        public Importer(UnitOfWork uow)
         {
-            this.database = db;
+            this.database = uow;
         }
 
         public Book ImportBook(ParsedBook parsedBook, string bookName, string authorName, string seriesName = null,
@@ -30,19 +30,18 @@ namespace Models
                 {
                     Format = parsedBook.Format,
                     Signature = Signer.ComputeHash(parsedBook.RawData),
-                    RawFile = new RawFile {RawContent = parsedBook.RawData}
+                    RawFile = new RawFile { RawContent = parsedBook.RawData }
                 },
                 Series = string.IsNullOrEmpty(seriesName)
                     ? null
-                    : this.database.Series.FirstOrDefault(x => x.Name == seriesName) ??
-                      new BookSeries {Name = seriesName},
+                    : database.SeriesRepository.GetByName(seriesName) ??
+                      new BookSeries { Name = seriesName },
                 NumberInSeries = seriesNumber,
-                Cover = ImageOptimizer.ResizeAndFill(parsedBook.Cover)
+                Cover = new Cover { Image = ImageOptimizer.ResizeAndFill(parsedBook.Cover) }
             };
 
-            Book result = this.database.Books.Add(book);
-            this.database.SaveChanges();
-            return result;
+            this.database.BookRepository.Add(book);
+            return book;
         }
 
         public Book ImportBook(ParsedBook parsedBook)
@@ -61,11 +60,10 @@ namespace Models
                     Signature = Signer.ComputeHash(parsedBook.RawData),
                     RawFile = new RawFile {RawContent = parsedBook.RawData}
                 },
-                Cover = ImageOptimizer.ResizeAndFill(parsedBook.Cover)
+                Cover = new Cover { Image = ImageOptimizer.ResizeAndFill(parsedBook.Cover) }
             };
 
-            book = this.database.Books.Add(book);
-            this.database.SaveChanges();
+            this.database.BookRepository.Add(book);
             return book;
         }
 

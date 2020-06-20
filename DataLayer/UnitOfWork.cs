@@ -1,4 +1,5 @@
-﻿using DataLayer.Repositories;
+﻿using Dapper;
+using DataLayer.Repositories;
 using System;
 using System.Data;
 using System.Data.SQLite;
@@ -17,6 +18,7 @@ namespace DataLayer
         private ISeriesRepository seriesRepository;
         private IEFileRepository eFileRepository;
         private IRawFileRepository rawFileRepository;
+        private ICoverRepository coverRepository;
 
         public UnitOfWork(string dbPath)
         {
@@ -42,7 +44,9 @@ namespace DataLayer
 
         public IRawFileRepository RawFileRepository { get { return rawFileRepository ?? (rawFileRepository = new RawFileRepository(transaction)); } }
 
-        public async void Commit()
+        public ICoverRepository CoverRepository { get { return coverRepository ?? (coverRepository = new CoverRepository(transaction)); } }
+
+        public void Commit()
         {
             //await semaphore.WaitAsync();
             try
@@ -80,6 +84,20 @@ namespace DataLayer
                 connection.Dispose();
                 connection = null;
             }
+        }
+
+        public void Truncate()
+        {
+            this.connection.Execute("DELETE FROM [AuthorBooks]");
+            this.connection.Execute("DELETE FROM [Authors]");
+            this.connection.Execute("DELETE FROM [EBookFiles]");
+            this.connection.Execute("DELETE FROM [Covers]");
+            this.connection.Execute("DELETE FROM [Books]");
+            this.connection.Execute("DELETE FROM [Quotes]");
+            this.connection.Execute("DELETE FROM [RawFiles]");
+            this.connection.Execute("DELETE FROM [Series]");
+            this.connection.Execute("DELETE FROM [UserCollectionBooks]");
+            this.connection.Execute("DELETE FROM [UserCollections]");
         }
     }
 }
