@@ -21,7 +21,7 @@ namespace Models
 
         public IEnumerable<int> SelectedIds => this.selectedBookIds.AsEnumerable();
 
-        public IList<Book> GetSelectedBooks(UnitOfWork uow)
+        public IList<Book> GetSelectedBooks(IUnitOfWork uow)
         {
             // TODO: replace this with filter later
             List<Book> result = new List<Book>();

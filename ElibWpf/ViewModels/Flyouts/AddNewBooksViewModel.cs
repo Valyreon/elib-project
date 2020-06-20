@@ -252,7 +252,7 @@ namespace ElibWpf.ViewModels.Flyouts
 
                 _ = Task.Run(() =>
                 {
-                    using UnitOfWork uow = ApplicationSettings.CreateUnitOfWork();
+                    using var uow = ApplicationSettings.CreateUnitOfWork();
                     uow.AuthorRepository.Add(newAuthor);
                 });
             }

@@ -16,14 +16,13 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/VS/Colors.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.FlatButton.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Cobalt.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Blue.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.TabControl.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.ListBox.xaml" />
                 <ResourceDictionary Source="Resources/Colors.xaml" />
                 <ResourceDictionary Source="Resources/DashboardTabControlStyles.xaml" />
                 <ResourceDictionary Source="Resources/BookTileSubLinksStyle.xaml" />
-                <ResourceDictionary Source="Resources/SymbolButtonResources.xaml" />
-                <ResourceDictionary Source="Resources/CustomDarkCheckbox.xaml" />
+                <ResourceDictionary Source="Resources/Miscellaneous.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <FontFamily x:Key="Font">/Fonts/#Sofia Pro Regular</FontFamily>
         </ResourceDictionary>

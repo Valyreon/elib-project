@@ -50,7 +50,7 @@ namespace Models
             throw new FileNotFoundException("Couldn't find properties.json in current or in AppData folder.");
         }
 
-        public static UnitOfWork CreateUnitOfWork()
+        public static IUnitOfWork CreateUnitOfWork()
         {
             return new UnitOfWork(GetInstance().DatabasePath);
         }

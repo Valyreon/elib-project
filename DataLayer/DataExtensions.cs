@@ -33,7 +33,7 @@ namespace DataLayer
             }
         }
 
-        public static Book LoadMembers(this Book book, UnitOfWork uow)
+        public static Book LoadMembers(this Book book, IUnitOfWork uow)
         {
             if(book.SeriesId.HasValue)
                 book.Series = uow.SeriesRepository.Find(book.SeriesId.Value);

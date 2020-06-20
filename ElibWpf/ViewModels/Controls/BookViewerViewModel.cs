@@ -142,7 +142,7 @@ namespace ElibWpf.ViewModels.Controls
 
             if (dontLoad) return;
 
-            using UnitOfWork uow = ApplicationSettings.CreateUnitOfWork();
+            using var uow = ApplicationSettings.CreateUnitOfWork();
             if (filter.Selected.HasValue && filter.Selected == true)
             {
                 bookList = uow.BookRepository.GetBooks(selector.SelectedIds).ToList();

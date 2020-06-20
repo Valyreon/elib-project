@@ -13,6 +13,7 @@ namespace DataLayer
         IRawFileRepository RawFileRepository { get; }
         ICoverRepository CoverRepository { get; }
 
+        void Truncate();
         void Commit();
     }
 }

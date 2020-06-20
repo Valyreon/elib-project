@@ -9,9 +9,9 @@ namespace Models
 {
     public class Importer
     {
-        private readonly UnitOfWork database;
+        private readonly IUnitOfWork database;
 
-        public Importer(UnitOfWork uow)
+        public Importer(IUnitOfWork uow)
         {
             this.database = uow;
         }

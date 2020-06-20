@@ -30,7 +30,7 @@ namespace DatabaseTests
                 DestinationDirectory = @"C:\Users\Luka\Desktop"
             };
 
-            exp.ExportBooks(uow.BookRepository.All(), options);
+            exp.ExportBooks(uow.BookRepository.All(), options, uow);
         }
 
         [TestMethod]
@@ -45,7 +45,7 @@ namespace DatabaseTests
                     .Select(s => s[random.Next(s.Length)]).ToArray());
             }
 
-            using UnitOfWork context = ApplicationSettings.CreateUnitOfWork();
+            using var context = ApplicationSettings.CreateUnitOfWork();
             for (int i = 0; i < 15; i++)
             {
                 context.CollectionRepository.Add(new UserCollection { Tag = RandomString(5) });
@@ -58,7 +58,7 @@ namespace DatabaseTests
         public void AddBookSeriesFromMyComputer()
         {
             string bookSeriesPath = @"D:\Documents\Ebooks\Book Series";
-            using UnitOfWork uow = ApplicationSettings.CreateUnitOfWork();
+            using var uow = ApplicationSettings.CreateUnitOfWork();
             uow.Truncate();
             uow.Commit();
             foreach (string dirPath in Directory.GetDirectories(bookSeriesPath))

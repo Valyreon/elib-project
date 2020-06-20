@@ -86,8 +86,7 @@
                         <Grid
                             x:Name="HeaderGrid"
                             Background="{StaticResource TabItemPanelBackgroundBrush}"
-                            DockPanel.Dock="Left"
-                            MouseLeftButtonDown="HandleLeftClick">
+                            DockPanel.Dock="Left">
                             <StackPanel
                                 Margin="15,0,0,0"
                                 HorizontalAlignment="Left"

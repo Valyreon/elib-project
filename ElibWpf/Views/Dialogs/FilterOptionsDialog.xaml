@@ -10,60 +10,6 @@
     d:DesignWidth="800"
     mc:Ignorable="d">
 
-    <dialogs:BaseMetroDialog.Resources>
-        <ResourceDictionary>
-            <Style x:Key="{x:Type RadioButton}" TargetType="{x:Type RadioButton}">
-                <Setter Property="SnapsToDevicePixels" Value="true" />
-                <Setter Property="OverridesDefaultStyle" Value="true" />
-                <Setter Property="FocusVisualStyle" Value="{StaticResource RadioButtonFocusVisual}" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type RadioButton}">
-                            <BulletDecorator Background="Transparent">
-                                <BulletDecorator.Bullet>
-                                    <Grid Width="16" Height="16">
-                                        <Ellipse
-                                            x:Name="Border"
-                                            Fill="Transparent"
-                                            Stroke="Gray"
-                                            StrokeThickness="1" />
-                                        <Ellipse
-                                            x:Name="CheckMark"
-                                            Margin="4"
-                                            Fill="CornflowerBlue" />
-                                    </Grid>
-                                </BulletDecorator.Bullet>
-                                <ContentPresenter
-                                    Margin="4,0,0,0"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Center"
-                                    RecognizesAccessKey="True" />
-                            </BulletDecorator>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsChecked" Value="false">
-                                    <Setter TargetName="CheckMark" Property="Visibility" Value="Collapsed" />
-                                </Trigger>
-                                <Trigger Property="IsMouseOver" Value="true">
-                                    <Setter TargetName="Border" Property="Stroke" Value="Black" />
-                                </Trigger>
-                                <Trigger Property="IsPressed" Value="true">
-                                    <Setter TargetName="Border" Property="Stroke" Value="Black" />
-                                    <Setter TargetName="CheckMark" Property="Visibility" Value="Visible" />
-                                    <Setter TargetName="CheckMark" Property="Fill" Value="#3172e7" />
-                                </Trigger>
-                                <Trigger Property="IsEnabled" Value="false">
-                                    <Setter TargetName="Border" Property="Fill" Value="Transparent" />
-                                    <Setter TargetName="Border" Property="Stroke" Value="CornflowerBlue" />
-                                    <Setter Property="Foreground" Value="#80000000" />
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-        </ResourceDictionary>
-    </dialogs:BaseMetroDialog.Resources>
-
     <Grid Margin="0,0,0,20">
         <Grid.RowDefinitions>
             <RowDefinition Height="35" />
@@ -80,8 +26,6 @@
                 Filter options
             </TextBlock>
         </StackPanel>
-
-
 
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -114,13 +58,6 @@
                     IsChecked="{Binding Options.SortByTitle}">
                     Title
                 </RadioButton>
-                <!--<RadioButton
-                    Margin="0,8,0,0"
-                    FontFamily="{StaticResource Font}"
-                    FontSize="14"
-                    IsChecked="{Binding Options.SortByAuthor}">
-                    Author
-                </RadioButton>-->
                 <RadioButton
                     Margin="0,8,0,0"
                     FontFamily="{StaticResource Font}"
@@ -183,23 +120,6 @@
                 </RadioButton>
             </StackPanel>
         </Grid>
-        <!--<StackPanel
-            Grid.Row="3"
-            MaxWidth="350"
-            Orientation="Horizontal">
-            <Label FontFamily="{StaticResource Font}" FontSize="14">Format:</Label>
-            <TextBox
-                x:Name="filter"
-                Width="250"
-                VerticalContentAlignment="Center"
-                Text="{Binding Options.FileTypeFilter, UpdateSourceTrigger=PropertyChanged}">
-                <TextBox.ToolTip>
-                    <ToolTip>
-                        Example: &quot;epub,mobi,pdf&quot;
-                    </ToolTip>
-                </TextBox.ToolTip>
-            </TextBox>
-        </StackPanel>-->
         <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />

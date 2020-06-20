@@ -68,7 +68,7 @@ namespace ElibWpf.ViewModels.Dialogs
 
         private void LoadSeries()
         {
-            using UnitOfWork uow = ApplicationSettings.CreateUnitOfWork();
+            using var uow = ApplicationSettings.CreateUnitOfWork();
             var list = uow.SeriesRepository.All().ToList();
             foreach (BookSeries series in list)
             {

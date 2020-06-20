@@ -11,9 +11,9 @@ namespace Models
 {
     public class Exporter
     {
-        private readonly UnitOfWork database;
+        private readonly IUnitOfWork database;
 
-        public Exporter(UnitOfWork db)
+        public Exporter(IUnitOfWork db)
         {
             this.database = db;
         }

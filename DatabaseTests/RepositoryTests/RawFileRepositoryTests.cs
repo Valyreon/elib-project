@@ -47,7 +47,7 @@ namespace DatabaseTests.RepositoryTests
         [TestMethod]
         public void TestFind()
         {
-            using UnitOfWork uow = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath);
+            using var uow = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath);
             var resFile = uow.RawFileRepository.Find(addedFiles[1].Id);
             for(int i = 0; i<resFile.RawContent.Length; i++)
             {

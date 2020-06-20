@@ -65,7 +65,7 @@ namespace ElibWpf.ViewModels.Dialogs
 
         private void LoadAuthors()
         {
-            using UnitOfWork uow = ApplicationSettings.CreateUnitOfWork();
+            using var uow = ApplicationSettings.CreateUnitOfWork();
             var list = uow.AuthorRepository.All().ToList();
             list.RemoveAll(a => this.AddedAuthors.Contains(a.Id));
             foreach (Author author in list)
