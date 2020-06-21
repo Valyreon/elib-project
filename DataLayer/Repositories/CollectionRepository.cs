@@ -2,12 +2,15 @@
 using Domain;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 
 namespace DataLayer.Repositories
 {
     public class CollectionRepository : RepositoryBase, ICollectionRepository
     {
+        private static readonly List<UserCollection> cache = new List<UserCollection>();
+
         public CollectionRepository(IDbTransaction transaction) : base(transaction)
         {
         }
@@ -19,6 +22,8 @@ namespace DataLayer.Repositories
                 entity,
                 Transaction
             );
+
+            cache.Add(entity);
         }
 
         public void AddCollectionForBook(UserCollection collection, int bookId)
@@ -33,7 +38,18 @@ namespace DataLayer.Repositories
 
         public IEnumerable<UserCollection> All()
         {
-            return Connection.Query<UserCollection>("SELECT * FROM UserCollections", Transaction).AsList();
+            var allList = Connection.Query<UserCollection>("SELECT * FROM UserCollections", Transaction).AsList();
+
+            foreach(var uc in allList)
+            {
+                var itemInCache = cache.Find(x => x.Id == uc.Id);
+                if (itemInCache == null)
+                    cache.Add(uc);
+                else
+                    itemInCache.Tag = uc.Tag;
+            }
+
+            return cache.ToList();
         }
 
         public void CleanCollections()
@@ -69,24 +85,60 @@ namespace DataLayer.Repositories
 
         public UserCollection Find(int id)
         {
-            return Connection.Query<UserCollection>("SELECT * FROM UserCollections WHERE Id = @CollectionId LIMIT 1",
+            var cacheResult = cache.Find(x => x.Id == id);
+
+            if (cacheResult != null)
+                return cacheResult;
+
+            var result = Connection.QueryFirst<UserCollection>("SELECT * FROM UserCollections WHERE Id = @CollectionId LIMIT 1",
                 new { CollectionId = id },
-                Transaction).FirstOrDefault();
+                Transaction);
+
+            if(result != null)
+            {
+                cache.Add(result);
+            }
+
+            return result;
         }
 
         public UserCollection GetByTag(string tag)
         {
-            return Connection.Query<UserCollection>("SELECT * FROM UserCollections WHERE Tag = @Tag", new { Tag = tag }, Transaction).FirstOrDefault();
+            var results = cache.Find(x => x.Tag == tag);
+            if(results == null)
+                return Connection.QueryFirst<UserCollection>("SELECT * FROM UserCollections WHERE Tag = @Tag LIMIT 1", new { Tag = tag }, Transaction);
+            return results;
         }
 
         public IEnumerable<UserCollection> GetUserCollectionsOfBook(int bookId)
         {
-            return Connection.Query<UserCollection>("SELECT Id, Tag FROM BookId_Collection_View WHERE BookId = @BookId", new { BookId = bookId }, Transaction).AsEnumerable();
+            List<UserCollection> result = new List<UserCollection>();
+            var dbResult = Connection.Query<UserCollection>("SELECT Id, Tag FROM BookId_Collection_View WHERE BookId = @BookId", new { BookId = bookId }, Transaction).AsEnumerable();
+
+            foreach(var uc in dbResult)
+            {
+                var inCache = cache.Find(x => x.Id == uc.Id);
+                if(inCache == null)
+                {
+                    cache.Add(uc);
+                    result.Add(uc);
+                }
+                else
+                {
+                    inCache.Tag = uc.Tag;
+                    result.Add(inCache);
+                }
+            }
+
+            return result;
         }
 
         public void Remove(int id)
         {
             Connection.Execute("DELETE FROM UserCollections WHERE Id = @RemoveId", new { RemoveId = id }, Transaction);
+            var inCache = cache.Find(x => x.Id == id);
+            if (inCache != null)
+                cache.Remove(inCache);
         }
 
         public void Remove(UserCollection entity)
@@ -103,6 +155,11 @@ namespace DataLayer.Repositories
         public void Update(UserCollection entity)
         {
             Connection.Execute("UPDATE UserCollections SET Tag = @Tag WHERE Id = @Id", entity, Transaction);
+        }
+
+        public void ClearCache()
+        {
+            cache.Clear();
         }
     }
 }

@@ -86,6 +86,11 @@ namespace DataLayer
             }
         }
 
+        public void ClearCache()
+        {
+            BookRepository.ClearCache();
+        }
+
         public void Truncate()
         {
             this.connection.Execute("DELETE FROM [AuthorBooks]");

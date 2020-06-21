@@ -1,6 +1,5 @@
 ﻿using Dapper;
 using Domain;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -9,6 +8,8 @@ namespace DataLayer.Repositories
 {
     public class SeriesRepository : RepositoryBase, ISeriesRepository
     {
+        private static readonly List<BookSeries> cache = new List<BookSeries>();
+
         public SeriesRepository(IDbTransaction transaction) : base(transaction)
         {
         }
@@ -20,11 +21,24 @@ namespace DataLayer.Repositories
                 entity,
                 Transaction
             );
+
+            cache.Add(entity);
         }
 
         public IEnumerable<BookSeries> All()
         {
-            return Connection.Query<BookSeries>("SELECT * FROM Series", Transaction).AsList();
+            var allList = Connection.Query<BookSeries>("SELECT * FROM Series", Transaction).AsList();
+
+            foreach (var series in allList)
+            {
+                var itemInCache = cache.Find(x => x.Id == series.Id);
+                if (itemInCache == null)
+                    cache.Add(series);
+                else
+                    itemInCache.Name = series.Name;
+            }
+
+            return cache.ToList();
         }
 
         public void CleanSeries()
@@ -53,13 +67,23 @@ namespace DataLayer.Repositories
 
         public BookSeries Find(int id)
         {
-            return Connection.Query<BookSeries>("SELECT * FROM Series WHERE Id = @SeriesId LIMIT 1",
+            var cacheResult = cache.Find(s => s.Id == id);
+            if (cacheResult != null)
+                return cacheResult;
+
+            var res = Connection.QueryFirst<BookSeries>("SELECT * FROM Series WHERE Id = @SeriesId LIMIT 1",
                 new { SeriesId = id },
-                Transaction).FirstOrDefault();
+                Transaction);
+            cache.Add(res);
+            return res;
         }
 
         public BookSeries GetByName(string name)
         {
+            var cacheResult = cache.Find(s => s.Name == name);
+            if (cacheResult != null)
+                return cacheResult;
+
             return Connection.Query<BookSeries>("SELECT * FROM Series WHERE Name = @Name LIMIT 1",
                 new { Name = name },
                 Transaction).FirstOrDefault();
@@ -68,6 +92,11 @@ namespace DataLayer.Repositories
         public void Remove(int id)
         {
             Connection.Execute("DELETE FROM Series WHERE Id = @RemoveId", new { RemoveId = id }, Transaction);
+            var cacheItem = cache.Find(x => x.Id == id);
+            if(cacheItem != null)
+            {
+                cache.Remove(cacheItem);
+            }
         }
 
         public void Remove(BookSeries entity)
@@ -79,6 +108,11 @@ namespace DataLayer.Repositories
         public void Update(BookSeries entity)
         {
             Connection.Execute("UPDATE Series SET Name = @Name WHERE Id = @Id", entity, Transaction);
+        }
+
+        public void ClearCache()
+        {
+            cache.Clear();
         }
     }
 }

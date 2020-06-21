@@ -211,8 +211,14 @@ namespace ElibWpf.ViewModels.Flyouts
                 }
                 else if (book.Series != null && this.Series != null && book.Series.Id == this.Series.Id)
                 {
-                    book.Series.Name = this.Series.Name;
+                    var series = book.Series;
+                    series.Name = this.Series.Name;
+                    book.Series = series; // to trgger SeriesInfo update in UI
                     uow.SeriesRepository.Update(book.Series);
+                } else if (book.Series != null && this.Series == null)
+                {
+                    book.SeriesId = null;
+                    book.Series = null;
                 }
 
                 if (this.IsSeriesSelected)
@@ -244,6 +250,8 @@ namespace ElibWpf.ViewModels.Flyouts
                         uow.AuthorRepository.RemoveAuthorForBook(author, book.Id);
                     }
                 }
+
+                book.Authors = this.AuthorsCollection;
 
                 if (this.Cover != null)
                 {

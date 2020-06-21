@@ -108,8 +108,6 @@ namespace ElibWpf.ViewModels.Windows
 
         private void HandleBookFlyout(ShowBookDetailsMessage obj)
         {
-            using var uow = ApplicationSettings.CreateUnitOfWork();
-            obj.Book.LoadMembers(uow);
             this.FlyoutControl = new BookDetailsViewModel(obj.Book);
             this.IsBookDetailsFlyoutOpen = true;
         }

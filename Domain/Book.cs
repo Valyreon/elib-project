@@ -26,12 +26,43 @@ namespace Domain
 
         public decimal PercentageRead { get; set; } = 0;
 
-        public BookSeries Series { get; set; }
+        private BookSeries series;
+        public BookSeries Series
+        {
+            get => series;
+            set
+            {
+                series = value;
+                RaisePropertyChanged(() => Series);
+                RaisePropertyChanged(() => SeriesInfo);
+            }
+        }
         public int? SeriesId { get; set; }
 
-        public ObservableCollection<UserCollection> Collections { get; set; }
+        public ObservableCollection<UserCollection> collections;
+        public ObservableCollection<UserCollection> Collections
+        {
+            get => collections;
+            set
+            {
+                collections = value;
+                RaisePropertyChanged(() => Collections);
+            }
+        }
+
         public ObservableCollection<Quote> Quotes { get; set; }
-        public ObservableCollection<Author> Authors { get; set; }
+
+        public ObservableCollection<Author> authors;
+        public ObservableCollection<Author> Authors
+        {
+            get => authors;
+            set
+            {
+                authors = value;
+                RaisePropertyChanged(() => Authors);
+                RaisePropertyChanged(() => AuthorsInfo);
+            }
+        }
 
         public int? WhenRead { get; set; }
 

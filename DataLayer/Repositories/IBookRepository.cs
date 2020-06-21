@@ -16,5 +16,6 @@ namespace DataLayer.Repositories
         void Remove(int id);
         void Remove(Book entity);
         void Update(Book entity);
+        void ClearCache();
     }
 }

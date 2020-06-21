@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using DataLayer;
@@ -17,13 +18,13 @@ namespace ElibWpf.ViewModels.Controls
 {
     public class BookViewerViewModel : ViewModelBase, IViewer
     {
-        private static readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
         private readonly Selector selector;
         private string caption;
         private Book lastSelectedBook;
         private string numberOfBooks;
         private double scrollVerticalOffset;
         private bool dontLoad = false;
+        private readonly SemaphoreSlim semaphore = new SemaphoreSlim(1,1);
 
         public BookViewerViewModel(string caption, FilterParameters filter, Selector selector)
         {
@@ -64,7 +65,7 @@ namespace ElibWpf.ViewModels.Controls
             set
             {
                 filter = value;
-                if(Books != null)
+                if (Books != null)
                     this.Refresh();
             }
         }
@@ -132,23 +133,31 @@ namespace ElibWpf.ViewModels.Controls
             }
         }
 
-        private void LoadMore()
+        private async void LoadMore()
         {
+            if (semaphore.CurrentCount == 0)
+                return;
+
+            await semaphore.WaitAsync();
             string callingMethod = (new System.Diagnostics.StackTrace()).GetFrame(1).GetMethod().Name;
             Console.WriteLine(callingMethod);
-            List<Book> bookList;
+            List<Book> bookList = null;
 
             if (dontLoad) return;
 
-            using var uow = ApplicationSettings.CreateUnitOfWork();
-            if (filter.Selected.HasValue && filter.Selected == true)
+            await Task.Factory.StartNew(() =>
             {
-                bookList = uow.BookRepository.GetBooks(selector.SelectedIds).ToList();
-                dontLoad = true;
-            }
-            else
-                bookList = uow.BookRepository.FindPageByFilter(filter, Books.Count, 25).ToList();
+                using var uow = ApplicationSettings.CreateUnitOfWork();
+                if (filter.Selected.HasValue && filter.Selected == true)
+                {
+                    bookList = uow.BookRepository.GetBooks(selector.SelectedIds).ToList();
+                    dontLoad = true;
+                }
+                else
+                    bookList = uow.BookRepository.FindPageByFilter(filter, Books.Count, 25).ToList();
+            });
 
+            using var uow = ApplicationSettings.CreateUnitOfWork();
             foreach (Book item in bookList)
             {
                 Application.Current.Dispatcher.Invoke(() =>
@@ -163,6 +172,7 @@ namespace ElibWpf.ViewModels.Controls
                         "No books found matching the search conditions."));
                 this.MessengerInstance.Send(new GoBackMessage());
             }
+            semaphore.Release();
         }
 
         public void Refresh()

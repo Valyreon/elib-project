@@ -18,5 +18,6 @@ namespace DataLayer.Repositories
         void Remove(UserCollection entity);
         void Update(UserCollection entity);
         void CleanCollections();
+        void ClearCache();
     }
 }

@@ -8,6 +8,8 @@ namespace DataLayer.Repositories
 {
     public class AuthorRepository : RepositoryBase, IAuthorRepository
     {
+        private static readonly List<Author> cache = new List<Author>();
+
         public AuthorRepository(IDbTransaction transaction) : base(transaction)
         {
         }
@@ -19,6 +21,8 @@ namespace DataLayer.Repositories
                 entity,
                 Transaction
             );
+
+            cache.Add(entity);
         }
 
         public void AddAuthorForBook(Author author, int bookId)
@@ -33,7 +37,18 @@ namespace DataLayer.Repositories
 
         public IEnumerable<Author> All()
         {
-            return Connection.Query<Author>("SELECT * FROM Authors", Transaction).AsList();
+            var allList = Connection.Query<Author>("SELECT * FROM Authors", Transaction);
+
+            foreach (var author in allList)
+            {
+                var itemInCache = cache.Find(x => x.Id == author.Id);
+                if (itemInCache == null)
+                    cache.Add(author);
+                else
+                    itemInCache.Name = author.Name;
+            }
+
+            return cache.ToList();
         }
 
         public void CleanAuthors()
@@ -64,26 +79,58 @@ namespace DataLayer.Repositories
 
         public Author Find(int id)
         {
-            return Connection.Query<Author>("SELECT * FROM Authors WHERE Id = @AuthorId LIMIT 1",
+            var cacheResult = cache.Find(s => s.Id == id);
+            if (cacheResult != null)
+                return cacheResult;
+
+            var result = Connection.Query<Author>("SELECT * FROM Authors WHERE Id = @AuthorId LIMIT 1",
                 new { AuthorId = id },
                 Transaction).FirstOrDefault();
+
+            if (result != null) cache.Add(result);
+
+            return result;
         }
 
         public IEnumerable<Author> GetAuthorsOfBook(int bookId)
         {
-            return Connection.Query<Author>("SELECT Id, Name FROM BookId_Author_View WHERE BookId = @BookId", new { BookId = bookId }, Transaction).AsEnumerable();
+            List<Author> result = new List<Author>();
+            var dbResult = Connection.Query<Author>("SELECT Id, Name FROM BookId_Author_View WHERE BookId = @BookId", new { BookId = bookId }, Transaction);
+
+            foreach (var uc in dbResult)
+            {
+                var inCache = cache.Find(x => x.Id == uc.Id);
+                if (inCache == null)
+                {
+                    cache.Add(uc);
+                    result.Add(uc);
+                }
+                else
+                {
+                    inCache.Name = uc.Name;
+                    result.Add(inCache);
+                }
+            }
+
+            return result;
         }
 
         public Author GetAuthorWithName(string name)
         {
-            return Connection.Query<Author>("SELECT * FROM Authors WHERE Name = @AuthorName LIMIT 1",
-                new { AuthorName = name },
-                Transaction).FirstOrDefault();
+            var results = cache.Find(x => x.Name == name);
+            if (results == null)
+                return Connection.Query<Author>("SELECT * FROM Authors WHERE Name = @AuthorName LIMIT 1",
+                                                new { AuthorName = name },
+                                                Transaction).FirstOrDefault();
+            return results;
         }
 
         public void Remove(int id)
         {
             Connection.Execute("DELETE FROM Authors WHERE Id = @RemoveId", new { RemoveId = id }, Transaction);
+            var inCache = cache.Find(x => x.Id == id);
+            if (inCache != null)
+                cache.Remove(inCache);
         }
 
         public void Remove(Author entity)
@@ -100,6 +147,11 @@ namespace DataLayer.Repositories
         public void Update(Author entity)
         {
             Connection.Execute("UPDATE Authors SET Name = @Name WHERE Id = @Id", entity, Transaction);
+        }
+
+        public void ClearCache()
+        {
+            cache.Clear();
         }
     }
 }

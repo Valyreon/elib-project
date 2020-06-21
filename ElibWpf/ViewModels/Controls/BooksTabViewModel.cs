@@ -138,6 +138,10 @@ namespace ElibWpf.ViewModels.Controls
                 {
                     this.viewerHistory.Clear();
 
+                    using var uow = ApplicationSettings.CreateUnitOfWork();
+                    uow.ClearCache();
+                    uow.Dispose();
+
                     FilterParameters filter = new FilterParameters
                     {
                         CollectionId = selectedCollection.Id
@@ -369,6 +373,10 @@ namespace ElibWpf.ViewModels.Controls
                 filter.SortByTitle = filterOptions.SortByTitle;
                 filter.Ascending = filterOptions.Ascending;
             }
+
+            using var uow = ApplicationSettings.CreateUnitOfWork();
+            uow.ClearCache();
+            uow.Dispose();
 
             this.CurrentViewer = new BookViewerViewModel(
                 this.SelectedMainPaneItem.ViewerCaption,

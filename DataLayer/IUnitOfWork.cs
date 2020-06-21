@@ -14,6 +14,7 @@ namespace DataLayer
         ICoverRepository CoverRepository { get; }
 
         void Truncate();
+        void ClearCache();
         void Commit();
     }
 }

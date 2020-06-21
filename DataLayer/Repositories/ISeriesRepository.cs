@@ -14,5 +14,6 @@ namespace DataLayer.Repositories
         void Update(BookSeries entity);
         void CleanSeries();
         void CleanSeries(int seriesId);
+        void ClearCache();
     }
 }
