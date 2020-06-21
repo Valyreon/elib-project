@@ -1,6 +1,6 @@
-﻿using ElibWpf.Messages;
+﻿using ElibWpf.BindingItems;
+using ElibWpf.Messages;
 using MahApps.Metro.Controls.Dialogs;
-using Models.Options;
 using MVVMLibrary;
 using System;
 using System.Windows;

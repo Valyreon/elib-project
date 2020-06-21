@@ -20,14 +20,12 @@ namespace ElibWpf.ViewModels.Controls
         private static readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
         private readonly Selector selector;
         private string caption;
-        private SearchOptions searchOptions;
         private Book lastSelectedBook;
-        private int nextPage = 1;
         private string numberOfBooks;
         private double scrollVerticalOffset;
         private bool dontLoad = false;
 
-        public BookViewerViewModel(string caption, Filter filter, Selector selector)
+        public BookViewerViewModel(string caption, FilterParameters filter, Selector selector)
         {
             this.Caption = caption;
             this.Filter = filter;
@@ -59,8 +57,8 @@ namespace ElibWpf.ViewModels.Controls
             this.HandleSelectBook(b);
         });
 
-        private Filter filter = null;
-        public Filter Filter
+        private FilterParameters filter = null;
+        public FilterParameters Filter
         {
             get => filter;
             set
@@ -169,7 +167,6 @@ namespace ElibWpf.ViewModels.Controls
 
         public void Refresh()
         {
-            this.nextPage = 1;
             this.ScrollVertical = 0;
             this.Books.Clear();
             this.LoadMore();
@@ -180,16 +177,16 @@ namespace ElibWpf.ViewModels.Controls
             this.Books.Clear();
         }
 
-        public void Search(SearchOptions searchOptions)
+        public void Search(SearchParameters searchOptions)
         {
-            this.searchOptions = searchOptions;
-            this.Filter.Token = searchOptions.Token;
+            this.filter.SearchParameters = searchOptions;
+            this.Filter.SearchParameters.Token = searchOptions.Token;
             if (!string.IsNullOrEmpty(searchOptions.Token))
             {
                 this.Caption = $"Search results for '{searchOptions.Token}'";
-                this.Filter.SearchByAuthor = searchOptions.SearchByAuthor;
-                this.Filter.SearchByName = searchOptions.SearchByName;
-                this.Filter.SearchBySeries = searchOptions.SearchBySeries;
+                this.filter.SearchParameters.SearchByAuthor = searchOptions.SearchByAuthor;
+                this.filter.SearchParameters.SearchByTitle = searchOptions.SearchByTitle;
+                this.filter.SearchParameters.SearchBySeries = searchOptions.SearchBySeries;
             }
 
             this.Refresh();

@@ -99,6 +99,7 @@
             <Button
                 Grid.Column="1"
                 MinHeight="30"
+                Background="CornflowerBlue"
                 Command="{Binding DoneCommand}"
                 Style="{StaticResource MahApps.Styles.Button.Dialogs.Accent}">
                 <TextBlock>

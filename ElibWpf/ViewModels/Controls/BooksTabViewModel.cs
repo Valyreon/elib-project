@@ -20,7 +20,6 @@ using MahApps.Metro.Controls.Dialogs;
 using MahApps.Metro.IconPacks;
 using Models;
 using Models.Observables;
-using Models.Options;
 using MVVMLibrary;
 using Application = System.Windows.Application;
 
@@ -36,7 +35,7 @@ namespace ElibWpf.ViewModels.Controls
         private bool isInSearchResults;
         private bool isSelectedMainAdded;
 
-        private SearchOptions searchOptions;
+        private SearchParameters searchOptions;
         private UserCollection selectedCollection;
         private PaneMainItem selectedMainPaneItem;
         private FilterOptions filterOptions;
@@ -44,7 +43,7 @@ namespace ElibWpf.ViewModels.Controls
         public BooksTabViewModel()
         {
             this.selector = new Selector();
-            this.selectedMainItem = new PaneMainItem("Selected", PackIconFontAwesomeKind.CheckDoubleSolid, "Selected Books", new Filter { Selected = true });
+            this.selectedMainItem = new PaneMainItem("Selected", PackIconFontAwesomeKind.CheckDoubleSolid, "Selected Books", new FilterParameters { Selected = true });
 
             this.MessengerInstance.Register<AuthorSelectedMessage>(this, this.HandleAuthorSelection);
             this.MessengerInstance.Register<BookSelectedMessage>(this, this.HandleBookChecked);
@@ -66,11 +65,11 @@ namespace ElibWpf.ViewModels.Controls
             this.MainPaneItems = new ObservableCollection<PaneMainItem>
             {
                 new PaneMainItem("All", PackIconBoxIconsKind.SolidBook, "All Books", null),
-                new PaneMainItem("Favorite", PackIconFontAwesomeKind.StarSolid, "Favorite Books", new Filter { Favorite = true })
+                new PaneMainItem("Favorite", PackIconFontAwesomeKind.StarSolid, "Favorite Books", new FilterParameters { Favorite = true })
             };
             this.SelectedMainPaneItem = this.MainPaneItems[0];
             this.PaneSelectionChanged();
-            this.SearchOptions = ApplicationSettings.GetInstance().SearchOptions;
+            this.SearchOptions = new SearchParameters();
             filterOptions = new FilterOptions();
         }
 
@@ -122,7 +121,7 @@ namespace ElibWpf.ViewModels.Controls
             PaneSelectionChanged();
         }
 
-        public SearchOptions SearchOptions
+        public SearchParameters SearchOptions
         {
             get => this.searchOptions;
             set => this.Set(() => this.SearchOptions, ref this.searchOptions, value);
@@ -139,7 +138,7 @@ namespace ElibWpf.ViewModels.Controls
                 {
                     this.viewerHistory.Clear();
 
-                    Filter filter = new Filter
+                    FilterParameters filter = new FilterParameters
                     {
                         CollectionId = selectedCollection.Id
                     };
@@ -286,14 +285,10 @@ namespace ElibWpf.ViewModels.Controls
 
         private void ProcessSearchCheckboxChanged()
         {
-            if (!this.SearchOptions.SearchByName && !this.SearchOptions.SearchByAuthor && !this.SearchOptions.SearchBySeries)
+            if (!this.SearchOptions.SearchByTitle && !this.SearchOptions.SearchByAuthor && !this.SearchOptions.SearchBySeries)
             {
-                this.SearchOptions = new SearchOptions();
+                this.SearchOptions = new SearchParameters();
             }
-
-            ApplicationSettings.GetInstance().SearchOptions.SearchByName = this.SearchOptions.SearchByName;
-            ApplicationSettings.GetInstance().SearchOptions.SearchByAuthor = this.SearchOptions.SearchByAuthor;
-            ApplicationSettings.GetInstance().SearchOptions.SearchBySeries = this.SearchOptions.SearchBySeries;
         }
 
         private void GoToPreviousViewer()
@@ -320,7 +315,7 @@ namespace ElibWpf.ViewModels.Controls
 
             this.viewerHistory.Push(ViewerState.ToState(this.CurrentViewer));
 
-            Filter filter = new Filter
+            FilterParameters filter = new FilterParameters
             {
                 AuthorId = obj.Author.Id
             };
@@ -341,7 +336,7 @@ namespace ElibWpf.ViewModels.Controls
                 return;
             }
 
-            Filter filter = new Filter
+            FilterParameters filter = new FilterParameters
             {
                 SeriesId = obj.Series.Id
             };
@@ -360,7 +355,7 @@ namespace ElibWpf.ViewModels.Controls
             this.RaisePropertyChanged(() => this.IsSelectedBooksViewer);
             this.viewerHistory.Clear();
 
-            Filter filter = SelectedMainPaneItem.Filter?.Clone ?? new Filter();
+            FilterParameters filter = SelectedMainPaneItem.Filter?.Clone() ?? new FilterParameters();
 
             if (filterOptions != null && filter != null)
             {
@@ -396,7 +391,7 @@ namespace ElibWpf.ViewModels.Controls
 
             if (this.CurrentViewer != null)
             {
-                Filter newFilter = this.CurrentViewer.Filter ?? new Filter();
+                FilterParameters newFilter = this.CurrentViewer.Filter ?? new FilterParameters();
 
                 if (filterOptions != null)
                 {

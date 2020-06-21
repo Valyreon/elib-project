@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 
 namespace DataLayer.Repositories
@@ -65,7 +64,7 @@ namespace DataLayer.Repositories
 
         public void Update(Book entity)
         {
-            Connection.Query<Book>(@"UPDATE Books
+            Connection.Execute(@"UPDATE Books
                                     SET
                                         Title = @Title,
                                         IsRead = @IsRead,
@@ -79,11 +78,11 @@ namespace DataLayer.Repositories
                                     WHERE Id = @Id", entity, Transaction);
         }
 
-        public IEnumerable<Book> FindPageByFilter(Filter filter, int offset = 0, int pageSize = 25)
+        public IEnumerable<Book> FindPageByFilter(FilterParameters filter, int offset = 0, int pageSize = 25)
         {
             if (filter == null)
             {
-                return GetPage(offset);
+                throw new ArgumentException("Filter is null");
             }
 
             bool conditionSet = filter.AuthorId.HasValue || filter.CollectionId.HasValue || filter.SeriesId.HasValue ||
@@ -131,24 +130,24 @@ namespace DataLayer.Repositories
                 queryBuilder.Append(")");
             }
 
-            if(!string.IsNullOrWhiteSpace(filter.Token))
+            if(filter.SearchParameters != null && !string.IsNullOrWhiteSpace(filter.SearchParameters.Token))
             {
                 queryBuilder.Append($" {(conditionSet ? " AND " : " WHERE ")} (");
                 bool searchAdded = false;
-                parameters.Add("@Token", $"%{filter.Token}%");
-                if (filter.SearchByName)
+                parameters.Add("@Token", $"%{filter.SearchParameters.Token}%");
+                if (filter.SearchParameters.SearchByTitle)
                 {
                     queryBuilder.Append($"Title LIKE @Token");
                     searchAdded = true;
                 }
 
-                if (filter.SearchByAuthor)
+                if (filter.SearchParameters.SearchByAuthor)
                 {
                     queryBuilder.Append($"{(searchAdded ? " OR " : "")}AuthorName LIKE @Token");
                     searchAdded = true;
                 }
 
-                if (filter.SearchBySeries)
+                if (filter.SearchParameters.SearchBySeries)
                 {
                     queryBuilder.Append($"{(searchAdded ? " OR " : "")}SeriesName LIKE @Token");
                 }
@@ -200,15 +199,6 @@ namespace DataLayer.Repositories
             }
 
             return new Tuple<string, DynamicParameters>(query.ToString(), parameters);
-        }
-
-        public IEnumerable<Book> GetPage(int lastId, int pageSize = 25)
-        {
-            return Connection.Query<Book>(@"SELECT *
-                                            FROM Books
-                                            WHERE Id > @LastId
-                                            ORDER BY Id
-                                            LIMIT @PageSize;", new { LastId = lastId, PageSize = pageSize }, Transaction);
         }
 
         public IEnumerable<Book> GetBooks(IEnumerable<int> Ids)

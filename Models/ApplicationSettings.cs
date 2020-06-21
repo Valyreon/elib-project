@@ -18,10 +18,6 @@ namespace Models
 
         [JsonIgnore] public string PropertiesPath { get; private set; }
 
-        [JsonProperty("SearchOptions")]
-        public SearchOptions SearchOptions { get; set; } = new SearchOptions
-            {SearchByName = true, SearchByAuthor = false, SearchBySeries = false};
-
         public static ApplicationSettings GetInstance()
         {
             if (_instance != null)

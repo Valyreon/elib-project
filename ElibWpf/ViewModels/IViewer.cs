@@ -7,7 +7,7 @@ namespace ElibWpf.ViewModels
     {
         public abstract string Caption { get; set; }
 
-        public abstract Filter Filter { get; }
+        public abstract FilterParameters Filter { get; }
 
         public abstract string NumberOfBooks { get; set; }
 
@@ -15,7 +15,7 @@ namespace ElibWpf.ViewModels
 
         public abstract void Clear();
 
-        public abstract void Search(SearchOptions searchOptions);
+        public abstract void Search(SearchParameters searchOptions);
 
     }
 }

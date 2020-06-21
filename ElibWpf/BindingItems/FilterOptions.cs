@@ -1,7 +1,7 @@
 ﻿using MVVMLibrary;
 using System;
 
-namespace Models.Options
+namespace ElibWpf.BindingItems
 {
     public class FilterOptions : ObservableObject, ICloneable
     {

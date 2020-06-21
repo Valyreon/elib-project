@@ -56,7 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataExtensions.cs" />
-    <Compile Include="Filter.cs" />
+    <Compile Include="FilterParameters.cs" />
     <Compile Include="Repositories\AuthorRepository.cs" />
     <Compile Include="Repositories\BookRepository.cs" />
     <Compile Include="Repositories\CollectionRepository.cs" />
@@ -76,6 +76,7 @@
     <Compile Include="Repositories\RawFileRepository.cs" />
     <Compile Include="Repositories\RepositoryBase.cs" />
     <Compile Include="Repositories\SeriesRepository.cs" />
+    <Compile Include="SearchParameters.cs" />
     <Compile Include="UnitOfWork.cs" />
   </ItemGroup>
   <ItemGroup>

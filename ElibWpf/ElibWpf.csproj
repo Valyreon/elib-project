@@ -179,6 +179,7 @@
     <Compile Include="Animations\GridLengthAnimation.cs" />
     <Compile Include="AttachedProperties\ScrollViewerExtensions.cs" />
     <Compile Include="BindingItems\BindingProxy.cs" />
+    <Compile Include="BindingItems\FilterOptions.cs" />
     <Compile Include="BindingItems\ViewerState.cs" />
     <Compile Include="Converters\BookTileConverters\TitleToVisibilityConverter.cs" />
     <Compile Include="Converters\ImageConverter.cs" />

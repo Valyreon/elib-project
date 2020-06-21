@@ -127,7 +127,7 @@
                             Focusable="False"
                             FontWeight="Medium"
                             Foreground="GhostWhite"
-                            IsChecked="{Binding SearchOptions.SearchByName, UpdateSourceTrigger=PropertyChanged}"
+                            IsChecked="{Binding SearchOptions.SearchByTitle, UpdateSourceTrigger=PropertyChanged}"
                             Style="{StaticResource CustomLightCheckBox}">
                             Search by title
                         </CheckBox>
