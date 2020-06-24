@@ -19,5 +19,15 @@ namespace EbookTools
                 _ => throw new ArgumentException($"{path} has an unkown extension.")
             };
         }
+
+        public static EbookParser Create(string extension, byte[] content)
+        {
+            return extension switch
+            {
+                ".epub" => new EpubParser(content),
+                ".mobi" => new MobiParser(content),
+                _ => throw new ArgumentException($"{extension} is an unkown extension.")
+            };
+        }
     }
 }
