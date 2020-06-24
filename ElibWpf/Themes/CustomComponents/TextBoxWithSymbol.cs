@@ -1,7 +1,7 @@
-﻿using System.Windows;
+﻿using MahApps.Metro.IconPacks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using MahApps.Metro.IconPacks;
 
 namespace ElibWpf.CustomComponents
 {
@@ -33,37 +33,37 @@ namespace ElibWpf.CustomComponents
 
         public ICommand EnterCommand
         {
-            get => (ICommand) this.GetValue(EnterCommandProperty);
+            get => (ICommand)this.GetValue(EnterCommandProperty);
             set => this.SetValue(EnterCommandProperty, value);
         }
 
         public Thickness IconMargin
         {
-            get => (Thickness) this.GetValue(IconMarginProperty);
+            get => (Thickness)this.GetValue(IconMarginProperty);
             set => this.SetValue(IconMarginProperty, value);
         }
 
         public PackIconFontAwesomeKind IconName
         {
-            get => (PackIconFontAwesomeKind) this.GetValue(IconNameProperty);
+            get => (PackIconFontAwesomeKind)this.GetValue(IconNameProperty);
             set => this.SetValue(IconNameProperty, value);
         }
 
         public double IconSize
         {
-            get => (double) this.GetValue(IconSizeProperty);
+            get => (double)this.GetValue(IconSizeProperty);
             set => this.SetValue(IconSizeProperty, value);
         }
 
         public Thickness TextboxPadding
         {
-            get => (Thickness) this.GetValue(TextboxPaddingProperty);
+            get => (Thickness)this.GetValue(TextboxPaddingProperty);
             set => this.SetValue(TextboxPaddingProperty, value);
         }
 
         public string WatermarkText
         {
-            get => (string) this.GetValue(WatermarkTextProperty);
+            get => (string)this.GetValue(WatermarkTextProperty);
             set => this.SetValue(WatermarkTextProperty, value);
         }
     }

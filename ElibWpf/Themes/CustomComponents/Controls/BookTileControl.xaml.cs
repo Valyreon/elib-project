@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Domain;
+using ElibWpf.Animations;
+using ElibWpf.CustomComponents;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows;
@@ -6,10 +9,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using Domain;
-using ElibWpf.Animations;
-using ElibWpf.CustomComponents;
-
 
 namespace ElibWpf.Themes.CustomComponents.Controls
 {
@@ -69,73 +68,73 @@ namespace ElibWpf.Themes.CustomComponents.Controls
 
         public ICommand AuthorCommand
         {
-            get => (ICommand) this.GetValue(AuthorCommandProperty);
+            get => (ICommand)this.GetValue(AuthorCommandProperty);
             set => this.SetValue(AuthorCommandProperty, value);
         }
 
         public ICollection<Author> AuthorParameter
         {
-            get => (ICollection<Author>) this.GetValue(AuthorParameterProperty);
+            get => (ICollection<Author>)this.GetValue(AuthorParameterProperty);
             set => this.SetValue(AuthorParameterProperty, value);
         }
 
         public string Authors
         {
-            get => (string) this.GetValue(AuthorsProperty);
+            get => (string)this.GetValue(AuthorsProperty);
             set => this.SetValue(AuthorsProperty, value);
         }
 
         public Cover Cover
         {
-            get => (Cover) this.GetValue(CoverProperty);
+            get => (Cover)this.GetValue(CoverProperty);
             set => this.SetValue(CoverProperty, value);
         }
 
         public bool IsSelected
         {
-            get => (bool) this.GetValue(IsSelectedProperty);
+            get => (bool)this.GetValue(IsSelectedProperty);
             set => this.SetValue(IsSelectedProperty, value);
         }
 
         public ICommand SelectCommand
         {
-            get => (ICommand) this.GetValue(SelectCommandProperty);
+            get => (ICommand)this.GetValue(SelectCommandProperty);
             set => this.SetValue(SelectCommandProperty, value);
         }
 
         public ICommand SeriesCommand
         {
-            get => (ICommand) this.GetValue(SeriesCommandProperty);
+            get => (ICommand)this.GetValue(SeriesCommandProperty);
             set => this.SetValue(SeriesCommandProperty, value);
         }
 
         public string SeriesInfo
         {
-            get => (string) this.GetValue(SeriesInfoProperty);
+            get => (string)this.GetValue(SeriesInfoProperty);
             set => this.SetValue(SeriesInfoProperty, value);
         }
 
         public BookSeries SeriesParameter
         {
-            get => (BookSeries) this.GetValue(SeriesParameterProperty);
+            get => (BookSeries)this.GetValue(SeriesParameterProperty);
             set => this.SetValue(SeriesParameterProperty, value);
         }
 
         public ICommand TileCommand
         {
-            get => (ICommand) this.GetValue(TileCommandProperty);
+            get => (ICommand)this.GetValue(TileCommandProperty);
             set => this.SetValue(TileCommandProperty, value);
         }
 
         public Book TileParameter
         {
-            get => (Book) this.GetValue(TileParameterProperty);
+            get => (Book)this.GetValue(TileParameterProperty);
             set => this.SetValue(TileParameterProperty, value);
         }
 
         public string Title
         {
-            get => (string) this.GetValue(TitleProperty);
+            get => (string)this.GetValue(TitleProperty);
             set => this.SetValue(TitleProperty, value);
         }
 
@@ -215,6 +214,8 @@ namespace ElibWpf.Themes.CustomComponents.Controls
             this.selectedCheckbox.Opacity = 1;
         }
 
-        private void SelectedCheckbox_Unchecked(object sender, RoutedEventArgs e) { }
+        private void SelectedCheckbox_Unchecked(object sender, RoutedEventArgs e)
+        {
+        }
     }
 }

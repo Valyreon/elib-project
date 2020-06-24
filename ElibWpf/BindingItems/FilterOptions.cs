@@ -15,6 +15,7 @@ namespace ElibWpf.BindingItems
 
         /* Sort options */
         private bool sortByTitle;
+
         public bool SortByTitle
         {
             get
@@ -36,6 +37,7 @@ namespace ElibWpf.BindingItems
         }
 
         private bool sortByAuthor;
+
         public bool SortByAuthor
         {
             get
@@ -57,6 +59,7 @@ namespace ElibWpf.BindingItems
         }
 
         private bool sortBySeries;
+
         public bool SortBySeries
         {
             get
@@ -78,6 +81,7 @@ namespace ElibWpf.BindingItems
         }
 
         private bool sortByImportTime;
+
         public bool SortByImportTime
         {
             get
@@ -99,6 +103,7 @@ namespace ElibWpf.BindingItems
         }
 
         private bool ascending = false;
+
         public bool Ascending
         {
             get => ascending;
@@ -131,6 +136,7 @@ namespace ElibWpf.BindingItems
 
         /* Read filter */
         private bool showAll;
+
         public bool ShowAll
         {
             get
@@ -151,6 +157,7 @@ namespace ElibWpf.BindingItems
         }
 
         private bool showRead;
+
         public bool ShowRead
         {
             get
@@ -171,6 +178,7 @@ namespace ElibWpf.BindingItems
         }
 
         private bool showUnread;
+
         public bool ShowUnread
         {
             get
@@ -190,7 +198,8 @@ namespace ElibWpf.BindingItems
             }
         }
 
-        bool showAllTypes = true;
+        private bool showAllTypes = true;
+
         public bool ShowAllTypes
         {
             get => showAllTypes;
@@ -199,6 +208,7 @@ namespace ElibWpf.BindingItems
 
         /* File type filter */
         private string fileTypeFilter = "epub|mobi";
+
         public string FileTypeFilter
         {
             get => fileTypeFilter;

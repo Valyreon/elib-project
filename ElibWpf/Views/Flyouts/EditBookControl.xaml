@@ -7,10 +7,7 @@
     xmlns:Converters="clr-namespace:ElibWpf.Converters"
     xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:fa="http://schemas.fontawesome.io/icons/"
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-    xmlns:local="clr-namespace:ElibWpf.Views.Flyouts"
-    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
     x:Name="editBookView"
@@ -179,9 +176,7 @@
                                     </ToolTip>
                                 </Components:BetterTextbox.ToolTip>
                             </Components:BetterTextbox>
-
                         </Grid>
-
                     </Grid>
                     <Components:DarkFlatSymbolButton
                         x:Name="SeriesOptionsButton"

@@ -1,17 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using CommandLineInterface.Utilities;
-using DataLayer;
-using Domain;
-using EbookTools;
-using Models;
-using Models.Helpers;
-using Models.Options;
-using Models.Utilities;
-using OnlineBookApi;
-using OnlineBookApi.OpenLibrary;
 
 namespace Cli
 {
@@ -509,7 +496,6 @@ namespace Cli
                         Image image = Image.FromStream(new MemoryStream(img));
                         image.Save(@"c:\users\gygasync\desktop\testtest\" + img.GetHashCode() + ".jpg", ImageFormat.Jpeg);
                     }
-
 
                     break;
 

@@ -1,4 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using Domain;
+using ElibWpf.Messages;
+using ElibWpf.ValidationAttributes;
+using ElibWpf.ViewModels.Dialogs;
+using ElibWpf.Views.Dialogs;
+using MahApps.Metro.Controls.Dialogs;
+using Models;
+using MVVMLibrary;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
@@ -8,16 +16,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
-using DataLayer;
-using Domain;
-using ElibWpf.Messages;
-using ElibWpf.ValidationAttributes;
-using ElibWpf.ViewModels.Dialogs;
-using ElibWpf.Views.Dialogs;
-using MahApps.Metro.Controls.Dialogs;
-using Models;
-using MVVMLibrary;
 using Application = System.Windows.Application;
 
 namespace ElibWpf.ViewModels.Flyouts

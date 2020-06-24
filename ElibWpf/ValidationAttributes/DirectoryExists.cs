@@ -7,7 +7,9 @@ namespace ElibWpf.ValidationAttributes
     {
         private readonly bool invert;
 
-        public DirectoryExists() { }
+        public DirectoryExists()
+        {
+        }
 
         public DirectoryExists(bool invert)
         {

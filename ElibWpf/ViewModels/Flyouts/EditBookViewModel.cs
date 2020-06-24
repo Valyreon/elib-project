@@ -1,4 +1,12 @@
-﻿using System.Collections.ObjectModel;
+﻿using Domain;
+using ElibWpf.Messages;
+using ElibWpf.ValidationAttributes;
+using ElibWpf.ViewModels.Dialogs;
+using ElibWpf.Views.Dialogs;
+using MahApps.Metro.Controls.Dialogs;
+using Models;
+using MVVMLibrary;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
@@ -7,15 +15,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
-using Domain;
-using ElibWpf.Messages;
-using ElibWpf.ValidationAttributes;
-using ElibWpf.ViewModels.Dialogs;
-using ElibWpf.Views.Dialogs;
-using MahApps.Metro.Controls.Dialogs;
-using Models;
-
-using MVVMLibrary;
 using Application = System.Windows.Application;
 
 namespace ElibWpf.ViewModels.Flyouts
@@ -215,7 +214,8 @@ namespace ElibWpf.ViewModels.Flyouts
                     series.Name = this.Series.Name;
                     book.Series = series; // to trgger SeriesInfo update in UI
                     uow.SeriesRepository.Update(book.Series);
-                } else if (book.Series != null && this.Series == null)
+                }
+                else if (book.Series != null && this.Series == null)
                 {
                     book.SeriesId = null;
                     book.Series = null;
@@ -241,13 +241,13 @@ namespace ElibWpf.ViewModels.Flyouts
 
                 foreach (Author author in this.AuthorsCollection)
                 {
-                    if(!oldAndNewCommonIds.Contains(author.Id))
+                    if (!oldAndNewCommonIds.Contains(author.Id))
                     {
                         uow.AuthorRepository.AddAuthorForBook(author, book.Id);
                     }
                 }
 
-                foreach(Author author in book.Authors)
+                foreach (Author author in book.Authors)
                 {
                     if (!oldAndNewCommonIds.Contains(author.Id))
                     {

@@ -1,11 +1,11 @@
-﻿using System;
+﻿using DataLayer;
+using Domain;
+using Models.Options;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using DataLayer;
-using Domain;
-using Models.Options;
 
 namespace Models
 {

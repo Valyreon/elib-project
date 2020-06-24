@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using DataLayer;
+﻿using DataLayer;
 using Domain;
 using EbookTools;
 using EbookTools.Epub;
 using EbookTools.Mobi;
 using Models;
+using System;
+using System.Collections.ObjectModel;
 
 namespace ElibWpf.Extensions
 {
@@ -26,7 +26,7 @@ namespace ElibWpf.Extensions
                 {
                     Format = parsedBook.Format,
                     Signature = Signer.ComputeHash(parsedBook.RawData),
-                    RawFile = new RawFile {RawContent = parsedBook.RawData}
+                    RawFile = new RawFile { RawContent = parsedBook.RawData }
                 }
             };
 

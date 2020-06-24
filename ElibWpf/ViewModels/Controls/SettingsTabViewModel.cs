@@ -1,5 +1,4 @@
-﻿
-using MVVMLibrary;
+﻿using MVVMLibrary;
 
 namespace ElibWpf.ViewModels.Controls
 {

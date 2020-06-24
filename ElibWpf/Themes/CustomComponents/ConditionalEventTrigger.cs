@@ -17,8 +17,8 @@ namespace ElibWpf.CustomComponents
                 PropertyChangedCallback = (obj, e) =>
                 {
                     // When "Triggers" is set, register handlers for each trigger in the list
-                    FrameworkElement element = (FrameworkElement) obj;
-                    var triggers = (List<ConditionalEventTrigger>) e.NewValue;
+                    FrameworkElement element = (FrameworkElement)obj;
+                    var triggers = (List<ConditionalEventTrigger>)e.NewValue;
                     foreach (ConditionalEventTrigger trigger in triggers)
                     {
                         element.AddHandler(trigger.RoutedEvent, new RoutedEventHandler((obj2, e2) =>
@@ -40,7 +40,7 @@ namespace ElibWpf.CustomComponents
         // Condition
         public bool Condition
         {
-            get => (bool) this.GetValue(ConditionProperty);
+            get => (bool)this.GetValue(ConditionProperty);
             set => this.SetValue(ConditionProperty, value);
         }
 
@@ -49,7 +49,7 @@ namespace ElibWpf.CustomComponents
         // "Triggers" attached property
         public static ConditionalEventTriggerCollection GetTriggers(DependencyObject obj)
         {
-            return (ConditionalEventTriggerCollection) obj.GetValue(TriggersProperty);
+            return (ConditionalEventTriggerCollection)obj.GetValue(TriggersProperty);
         }
 
         public static void SetTriggers(DependencyObject obj, ConditionalEventTriggerCollection value)
@@ -64,7 +64,7 @@ namespace ElibWpf.CustomComponents
             if (this.Condition)
             {
                 // Construct an EventTrigger containing the actions, then trigger it
-                EventTrigger dummyTrigger = new EventTrigger {RoutedEvent = _triggerActionsEvent};
+                EventTrigger dummyTrigger = new EventTrigger { RoutedEvent = _triggerActionsEvent };
                 foreach (TriggerAction action in this.Actions)
                 {
                     dummyTrigger.Actions.Add(action);

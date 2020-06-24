@@ -13,7 +13,8 @@ namespace Domain
         public ICollection<Book> Books { get; set; }
         public int Id { get; set; }
 
-        [Required] [StringLength(50)]
+        [Required]
+        [StringLength(50)]
         public string Tag
         {
             get => this.tag;

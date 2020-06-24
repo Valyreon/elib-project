@@ -1,7 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.Linq;
-using System.Windows.Input;
-using DataLayer;
+﻿using DataLayer;
 using Domain;
 using ElibWpf.BindingItems;
 using ElibWpf.CustomDataStructures;
@@ -9,6 +6,9 @@ using ElibWpf.Messages;
 using MahApps.Metro.IconPacks;
 using Models;
 using MVVMLibrary;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows.Input;
 
 namespace ElibWpf.ViewModels.Controls
 {
@@ -53,8 +53,6 @@ namespace ElibWpf.ViewModels.Controls
             this.PaneSelectionChanged();
             this.SearchOptions = new SearchParameters();
         }
-
-
 
         public ObservableCollection<UserCollection> Collections
         {
@@ -155,7 +153,7 @@ namespace ElibWpf.ViewModels.Controls
 
                 var resultViewModel = this.CurrentViewer.Search(this.SearchOptions);
 
-                if(resultViewModel == null)
+                if (resultViewModel == null)
                 {
                     this.MessengerInstance.Send(new ShowDialogMessage("No matches", "No books found matching the search conditions."));
                 }
@@ -266,6 +264,5 @@ namespace ElibWpf.ViewModels.Controls
                 Caption = this.SelectedMainPaneItem.ViewerCaption
             };
         }
-
     }
 }

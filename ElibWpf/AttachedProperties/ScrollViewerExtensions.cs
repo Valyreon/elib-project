@@ -46,12 +46,12 @@ namespace ElibWpf.AttachedProperties
 
         public static ICommand GetScrollToBottom(DependencyObject ob)
         {
-            return (ICommand) ob.GetValue(ScrollToBottomProperty);
+            return (ICommand)ob.GetValue(ScrollToBottomProperty);
         }
 
         public static double GetVerticalOffset(DependencyObject depObj)
         {
-            return (double) depObj.GetValue(VerticalOffsetProperty);
+            return (double)depObj.GetValue(VerticalOffsetProperty);
         }
 
         public static void SetScrollToBottom(DependencyObject ob, ICommand value)
@@ -84,7 +84,7 @@ namespace ElibWpf.AttachedProperties
 
         private static void OnScrollViewerScrollChanged(object sender, ScrollChangedEventArgs e)
         {
-            ScrollViewer scrollViewer = (ScrollViewer) sender;
+            ScrollViewer scrollViewer = (ScrollViewer)sender;
             if (scrollViewer.VerticalOffset >= scrollViewer.ScrollableHeight)
             {
                 ICommand command = GetScrollToBottom(sender as ScrollViewer);
@@ -114,7 +114,7 @@ namespace ElibWpf.AttachedProperties
             }
 
             BindVerticalOffset(scrollViewer);
-            scrollViewer.ScrollToVerticalOffset((double) e.NewValue);
+            scrollViewer.ScrollToVerticalOffset((double)e.NewValue);
         }
     }
 }

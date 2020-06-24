@@ -31,43 +31,43 @@ namespace ElibWpf.CustomComponents
 
         public ICommand EnterCommand
         {
-            get => (ICommand) this.GetValue(EnterCommandProperty);
+            get => (ICommand)this.GetValue(EnterCommandProperty);
             set => this.SetValue(EnterCommandProperty, value);
         }
 
         public Enum Icon
         {
-            get => (Enum) this.GetValue(IconProperty);
+            get => (Enum)this.GetValue(IconProperty);
             set => this.SetValue(IconProperty, value);
         }
 
         public Thickness IconMargin
         {
-            get => (Thickness) this.GetValue(IconMarginProperty);
+            get => (Thickness)this.GetValue(IconMarginProperty);
             set => this.SetValue(IconMarginProperty, value);
         }
 
         public double IconSize
         {
-            get => (double) this.GetValue(IconSizeProperty);
+            get => (double)this.GetValue(IconSizeProperty);
             set => this.SetValue(IconSizeProperty, value);
         }
 
         public bool IconVisible
         {
-            get => (bool) this.GetValue(IconVisibleProperty);
+            get => (bool)this.GetValue(IconVisibleProperty);
             set => this.SetValue(IconVisibleProperty, value);
         }
 
         public Thickness TextboxPadding
         {
-            get => (Thickness) this.GetValue(TextboxPaddingProperty);
+            get => (Thickness)this.GetValue(TextboxPaddingProperty);
             set => this.SetValue(TextboxPaddingProperty, value);
         }
 
         public string WatermarkText
         {
-            get => (string) this.GetValue(WatermarkTextProperty);
+            get => (string)this.GetValue(WatermarkTextProperty);
             set => this.SetValue(WatermarkTextProperty, value);
         }
     }

@@ -1,5 +1,4 @@
 ﻿using MahApps.Metro.Controls.Dialogs;
-using System.Windows.Controls;
 
 namespace ElibWpf.Views.Dialogs
 {

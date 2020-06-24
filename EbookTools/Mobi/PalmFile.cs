@@ -23,6 +23,7 @@ namespace EbookTools.Mobi
 
         // File Version
         protected DateTime MCreationDate;
+
         protected string MCreator;
         protected uint MCurrentPosition;
         protected byte[] MFileName;
@@ -35,6 +36,7 @@ namespace EbookTools.Mobi
 
         // Last Backup Date
         protected uint MModificationNumber;
+
         protected string MName;
         protected uint MNextRecordListId;
         protected uint MNumberOfRecords;
@@ -113,7 +115,7 @@ namespace EbookTools.Mobi
                 MFileName = file
             };
             using MemoryStream fs = new MemoryStream(file);
-            using StreamReader sr =  new StreamReader(fs);
+            using StreamReader sr = new StreamReader(fs);
             DateTime startdate = new DateTime(1904, 1, 1);
 
             //startdate = new DateTime(1970, 1, 1);
@@ -132,15 +134,15 @@ namespace EbookTools.Mobi
                 bytebuffer = new byte[4];
                 fs.Read(bytebuffer, 0, 4);
                 uint seconds = BytesToUint(bytebuffer);
-                TimeSpan ts = new TimeSpan(0, (int) (seconds / 60), 0);
+                TimeSpan ts = new TimeSpan(0, (int)(seconds / 60), 0);
                 retval.MCreationDate = startdate + ts;
                 fs.Read(bytebuffer, 0, 4);
                 seconds = BytesToUint(bytebuffer);
-                ts = new TimeSpan(0, (int) (seconds / 60), 0);
+                ts = new TimeSpan(0, (int)(seconds / 60), 0);
                 retval.MModificationDate = startdate + ts;
                 fs.Read(bytebuffer, 0, 4);
                 seconds = BytesToUint(bytebuffer);
-                ts = new TimeSpan(0, (int) (seconds / 60), 0);
+                ts = new TimeSpan(0, (int)(seconds / 60), 0);
                 retval.MLastBackupDate = startdate + ts;
                 fs.Read(bytebuffer, 0, 4);
                 retval.MModificationNumber = BytesToUint(bytebuffer);
@@ -191,14 +193,14 @@ namespace EbookTools.Mobi
                 {
                     startOffset = retval.MRecordInfoList[i].DataOffset;
                     uint endOffset = retval.MRecordInfoList[i + 1].DataOffset;
-                    recordLength = (int) (endOffset - startOffset);
+                    recordLength = (int)(endOffset - startOffset);
                     fs.Seek(startOffset, SeekOrigin.Begin);
                     retval.MRecordList[i].Data = new byte[recordLength];
                     fs.Read(retval.MRecordList[i].Data, 0, recordLength);
                 }
 
                 startOffset = retval.MRecordInfoList[retval.MNumberOfRecords - 1].DataOffset;
-                recordLength = (int) (fs.Length - (int) startOffset);
+                recordLength = (int)(fs.Length - (int)startOffset);
                 fs.Seek(startOffset, SeekOrigin.Begin);
                 retval.MRecordList[retval.MNumberOfRecords - 1].Data = new byte[recordLength];
                 fs.Read(retval.MRecordList[retval.MNumberOfRecords - 1].Data, 0, recordLength);
@@ -249,7 +251,7 @@ namespace EbookTools.Mobi
 
         public static uint BytesToUint(byte[] bytes)
         {
-            return (uint) ((bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3]);
+            return (uint)((bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3]);
         }
     }
 }

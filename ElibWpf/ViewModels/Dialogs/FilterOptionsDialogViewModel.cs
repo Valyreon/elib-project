@@ -1,5 +1,4 @@
 ﻿using ElibWpf.BindingItems;
-using ElibWpf.Messages;
 using MahApps.Metro.Controls.Dialogs;
 using MVVMLibrary;
 using System;
@@ -13,7 +12,7 @@ namespace ElibWpf.ViewModels.Dialogs
         public FilterOptions Options { get; }
         private FilterOptions oldOptions { get; }
 
-        int orderSelectedIndex;
+        private int orderSelectedIndex;
         private readonly Action<FilterOptions> onConfirm;
 
         public int OrderSelectedIndex

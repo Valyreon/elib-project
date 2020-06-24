@@ -1,15 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Windows.Input;
-using DataLayer;
-using Domain;
+﻿using Domain;
 using ElibWpf.Messages;
 using ElibWpf.ViewModels.Controls;
 using ElibWpf.ViewModels.Flyouts;
 using MahApps.Metro.Controls.Dialogs;
-using Models;
-
 using MVVMLibrary;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Windows.Input;
 
 namespace ElibWpf.ViewModels.Windows
 {

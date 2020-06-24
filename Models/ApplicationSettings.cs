@@ -1,8 +1,7 @@
-﻿using System;
-using System.IO;
-using DataLayer;
-using Models.Options;
+﻿using DataLayer;
 using Newtonsoft.Json;
+using System;
+using System.IO;
 
 namespace Models
 {
@@ -12,7 +11,8 @@ namespace Models
 
         [JsonProperty("DatabasePath")]
         public string
-            DatabasePath { get; set; } //= Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ElibApp", "elib_db");
+            DatabasePath
+        { get; set; } //= Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ElibApp", "elib_db");
 
         [JsonProperty("LogFilePath")] public string LogFilePath { get; set; } = "log.txt";
 

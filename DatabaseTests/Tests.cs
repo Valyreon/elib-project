@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using DataLayer;
-using DataLayer.Repositories;
+﻿using DataLayer;
 using Domain;
 using EbookTools;
 using ElibWpf.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Models;
 using Models.Options;
+using System;
+using System.IO;
+using System.Linq;
 
 namespace DatabaseTests
 {
@@ -121,7 +118,6 @@ namespace DatabaseTests
                                 {
                                     uow.AuthorRepository.AddAuthorForBook(existingAuthor, newBook.Id);
                                 }
-
                             }
 
                             DirSearch(d);

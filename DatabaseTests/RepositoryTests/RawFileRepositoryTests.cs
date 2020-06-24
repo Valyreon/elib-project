@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using DataLayer;
+﻿using DataLayer;
 using Domain;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Models;
+using System.Collections.Generic;
+using System.Text;
 
 namespace DatabaseTests.RepositoryTests
 {
     [TestClass]
     public class RawFileRepositoryTests
     {
-        List<RawFile> addedFiles;
+        private List<RawFile> addedFiles;
 
         [TestInitialize]
         public void Initialize()
@@ -49,7 +48,7 @@ namespace DatabaseTests.RepositoryTests
         {
             using var uow = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath);
             var resFile = uow.RawFileRepository.Find(addedFiles[1].Id);
-            for(int i = 0; i<resFile.RawContent.Length; i++)
+            for (int i = 0; i < resFile.RawContent.Length; i++)
             {
                 Assert.AreEqual(addedFiles[1].RawContent[i], resFile.RawContent[i]);
             }

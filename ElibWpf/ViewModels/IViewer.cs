@@ -1,5 +1,4 @@
 ﻿using DataLayer;
-using Models.Options;
 using System;
 
 namespace ElibWpf.ViewModels

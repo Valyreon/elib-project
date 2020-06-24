@@ -1,5 +1,4 @@
 ﻿using MVVMLibrary;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -27,6 +26,7 @@ namespace Domain
         public decimal PercentageRead { get; set; } = 0;
 
         private BookSeries series;
+
         public BookSeries Series
         {
             get => series;
@@ -37,9 +37,11 @@ namespace Domain
                 RaisePropertyChanged(() => SeriesInfo);
             }
         }
+
         public int? SeriesId { get; set; }
 
         public ObservableCollection<UserCollection> collections;
+
         public ObservableCollection<UserCollection> Collections
         {
             get => collections;
@@ -53,6 +55,7 @@ namespace Domain
         public ObservableCollection<Quote> Quotes { get; set; }
 
         public ObservableCollection<Author> authors;
+
         public ObservableCollection<Author> Authors
         {
             get => authors;

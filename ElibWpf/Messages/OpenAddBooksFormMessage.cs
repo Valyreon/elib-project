@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using Domain;
+﻿using Domain;
 using MVVMLibrary.Messaging;
+using System.Collections.Generic;
 
 namespace ElibWpf.Messages
 {

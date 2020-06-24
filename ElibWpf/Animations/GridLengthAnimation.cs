@@ -21,7 +21,7 @@ namespace ElibWpf.Animations
 
         public GridLength From
         {
-            get => (GridLength) this.GetValue(FromProperty);
+            get => (GridLength)this.GetValue(FromProperty);
             set => this.SetValue(FromProperty, value);
         }
 
@@ -29,7 +29,7 @@ namespace ElibWpf.Animations
 
         public GridLength To
         {
-            get => (GridLength) this.GetValue(ToProperty);
+            get => (GridLength)this.GetValue(ToProperty);
             set => this.SetValue(ToProperty, value);
         }
 
@@ -41,8 +41,8 @@ namespace ElibWpf.Animations
         public override object GetCurrentValue(object defaultOriginValue, object defaultDestinationValue,
             AnimationClock animationClock)
         {
-            double fromVal = ((GridLength) this.GetValue(FromProperty)).Value;
-            double toVal = ((GridLength) this.GetValue(ToProperty)).Value;
+            double fromVal = ((GridLength)this.GetValue(FromProperty)).Value;
+            double toVal = ((GridLength)this.GetValue(ToProperty)).Value;
             if (fromVal > toVal)
             {
                 return new GridLength((1 - animationClock.CurrentProgress.Value) *

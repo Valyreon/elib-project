@@ -5,5 +5,4 @@
     <SolidColorBrush x:Key="LighterBackgroundColorBrush" Color="#373737" />
     <SolidColorBrush x:Key="TabItemPanelBackgroundBrush" Color="#222222" />
     <SolidColorBrush x:Key="DefaultDarkFont" Color="#484b4e" />
-
 </ResourceDictionary>

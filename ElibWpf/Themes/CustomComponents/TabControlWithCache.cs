@@ -175,7 +175,7 @@ namespace ElibWpf.CustomComponents
             // show the right child
             foreach (ContentPresenter child in this.itemsHolderPanel.Children)
             {
-                child.Visibility = ((TabItem) child.Tag).IsSelected ? Visibility.Visible : Visibility.Collapsed;
+                child.Visibility = ((TabItem)child.Tag).IsSelected ? Visibility.Visible : Visibility.Collapsed;
             }
         }
     }

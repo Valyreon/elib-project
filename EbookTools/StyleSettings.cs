@@ -14,7 +14,9 @@ namespace EbookTools
             this.Font = font;
         }
 
-        public StyleSettings() { }
+        public StyleSettings()
+        {
+        }
 
         [RegularExpression(@"#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})", ErrorMessage = "Invalid hex color.")]
         public string BackgroundColor { get; set; } = "#f2f1ef";

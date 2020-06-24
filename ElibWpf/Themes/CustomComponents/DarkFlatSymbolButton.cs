@@ -19,13 +19,13 @@ namespace ElibWpf.CustomComponents
 
         public Enum Icon
         {
-            get => (Enum) this.GetValue(IconProperty);
+            get => (Enum)this.GetValue(IconProperty);
             set => this.SetValue(IconProperty, value);
         }
 
         public double IconSize
         {
-            get => (double) this.GetValue(IconSizeProperty);
+            get => (double)this.GetValue(IconSizeProperty);
             set => this.SetValue(IconSizeProperty, value);
         }
     }

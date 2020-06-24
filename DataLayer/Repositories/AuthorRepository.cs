@@ -27,7 +27,7 @@ namespace DataLayer.Repositories
 
         public void AddAuthorForBook(Author author, int bookId)
         {
-            if(author.Id == 0)
+            if (author.Id == 0)
             {
                 this.Add(author);
             }
@@ -54,7 +54,7 @@ namespace DataLayer.Repositories
         public void CleanAuthors()
         {
             var allAuthors = this.All();
-            foreach(var author in allAuthors)
+            foreach (var author in allAuthors)
             {
                 int count = Connection.QueryFirst<int>(@"SELECT COUNT(*) FROM (
                                                        SELECT AuthorBooks.AuthorId,
@@ -65,7 +65,7 @@ namespace DataLayer.Repositories
                                                     ) WHERE Id = @Id"
                 , author, Transaction);
 
-                if(count == 0)
+                if (count == 0)
                 {
                     this.Remove(author.Id);
                 }

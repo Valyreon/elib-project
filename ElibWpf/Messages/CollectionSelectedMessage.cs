@@ -1,6 +1,4 @@
-﻿
-
-namespace ElibWpf.Messages
+﻿namespace ElibWpf.Messages
 {
     public class CollectionSelectedMessage
     {

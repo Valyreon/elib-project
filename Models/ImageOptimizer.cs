@@ -1,8 +1,8 @@
-﻿using System;
+﻿using ImageProcessor;
+using ImageProcessor.Imaging;
+using System;
 using System.Drawing;
 using System.IO;
-using ImageProcessor;
-using ImageProcessor.Imaging;
 
 namespace Models
 {
@@ -14,7 +14,6 @@ namespace Models
             {
                 using var ms = new MemoryStream(imgBytes);
                 using Image imgPhoto = Image.FromStream(ms);
-
 
                 Size size = new Size(width, height);
 
@@ -35,7 +34,7 @@ namespace Models
 
                 using Image resizePhoto = Image.FromStream(outStream);
 
-                ImageLayer resizedImage = new ImageLayer {Image = resizePhoto};
+                ImageLayer resizedImage = new ImageLayer { Image = resizePhoto };
 
                 // If the picture fits do not blur the background
                 if (resizedImage.Size == size)

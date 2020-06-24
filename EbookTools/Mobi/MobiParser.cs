@@ -1,6 +1,6 @@
-﻿using System.IO;
+﻿using HtmlAgilityPack;
+using System.IO;
 using System.Text;
-using HtmlAgilityPack;
 
 namespace EbookTools.Mobi
 {

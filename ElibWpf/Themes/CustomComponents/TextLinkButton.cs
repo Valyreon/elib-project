@@ -16,7 +16,7 @@ namespace ElibWpf.CustomComponents
 
         public string Text
         {
-            get => (string) this.GetValue(TextProperty);
+            get => (string)this.GetValue(TextProperty);
             set => this.SetValue(TextProperty, value);
         }
     }

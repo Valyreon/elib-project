@@ -1,9 +1,7 @@
 ﻿using Dapper;
 using Domain;
-using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
 using System.Linq;
 
 namespace DataLayer.Repositories
@@ -41,7 +39,7 @@ namespace DataLayer.Repositories
         {
             var allList = Connection.Query<UserCollection>("SELECT * FROM UserCollections", Transaction).AsList();
 
-            foreach(var uc in allList)
+            foreach (var uc in allList)
             {
                 var itemInCache = cache.Find(x => x.Id == uc.Id);
                 if (itemInCache == null)
@@ -95,7 +93,7 @@ namespace DataLayer.Repositories
                 new { CollectionId = id },
                 Transaction);
 
-            if(result != null)
+            if (result != null)
             {
                 cache.Add(result);
             }
@@ -123,10 +121,10 @@ namespace DataLayer.Repositories
             List<UserCollection> result = new List<UserCollection>();
             var dbResult = Connection.Query<UserCollection>("SELECT Id, Tag FROM BookId_Collection_View WHERE BookId = @BookId", new { BookId = bookId }, Transaction).AsEnumerable();
 
-            foreach(var uc in dbResult)
+            foreach (var uc in dbResult)
             {
                 var inCache = cache.Find(x => x.Id == uc.Id);
-                if(inCache == null)
+                if (inCache == null)
                 {
                     cache.Add(uc);
                     result.Add(uc);

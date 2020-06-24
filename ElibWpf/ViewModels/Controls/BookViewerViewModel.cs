@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Forms;
-using System.Windows.Input;
-using DataLayer;
+﻿using DataLayer;
 using Domain;
 using EbookTools;
 using ElibWpf.BindingItems;
@@ -20,6 +10,15 @@ using MahApps.Metro.Controls.Dialogs;
 using Models;
 using MVVMLibrary;
 using MVVMLibrary.Messaging;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Windows.Input;
 
 namespace ElibWpf.ViewModels.Controls
 {
@@ -35,6 +34,7 @@ namespace ElibWpf.ViewModels.Controls
         private bool isResultEmpty = false;
 
         private Action backAction;
+
         public Action Back
         {
             get => backAction;
@@ -103,6 +103,7 @@ namespace ElibWpf.ViewModels.Controls
         });
 
         private FilterParameters filter = null;
+
         public FilterParameters Filter
         {
             get => filter;
@@ -121,6 +122,7 @@ namespace ElibWpf.ViewModels.Controls
         }
 
         private string subCaption;
+
         public string SubCaption
         {
             get => this.subCaption;
@@ -214,7 +216,6 @@ namespace ElibWpf.ViewModels.Controls
                 {
                     this.Books.Add(this.selector.SetMarked(item).LoadMembers(uow));
                 }
-
             }, TaskScheduler.FromCurrentSynchronizationContext());
             semaphore.Release();
         }

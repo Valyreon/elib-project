@@ -64,7 +64,7 @@ namespace EbookTools.Mobi
                 while (a < retval.MTextRecordCount + 1)
                 {
                     var blockbuilder = new List<byte>();
-                    var datatemp = new List<byte>(retval.MRecordList[a++].Data) {0};
+                    var datatemp = new List<byte>(retval.MRecordList[a++].Data) { 0 };
                     int pos = 0;
                     var temps = new List<byte>();
 
@@ -96,14 +96,14 @@ namespace EbookTools.Mobi
                             temps.Clear();
                             temps.Add(0);
                             temps.Add(0);
-                            byte bb = (byte) (ab & 63); // do this to drop the first 2 bits
+                            byte bb = (byte)(ab & 63); // do this to drop the first 2 bits
                             temps.Add(bb);
-                            temps.Add(pos < datatemp.Count ? datatemp[pos++] : (byte) 0);
+                            temps.Add(pos < datatemp.Count ? datatemp[pos++] : (byte)0);
 
                             uint b = BytesToUint(temps.ToArray());
                             uint dist = (b >> 3) * 1;
                             uint len = (b << 29) >> 29;
-                            int uncompressedpos = blockbuilder.Count - (int) dist;
+                            int uncompressedpos = blockbuilder.Count - (int)dist;
                             for (int i = 0; i < (len + 3) * 1; i++)
                             {
                                 try
@@ -120,7 +120,7 @@ namespace EbookTools.Mobi
                         {
                             blockbuilder.Add(32);
                             //blockbuilder.Add (0);
-                            blockbuilder.Add((byte) (ab ^ 0x80));
+                            blockbuilder.Add((byte)(ab ^ 0x80));
                             //blockbuilder.Add (0);
                         }
                     }
@@ -171,14 +171,14 @@ namespace EbookTools.Mobi
                 for (int i = 0; i < 256; i++)
                 {
                     temp.Clear();
-                    temp.AddRange(huffdata.GetRange((int) (off1 + i * 4), 4));
+                    temp.AddRange(huffdata.GetRange((int)(off1 + i * 4), 4));
                     huffdict1.Add(BitConverter.ToUInt32(temp.ToArray(), 0));
                 }
 
                 for (int i = 0; i < 64; i++)
                 {
                     temp.Clear();
-                    temp.AddRange(huffdata.GetRange((int) (off2 + i * 4), 4));
+                    temp.AddRange(huffdata.GetRange((int)(off2 + i * 4), 4));
                     huffdict2.Add(BitConverter.ToUInt32(temp.ToArray(), 0));
                 }
 
@@ -195,7 +195,7 @@ namespace EbookTools.Mobi
                     int size = GetSizeOfTrailingDataEntries(datatemp.ToArray(), datatemp.Count, retval.MExtraFlags);
 
                     sb.Append(Unpack(new BitReader(datatemp.GetRange(0, datatemp.Count - size).ToArray()),
-                        huffdict1.ToArray(), huffdict2.ToArray(), huffdicts, (int) entrybits));
+                        huffdict1.ToArray(), huffdict2.ToArray(), huffdicts, (int)entrybits));
                 }
 
                 retval.MBookText = sb.ToString();
@@ -230,14 +230,14 @@ namespace EbookTools.Mobi
                 uint v = huffdict1[dw >> 24];
                 uint codelen = v & 0x1F;
                 //assert codelen != 0;
-                ulong code = dw >> (int) (32 - codelen);
+                ulong code = dw >> (int)(32 - codelen);
                 ulong r = v >> 8;
                 if ((v & 0x80) == 0)
                 {
                     while (code < huffdict2[(codelen - 1) * 2])
                     {
                         codelen += 1;
-                        code = dw >> (int) (32 - codelen);
+                        code = dw >> (int)(32 - codelen);
                     }
 
                     r = huffdict2[(codelen - 1) * 2 + 1];
@@ -252,9 +252,9 @@ namespace EbookTools.Mobi
 
                 ulong dicno = r >> entrybits;
                 ulong off1 = 16 + (r - (dicno << entrybits)) * 2;
-                var dic = huffdicts[(int) (long) dicno];
-                int off2 = 16 + (char) dic[(int) (long) off1] * 256 + (char) dic[(int) (long) off1 + 1];
-                int blen = (char) dic[off2] * 256 + (char) dic[off2 + 1];
+                var dic = huffdicts[(int)(long)dicno];
+                int off2 = 16 + (char)dic[(int)(long)off1] * 256 + (char)dic[(int)(long)off1 + 1];
+                int blen = (char)dic[off2] * 256 + (char)dic[off2 + 1];
                 var slicelist = dic.GetRange(off2 + 2, blen & 0x7fff);
                 var slice = slicelist.ToArray();
                 retval.Append((blen & 0x8000) > 0
@@ -273,7 +273,7 @@ namespace EbookTools.Mobi
             {
                 if ((flags & 1) > 0)
                 {
-                    retval += (int) GetSizeOfTrailingDataEntry(ptr, size - retval);
+                    retval += (int)GetSizeOfTrailingDataEntry(ptr, size - retval);
                 }
 
                 flags >>= 1;
@@ -288,7 +288,7 @@ namespace EbookTools.Mobi
             int bitpos = 0;
             while (true)
             {
-                uint v = (char) ptr[size - 1];
+                uint v = (char)ptr[size - 1];
                 retval |= (v & 0x7F) << bitpos;
                 bitpos += 7;
                 size -= 1;
@@ -324,11 +324,11 @@ namespace EbookTools.Mobi
             ulong g = 0;
             while (g < n)
             {
-                r = (r << 8) | (char) this.mData[(int) (long) ((this.mPos + g) >> 3)];
+                r = (r << 8) | (char)this.mData[(int)(long)((this.mPos + g) >> 3)];
                 g = g + 8 - ((this.mPos + g) & 7);
             }
 
-            return (r >> (int) (long) (g - n)) & (((ulong) 1 << (int) n) - 1);
+            return (r >> (int)(long)(g - n)) & (((ulong)1 << (int)n) - 1);
         }
 
         public bool Eat(uint n)

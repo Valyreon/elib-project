@@ -14,7 +14,9 @@ namespace ElibWpf.Animations
         public static readonly DependencyProperty ToProperty =
             DependencyProperty.Register("To", typeof(Brush), typeof(BrushAnimation));
 
-        public BrushAnimation() { }
+        public BrushAnimation()
+        {
+        }
 
         public BrushAnimation(Brush to, Duration duration)
         {
@@ -26,7 +28,7 @@ namespace ElibWpf.Animations
         //we must define From and To, AnimationTimeline does not have this properties
         public Brush From
         {
-            get => (Brush) this.GetValue(FromProperty);
+            get => (Brush)this.GetValue(FromProperty);
             set => this.SetValue(FromProperty, value);
         }
 
@@ -34,7 +36,7 @@ namespace ElibWpf.Animations
 
         public Brush To
         {
-            get => (Brush) this.GetValue(ToProperty);
+            get => (Brush)this.GetValue(ToProperty);
             set => this.SetValue(ToProperty, value);
         }
 

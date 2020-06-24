@@ -20,13 +20,13 @@ namespace ElibWpf.CustomComponents
 
         public Enum IconName
         {
-            get => (Enum) this.GetValue(IconProperty);
+            get => (Enum)this.GetValue(IconProperty);
             set => this.SetValue(IconProperty, value);
         }
 
         public string WatermarkText
         {
-            get => (string) this.GetValue(WatermarkTextProperty);
+            get => (string)this.GetValue(WatermarkTextProperty);
             set => this.SetValue(WatermarkTextProperty, value);
         }
     }

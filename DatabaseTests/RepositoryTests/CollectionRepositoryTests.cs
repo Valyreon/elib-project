@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using DataLayer;
+﻿using DataLayer;
 using Domain;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Models;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DatabaseTests.RepositoryTests
 {
@@ -25,7 +24,7 @@ namespace DatabaseTests.RepositoryTests
                 new UserCollection { Tag = "Three Collection" }
             };
 
-            foreach(UserCollection col in addedCollections)
+            foreach (UserCollection col in addedCollections)
             {
                 unitOfWork.CollectionRepository.Add(col);
             }

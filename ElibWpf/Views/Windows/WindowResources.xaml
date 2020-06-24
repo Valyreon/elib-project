@@ -3,13 +3,10 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ControlViewModels="clr-namespace:ElibWpf.ViewModels.Controls"
     xmlns:ControlViews="clr-namespace:ElibWpf.Views.Controls"
-    xmlns:Converters="clr-namespace:ElibWpf.Converters"
     xmlns:DialogViewModels="clr-namespace:ElibWpf.ViewModels.Dialogs"
     xmlns:DialogViews="clr-namespace:ElibWpf.Views.Dialogs"
     xmlns:FlyoutViewModels="clr-namespace:ElibWpf.ViewModels.Flyouts"
-    xmlns:FlyoutViews="clr-namespace:ElibWpf.Views.Flyouts"
-    xmlns:WindowViewModels="clr-namespace:ElibWpf.ViewModels.Windows"
-    xmlns:WindowViews="clr-namespace:ElibWpf.Views.Windows">
+    xmlns:FlyoutViews="clr-namespace:ElibWpf.Views.Flyouts">
     <DataTemplate DataType="{x:Type ControlViewModels:BooksTabViewModel}">
         <ControlViews:BooksTabControl />
     </DataTemplate>

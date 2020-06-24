@@ -160,7 +160,8 @@ namespace DataLayer.Repositories
             if (filter == null)
             {
                 throw new ArgumentException("Filter is null");
-            } else if((offset == null && pageSize != null) || (offset != null && pageSize == null))
+            }
+            else if ((offset == null && pageSize != null) || (offset != null && pageSize == null))
             {
                 throw new ArgumentException("Offset and page size should both be null, or both have values.");
             }
@@ -234,7 +235,6 @@ namespace DataLayer.Repositories
                 queryBuilder.Append(")");
             }
 
-
             queryBuilder.Append(" GROUP BY Id");
 
             if (filter.SortByImportOrder)
@@ -259,7 +259,7 @@ namespace DataLayer.Repositories
             if (!filter.SortBySeries)
             {
                 queryBuilder.Append(filter.Ascending ? " ASC" : " DESC");
-                if(offset != null && pageSize != null)
+                if (offset != null && pageSize != null)
                     queryBuilder.Append($" LIMIT {offset}, {pageSize}");
             }
 

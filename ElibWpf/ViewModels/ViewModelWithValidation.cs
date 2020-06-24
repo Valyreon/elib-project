@@ -1,11 +1,11 @@
-﻿using System;
+﻿using MVVMLibrary;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using MVVMLibrary;
 
 namespace ElibWpf.ViewModels
 {
@@ -44,7 +44,6 @@ namespace ElibWpf.ViewModels
             }
 
             return null;
-
         }
 
         public void ClearErrors()

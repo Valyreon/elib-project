@@ -15,7 +15,7 @@ namespace Models.Helpers
                 return new Tuple<string, string>(string.Empty, string.Empty);
             }
 
-            var parts = str.Split(new[] {' '}, 2);
+            var parts = str.Split(new[] { ' ' }, 2);
 
             return parts.Length == 2
                 ? new Tuple<string, string>(parts[0], parts[1])

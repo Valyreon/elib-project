@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SQLite;
-using System.Linq;
-using DataLayer;
+﻿using DataLayer;
 using Domain;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Models;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DatabaseTests.RepositoryTests
 {
@@ -15,7 +13,7 @@ namespace DatabaseTests.RepositoryTests
     [TestClass]
     public class AuthorRepositoryTests
     {
-        readonly List<Author> addedAuthors = new List<Author>();
+        private readonly List<Author> addedAuthors = new List<Author>();
 
         [TestInitialize]
         public void Initialize()
@@ -39,7 +37,7 @@ namespace DatabaseTests.RepositoryTests
         [TestCleanup]
         public void Clean()
         {
-            foreach(var author in addedAuthors)
+            foreach (var author in addedAuthors)
             {
                 using var unitOfWork = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath);
                 unitOfWork.AuthorRepository.Remove(author.Id);

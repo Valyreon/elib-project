@@ -1,6 +1,5 @@
-﻿using System;
-using DataLayer;
-using Models.Options;
+﻿using DataLayer;
+using System;
 
 namespace ElibWpf.BindingItems
 {

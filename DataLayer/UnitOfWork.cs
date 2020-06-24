@@ -1,9 +1,7 @@
 ﻿using Dapper;
 using DataLayer.Repositories;
-using System;
 using System.Data;
 using System.Data.SQLite;
-using System.Threading;
 
 namespace DataLayer
 {

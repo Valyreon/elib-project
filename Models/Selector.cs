@@ -1,10 +1,7 @@
-﻿using System;
+﻿using DataLayer;
+using Domain;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using DataLayer;
-using Domain;
-
 
 namespace Models
 {
@@ -25,7 +22,7 @@ namespace Models
         {
             // TODO: replace this with filter later
             List<Book> result = new List<Book>();
-            foreach(int id in selectedBookIds)
+            foreach (int id in selectedBookIds)
             {
                 result.Add(uow.BookRepository.Find(id).LoadMembers(uow));
             }

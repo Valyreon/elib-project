@@ -1,15 +1,14 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Windows.Input;
-using DataLayer;
-using Domain;
+﻿using Domain;
 using ElibWpf.ValidationAttributes;
 using MahApps.Metro.Controls.Dialogs;
 using Models;
 using Models.Options;
 using MVVMLibrary;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Windows.Input;
 using Application = System.Windows.Application;
 
 namespace ElibWpf.ViewModels.Dialogs
@@ -98,7 +97,8 @@ namespace ElibWpf.ViewModels.Dialogs
             await Task.Run(() => exporter.ExportBooks(this.booksToExport,
                 new ExporterOptions
                 {
-                    DestinationDirectory = this.DestinationPath, GroupByAuthor = this.IsGroupByAuthorChecked,
+                    DestinationDirectory = this.DestinationPath,
+                    GroupByAuthor = this.IsGroupByAuthorChecked,
                     GroupBySeries = this.IsGroupBySeriesChecked
                 }, uow, SetProgress));
             await controlProgress.CloseAsync();

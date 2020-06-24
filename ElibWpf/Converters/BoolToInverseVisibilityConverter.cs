@@ -26,7 +26,7 @@ namespace ElibWpf.Converters
                 throw new InvalidOperationException("The target must be a VisibilityProperty");
             }
 
-            if (!(bool) value)
+            if (!(bool)value)
             {
                 return Visibility.Visible;
             }

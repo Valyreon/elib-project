@@ -1,18 +1,15 @@
-﻿using System;
+﻿using Domain;
+using EbookTools;
+using ElibWpf.Messages;
+using Models;
+using MVVMLibrary;
+using MVVMLibrary.Messaging;
+using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using DataLayer;
-using Domain;
-using EbookTools;
-using ElibWpf.Messages;
-using Models;
-
-using MVVMLibrary;
-using MVVMLibrary.Messaging;
 
 namespace ElibWpf.ViewModels.Flyouts
 {
@@ -137,7 +134,7 @@ namespace ElibWpf.ViewModels.Flyouts
                 }
                 else // if not
                 {
-                    UserCollection newCollection = new UserCollection {Tag = tag};
+                    UserCollection newCollection = new UserCollection { Tag = tag };
                     this.Book.Collections.Add(newCollection);
                     Task.Run(() =>
                     {
@@ -196,7 +193,7 @@ namespace ElibWpf.ViewModels.Flyouts
                     exporter.Export(fileToExport, filePath);
                 }
             }
-            catch(Exception)
+            catch (Exception)
             {
                 MessengerInstance.Send(new ShowDialogMessage("Error Notification", "Something went wrong while exporting the file."));
             }

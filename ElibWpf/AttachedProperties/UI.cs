@@ -59,9 +59,9 @@ namespace ElibWpf.AttachedProperties
                 }
             };
             elevation = Math.Max(0, elevation / 12 * shadows.Length - 1);
-            int prevIndex = (int) Math.Floor(elevation),
-                index = (int) elevation,
-                nextIndex = (int) Math.Ceiling(elevation);
+            int prevIndex = (int)Math.Floor(elevation),
+                index = (int)elevation,
+                nextIndex = (int)Math.Ceiling(elevation);
             double approx = elevation - index;
             DropShadowEffect shadow = shadows[index];
             if (approx != 0)

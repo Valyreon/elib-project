@@ -22,19 +22,19 @@ namespace ElibWpf.CustomComponents
 
         public Brush CheckedColor
         {
-            get => (Brush) this.GetValue(CheckedColorProperty);
+            get => (Brush)this.GetValue(CheckedColorProperty);
             set => this.SetValue(CheckedColorProperty, value);
         }
 
         public Enum CheckedIcon
         {
-            get => (Enum) this.GetValue(CheckedIconProperty);
+            get => (Enum)this.GetValue(CheckedIconProperty);
             set => this.SetValue(CheckedIconProperty, value);
         }
 
         public string Text
         {
-            get => (string) this.GetValue(TextProperty);
+            get => (string)this.GetValue(TextProperty);
             set => this.SetValue(TextProperty, value);
         }
     }

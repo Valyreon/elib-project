@@ -93,7 +93,7 @@ namespace DataLayer.Repositories
         {
             Connection.Execute("DELETE FROM Series WHERE Id = @RemoveId", new { RemoveId = id }, Transaction);
             var cacheItem = cache.Find(x => x.Id == id);
-            if(cacheItem != null)
+            if (cacheItem != null)
             {
                 cache.Remove(cacheItem);
             }

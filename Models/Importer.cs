@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using DataLayer;
+﻿using DataLayer;
 using Domain;
 using EbookTools;
+using System.Collections.Generic;
+using System.IO;
 
 namespace Models
 {
@@ -58,7 +57,7 @@ namespace Models
                 {
                     Format = parsedBook.Format,
                     Signature = Signer.ComputeHash(parsedBook.RawData),
-                    RawFile = new RawFile {RawContent = parsedBook.RawData}
+                    RawFile = new RawFile { RawContent = parsedBook.RawData }
                 },
                 Cover = new Cover { Image = ImageOptimizer.ResizeAndFill(parsedBook.Cover) }
             };

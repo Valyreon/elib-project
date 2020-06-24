@@ -1,6 +1,5 @@
 ﻿using Dapper;
 using Domain;
-using System;
 using System.Data;
 using System.Linq;
 
