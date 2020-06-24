@@ -32,7 +32,6 @@ namespace ElibWpf.ViewModels.Controls
         private bool dontLoad = false;
         private readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
         private static FilterOptions filterOptions = new FilterOptions();
-        private bool isSelectedBooksViewer = false;
         private bool isResultEmpty = false;
 
         private Action backAction;
@@ -77,7 +76,7 @@ namespace ElibWpf.ViewModels.Controls
 
         public ICommand ClearSelectedBooksCommand => new RelayCommand(this.HandleClearButton);
 
-        public bool IsSelectedBooksViewer => this.isSelectedBooksViewer;
+        public bool IsSelectedBooksViewer => this.Filter.Selected != null && this.Filter.Selected.Value == true;
 
         public bool IsResultEmpty
         {
