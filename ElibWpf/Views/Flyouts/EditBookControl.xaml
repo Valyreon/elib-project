@@ -32,7 +32,7 @@
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
-            <RowDefinition Height="4*" />
+            <RowDefinition Height="390" />
             <RowDefinition Height="40" />
             <RowDefinition Height="2*" />
         </Grid.RowDefinitions>
@@ -40,7 +40,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="3*" />
                 <ColumnDefinition Width="210" />
-                <ColumnDefinition Width="40" />
+                <ColumnDefinition Width="12" />
                 <ColumnDefinition Width="3*" />
                 <ColumnDefinition Width="40" />
                 <ColumnDefinition Width="4*" />
@@ -116,14 +116,14 @@
                 <Components:BetterTextbox
                     Grid.Row="0"
                     Height="35"
-                    Background="#222"
-                    FontFamily="{StaticResource Font}"
+                    Background="Transparent"
+                    FontFamily="{StaticResource SofiaFont}"
                     FontSize="13"
                     Icon="{x:Static iconPacks:PackIconUniconsKind.BookAlt}"
                     IconMargin="8,11,0,0"
                     IconSize="14"
                     Text="{Binding TitleFieldText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                    TextboxPadding="26,0,0,0"
+                    TextboxPadding="28,0,0,0"
                     WatermarkText="Title">
                     <Components:BetterTextbox.ToolTip>
                         <ToolTip>
@@ -135,11 +135,13 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="7" />
+                        <ColumnDefinition Width="26" />
+                        <ColumnDefinition Width="7" />
                         <ColumnDefinition Width="40" />
                     </Grid.ColumnDefinitions>
                     <Grid Grid.Column="0">
-                        <StackPanel Orientation="Horizontal">
-                            <iconPacks:PackIconControl
+                        <Grid>
+                            <!--<iconPacks:PackIconControl
                                 Width="14"
                                 Height="14"
                                 VerticalAlignment="Center"
@@ -155,58 +157,83 @@
                                         Book series
                                     </ToolTip>
                                 </TextBlock.ToolTip>
-                            </TextBlock>
-                        </StackPanel>
-                        <Components:DarkFlatSymbolButton
-                            x:Name="SeriesOptionsButton"
-                            Width="26"
-                            Height="26"
-                            HorizontalAlignment="Right"
-                            Focusable="False"
-                            Icon="{x:Static iconPacks:PackIconMicronsKind.OptionsVertical}"
-                            IconSize="16">
-                            <Components:DarkFlatSymbolButton.ToolTip>
-                                Edit series options
-                            </Components:DarkFlatSymbolButton.ToolTip>
-                            <Button.ContextMenu>
-                                <ContextMenu x:Name="MainContextMenu">
-                                    <MenuItem
-                                        Command="{Binding Source={StaticResource Proxy}, Path=Data.EditSeriesCommand}"
-                                        Header="Edit"
-                                        IsEnabled="{Binding Source={StaticResource Proxy}, Path=Data.IsSeriesSelected}" />
-                                    <MenuItem Command="{Binding Source={StaticResource Proxy}, Path=Data.CreateNewSeriesCommand}" Header="Create new" />
-                                    <MenuItem Command="{Binding Source={StaticResource Proxy}, Path=Data.ChooseExistingSeriesCommand}" Header="Choose existing" />
-                                    <MenuItem Command="{Binding Source={StaticResource Proxy}, Path=Data.ClearSeriesCommand}" Header="Clear" />
-                                </ContextMenu>
-                            </Button.ContextMenu>
-                            <Button.Triggers>
-                                <EventTrigger RoutedEvent="Button.Click" SourceName="SeriesOptionsButton">
-                                    <EventTrigger.Actions>
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="MainContextMenu" Storyboard.TargetProperty="(ContextMenu.IsOpen)">
-                                                    <DiscreteObjectKeyFrame KeyTime="0:0:0">
-                                                        <DiscreteObjectKeyFrame.Value>
-                                                            <sys:Boolean>True</sys:Boolean>
-                                                        </DiscreteObjectKeyFrame.Value>
-                                                    </DiscreteObjectKeyFrame>
-                                                </ObjectAnimationUsingKeyFrames>
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </EventTrigger.Actions>
-                                </EventTrigger>
-                            </Button.Triggers>
-                        </Components:DarkFlatSymbolButton>
+                            </TextBlock>-->
+                            <Components:BetterTextbox
+                                Grid.Row="0"
+                                Height="35"
+                                Background="Transparent"
+                                Cursor="Arrow"
+                                Focusable="False"
+                                FontFamily="{StaticResource SofiaFont}"
+                                FontSize="13"
+                                Icon="{x:Static iconPacks:PackIconUniconsKind.Link}"
+                                IconMargin="8,11,0,0"
+                                IconSize="14"
+                                IsReadOnly="True"
+                                Text="{Binding Series.Name}"
+                                TextboxPadding="28,0,0,0"
+                                WatermarkText="No series selected.">
+                                <Components:BetterTextbox.ToolTip>
+                                    <ToolTip>
+                                        Book series
+                                    </ToolTip>
+                                </Components:BetterTextbox.ToolTip>
+                            </Components:BetterTextbox>
+
+                        </Grid>
+
                     </Grid>
-                    <Components:BetterTextbox
+                    <Components:DarkFlatSymbolButton
+                        x:Name="SeriesOptionsButton"
                         Grid.Column="2"
+                        Width="26"
+                        Height="26"
+                        HorizontalAlignment="Right"
+                        Focusable="False"
+                        Icon="{x:Static iconPacks:PackIconMicronsKind.OptionsVertical}"
+                        IconSize="16">
+                        <Components:DarkFlatSymbolButton.ToolTip>
+                            Edit series options
+                        </Components:DarkFlatSymbolButton.ToolTip>
+                        <Button.ContextMenu>
+                            <ContextMenu x:Name="MainContextMenu">
+                                <MenuItem
+                                    Command="{Binding Source={StaticResource Proxy}, Path=Data.EditSeriesCommand}"
+                                    Header="Edit"
+                                    IsEnabled="{Binding Source={StaticResource Proxy}, Path=Data.IsSeriesSelected}" />
+                                <MenuItem Command="{Binding Source={StaticResource Proxy}, Path=Data.CreateNewSeriesCommand}" Header="Create new" />
+                                <MenuItem Command="{Binding Source={StaticResource Proxy}, Path=Data.ChooseExistingSeriesCommand}" Header="Choose existing" />
+                                <MenuItem Command="{Binding Source={StaticResource Proxy}, Path=Data.ClearSeriesCommand}" Header="Clear" />
+                            </ContextMenu>
+                        </Button.ContextMenu>
+                        <Button.Triggers>
+                            <EventTrigger RoutedEvent="Button.Click" SourceName="SeriesOptionsButton">
+                                <EventTrigger.Actions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="MainContextMenu" Storyboard.TargetProperty="(ContextMenu.IsOpen)">
+                                                <DiscreteObjectKeyFrame KeyTime="0:0:0">
+                                                    <DiscreteObjectKeyFrame.Value>
+                                                        <sys:Boolean>True</sys:Boolean>
+                                                    </DiscreteObjectKeyFrame.Value>
+                                                </DiscreteObjectKeyFrame>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger.Actions>
+                            </EventTrigger>
+                        </Button.Triggers>
+                    </Components:DarkFlatSymbolButton>
+                    <Components:BetterTextbox
+                        Grid.Column="4"
                         Height="35"
-                        Background="#222"
+                        Background="Transparent"
                         Focusable="{Binding IsSeriesSelected}"
                         FontSize="14"
                         IconVisible="False"
                         IsEnabled="{Binding IsSeriesSelected}"
                         Text="{Binding SeriesNumberFieldText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                        Visibility="{Binding IsSeriesSelected, Converter={StaticResource BooleanToVisibilityConverter}}"
                         WatermarkText="#">
                         <Components:BetterTextbox.ToolTip>
                             <ToolTip>
@@ -215,7 +242,7 @@
                         </Components:BetterTextbox.ToolTip>
                     </Components:BetterTextbox>
                 </Grid>
-                <Grid Grid.Row="3" Margin="0,10,0,0">
+                <Grid Grid.Row="3" Margin="0,10,17,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
@@ -267,11 +294,15 @@
                                 </Components:DarkFlatSymbolButton.ToolTip>
                             </Components:DarkFlatSymbolButton>
                         </Grid>
-                        <ScrollViewer MaxHeight="130px" VerticalScrollBarVisibility="Auto">
+                        <ScrollViewer MaxHeight="122px" VerticalScrollBarVisibility="Auto">
                             <ItemsControl Margin="0,0,0,3" ItemsSource="{Binding AuthorsCollection}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Grid Height="26" VerticalAlignment="Center">
+                                        <Grid
+                                            Height="26"
+                                            MaxWidth="200"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="20" />
@@ -313,6 +344,7 @@
                                                 Grid.Column="1"
                                                 Width="16"
                                                 Height="16"
+                                                HorizontalAlignment="Right"
                                                 Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.RemoveAuthorCommand}"
                                                 CommandParameter="{Binding Id}"
                                                 Foreground="#484b4e"

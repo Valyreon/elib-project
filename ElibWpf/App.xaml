@@ -11,6 +11,7 @@
     StartupUri="Views/Windows/TheWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
+            <FontFamily x:Key="SofiaFont">/Fonts/#Sofia Pro Regular</FontFamily>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/VS/Colors.xaml" />
@@ -24,7 +25,6 @@
                 <ResourceDictionary Source="Resources/BookTileSubLinksStyle.xaml" />
                 <ResourceDictionary Source="Resources/Miscellaneous.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <FontFamily x:Key="Font">/Fonts/#Sofia Pro Regular</FontFamily>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

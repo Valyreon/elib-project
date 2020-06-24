@@ -45,9 +45,4 @@
         <Setter Property="Margin" Value="0" />
         <Setter Property="Foreground" Value="Black" />
     </Style>
-
-    <Style TargetType="{x:Type Window}">
-        <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-    </Style>
 </ResourceDictionary>

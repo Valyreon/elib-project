@@ -100,10 +100,6 @@ namespace ElibWpf.ViewModels.Windows
                 this.IsBookDetailsFlyoutOpen = false;
                 this.FlyoutControl = null;
             }
-            else
-            {
-                this.MessengerInstance.Send(new GoBackMessage());
-            }
         }
 
         private void HandleBookFlyout(ShowBookDetailsMessage obj)

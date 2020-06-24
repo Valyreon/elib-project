@@ -40,11 +40,10 @@ namespace ElibWpf.ViewModels.Dialogs
 
         private async void Apply()
         {
-            onConfirm(Options);
             await DialogCoordinator.Instance.HideMetroDialogAsync(Application.Current.MainWindow.DataContext,
                 await DialogCoordinator.Instance.GetCurrentDialogAsync<BaseMetroDialog>(Application.Current.MainWindow
                     .DataContext));
-            this.MessengerInstance.Send(new RefreshCurrentViewMessage());
+            onConfirm(Options);
         }
 
         private async void Cancel()

@@ -28,12 +28,12 @@
 
         <StackPanel Width="400" Orientation="Vertical">
             <TextBlock
-                FontFamily="{StaticResource Font}"
+                FontFamily="{StaticResource SofiaFont}"
                 FontSize="20"
                 FontWeight="Bold">
                 Choose series
             </TextBlock>
-            <TextBlock FontFamily="{StaticResource Font}" FontSize="14">Choose the series of the book below.</TextBlock>
+            <TextBlock FontFamily="{StaticResource SofiaFont}" FontSize="14">Choose the series of the book below.</TextBlock>
         </StackPanel>
         <Grid
             Grid.Row="1"

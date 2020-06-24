@@ -29,12 +29,12 @@
 
         <StackPanel Width="400" Orientation="Vertical">
             <TextBlock
-                FontFamily="{StaticResource Font}"
+                FontFamily="{StaticResource SofiaFont}"
                 FontSize="20"
                 FontWeight="Bold">
                 Add existing author
             </TextBlock>
-            <TextBlock FontFamily="{StaticResource Font}" FontSize="14">Choose one of the authors below to add to the book.</TextBlock>
+            <TextBlock FontFamily="{StaticResource SofiaFont}" FontSize="14">Choose one of the authors below to add to the book.</TextBlock>
         </StackPanel>
         <Grid
             Grid.Row="1"

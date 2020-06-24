@@ -18,10 +18,9 @@ namespace Models
             this.database = db;
         }
 
-        private void ExportBook(Book book, string destinationFolder)
+        public static string GenerateName(Book book)
         {
             StringBuilder fileNameBuilder = new StringBuilder();
-
             // there can be more than one author
             int index = 1;
             fileNameBuilder.Append(
@@ -38,6 +37,18 @@ namespace Models
 
             fileName = Path.GetInvalidFileNameChars().Aggregate(fileName, (current, invalid) => current.Replace(char.ToString(invalid), ""));
 
+            return fileName;
+        }
+
+        public void Export(RawFile file, string filePath)
+        {
+            using FileStream fs = File.Create(filePath);
+            fs.Write(file.RawContent, 0, file.RawContent.Length);
+        }
+
+        private void ExportBookToFolder(Book book, string destinationFolder)
+        {
+            string fileName = GenerateName(book);
             using FileStream fs = File.Create(Path.Combine(destinationFolder, fileName));
             fs.Write(book.File.RawFile.RawContent, 0, book.File.RawFile.RawContent.Length);
         }
@@ -50,7 +61,7 @@ namespace Models
                 {
                     progressSet?.Invoke(book.Title);
 
-                    this.ExportBook(book, outPath);
+                    this.ExportBookToFolder(book, outPath);
                 }
             }
 

@@ -27,7 +27,6 @@
                     <Border
                         x:Name="TheBorder"
                         Margin="{TemplateBinding Margin}"
-                        attachedProperties:UI.Elevation="0"
                         BorderBrush="{TemplateBinding Foreground}"
                         BorderThickness="0,0,0,1"
                         CornerRadius="0">
@@ -109,6 +108,8 @@
                                 Background="{TemplateBinding Background}"
                                 BorderThickness="0"
                                 CaretBrush="{DynamicResource IdealForegroundColorBrush}"
+                                Cursor="{TemplateBinding Cursor}"
+                                Focusable="{TemplateBinding Focusable}"
                                 FontSize="{TemplateBinding FontSize}"
                                 FontWeight="{TemplateBinding FontWeight}"
                                 Foreground="{TemplateBinding Foreground}"

@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Domain;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -104,10 +105,17 @@ namespace DataLayer.Repositories
 
         public UserCollection GetByTag(string tag)
         {
-            var results = cache.Find(x => x.Tag == tag);
-            if(results == null)
-                return Connection.QueryFirst<UserCollection>("SELECT * FROM UserCollections WHERE Tag = @Tag LIMIT 1", new { Tag = tag }, Transaction);
-            return results;
+            var fromCache = cache.Find(x => x.Tag == tag);
+
+            if (fromCache != null)
+                return fromCache;
+
+            UserCollection fromDb = Connection.Query<UserCollection>("SELECT * FROM UserCollections WHERE Tag = @Tag LIMIT 1", new { Tag = tag }, Transaction).FirstOrDefault();
+
+            if (fromDb != null)
+                cache.Add(fromDb);
+
+            return fromDb;
         }
 
         public IEnumerable<UserCollection> GetUserCollectionsOfBook(int bookId)

@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using DataLayer;
 using Domain;
+using EbookTools;
 using ElibWpf.Messages;
 using Models;
 
@@ -130,8 +133,7 @@ namespace ElibWpf.ViewModels.Flyouts
                 this.AddCollectionFieldText = "";
                 if (this.Book.Collections.Any(c => c.Tag == tag)) // check if book is already in that collection
                 {
-                    this.MessengerInstance.Send(new ShowDialogMessage("",
-                        $"This book is already in the '{tag}' collection"));
+                    return;
                 }
                 else // if not
                 {
@@ -166,6 +168,54 @@ namespace ElibWpf.ViewModels.Flyouts
         private void HandleEditButton()
         {
             this.MessengerInstance.Send(new EditBookMessage(this.Book));
+        }
+
+        public ICommand ExportButtonCommand { get => new RelayCommand(this.HandleExport); }
+
+        private void HandleExport()
+        {
+            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog
+            {
+                FileName = Exporter.GenerateName(Book), // Default file name
+                DefaultExt = Book.File.Format, // Default file extension
+                CheckPathExists = true,
+                Title = "Export book file",
+                OverwritePrompt = true
+            };
+
+            bool? result = dlg.ShowDialog();
+
+            try
+            {
+                if (result == true)
+                {
+                    string filePath = dlg.FileName;
+                    using var uow = ApplicationSettings.CreateUnitOfWork();
+                    Exporter exporter = new Exporter(uow);
+                    RawFile fileToExport = uow.RawFileRepository.Find(Book.File.RawFileId);
+                    exporter.Export(fileToExport, filePath);
+                }
+            }
+            catch(Exception)
+            {
+                MessengerInstance.Send(new ShowDialogMessage("Error Notification", "Something went wrong while exporting the file."));
+            }
+        }
+
+        public ICommand ShowFileInfoCommand { get => new RelayCommand(this.HandleShowFileInfo); }
+
+        private void HandleShowFileInfo()
+        {
+            using var uow = ApplicationSettings.CreateUnitOfWork();
+            RawFile fileToExport = uow.RawFileRepository.Find(Book.File.RawFileId);
+
+            ParsedBook x = EbookParserFactory.Create(Book.File.Format, fileToExport.RawContent).Parse();
+
+            StringBuilder builder = new StringBuilder("");
+            builder.AppendLine($"ISBN: {x.Isbn}");
+            builder.AppendLine($"Publisher: {x.Publisher}");
+
+            MessengerInstance.Send(new ShowDialogMessage("File Information", builder.ToString()));
         }
     }
 }

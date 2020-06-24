@@ -3,6 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:Components="clr-namespace:ElibWpf.CustomComponents"
     xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:Converters="http://metro.mahapps.com/winfx/xaml/shared"
     xmlns:local="clr-namespace:ElibWpf.Resources">
     <Style
         x:Key="CustomDarkCheckbox"

@@ -56,7 +56,7 @@
                 <MetroControls:Flyout.Background>
                     <SolidColorBrush Opacity="0.97" Color="#222222" />
                 </MetroControls:Flyout.Background>
-                <ContentControl Content="{Binding FlyoutControl}" FontFamily="{StaticResource Font}" />
+                <ContentControl Content="{Binding FlyoutControl}" FontFamily="{StaticResource SofiaFont}" />
             </MetroControls:Flyout>
         </MetroControls:FlyoutsControl>
     </MetroControls:MetroWindow.Flyouts>
@@ -74,7 +74,7 @@
             Margin="0"
             MetroControls:TabControlHelper.Transition="Normal"
             DisplayMemberPath="Caption"
-            FontFamily="{StaticResource Font}"
+            FontFamily="{StaticResource SofiaFont}"
             ItemsSource="{Binding Tabs, UpdateSourceTrigger=PropertyChanged}"
             SelectedItem="{Binding SelectedTab, UpdateSourceTrigger=PropertyChanged}"
             Style="{StaticResource DashboardTabControlStyle}">

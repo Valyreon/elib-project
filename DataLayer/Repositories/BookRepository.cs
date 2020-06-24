@@ -155,11 +155,14 @@ namespace DataLayer.Repositories
                                     WHERE Id = @Id", entity, Transaction);
         }
 
-        public IEnumerable<Book> FindPageByFilter(FilterParameters filter, int offset = 0, int pageSize = 25)
+        private Tuple<string, DynamicParameters> CreateQueryFromFilter(FilterParameters filter, int? offset, int? pageSize)
         {
             if (filter == null)
             {
                 throw new ArgumentException("Filter is null");
+            } else if((offset == null && pageSize != null) || (offset != null && pageSize == null))
+            {
+                throw new ArgumentException("Offset and page size should both be null, or both have values.");
             }
 
             bool conditionSet = filter.AuthorId.HasValue || filter.CollectionId.HasValue || filter.SeriesId.HasValue ||
@@ -207,7 +210,7 @@ namespace DataLayer.Repositories
                 queryBuilder.Append(")");
             }
 
-            if(filter.SearchParameters != null && !string.IsNullOrWhiteSpace(filter.SearchParameters.Token))
+            if (filter.SearchParameters != null && !string.IsNullOrWhiteSpace(filter.SearchParameters.Token))
             {
                 queryBuilder.Append($" {(conditionSet ? " AND " : " WHERE ")} (");
                 bool searchAdded = false;
@@ -244,15 +247,30 @@ namespace DataLayer.Repositories
             }
             else if (filter.SortBySeries)
             {
-                queryBuilder.Append(" ORDER BY SeriesName");
+                queryBuilder.Append($" ORDER BY SeriesName {(filter.Ascending ? " ASC" : " DESC")}, NumberInSeries ASC");
+                if (offset != null && pageSize != null)
+                    queryBuilder.Append($" LIMIT {offset}, {pageSize}");
             }
             else // title
             {
                 queryBuilder.Append(" ORDER BY Title");
             }
 
-            queryBuilder.Append($"{(filter.Ascending ? " ASC" : " DESC")} LIMIT {offset}, {pageSize}");
-            var dbResult = Connection.Query<Book>(queryBuilder.ToString(), parameters, Transaction);
+            if (!filter.SortBySeries)
+            {
+                queryBuilder.Append(filter.Ascending ? " ASC" : " DESC");
+                if(offset != null && pageSize != null)
+                    queryBuilder.Append($" LIMIT {offset}, {pageSize}");
+            }
+
+            return new Tuple<string, DynamicParameters>(queryBuilder.ToString(), parameters);
+        }
+
+        public IEnumerable<Book> FindPageByFilter(FilterParameters filter, int offset = 0, int pageSize = 25)
+        {
+            var queryTuple = CreateQueryFromFilter(filter, offset, pageSize);
+
+            var dbResult = Connection.Query<Book>(queryTuple.Item1.ToString(), queryTuple.Item2, Transaction);
             List<Book> result = new List<Book>();
 
             foreach (var uc in dbResult)
@@ -302,6 +320,15 @@ namespace DataLayer.Repositories
         public void ClearCache()
         {
             cache.Clear();
+        }
+
+        public int Count(FilterParameters filter)
+        {
+            var queryTuple = CreateQueryFromFilter(filter, null, null);
+
+            string query = $"SELECT COUNT(*) FROM ({queryTuple.Item1});";
+
+            return Connection.QueryFirst<int>(query, queryTuple.Item2, Transaction);
         }
     }
 }

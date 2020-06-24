@@ -85,7 +85,7 @@
                     FontSize="14"
                     Foreground="Black"
                     Text="{Binding Title, RelativeSource={RelativeSource TemplatedParent}}"
-                    TextOptions.TextHintingMode="Auto"
+                    TextOptions.TextHintingMode="Fixed"
                     ToolTip="{Binding Title, RelativeSource={RelativeSource TemplatedParent}}"
                     ToolTipService.IsEnabled="{Binding Title, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource StringToBoolConverter}, ConverterParameter=21}" />
                 <Components:TextLinkButton

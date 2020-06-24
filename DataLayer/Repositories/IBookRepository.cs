@@ -13,6 +13,7 @@ namespace DataLayer.Repositories
         IEnumerable<Book> FindByCollectionId(int collectionId);
         IEnumerable<Book> FindByAuthorId(int authorId);
         IEnumerable<Book> FindPageByFilter(FilterParameters filter, int offset, int pageSize);
+        int Count(FilterParameters filter);
         void Remove(int id);
         void Remove(Book entity);
         void Update(Book entity);

@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:Behaviors="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:Components="clr-namespace:ElibWpf.CustomComponents"
+    xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:Converters="clr-namespace:ElibWpf.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:fa="http://schemas.fontawesome.io/icons/"
@@ -14,11 +15,11 @@
     d:DesignWidth="1000"
     mc:Ignorable="d">
 
-    <Behaviors:Interaction.Triggers>
+    <!--<Behaviors:Interaction.Triggers>
         <Behaviors:EventTrigger EventName="Loaded">
             <Behaviors:InvokeCommandAction Command="{Binding LoadOnlineApiCommand}" />
         </Behaviors:EventTrigger>
-    </Behaviors:Interaction.Triggers>
+    </Behaviors:Interaction.Triggers>-->
 
     <UserControl.Resources>
         <Converters:ImageConverter x:Key="ImageConverter" />
@@ -26,182 +27,248 @@
         <Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <Converters:BoolToInverseVisibilityConverter x:Key="BoolToInverseVisibilityConverter" />
     </UserControl.Resources>
-    <StackPanel Orientation="Vertical">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="1000" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <StackPanel Grid.Column="1" Orientation="Vertical">
-                <Grid Width="1000">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="1000" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="1">
+            <Grid Width="1000">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="232" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="200" />
+                    </Grid.ColumnDefinitions>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="232" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="308" />
-                                <RowDefinition Height="0" />
-                                <RowDefinition Height="35" />
-                            </Grid.RowDefinitions>
-                            <Border
-                                Grid.Row="0"
-                                Grid.ColumnSpan="2"
-                                Width="206"
-                                Height="306"
-                                Margin="0"
-                                BorderBrush="LightGray"
-                                BorderThickness="1">
-                                <Image
-                                    Width="200"
-                                    Height="300"
-                                    Source="{Binding Book.Cover, Converter={StaticResource ImageConverter}}" />
-                            </Border>
-
-                            <Components:CheckboxButton
-                                Grid.Row="2"
-                                Height="30"
-                                Margin="6,0,1,0"
-                                IsChecked="{Binding IsBookRead}"
-                                Text="Read" />
-
-                            <Components:CheckboxButton
-                                Grid.Row="2"
-                                Grid.Column="1"
-                                Height="30"
-                                Margin="1,0,6,0"
-                                CheckedColor="#ffff7e"
-                                CheckedIcon="{x:Static iconPacks:PackIconTypiconsKind.Star}"
-                                IsChecked="{Binding IsBookFavorite}"
-                                Text="Favorite" />
-                        </Grid>
-                        <StackPanel
-                            Grid.Column="1"
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="308" />
+                            <RowDefinition Height="0" />
+                            <RowDefinition Height="35" />
+                            <RowDefinition x:Name="EditButtonRow" Height="35" />
+                            <RowDefinition x:Name="FileInfoButtonRow" Height="35" />
+                            <RowDefinition x:Name="ExportButtonRow" Height="35" />
+                            <RowDefinition x:Name="ReadButtonRow" Height="35" />
+                        </Grid.RowDefinitions>
+                        <Border
+                            Grid.Row="0"
+                            Grid.ColumnSpan="2"
+                            Width="206"
+                            Height="306"
                             Margin="0"
-                            Orientation="Vertical">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock
-                                    Margin="0,-7,0,0"
-                                    FontSize="22"
-                                    Text="{Binding Book.Title}" />
-                                <Components:DarkFlatSymbolButton
-                                    Width="26"
-                                    Height="23"
-                                    Margin="10,0,0,0"
-                                    Command="{Binding EditButtonCommand}"
-                                    Icon="{x:Static iconPacks:PackIconIoniconsKind.CreateMD}"
-                                    IconSize="14" />
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <Components:TextLinkButton
-                                    Command="{Binding GoToSeries}"
-                                    CommandParameter="{Binding Book.Series}"
-                                    FontSize="18"
-                                    Foreground="Gray"
-                                    Style="{DynamicResource BookDetailsSubLinkGrayStyle}"
-                                    Text="{Binding Book.SeriesInfo}"
-                                    Visibility="{Binding Book.SeriesInfo, Converter={StaticResource StringToVisibilityConverter}}" />
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock
-                                    FontSize="16"
-                                    Foreground="LightGray"
-                                    Text="by " />
-                                <Components:TextLinkButton
-                                    Command="{Binding GoToAuthor}"
-                                    CommandParameter="{Binding Book.Authors}"
-                                    FontSize="16"
-                                    Foreground="LightGray"
-                                    Style="{DynamicResource BookDetailsSubLinkLightGrayStyle}"
-                                    Text="{Binding Book.AuthorsInfo}" />
-                            </StackPanel>
-                            <StackPanel Orientation="Vertical">
-                                <TextBlock Text="{Binding BookDescriptionText}" />
-                            </StackPanel>
-                        </StackPanel>
-                        <StackPanel Grid.Column="2">
-                            <TextBlock FontSize="16" Text="Collections:" />
-
-                            <ItemsControl Margin="0,0,0,3" ItemsSource="{Binding Book.Collections}">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel
-                                            Height="28"
-                                            VerticalAlignment="Center"
-                                            Orientation="Horizontal">
-                                            <StackPanel.Triggers>
-                                                <EventTrigger RoutedEvent="MouseEnter">
-                                                    <BeginStoryboard>
-                                                        <Storyboard>
-                                                            <DoubleAnimation
-                                                                Storyboard.TargetName="CloseButton"
-                                                                Storyboard.TargetProperty="(Button.Opacity)"
-                                                                To="1"
-                                                                Duration="0:0:0.3" />
-                                                        </Storyboard>
-                                                    </BeginStoryboard>
-                                                </EventTrigger>
-                                                <EventTrigger RoutedEvent="MouseLeave">
-                                                    <BeginStoryboard>
-                                                        <Storyboard>
-                                                            <DoubleAnimation
-                                                                Storyboard.TargetName="CloseButton"
-                                                                Storyboard.TargetProperty="(Button.Opacity)"
-                                                                To="0"
-                                                                Duration="0:0:0.3" />
-                                                        </Storyboard>
-                                                    </BeginStoryboard>
-                                                </EventTrigger>
-                                            </StackPanel.Triggers>
-                                            <Components:TextLinkButton
-                                                Width="180"
-                                                Height="20"
-                                                VerticalAlignment="Center"
-                                                Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.GoToCollectionCommand}"
-                                                CommandParameter="{Binding .}"
-                                                FontSize="15"
-                                                Foreground="#bbb"
-                                                Style="{DynamicResource BookDetailsSubLinkLighterGrayCollectionStyle}"
-                                                Text="{Binding Tag}" />
-                                            <Components:SymbolButton
-                                                x:Name="CloseButton"
-                                                Grid.Column="3"
-                                                Width="20"
-                                                Height="20"
-                                                Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.RemoveCollectionCommand}"
-                                                CommandParameter="{Binding Tag}"
-                                                Foreground="#484b4e"
-                                                Icon="{x:Static iconPacks:PackIconEvaIconsKind.Close}"
-                                                IconSize="10"
-                                                Opacity="0"
-                                                Style="{StaticResource BlueHoverStyle}" />
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                            <Components:BetterTextbox
+                            BorderBrush="LightGray"
+                            BorderThickness="1">
+                            <Image
                                 Width="200"
-                                Height="30"
-                                Background="#222"
-                                EnterCommand="{Binding AddCollectionCommand}"
-                                FontSize="14"
-                                Foreground="#888"
-                                Icon="{x:Static iconPacks:PackIconEntypoKind.Link}"
-                                IconMargin="5,10,0,0"
-                                IconSize="10"
-                                TextboxPadding="17,0,0,0"
-                                WatermarkText="Add collection..." />
-                        </StackPanel>
+                                Height="300"
+                                Source="{Binding Book.Cover, Converter={StaticResource ImageConverter}}" />
+                        </Border>
+
+                        <Components:CheckboxButton
+                            Grid.Row="2"
+                            Height="30"
+                            Margin="6,0,1,0"
+                            IsChecked="{Binding IsBookRead}"
+                            Text="Read" />
+
+                        <Components:CheckboxButton
+                            Grid.Row="2"
+                            Grid.Column="1"
+                            Height="30"
+                            Margin="1,0,6,0"
+                            CheckedColor="#ffff7e"
+                            CheckedIcon="{x:Static iconPacks:PackIconTypiconsKind.Star}"
+                            IsChecked="{Binding IsBookFavorite}"
+                            Text="Favorite" />
+
+                        <Button
+                            Grid.Row="3"
+                            Grid.ColumnSpan="2"
+                            Height="30"
+                            Margin="12,0"
+                            Command="{Binding EditButtonCommand}"
+                            Content="Edit"
+                            Focusable="False"
+                            FontFamily="{StaticResource SofiaFont}"
+                            FontSize="12"
+                            Style="{StaticResource MahApps.Styles.Button}"
+                            TextOptions.TextHintingMode="Fixed" />
+
+                        <Button
+                            Grid.Row="4"
+                            Grid.ColumnSpan="2"
+                            Height="30"
+                            Margin="12,0"
+                            Command="{Binding ShowFileInfoCommand}"
+                            Content="File Info"
+                            Focusable="False"
+                            FontFamily="{StaticResource SofiaFont}"
+                            FontSize="12"
+                            Style="{StaticResource MahApps.Styles.Button}"
+                            TextOptions.TextHintingMode="Fixed" />
+
+                        <Button
+                            Grid.Row="5"
+                            Grid.ColumnSpan="2"
+                            Height="30"
+                            Margin="12,0"
+                            Command="{Binding ExportButtonCommand}"
+                            Content="Export"
+                            Focusable="False"
+                            FontFamily="{StaticResource SofiaFont}"
+                            FontSize="12"
+                            Style="{StaticResource MahApps.Styles.Button}"
+                            TextOptions.TextHintingMode="Fixed" />
+
+                        <Button
+                            Grid.Row="6"
+                            Grid.ColumnSpan="2"
+                            Height="30"
+                            Margin="12,0"
+                            Command="{Binding ReadBookCommand}"
+                            Content="READ"
+                            Focusable="False"
+                            FontFamily="{StaticResource SofiaFont}"
+                            FontSize="12"
+                            Style="{StaticResource MahApps.Styles.Button}"
+                            TextOptions.TextHintingMode="Fixed" />
                     </Grid>
+                    <StackPanel
+                        Grid.Column="1"
+                        Margin="0"
+                        Orientation="Vertical">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock
+                                Margin="0,-7,0,0"
+                                FontSize="22"
+                                Text="{Binding Book.Title}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Components:TextLinkButton
+                                Command="{Binding GoToSeries}"
+                                CommandParameter="{Binding Book.Series}"
+                                FontSize="18"
+                                Foreground="Gray"
+                                Style="{DynamicResource BookDetailsSubLinkGrayStyle}"
+                                Text="{Binding Book.SeriesInfo}"
+                                Visibility="{Binding Book.SeriesInfo, Converter={StaticResource StringToVisibilityConverter}}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock
+                                FontSize="16"
+                                Foreground="LightGray"
+                                Text="by " />
+                            <Components:TextLinkButton
+                                Command="{Binding GoToAuthor}"
+                                CommandParameter="{Binding Book.Authors}"
+                                FontSize="16"
+                                Foreground="LightGray"
+                                Style="{DynamicResource BookDetailsSubLinkLightGrayStyle}"
+                                Text="{Binding Book.AuthorsInfo}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="{Binding BookDescriptionText}" />
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Orientation="Vertical">
+                        <!--<Grid.RowDefinitions>
+                            <RowDefinition x:Name="ColLabelRow" Height="20" />
+                            <RowDefinition x:Name="ColListRow" Height="Auto" />
+                            <RowDefinition x:Name="ColTextBoxRow" Height="45" />
+                            <RowDefinition x:Name="Separator" Height="*" />
+                        </Grid.RowDefinitions>-->
+                        <TextBlock
+                            Grid.Row="0"
+                            FontSize="16"
+                            Text="Collections:" />
+
+                        <ItemsControl
+                            Grid.Row="1"
+                            Margin="0,0,0,3"
+                            ItemsSource="{Binding Book.Collections}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel
+                                        x:Name="colStack"
+                                        Height="22"
+                                        VerticalAlignment="Center"
+                                        Orientation="Horizontal">
+                                        <StackPanel.Triggers>
+                                            <EventTrigger RoutedEvent="MouseEnter">
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation
+                                                            Storyboard.TargetName="CloseButton"
+                                                            Storyboard.TargetProperty="(Button.Opacity)"
+                                                            To="1"
+                                                            Duration="0:0:0.3" />
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </EventTrigger>
+                                            <EventTrigger RoutedEvent="MouseLeave">
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation
+                                                            Storyboard.TargetName="CloseButton"
+                                                            Storyboard.TargetProperty="(Button.Opacity)"
+                                                            To="0"
+                                                            Duration="0:0:0.3" />
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </EventTrigger>
+                                        </StackPanel.Triggers>
+                                        <Components:TextLinkButton
+                                            Width="180"
+                                            Height="20"
+                                            VerticalAlignment="Center"
+                                            Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.GoToCollectionCommand}"
+                                            CommandParameter="{Binding .}"
+                                            FontSize="15"
+                                            Foreground="#bbb"
+                                            Style="{DynamicResource BookDetailsSubLinkLighterGrayCollectionStyle}"
+                                            Text="{Binding Tag}" />
+                                        <Components:SymbolButton
+                                            x:Name="CloseButton"
+                                            Grid.Column="3"
+                                            Width="20"
+                                            Height="20"
+                                            Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.RemoveCollectionCommand}"
+                                            CommandParameter="{Binding Tag}"
+                                            Foreground="#484b4e"
+                                            Icon="{x:Static iconPacks:PackIconEvaIconsKind.Close}"
+                                            IconSize="10"
+                                            Opacity="0"
+                                            Style="{StaticResource BlueHoverStyle}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <TextBox
+                            x:Name="addCollectionTextBox"
+                            Grid.Row="2"
+                            Width="200"
+                            Margin="0,5,0,0"
+                            Controls:TextBoxHelper.Watermark="Add collection..."
+                            Controls:TextBoxHelper.WatermarkAlignment="Center"
+                            FontFamily="{StaticResource SofiaFont}"
+                            FontSize="14"
+                            Foreground="#888"
+                            Text="{Binding AddCollectionFieldText}">
+                            <TextBox.InputBindings>
+                                <KeyBinding
+                                    Key="Enter"
+                                    Command="{Binding AddCollectionCommand}"
+                                    CommandParameter="{Binding Text, ElementName=addCollectionTextBox}" />
+                            </TextBox.InputBindings>
+                        </TextBox>
+                    </StackPanel>
                 </Grid>
-            </StackPanel>
+            </Grid>
         </Grid>
-    </StackPanel>
+    </Grid>
 </UserControl>

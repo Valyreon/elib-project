@@ -228,6 +228,10 @@ namespace ElibWpf.ViewModels.Flyouts
                         book.NumberInSeries = decimal.Parse(this.SeriesNumberFieldText);
                     }
                 }
+                else
+                {
+                    book.NumberInSeries = null;
+                }
 
                 book.Title = this.TitleFieldText;
                 book.IsFavorite = this.IsFavoriteCheck;

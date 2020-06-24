@@ -64,7 +64,6 @@
     <Compile Include="ApplicationSettings.cs" />
     <Compile Include="ImageOptimizer.cs" />
     <Compile Include="Logger.cs" />
-    <Compile Include="Observables\ObservableStack.cs" />
     <Compile Include="Options\ExporterOptions.cs" />
     <Compile Include="Exporter.cs" />
     <Compile Include="Importer.cs" />

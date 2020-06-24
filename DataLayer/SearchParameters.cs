@@ -1,4 +1,6 @@
-﻿namespace DataLayer
+﻿using System.Collections.Generic;
+
+namespace DataLayer
 {
     public class SearchParameters
     {
@@ -16,6 +18,25 @@
                 SearchByTitle = this.SearchByTitle,
                 Token = this.Token
             };
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is SearchParameters parameters &&
+                   this.SearchByAuthor == parameters.SearchByAuthor &&
+                   this.SearchByTitle == parameters.SearchByTitle &&
+                   this.SearchBySeries == parameters.SearchBySeries &&
+                   this.Token == parameters.Token;
+        }
+
+        public override int GetHashCode()
+        {
+            int hashCode = 63130288;
+            hashCode = hashCode * -1521134295 + this.SearchByAuthor.GetHashCode();
+            hashCode = hashCode * -1521134295 + this.SearchByTitle.GetHashCode();
+            hashCode = hashCode * -1521134295 + this.SearchBySeries.GetHashCode();
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.Token);
+            return hashCode;
         }
     }
 }

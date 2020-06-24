@@ -20,7 +20,7 @@
         <StackPanel Width="400" Orientation="Vertical">
             <TextBlock
                 HorizontalAlignment="Center"
-                FontFamily="{StaticResource Font}"
+                FontFamily="{StaticResource SofiaFont}"
                 FontSize="20"
                 FontWeight="Bold">
                 Filter options
@@ -40,27 +40,27 @@
                 HorizontalAlignment="Center">
                 <Label
                     Margin="-5,0,0,0"
-                    FontFamily="{StaticResource Font}"
+                    FontFamily="{StaticResource SofiaFont}"
                     FontSize="16">
                     Sort by
                 </Label>
                 <RadioButton
                     Margin="0,3,0,0"
-                    FontFamily="{StaticResource Font}"
+                    FontFamily="{StaticResource SofiaFont}"
                     FontSize="14"
                     IsChecked="{Binding Options.SortByImportTime}">
                     Import Time
                 </RadioButton>
                 <RadioButton
                     Margin="0,8,0,0"
-                    FontFamily="{StaticResource Font}"
+                    FontFamily="{StaticResource SofiaFont}"
                     FontSize="14"
                     IsChecked="{Binding Options.SortByTitle}">
                     Title
                 </RadioButton>
                 <RadioButton
                     Margin="0,8,0,0"
-                    FontFamily="{StaticResource Font}"
+                    FontFamily="{StaticResource SofiaFont}"
                     FontSize="14"
                     IsChecked="{Binding Options.SortBySeries}">
                     Series
@@ -72,14 +72,14 @@
                     <TextBlock
                         Margin="0,0,10,0"
                         VerticalAlignment="Center"
-                        FontFamily="{StaticResource Font}"
+                        FontFamily="{StaticResource SofiaFont}"
                         FontSize="14">
                         Order:
                     </TextBlock>
                     <ComboBox
                         Width="120"
                         VerticalAlignment="Center"
-                        FontFamily="{StaticResource Font}"
+                        FontFamily="{StaticResource SofiaFont}"
                         FontSize="12"
                         SelectedIndex="{Binding OrderSelectedIndex}">
                         <ComboBoxItem>Descending</ComboBoxItem>
@@ -93,27 +93,27 @@
                 HorizontalAlignment="Center">
                 <Label
                     Margin="-5,0,0,0"
-                    FontFamily="{StaticResource Font}"
+                    FontFamily="{StaticResource SofiaFont}"
                     FontSize="16">
                     Read Filter
                 </Label>
                 <RadioButton
                     Margin="0,3,0,0"
-                    FontFamily="{StaticResource Font}"
+                    FontFamily="{StaticResource SofiaFont}"
                     FontSize="14"
                     IsChecked="{Binding Options.ShowAll}">
                     All
                 </RadioButton>
                 <RadioButton
                     Margin="0,8,0,0"
-                    FontFamily="{StaticResource Font}"
+                    FontFamily="{StaticResource SofiaFont}"
                     FontSize="14"
                     IsChecked="{Binding Options.ShowRead}">
                     Read
                 </RadioButton>
                 <RadioButton
                     Margin="0,8,0,0"
-                    FontFamily="{StaticResource Font}"
+                    FontFamily="{StaticResource SofiaFont}"
                     FontSize="14"
                     IsChecked="{Binding Options.ShowUnread}">
                     Unread

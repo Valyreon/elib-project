@@ -1,5 +1,6 @@
 ﻿using DataLayer;
 using Models.Options;
+using System;
 
 namespace ElibWpf.ViewModels
 {
@@ -9,13 +10,12 @@ namespace ElibWpf.ViewModels
 
         public abstract FilterParameters Filter { get; }
 
-        public abstract string NumberOfBooks { get; set; }
-
         public abstract void Refresh();
 
+        public abstract IViewer Search(SearchParameters searchOptions);
+
+        public abstract Action Back { get; set; }
+
         public abstract void Clear();
-
-        public abstract void Search(SearchParameters searchOptions);
-
     }
 }
