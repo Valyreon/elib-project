@@ -92,7 +92,6 @@ namespace ElibWpf.ViewModels.Windows
                                 contextMenu.addItem(""Save Quote"", ContextMenuExampleFunction);
                                 </script>");
                 html.Append("</html>");
-                System.IO.File.WriteAllText(@"C:\Users\Luka\Desktop\test2.html", html.ToString());
 
                 BookHtml = html.ToString();
             });
