@@ -43,6 +43,7 @@ namespace EbookTools
         public string GenerateCss()
         {
             string css =
+                "html { scroll-behavior: smooth; }" +
                 "\nbody {\n" +
                 "	margin: 0 " + this.SideMargins + "%;\n" +
                 "	background-color: " + this.BackgroundColor + ";\n" +
@@ -54,7 +55,7 @@ namespace EbookTools
                 "h1, h2, h3 {\n" +
                 "	text-align:center;\n" +
                 "}\n" +
-                "p {\n" +
+                "p, div {\n" +
                 "	line-height: " + this.LineHeight + "\n" +
                 "}\n" +
                 "hr {\n" +
@@ -77,7 +78,8 @@ namespace EbookTools
                 "}\n" +
                 ".calibre1 {" +
                 "	text-align:center;" +
-                "}\n";
+                "}\n" +
+                "body img:first-child { max-width:100%; height:auto; }";
             return css;
         }
     }

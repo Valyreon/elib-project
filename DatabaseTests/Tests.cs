@@ -31,6 +31,16 @@ namespace DatabaseTests
         }
 
         [TestMethod]
+        public void BookToHtml()
+        {
+            string inputPath = @"D:\Documents\Ebooks\Miscellaneous\I Will Teach You to Be Rich, Second Edition No Guilt. No Excuses. No B.S. Just a 6-Week Program That Works. by Ramit Sethi (z-lib.org).epub";
+            string outputPath = @"C:\Users\Luka\Desktop\IWillTeachYouToBeRich.html";
+
+            var html = EbookParserFactory.Create(inputPath).GenerateHtml();
+            File.WriteAllText(outputPath, html);
+        }
+
+        [TestMethod]
         public void MoreCollections()
         {
             Random random = new Random();

@@ -17,6 +17,7 @@ namespace DataLayer
         private IEFileRepository eFileRepository;
         private IRawFileRepository rawFileRepository;
         private ICoverRepository coverRepository;
+        private IQuoteRepository quoteRepository;
 
         public UnitOfWork(string dbPath)
         {
@@ -30,19 +31,21 @@ namespace DataLayer
             transaction = connection.BeginTransaction();
         }
 
-        public IBookRepository BookRepository { get { return bookRepository ?? (bookRepository = new BookRepository(transaction)); } }
+        public IBookRepository BookRepository { get { return bookRepository ??= new BookRepository(transaction); } }
 
-        public ISeriesRepository SeriesRepository { get { return seriesRepository ?? (seriesRepository = new SeriesRepository(transaction)); } }
+        public ISeriesRepository SeriesRepository { get { return seriesRepository ??= new SeriesRepository(transaction); } }
 
-        public ICollectionRepository CollectionRepository { get { return collectionRepository ?? (collectionRepository = new CollectionRepository(transaction)); } }
+        public ICollectionRepository CollectionRepository { get { return collectionRepository ??= new CollectionRepository(transaction); } }
 
-        public IAuthorRepository AuthorRepository { get { return authorRepository ?? (authorRepository = new AuthorRepository(transaction)); } }
+        public IAuthorRepository AuthorRepository { get { return authorRepository ??= new AuthorRepository(transaction); } }
 
-        public IEFileRepository EFileRepository { get { return eFileRepository ?? (eFileRepository = new EFileRepository(transaction)); } }
+        public IEFileRepository EFileRepository { get { return eFileRepository ??= new EFileRepository(transaction); } }
 
-        public IRawFileRepository RawFileRepository { get { return rawFileRepository ?? (rawFileRepository = new RawFileRepository(transaction)); } }
+        public IRawFileRepository RawFileRepository { get { return rawFileRepository ??= new RawFileRepository(transaction); } }
 
-        public ICoverRepository CoverRepository { get { return coverRepository ?? (coverRepository = new CoverRepository(transaction)); } }
+        public ICoverRepository CoverRepository { get { return coverRepository ??= new CoverRepository(transaction); } }
+
+        public IQuoteRepository QuoteRepository { get { return quoteRepository ??= new QuoteRepository(transaction); } }
 
         public void Commit()
         {

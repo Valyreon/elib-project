@@ -1,6 +1,8 @@
 ﻿using Domain;
 using EbookTools;
 using ElibWpf.Messages;
+using ElibWpf.ViewModels.Windows;
+using ElibWpf.Views.Windows;
 using Models;
 using MVVMLibrary;
 using MVVMLibrary.Messaging;
@@ -22,6 +24,17 @@ namespace ElibWpf.ViewModels.Flyouts
         public BookDetailsViewModel(Book book)
         {
             this.Book = book;
+        }
+
+        public ICommand ReadBookCommand => new RelayCommand(this.HandleRead);
+
+        private void HandleRead()
+        {
+            ReaderWindow win2 = new ReaderWindow
+            {
+                DataContext = new ReaderViewModel(this.Book)
+            };
+            win2.Show();
         }
 
         public ICommand AddCollectionCommand => new RelayCommand<string>(this.AddCollection);
@@ -177,7 +190,8 @@ namespace ElibWpf.ViewModels.Flyouts
                 DefaultExt = Book.File.Format, // Default file extension
                 CheckPathExists = true,
                 Title = "Export book file",
-                OverwritePrompt = true
+                OverwritePrompt = true,
+                Filter = $"Book file (*{Book.File.Format})|*{Book.File.Format}"
             };
 
             bool? result = dlg.ShowDialog();

@@ -18,7 +18,6 @@
                 "<head>\n" +
                 "<meta charset=\"utf-8\">\n" +
                 (title == null ? "" : "<title>" + title + "</title>") +
-                "<link href=\"https://fonts.googleapis.com/css?family=Bitter:400,400i \" rel=\"stylesheet\">" +
                 "<style>\n" + this.StyleSettings.GenerateCss() +
                 "</style>\n" +
                 "<script>\n" +

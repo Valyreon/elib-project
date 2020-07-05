@@ -3,6 +3,7 @@ using Domain;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 
 namespace DataLayer.Repositories
 {
@@ -26,12 +27,12 @@ namespace DataLayer.Repositories
 
         public IEnumerable<EFile> All()
         {
-            return Connection.Query<EFile>("SELECT * FROM EBookFiles", Transaction).AsList();
+            return Connection.Query<EFile>("SELECT * FROM EBookFiles", Transaction);
         }
 
         public EFile Find(int id)
         {
-            return Connection.QueryFirst<EFile>("SELECT * FROM EBookFiles WHERE Id = @FileId LIMIT 1", new { FileId = id }, Transaction);
+            return Connection.Query<EFile>("SELECT * FROM EBookFiles WHERE Id = @FileId LIMIT 1", new { FileId = id }, Transaction).FirstOrDefault();
         }
 
         public void Remove(int id)

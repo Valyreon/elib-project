@@ -1,7 +1,9 @@
-﻿using Domain;
+﻿using Dapper;
+using Domain;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 
 namespace DataLayer.Repositories
 {
@@ -13,37 +15,42 @@ namespace DataLayer.Repositories
 
         public void Add(Quote entity)
         {
-            throw new NotImplementedException();
+            entity.Id = Connection.ExecuteScalar<int>(
+                "INSERT INTO Quotes(Text, BookId, Note) VALUES (@Text, @BookId, @Note); SELECT last_insert_rowid() ",
+                entity,
+                Transaction
+            );
         }
 
         public IEnumerable<Quote> All()
         {
-            throw new NotImplementedException();
+            return Connection.Query<Quote>("SELECT * FROM Quotes", Transaction);
         }
 
         public Quote Find(int id)
         {
-            throw new NotImplementedException();
+            return Connection.Query<Quote>("SELECT * FROM Quotes WHERE Id = @QuoteId LIMIT 1", new { QuoteId = id }, Transaction).FirstOrDefault();
         }
 
         public IEnumerable<Quote> GetQuotesFromBook(int bookId)
         {
-            throw new NotImplementedException();
+            return Connection.Query<Quote>("SELECT * FROM Quotes WHERE BookId = @BookId LIMIT 1", new { BookId = bookId }, Transaction);
         }
 
         public void Remove(int id)
         {
-            throw new NotImplementedException();
+            Connection.Execute("DELETE FROM Quotes WHERE Id = @RemoveId", new { RemoveId = id }, Transaction);
         }
 
         public void Remove(Quote entity)
         {
-            throw new NotImplementedException();
+            this.Remove(entity.Id);
+            entity.Id = 0;
         }
 
         public void Update(Quote entity)
         {
-            throw new NotImplementedException();
+            Connection.Execute("UPDATE Quotes SET Text = @Text, Note = @Note, BookId = @BookId WHERE Id = @Id", entity, Transaction);
         }
     }
 }

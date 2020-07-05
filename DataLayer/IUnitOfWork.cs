@@ -12,6 +12,7 @@ namespace DataLayer
         IEFileRepository EFileRepository { get; }
         IRawFileRepository RawFileRepository { get; }
         ICoverRepository CoverRepository { get; }
+        IQuoteRepository QuoteRepository { get; }
 
         void Truncate();
 

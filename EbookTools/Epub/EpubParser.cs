@@ -116,8 +116,7 @@ namespace EbookTools.Epub
 
             XmlNode spine = GetFirstElementByTagName(opf, "spine");
             XmlNode manifestNode = GetFirstElementByTagName(opf, "manifest");
-            int chapterCounter =
-                0; // we use this to set ID attributes on each div that we are going to enclose a chapter into
+            int chapterCounter = 0; // we use this to set ID attributes on each div that we are going to enclose a chapter into
             foreach (XmlNode child in spine.ChildNodes)
             {
                 if (child.Attributes != null)
