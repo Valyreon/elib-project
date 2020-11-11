@@ -9,56 +9,26 @@ namespace MVVMLibrary.Messaging
     ////[ClassInfo(typeof(Messenger))]
     public class WeakAction
     {
-        private readonly Action _action;
-
         private WeakReference _reference;
 
         public WeakAction(object target, Action action)
         {
             _reference = new WeakReference(target);
-            _action = action;
+            Action = action;
         }
 
-        public Action Action
-        {
-            get
-            {
-                return _action;
-            }
-        }
+        public Action Action { get; }
 
-        public bool IsAlive
-        {
-            get
-            {
-                if (_reference == null)
-                {
-                    return false;
-                }
+        public bool IsAlive => _reference != null && _reference.IsAlive;
 
-                return _reference.IsAlive;
-            }
-        }
-
-        public object Target
-        {
-            get
-            {
-                if (_reference == null)
-                {
-                    return null;
-                }
-
-                return _reference.Target;
-            }
-        }
+        public object Target => _reference?.Target;
 
         public void Execute()
         {
-            if (_action != null
+            if (Action != null
                 && IsAlive)
             {
-                _action();
+                Action();
             }
         }
 

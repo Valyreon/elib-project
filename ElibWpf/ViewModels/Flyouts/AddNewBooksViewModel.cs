@@ -1,11 +1,3 @@
-﻿using Domain;
-using ElibWpf.Messages;
-using ElibWpf.ValidationAttributes;
-using ElibWpf.ViewModels.Dialogs;
-using ElibWpf.Views.Dialogs;
-using MahApps.Metro.Controls.Dialogs;
-using Models;
-using MVVMLibrary;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
@@ -16,6 +8,14 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
+using Domain;
+using ElibWpf.Messages;
+using ElibWpf.Models;
+using ElibWpf.ValidationAttributes;
+using ElibWpf.ViewModels.Dialogs;
+using ElibWpf.Views.Dialogs;
+using MahApps.Metro.Controls.Dialogs;
+using MVVMLibrary;
 using Application = System.Windows.Application;
 
 namespace ElibWpf.ViewModels.Flyouts
@@ -56,99 +56,99 @@ namespace ElibWpf.ViewModels.Flyouts
 
         public AddNewBooksViewModel(IEnumerable<Book> newBooks)
         {
-            this.books = newBooks.ToList();
+            books = newBooks.ToList();
         }
 
         public string AddAuthorFieldText
         {
-            get => this.addAuthorFieldText;
-            set => this.Set(() => this.AddAuthorFieldText, ref this.addAuthorFieldText, value);
+            get => addAuthorFieldText;
+            set => Set(() => AddAuthorFieldText, ref addAuthorFieldText, value);
         }
 
-        public ICommand AddExistingAuthorButtonCommand => new RelayCommand(this.HandleAddExistingAuthor);
+        public ICommand AddExistingAuthorButtonCommand => new RelayCommand(HandleAddExistingAuthor);
 
-        public ICommand AddNewAuthorButtonCommand => new RelayCommand(this.HandleAddNewAuthor);
+        public ICommand AddNewAuthorButtonCommand => new RelayCommand(HandleAddNewAuthor);
 
         [NotEmpty(ErrorMessage = "Book has to have at least one author.")]
         public ObservableCollection<Author> AuthorsCollection
         {
-            get => this.authorCollection;
-            private set { this.Set(() => this.AuthorsCollection, ref this.authorCollection, value); }
+            get => authorCollection;
+            private set => Set(() => AuthorsCollection, ref authorCollection, value);
         }
 
-        public ICommand CancelButtonCommand => new RelayCommand(this.HandleCancel);
+        public ICommand CancelButtonCommand => new RelayCommand(HandleCancel);
 
-        public ICommand ChangeCoverButtonCommand => new RelayCommand(this.HandleChangeCoverButton);
+        public ICommand ChangeCoverButtonCommand => new RelayCommand(HandleChangeCoverButton);
 
-        public ICommand ChooseExistingSeriesCommand => new RelayCommand(this.HandleChooseExistingSeries);
+        public ICommand ChooseExistingSeriesCommand => new RelayCommand(HandleChooseExistingSeries);
 
-        public ICommand ClearSeriesCommand => new RelayCommand(this.HandleClearSeries);
+        public ICommand ClearSeriesCommand => new RelayCommand(HandleClearSeries);
 
         public Cover Cover
         {
-            get => this.coverImage;
-            set => this.Set(() => this.Cover, ref this.coverImage, value);
+            get => coverImage;
+            set => Set(() => Cover, ref coverImage, value);
         }
 
-        public ICommand CreateNewSeriesCommand => new RelayCommand(this.HandleCreateNewSeries);
+        public ICommand CreateNewSeriesCommand => new RelayCommand(HandleCreateNewSeries);
 
-        public ICommand EditSeriesCommand => new RelayCommand(this.HandleEditSeries);
+        public ICommand EditSeriesCommand => new RelayCommand(HandleEditSeries);
 
         public bool IsCurrentBookDuplicate
         {
-            get => this.isSaving || this.isCurrentDuplicate;
-            set => this.Set(() => this.IsCurrentBookDuplicate, ref this.isCurrentDuplicate, value);
+            get => isSaving || isCurrentDuplicate;
+            set => Set(() => IsCurrentBookDuplicate, ref isCurrentDuplicate, value);
         }
 
         public bool IsFavoriteCheck
         {
-            get => this.isFavorite;
-            set => this.Set(() => this.IsFavoriteCheck, ref this.isFavorite, value);
+            get => isFavorite;
+            set => Set(() => IsFavoriteCheck, ref isFavorite, value);
         }
 
         public bool IsReadCheck
         {
-            get => this.isRead;
-            set => this.Set(() => this.IsReadCheck, ref this.isRead, value);
+            get => isRead;
+            set => Set(() => IsReadCheck, ref isRead, value);
         }
 
         public bool IsSaving
         {
-            get => this.isSaving;
+            get => isSaving;
             set
             {
-                this.Set(() => this.IsSaving, ref this.isSaving, value);
-                this.RaisePropertyChanged(() => this.IsCurrentBookDuplicate);
+                Set(() => IsSaving, ref isSaving, value);
+                RaisePropertyChanged(() => IsCurrentBookDuplicate);
             }
         }
 
-        public bool IsSeriesSelected => this.Series != null;
+        public bool IsSeriesSelected => Series != null;
 
-        public ICommand LoadedCommand => new RelayCommand(this.HandleLoaded);
+        public ICommand LoadedCommand => new RelayCommand(HandleLoaded);
 
-        public ICommand NextButtonCommand => new RelayCommand(this.HandleSaveAndNext);
+        public ICommand NextButtonCommand => new RelayCommand(HandleSaveAndNext);
 
         public string ProceedButtonText
         {
-            get => this.proceedButtonText;
-            set => this.Set(() => this.ProceedButtonText, ref this.proceedButtonText, value);
+            get => proceedButtonText;
+            set => Set(() => ProceedButtonText, ref proceedButtonText, value);
         }
 
         public ICommand RemoveAuthorCommand =>
-            new RelayCommand<int>(x => this.AuthorsCollection.Remove(this.AuthorsCollection.FirstOrDefault(c => c.Id == x)));
+            new RelayCommand<int>(x => AuthorsCollection.Remove(AuthorsCollection.FirstOrDefault(c => c.Id == x)));
 
-        public ICommand RemoveCoverButtonCommand => new RelayCommand(() => this.Cover = null);
+        public ICommand RemoveCoverButtonCommand => new RelayCommand(() => Cover = null);
 
-        public ICommand RevertButtonCommand => new RelayCommand(this.HandleRevert);
+        public ICommand RevertButtonCommand => new RelayCommand(HandleRevert);
 
         public BookSeries Series
         {
-            get => this.series;
+            get => series;
             set
             {
-                this.Set(() => this.Series, ref this.series, value);
-                this.RaisePropertyChanged(() => this.IsSeriesSelected);
-                this.RaisePropertyChanged(() => this.SeriesColor);
+                Set(() => Series, ref series, value);
+                RaisePropertyChanged(() => IsSeriesSelected);
+                RaisePropertyChanged(() => SeriesColor);
             }
         }
 
@@ -156,7 +156,7 @@ namespace ElibWpf.ViewModels.Flyouts
         {
             get
             {
-                if (!this.IsSeriesSelected)
+                if (!IsSeriesSelected)
                 {
                     return Brushes.Gray;
                 }
@@ -167,64 +167,59 @@ namespace ElibWpf.ViewModels.Flyouts
 
         public string SeriesNumberFieldText
         {
-            get => this.seriesNumberFieldText;
-            set => this.Set(() => this.SeriesNumberFieldText, ref this.seriesNumberFieldText, value);
+            get => seriesNumberFieldText;
+            set => Set(() => SeriesNumberFieldText, ref seriesNumberFieldText, value);
         }
 
-        public ICommand SkipButtonCommand => new RelayCommand(this.NextBook);
+        public ICommand SkipButtonCommand => new RelayCommand(NextBook);
 
         [Required(ErrorMessage = "Book title can't be empty.")]
         public string TitleFieldText
         {
-            get => this.titleFieldText;
-            set => this.Set(() => this.TitleFieldText, ref this.titleFieldText, value);
+            get => titleFieldText;
+            set => Set(() => TitleFieldText, ref titleFieldText, value);
         }
 
         public string TitleText
         {
-            get => this.titleText;
-            set => this.Set(() => this.TitleText, ref this.titleText, value);
+            get => titleText;
+            set => Set(() => TitleText, ref titleText, value);
         }
 
         public string WarningText
         {
-            get => this.warning;
-            set => this.Set(() => this.WarningText, ref this.warning, value);
+            get => warning;
+            set => Set(() => WarningText, ref warning, value);
         }
 
         private Book CurrentBook
         {
-            get => this.currentBook;
+            get => currentBook;
 
             set
             {
-                this.currentBook = value;
-                this.Set(() => this.CurrentBook, ref this.currentBook, value);
-                if (this.currentBook != null)
+                currentBook = value;
+                Set(() => CurrentBook, ref currentBook, value);
+                if (currentBook != null)
                 {
-                    this.AuthorsCollection = new ObservableCollection<Author>(this.CurrentBook.Authors);
+                    AuthorsCollection = new ObservableCollection<Author>(CurrentBook.Authors);
 
-                    if (this.CurrentBook.Series != null)
+                    Series = CurrentBook.Series != null
+                        ? new BookSeries() { Id = CurrentBook.Series.Id, Name = CurrentBook.Series.Name }
+                        : null;
+
+                    TitleFieldText = CurrentBook.Title;
+                    SeriesNumberFieldText = CurrentBook.NumberInSeries.ToString();
+                    IsFavoriteCheck = CurrentBook.IsFavorite;
+                    IsReadCheck = CurrentBook.IsRead;
+
+                    if (CurrentBook.Cover != null)
                     {
-                        this.Series = new BookSeries() { Id = this.CurrentBook.Series.Id, Name = this.CurrentBook.Series.Name };
+                        Cover = new Cover() { Id = CurrentBook.Cover.Id, Image = CurrentBook.Cover.Image };
                     }
                     else
                     {
-                        this.Series = null;
-                    }
-
-                    this.TitleFieldText = this.CurrentBook.Title;
-                    this.SeriesNumberFieldText = this.CurrentBook.NumberInSeries.ToString();
-                    this.IsFavoriteCheck = this.CurrentBook.IsFavorite;
-                    this.IsReadCheck = this.CurrentBook.IsRead;
-
-                    if (this.CurrentBook.Cover != null)
-                    {
-                        this.Cover = new Cover() { Id = this.CurrentBook.Cover.Id, Image = this.CurrentBook.Cover.Image };
-                    }
-                    else
-                    {
-                        this.Cover = null;
+                        Cover = null;
                     }
                 }
             }
@@ -232,21 +227,21 @@ namespace ElibWpf.ViewModels.Flyouts
 
         private void HandleLoaded()
         {
-            this.CurrentBook = this.books[0];
-            this.TitleText = $"Book 1 of {this.books.Count}";
-            this.ProceedButtonText = this.books.Count == 1 ? "SAVE & FINISH" : "SAVE & NEXT";
-            this.CheckDuplicate(this.CurrentBook);
+            CurrentBook = books[0];
+            TitleText = $"Book 1 of {books.Count}";
+            ProceedButtonText = books.Count == 1 ? "SAVE & FINISH" : "SAVE & NEXT";
+            CheckDuplicate(CurrentBook);
         }
 
         private async void HandleAddNewAuthor()
         {
-            string name = await DialogCoordinator.Instance.ShowInputAsync(this, "Adding New Author", "Author's name:");
+            var name = await DialogCoordinator.Instance.ShowInputAsync(this, "Adding New Author", "Author's name:");
             if (!string.IsNullOrWhiteSpace(name))
             {
                 name = name.Trim();
 
-                Author newAuthor = new Author { Name = name };
-                this.AuthorsCollection.Add(newAuthor);
+                var newAuthor = new Author { Name = name };
+                AuthorsCollection.Add(newAuthor);
 
                 _ = Task.Run(() =>
                 {
@@ -258,68 +253,68 @@ namespace ElibWpf.ViewModels.Flyouts
 
         private void HandleRevert()
         {
-            this.ClearErrors();
-            this.AuthorsCollection = new ObservableCollection<Author>(this.CurrentBook.Authors);
-            this.Series = this.CurrentBook.Series == null
+            ClearErrors();
+            AuthorsCollection = new ObservableCollection<Author>(CurrentBook.Authors);
+            Series = CurrentBook.Series == null
                 ? null
-                : new BookSeries { Name = this.CurrentBook.Series.Name, Id = this.CurrentBook.Series.Id };
-            this.TitleFieldText = this.CurrentBook.Title;
-            this.SeriesNumberFieldText = this.CurrentBook.NumberInSeries.ToString();
-            this.IsFavoriteCheck = this.CurrentBook.IsFavorite;
-            this.IsReadCheck = this.CurrentBook.IsRead;
-            this.Cover = new Cover() { Id = this.CurrentBook.Cover.Id, Image = this.CurrentBook.Cover.Image };
+                : new BookSeries { Name = CurrentBook.Series.Name, Id = CurrentBook.Series.Id };
+            TitleFieldText = CurrentBook.Title;
+            SeriesNumberFieldText = CurrentBook.NumberInSeries.ToString();
+            IsFavoriteCheck = CurrentBook.IsFavorite;
+            IsReadCheck = CurrentBook.IsRead;
+            Cover = new Cover() { Id = CurrentBook.Cover.Id, Image = CurrentBook.Cover.Image };
         }
 
         private async void HandleSaveAndNext()
         {
-            this.IsSaving = true;
-            this.Validate();
-            if (!this.HasErrors)
+            IsSaving = true;
+            Validate();
+            if (!HasErrors)
             {
-                Book book = this.CurrentBook;
+                var book = CurrentBook;
                 await Task.Run(() =>
                 {
                     using var uow = ApplicationSettings.CreateUnitOfWork();
 
-                    book.Series = this.Series;
-                    if (this.Series != null && this.Series.Id == 0)
+                    book.Series = Series;
+                    if (Series != null && Series.Id == 0)
                     {
                         uow.SeriesRepository.Add(book.Series);
                         book.SeriesId = book.Series.Id;
                     }
-                    else if (this.Series != null && this.Series.Id != 0)
+                    else if (Series != null && Series.Id != 0)
                     {
                         uow.SeriesRepository.Update(book.Series);
                         book.SeriesId = book.SeriesId;
                     }
 
-                    if (this.IsSeriesSelected)
+                    if (IsSeriesSelected)
                     {
-                        if (Regex.IsMatch(this.SeriesNumberFieldText, @"\d+(\.\d+)?"))
+                        if (Regex.IsMatch(SeriesNumberFieldText, @"\d+(\.\d+)?"))
                         {
-                            book.NumberInSeries = decimal.Parse(this.SeriesNumberFieldText);
+                            book.NumberInSeries = decimal.Parse(SeriesNumberFieldText);
                         }
                     }
 
-                    book.Title = this.TitleFieldText;
-                    book.IsFavorite = this.IsFavoriteCheck;
-                    book.IsRead = this.IsReadCheck;
+                    book.Title = TitleFieldText;
+                    book.IsFavorite = IsFavoriteCheck;
+                    book.IsRead = IsReadCheck;
 
                     uow.RawFileRepository.Add(book.File.RawFile);
                     book.File.RawFileId = book.File.RawFile.Id;
                     uow.EFileRepository.Add(book.File);
                     book.FileId = book.File.Id;
 
-                    if (this.Cover != null && Cover.Id == 0 && Cover.Image != null)
+                    if (Cover != null && Cover.Id == 0 && Cover.Image != null)
                     {
-                        book.Cover = this.Cover;
+                        book.Cover = Cover;
                         uow.CoverRepository.Add(book.Cover);
                         book.CoverId = book.Cover.Id;
                     }
 
                     uow.BookRepository.Add(book);
 
-                    foreach (Author author in this.AuthorsCollection)
+                    foreach (var author in AuthorsCollection)
                     {
                         uow.AuthorRepository.AddAuthorForBook(author, book.Id);
                     }
@@ -327,20 +322,20 @@ namespace ElibWpf.ViewModels.Flyouts
                     uow.Commit();
                 });
 
-                this.NextBook();
+                NextBook();
             }
 
-            this.IsSaving = false;
+            IsSaving = false;
         }
 
         private void HandleCancel()
         {
-            this.MessengerInstance.Send(new CloseFlyoutMessage());
+            MessengerInstance.Send(new CloseFlyoutMessage());
         }
 
         private void HandleChangeCoverButton()
         {
-            using OpenFileDialog dlg = new OpenFileDialog
+            using var dlg = new OpenFileDialog
             {
                 Filter = "All files|*.*|jpg|*.jpg|png|*.png",
                 CheckFileExists = true,
@@ -348,66 +343,63 @@ namespace ElibWpf.ViewModels.Flyouts
                 FilterIndex = 0,
                 Multiselect = false
             };
-            DialogResult result = dlg.ShowDialog();
+            var result = dlg.ShowDialog();
             if (result == DialogResult.OK && dlg.FileName != null)
             {
-                this.Cover.Image = ImageOptimizer.ResizeAndFill(File.ReadAllBytes(dlg.FileName));
+                Cover.Image = ImageOptimizer.ResizeAndFill(File.ReadAllBytes(dlg.FileName));
             }
         }
 
         private void NextBook()
         {
-            if (this.counter >= this.books.Count - 1)
+            if (counter >= books.Count - 1)
             {
-                this.MessengerInstance.Send(new CloseFlyoutMessage());
+                MessengerInstance.Send(new CloseFlyoutMessage());
             }
             else
             {
-                this.ClearErrors();
-                this.TitleText = $"Book {this.counter + 2} of {this.books.Count}";
-                if (this.counter == this.books.Count - 2)
+                ClearErrors();
+                TitleText = $"Book {counter + 2} of {books.Count}";
+                if (counter == books.Count - 2)
                 {
-                    this.ProceedButtonText = "SAVE & FINISH";
+                    ProceedButtonText = "SAVE & FINISH";
                 }
 
-                this.CurrentBook = this.books[++this.counter];
+                CurrentBook = books[++counter];
 
-                this.CheckDuplicate(this.CurrentBook);
+                CheckDuplicate(CurrentBook);
             }
         }
 
         private async void HandleAddExistingAuthor()
         {
-            ChooseAuthorDialog dialog = new ChooseAuthorDialog
+            var dialog = new ChooseAuthorDialog
             {
-                DataContext = new ChooseAuthorDialogViewModel(this.AuthorsCollection.Select(oa => oa.Id),
-                    x => Application.Current.Dispatcher.Invoke(() => this.AuthorsCollection.Add(x)))
+                DataContext = new ChooseAuthorDialogViewModel(AuthorsCollection.Select(oa => oa.Id),
+                    x => Application.Current.Dispatcher.Invoke(() => AuthorsCollection.Add(x)))
             };
             await DialogCoordinator.Instance.ShowMetroDialogAsync(this, dialog);
         }
 
         private async void HandleChooseExistingSeries()
         {
-            ChooseSeriesDialog dialog = new ChooseSeriesDialog
+            var dialog = new ChooseSeriesDialog
             {
-                DataContext = new ChooseSeriesDialogViewModel(x =>
-                {
-                    this.Series = x;
-                })
+                DataContext = new ChooseSeriesDialogViewModel(x => Series = x)
             };
             await DialogCoordinator.Instance.ShowMetroDialogAsync(this, dialog);
         }
 
         private async void HandleCreateNewSeries()
         {
-            string name = await DialogCoordinator.Instance.ShowInputAsync(this, "Adding New Series", "Series name:");
+            var name = await DialogCoordinator.Instance.ShowInputAsync(this, "Adding New Series", "Series name:");
             if (!string.IsNullOrWhiteSpace(name))
             {
                 using var uow = ApplicationSettings.CreateUnitOfWork();
                 name = name.Trim();
-                BookSeries newSeries = new BookSeries { Name = name };
-                BookSeries temp = this.Series;
-                this.Series = newSeries;
+                var newSeries = new BookSeries { Name = name };
+                var temp = Series;
+                Series = newSeries;
                 uow.SeriesRepository.CleanSeries(temp.Id);
 
                 _ = Task.Run(() =>
@@ -420,16 +412,16 @@ namespace ElibWpf.ViewModels.Flyouts
 
         private void HandleClearSeries()
         {
-            BookSeries temp = this.Series;
-            this.Series = null;
+            var temp = Series;
+            Series = null;
             using var uow = ApplicationSettings.CreateUnitOfWork();
             uow.SeriesRepository.CleanSeries(temp.Id);
         }
 
         private async void HandleEditSeries()
         {
-            this.Series.Name = await DialogCoordinator.Instance.ShowInputAsync(this, "Edit Series", "Series name:",
-                new MetroDialogSettings { DefaultText = this.Series.Name });
+            Series.Name = await DialogCoordinator.Instance.ShowInputAsync(this, "Edit Series", "Series name:",
+                new MetroDialogSettings { DefaultText = Series.Name });
         }
 
         private void CheckDuplicate(Book book)
@@ -437,13 +429,13 @@ namespace ElibWpf.ViewModels.Flyouts
             using var uow = ApplicationSettings.CreateUnitOfWork();
             if (uow.EFileRepository.SignatureExists(book.File.Signature))
             {
-                this.WarningText = "This book is a duplicate of a book already in the database.";
-                this.IsCurrentBookDuplicate = true;
+                WarningText = "This book is a duplicate of a book already in the database.";
+                IsCurrentBookDuplicate = true;
             }
             else
             {
-                this.WarningText = null;
-                this.IsCurrentBookDuplicate = false;
+                WarningText = null;
+                IsCurrentBookDuplicate = false;
             }
         }
     }

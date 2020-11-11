@@ -3,222 +3,201 @@ using System;
 
 namespace ElibWpf.BindingItems
 {
-    public class FilterOptions : ObservableObject, ICloneable
-    {
-        private void RaiseSortPropertiesChange()
-        {
-            RaisePropertyChanged(() => SortByTitle);
-            RaisePropertyChanged(() => SortByAuthor);
-            RaisePropertyChanged(() => SortBySeries);
-            RaisePropertyChanged(() => SortByImportTime);
-        }
+	public class FilterOptions : ObservableObject, ICloneable
+	{
+		private void RaiseSortPropertiesChange()
+		{
+			RaisePropertyChanged(() => SortByTitle);
+			RaisePropertyChanged(() => SortByAuthor);
+			RaisePropertyChanged(() => SortBySeries);
+			RaisePropertyChanged(() => SortByImportTime);
+		}
 
-        /* Sort options */
-        private bool sortByTitle;
+		/* Sort options */
+		private bool sortByTitle;
 
-        public bool SortByTitle
-        {
-            get
-            {
-                return sortByTitle;
-            }
+		public bool SortByTitle
+		{
+			get => sortByTitle;
 
-            set
-            {
-                sortByTitle = value;
-                if (sortByTitle)
-                {
-                    SortByAuthor = false;
-                    SortBySeries = false;
-                    SortByImportTime = false;
-                }
-                RaiseSortPropertiesChange();
-            }
-        }
+			set
+			{
+				sortByTitle = value;
+				if(sortByTitle)
+				{
+					SortByAuthor = false;
+					SortBySeries = false;
+					SortByImportTime = false;
+				}
+				RaiseSortPropertiesChange();
+			}
+		}
 
-        private bool sortByAuthor;
+		private bool sortByAuthor;
 
-        public bool SortByAuthor
-        {
-            get
-            {
-                return sortByAuthor;
-            }
+		public bool SortByAuthor
+		{
+			get => sortByAuthor;
 
-            set
-            {
-                sortByAuthor = value;
-                if (sortByAuthor)
-                {
-                    SortByTitle = false;
-                    SortBySeries = false;
-                    SortByImportTime = false;
-                }
-                RaiseSortPropertiesChange();
-            }
-        }
+			set
+			{
+				sortByAuthor = value;
+				if(sortByAuthor)
+				{
+					SortByTitle = false;
+					SortBySeries = false;
+					SortByImportTime = false;
+				}
+				RaiseSortPropertiesChange();
+			}
+		}
 
-        private bool sortBySeries;
+		private bool sortBySeries;
 
-        public bool SortBySeries
-        {
-            get
-            {
-                return sortBySeries;
-            }
+		public bool SortBySeries
+		{
+			get => sortBySeries;
 
-            set
-            {
-                sortBySeries = value;
-                if (sortBySeries)
-                {
-                    SortByTitle = false;
-                    SortByAuthor = false;
-                    SortByImportTime = false;
-                }
-                RaiseSortPropertiesChange();
-            }
-        }
+			set
+			{
+				sortBySeries = value;
+				if(sortBySeries)
+				{
+					SortByTitle = false;
+					SortByAuthor = false;
+					SortByImportTime = false;
+				}
+				RaiseSortPropertiesChange();
+			}
+		}
 
-        private bool sortByImportTime;
+		private bool sortByImportTime;
 
-        public bool SortByImportTime
-        {
-            get
-            {
-                return sortByImportTime;
-            }
+		public bool SortByImportTime
+		{
+			get => sortByImportTime;
 
-            set
-            {
-                sortByImportTime = value;
-                if (sortByImportTime)
-                {
-                    SortByTitle = false;
-                    SortByAuthor = false;
-                    SortBySeries = false;
-                }
-                RaiseSortPropertiesChange();
-            }
-        }
+			set
+			{
+				sortByImportTime = value;
+				if(sortByImportTime)
+				{
+					SortByTitle = false;
+					SortByAuthor = false;
+					SortBySeries = false;
+				}
+				RaiseSortPropertiesChange();
+			}
+		}
 
-        private bool ascending = false;
+		private bool ascending = false;
 
-        public bool Ascending
-        {
-            get => ascending;
-            set => Set(() => Ascending, ref ascending, value);
-        }
+		public bool Ascending
+		{
+			get => ascending;
+			set => Set(() => Ascending, ref ascending, value);
+		}
 
-        private void RaiseReadProperties()
-        {
-            RaisePropertyChanged(() => ShowAll);
-            RaisePropertyChanged(() => ShowRead);
-            RaisePropertyChanged(() => ShowUnread);
-        }
+		private void RaiseReadProperties()
+		{
+			RaisePropertyChanged(() => ShowAll);
+			RaisePropertyChanged(() => ShowRead);
+			RaisePropertyChanged(() => ShowUnread);
+		}
 
-        public object Clone()
-        {
-            return new FilterOptions
-            {
-                SortByAuthor = this.SortByAuthor,
-                SortByImportTime = this.SortByImportTime,
-                SortBySeries = this.SortBySeries,
-                SortByTitle = this.SortByTitle,
-                ShowAll = this.ShowAll,
-                ShowRead = this.ShowRead,
-                ShowUnread = this.ShowUnread,
-                Ascending = this.Ascending,
-                FileTypeFilter = this.FileTypeFilter,
-                ShowAllTypes = this.ShowAllTypes
-            };
-        }
+		public object Clone()
+		{
+			return new FilterOptions
+			{
+				SortByAuthor = SortByAuthor,
+				SortByImportTime = SortByImportTime,
+				SortBySeries = SortBySeries,
+				SortByTitle = SortByTitle,
+				ShowAll = ShowAll,
+				ShowRead = ShowRead,
+				ShowUnread = ShowUnread,
+				Ascending = Ascending,
+				FileTypeFilter = FileTypeFilter,
+				ShowAllTypes = ShowAllTypes
+			};
+		}
 
-        /* Read filter */
-        private bool showAll;
+		/* Read filter */
+		private bool showAll;
 
-        public bool ShowAll
-        {
-            get
-            {
-                return showAll;
-            }
+		public bool ShowAll
+		{
+			get => showAll;
 
-            set
-            {
-                showAll = value;
-                if (showAll)
-                {
-                    ShowRead = false;
-                    ShowUnread = false;
-                }
-                RaiseReadProperties();
-            }
-        }
+			set
+			{
+				showAll = value;
+				if(showAll)
+				{
+					ShowRead = false;
+					ShowUnread = false;
+				}
+				RaiseReadProperties();
+			}
+		}
 
-        private bool showRead;
+		private bool showRead;
 
-        public bool ShowRead
-        {
-            get
-            {
-                return showRead;
-            }
+		public bool ShowRead
+		{
+			get => showRead;
 
-            set
-            {
-                showRead = value;
-                if (showRead)
-                {
-                    ShowAll = false;
-                    ShowUnread = false;
-                }
-                RaiseReadProperties();
-            }
-        }
+			set
+			{
+				showRead = value;
+				if(showRead)
+				{
+					ShowAll = false;
+					ShowUnread = false;
+				}
+				RaiseReadProperties();
+			}
+		}
 
-        private bool showUnread;
+		private bool showUnread;
 
-        public bool ShowUnread
-        {
-            get
-            {
-                return showUnread;
-            }
+		public bool ShowUnread
+		{
+			get => showUnread;
 
-            set
-            {
-                showUnread = value;
-                if (showUnread)
-                {
-                    ShowAll = false;
-                    ShowRead = false;
-                }
-                RaiseReadProperties();
-            }
-        }
+			set
+			{
+				showUnread = value;
+				if(showUnread)
+				{
+					ShowAll = false;
+					ShowRead = false;
+				}
+				RaiseReadProperties();
+			}
+		}
 
-        private bool showAllTypes = true;
+		private bool showAllTypes = true;
 
-        public bool ShowAllTypes
-        {
-            get => showAllTypes;
-            set => Set(() => ShowAllTypes, ref showAllTypes, value);
-        }
+		public bool ShowAllTypes
+		{
+			get => showAllTypes;
+			set => Set(() => ShowAllTypes, ref showAllTypes, value);
+		}
 
-        /* File type filter */
-        private string fileTypeFilter = "epub|mobi";
+		/* File type filter */
+		private string fileTypeFilter = "epub|mobi";
 
-        public string FileTypeFilter
-        {
-            get => fileTypeFilter;
-            set => Set(() => FileTypeFilter, ref fileTypeFilter, value);
-        }
+		public string FileTypeFilter
+		{
+			get => fileTypeFilter;
+			set => Set(() => FileTypeFilter, ref fileTypeFilter, value);
+		}
 
-        public FilterOptions()
-        {
-            ShowAll = true;
-            SortByImportTime = true;
-        }
-    }
+		public FilterOptions()
+		{
+			ShowAll = true;
+			SortByImportTime = true;
+		}
+	}
 }

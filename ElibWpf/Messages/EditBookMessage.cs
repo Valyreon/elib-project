@@ -2,13 +2,13 @@
 
 namespace ElibWpf.Messages
 {
-    public class EditBookMessage
-    {
-        public EditBookMessage(Book clickedBook)
-        {
-            this.Book = clickedBook;
-        }
+	public class EditBookMessage
+	{
+		public EditBookMessage(Book clickedBook)
+		{
+			Book = clickedBook;
+		}
 
-        public Book Book { get; }
-    }
+		public Book Book { get; }
+	}
 }

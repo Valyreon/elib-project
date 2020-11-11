@@ -2,14 +2,14 @@
 
 namespace ElibWpf.ViewModels.Controls
 {
-    public class QuotesTabViewModel : ViewModelBase, ITabViewModel
-    {
-        private string caption = "Quotes";
+	public class QuotesTabViewModel : ViewModelBase, ITabViewModel
+	{
+		private string caption = "Quotes";
 
-        public string Caption
-        {
-            get => this.caption;
-            set => this.Set(() => Caption, ref this.caption, value);
-        }
-    }
+		public string Caption
+		{
+			get => caption;
+			set => Set(() => Caption, ref caption, value);
+		}
+	}
 }

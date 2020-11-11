@@ -4,37 +4,29 @@ namespace MVVMLibrary.Messaging
 {
     public class WeakAction<T> : WeakAction, IExecuteWithObject
     {
-        private readonly Action<T> _action;
-
         public WeakAction(object target, Action<T> action)
             : base(target, null)
         {
-            _action = action;
+            Action = action;
         }
 
-        public new Action<T> Action
-        {
-            get
-            {
-                return _action;
-            }
-        }
+        public new Action<T> Action { get; }
 
         public new void Execute()
         {
-            if (_action != null
+            if (Action != null
                 && IsAlive)
             {
-                _action(default(T));
+                Action(default);
             }
         }
 
         public void Execute(T parameter)
         {
-            if (_action != null
+            if (Action != null
                 && IsAlive)
             {
-                _action(parameter);
+                Action(parameter);
             }
         }
 

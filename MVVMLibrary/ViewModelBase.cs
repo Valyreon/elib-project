@@ -2,8 +2,8 @@
 
 namespace MVVMLibrary
 {
-    public class ViewModelBase : ObservableObject
-    {
-        protected IMessenger MessengerInstance { get => Messenger.Default; }
-    }
+	public class ViewModelBase : ObservableObject
+	{
+		protected IMessenger MessengerInstance => Messenger.Default;
+	}
 }

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace DataLayer
 {
@@ -13,29 +13,29 @@ namespace DataLayer
         {
             return new SearchParameters
             {
-                SearchByAuthor = this.SearchByAuthor,
-                SearchBySeries = this.SearchBySeries,
-                SearchByTitle = this.SearchByTitle,
-                Token = this.Token
+                SearchByAuthor = SearchByAuthor,
+                SearchBySeries = SearchBySeries,
+                SearchByTitle = SearchByTitle,
+                Token = Token
             };
         }
 
         public override bool Equals(object obj)
         {
             return obj is SearchParameters parameters &&
-                   this.SearchByAuthor == parameters.SearchByAuthor &&
-                   this.SearchByTitle == parameters.SearchByTitle &&
-                   this.SearchBySeries == parameters.SearchBySeries &&
-                   this.Token == parameters.Token;
+                   SearchByAuthor == parameters.SearchByAuthor &&
+                   SearchByTitle == parameters.SearchByTitle &&
+                   SearchBySeries == parameters.SearchBySeries &&
+                   Token == parameters.Token;
         }
 
         public override int GetHashCode()
         {
-            int hashCode = 63130288;
-            hashCode = hashCode * -1521134295 + this.SearchByAuthor.GetHashCode();
-            hashCode = hashCode * -1521134295 + this.SearchByTitle.GetHashCode();
-            hashCode = hashCode * -1521134295 + this.SearchBySeries.GetHashCode();
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.Token);
+            var hashCode = 63130288;
+            hashCode = (hashCode * -1521134295) + SearchByAuthor.GetHashCode();
+            hashCode = (hashCode * -1521134295) + SearchByTitle.GetHashCode();
+            hashCode = (hashCode * -1521134295) + SearchBySeries.GetHashCode();
+            hashCode = (hashCode * -1521134295) + EqualityComparer<string>.Default.GetHashCode(Token);
             return hashCode;
         }
     }

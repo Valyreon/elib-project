@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -218,16 +218,14 @@ namespace MVVMLibrary.Messaging
 
                 foreach (var item in listClone)
                 {
-                    var executeAction = item.Action as IExecuteWithObject;
-
-                    if (executeAction != null
+                    if (item.Action is IExecuteWithObject executeAction
                         && item.Action.IsAlive
                         && item.Action.Target != null
                         && (messageTargetType == null
                             || item.Action.Target.GetType() == messageTargetType
                             || Implements(item.Action.Target.GetType(), messageTargetType))
                         && ((item.Token == null && token == null)
-                            || item.Token != null && item.Token.Equals(token)))
+                            || (item.Token != null && item.Token.Equals(token))))
                     {
                         executeAction.ExecuteWithObject(message);
                     }
@@ -281,9 +279,7 @@ namespace MVVMLibrary.Messaging
             {
                 foreach (var item in lists[messageType])
                 {
-                    var weakActionCasted = item.Action as WeakAction<TMessage>;
-
-                    if (weakActionCasted != null
+                    if (item.Action is WeakAction<TMessage> weakActionCasted
                         && recipient == weakActionCasted.Target
                         && (action == null
                             || action == weakActionCasted.Action))
@@ -300,7 +296,7 @@ namespace MVVMLibrary.Messaging
             Action<TMessage> action,
             Dictionary<Type, List<WeakActionAndToken>> lists)
         {
-            Type messageType = typeof(TMessage);
+            var messageType = typeof(TMessage);
 
             if (recipient == null
                 || lists == null
@@ -312,11 +308,9 @@ namespace MVVMLibrary.Messaging
 
             lock (lists)
             {
-                foreach (WeakActionAndToken item in lists[messageType])
+                foreach (var item in lists[messageType])
                 {
-                    var weakActionCasted = item.Action as WeakAction<TMessage>;
-
-                    if (weakActionCasted != null
+                    if (item.Action is WeakAction<TMessage> weakActionCasted
                         && recipient == weakActionCasted.Target
                         && (action == null
                             || action == weakActionCasted.Action)

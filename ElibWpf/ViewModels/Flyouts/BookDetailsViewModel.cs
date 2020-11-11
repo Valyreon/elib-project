@@ -1,17 +1,17 @@
-﻿using Domain;
-using EbookTools;
-using ElibWpf.Messages;
-using ElibWpf.ViewModels.Windows;
-using ElibWpf.Views.Windows;
-using Models;
-using MVVMLibrary;
-using MVVMLibrary.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Domain;
+using EbookTools;
+using ElibWpf.Messages;
+using ElibWpf.Models;
+using ElibWpf.ViewModels.Windows;
+using ElibWpf.Views.Windows;
+using MVVMLibrary;
+using MVVMLibrary.Messaging;
 
 namespace ElibWpf.ViewModels.Flyouts
 {
@@ -23,37 +23,37 @@ namespace ElibWpf.ViewModels.Flyouts
 
         public BookDetailsViewModel(Book book)
         {
-            this.Book = book;
+            Book = book;
         }
 
-        public ICommand ReadBookCommand => new RelayCommand(this.HandleRead);
+        public ICommand ReadBookCommand => new RelayCommand(HandleRead);
 
         private void HandleRead()
         {
-            ReaderWindow win2 = new ReaderWindow
+            var win2 = new ReaderWindow
             {
-                DataContext = new ReaderViewModel(this.Book)
+                DataContext = new ReaderViewModel(Book)
             };
             win2.Show();
         }
 
-        public ICommand AddCollectionCommand => new RelayCommand<string>(this.AddCollection);
+        public ICommand AddCollectionCommand => new RelayCommand<string>(AddCollection);
 
         public string AddCollectionFieldText
         {
-            get => this.addCollectionFieldText;
-            set => base.Set(() => this.AddCollectionFieldText, ref this.addCollectionFieldText, value);
+            get => addCollectionFieldText;
+            set => Set(() => AddCollectionFieldText, ref addCollectionFieldText, value);
         }
 
         public Book Book { get; }
 
         public string BookDescriptionText
         {
-            get => this.bookDescription;
-            set => this.Set(() => BookDescriptionText, ref this.bookDescription, value);
+            get => bookDescription;
+            set => Set(() => BookDescriptionText, ref bookDescription, value);
         }
 
-        public ICommand EditButtonCommand => new RelayCommand(this.HandleEditButton);
+        public ICommand EditButtonCommand => new RelayCommand(HandleEditButton);
 
         public ICommand GoToAuthor => new RelayCommand<ICollection<Author>>(a =>
         {
@@ -61,7 +61,7 @@ namespace ElibWpf.ViewModels.Flyouts
             Messenger.Default.Send(new CloseFlyoutMessage());
         });
 
-        public ICommand GoToCollectionCommand => new RelayCommand<UserCollection>(this.GoToCollection);
+        public ICommand GoToCollectionCommand => new RelayCommand<UserCollection>(GoToCollection);
 
         public ICommand GoToSeries => new RelayCommand<BookSeries>(a =>
         {
@@ -71,16 +71,16 @@ namespace ElibWpf.ViewModels.Flyouts
 
         public bool IsBookFavorite
         {
-            get => this.Book.IsFavorite;
+            get => Book.IsFavorite;
             set
             {
-                this.Book.IsFavorite = value;
-                this.RaisePropertyChanged(() => this.IsBookFavorite);
+                Book.IsFavorite = value;
+                RaisePropertyChanged(() => IsBookFavorite);
 
                 Task.Run(() =>
                 {
                     using var uow = ApplicationSettings.CreateUnitOfWork();
-                    uow.BookRepository.Update(this.Book);
+                    uow.BookRepository.Update(Book);
                     uow.Commit();
                 });
             }
@@ -88,48 +88,50 @@ namespace ElibWpf.ViewModels.Flyouts
 
         public bool IsBookRead
         {
-            get => this.Book.IsRead;
+            get => Book.IsRead;
             set
             {
-                this.Book.IsRead = value;
-                this.RaisePropertyChanged(() => this.IsBookRead);
+                Book.IsRead = value;
+                RaisePropertyChanged(() => IsBookRead);
 
                 Task.Run(() =>
                 {
                     using var uow = ApplicationSettings.CreateUnitOfWork();
-                    uow.BookRepository.Update(this.Book);
+                    uow.BookRepository.Update(Book);
                     uow.Commit();
                 });
             }
         }
 
-        public ICommand LoadOnlineApiCommand => new RelayCommand(this.LoadOnlineApiAsync);
+        public ICommand LoadOnlineApiCommand => new RelayCommand(LoadOnlineApiAsync);
 
-        public ICommand RemoveCollectionCommand => new RelayCommand<string>(this.RemoveCollection);
+        public ICommand RemoveCollectionCommand => new RelayCommand<string>(RemoveCollection);
 
         private void GoToCollection(UserCollection obj)
         {
-            this.MessengerInstance.Send(new CollectionSelectedMessage(obj.Id));
-            this.MessengerInstance.Send(new CloseFlyoutMessage());
+            MessengerInstance.Send(new CollectionSelectedMessage(obj.Id));
+            MessengerInstance.Send(new CloseFlyoutMessage());
         }
 
         private void RemoveCollection(string tag)
         {
-            UserCollection collection = this.Book.Collections.FirstOrDefault(c => c.Tag == tag);
+            var collection = Book.Collections.FirstOrDefault(c => c.Tag == tag);
 
             if (collection == null)
+            {
                 return;
+            }
 
-            this.Book.Collections.Remove(collection);
+            Book.Collections.Remove(collection);
 
             Task.Run(() =>
             {
                 using var uow = ApplicationSettings.CreateUnitOfWork();
-                uow.CollectionRepository.RemoveCollectionForBook(collection, this.Book.Id);
+                uow.CollectionRepository.RemoveCollectionForBook(collection, Book.Id);
                 if (uow.CollectionRepository.CountBooksInUserCollection(collection.Id) <= 1)
                 {
                     uow.CollectionRepository.Remove(collection);
-                    this.MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
+                    MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
                 }
                 uow.Commit();
             });
@@ -140,28 +142,28 @@ namespace ElibWpf.ViewModels.Flyouts
             if (!string.IsNullOrWhiteSpace(tag))
             {
                 tag = tag.Trim();
-                this.AddCollectionFieldText = "";
-                if (this.Book.Collections.Any(c => c.Tag == tag)) // check if book is already in that collection
+                AddCollectionFieldText = "";
+                if (Book.Collections.Any(c => c.Tag == tag)) // check if book is already in that collection
                 {
                     return;
                 }
                 else // if not
                 {
-                    UserCollection newCollection = new UserCollection { Tag = tag };
-                    this.Book.Collections.Add(newCollection);
+                    var newCollection = new UserCollection { Tag = tag };
+                    Book.Collections.Add(newCollection);
                     Task.Run(() =>
                     {
                         using var uow = ApplicationSettings.CreateUnitOfWork();
-                        UserCollection existingCollection = uow.CollectionRepository.GetByTag(tag);
+                        var existingCollection = uow.CollectionRepository.GetByTag(tag);
                         if (existingCollection == null)
                         {
-                            uow.CollectionRepository.AddCollectionForBook(newCollection, this.Book.Id);
-                            this.MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
+                            uow.CollectionRepository.AddCollectionForBook(newCollection, Book.Id);
+                            MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
                         }
                         else
                         {
                             newCollection.Id = existingCollection.Id;
-                            uow.CollectionRepository.AddCollectionForBook(existingCollection, this.Book.Id);
+                            uow.CollectionRepository.AddCollectionForBook(existingCollection, Book.Id);
                         }
 
                         uow.Commit();
@@ -177,14 +179,14 @@ namespace ElibWpf.ViewModels.Flyouts
 
         private void HandleEditButton()
         {
-            this.MessengerInstance.Send(new EditBookMessage(this.Book));
+            MessengerInstance.Send(new EditBookMessage(Book));
         }
 
-        public ICommand ExportButtonCommand { get => new RelayCommand(this.HandleExport); }
+        public ICommand ExportButtonCommand => new RelayCommand(HandleExport);
 
         private void HandleExport()
         {
-            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog
+            var dlg = new Microsoft.Win32.SaveFileDialog
             {
                 FileName = Exporter.GenerateName(Book), // Default file name
                 DefaultExt = Book.File.Format, // Default file extension
@@ -194,17 +196,16 @@ namespace ElibWpf.ViewModels.Flyouts
                 Filter = $"Book file (*{Book.File.Format})|*{Book.File.Format}"
             };
 
-            bool? result = dlg.ShowDialog();
+            var result = dlg.ShowDialog();
 
             try
             {
                 if (result == true)
                 {
-                    string filePath = dlg.FileName;
+                    var filePath = dlg.FileName;
                     using var uow = ApplicationSettings.CreateUnitOfWork();
-                    Exporter exporter = new Exporter(uow);
-                    RawFile fileToExport = uow.RawFileRepository.Find(Book.File.RawFileId);
-                    exporter.Export(fileToExport, filePath);
+                    var fileToExport = uow.RawFileRepository.Find(Book.File.RawFileId);
+                    Exporter.Export(fileToExport, filePath);
                 }
             }
             catch (Exception)
@@ -213,16 +214,16 @@ namespace ElibWpf.ViewModels.Flyouts
             }
         }
 
-        public ICommand ShowFileInfoCommand { get => new RelayCommand(this.HandleShowFileInfo); }
+        public ICommand ShowFileInfoCommand => new RelayCommand(HandleShowFileInfo);
 
         private void HandleShowFileInfo()
         {
             using var uow = ApplicationSettings.CreateUnitOfWork();
-            RawFile fileToExport = uow.RawFileRepository.Find(Book.File.RawFileId);
+            var fileToExport = uow.RawFileRepository.Find(Book.File.RawFileId);
 
-            ParsedBook x = EbookParserFactory.Create(Book.File.Format, fileToExport.RawContent).Parse();
+            var x = EbookParserFactory.Create(Book.File.Format, fileToExport.RawContent).Parse();
 
-            StringBuilder builder = new StringBuilder("");
+            var builder = new StringBuilder("");
             builder.AppendLine($"ISBN: {x.Isbn}");
             builder.AppendLine($"Publisher: {x.Publisher}");
 

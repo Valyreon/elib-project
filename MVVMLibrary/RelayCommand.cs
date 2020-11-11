@@ -11,8 +11,8 @@ namespace MVVMLibrary
             remove { }
         }
 
-        private Action methodToExecute;
-        private Func<bool> canExecuteEvaluator;
+        private readonly Action methodToExecute;
+        private readonly Func<bool> canExecuteEvaluator;
 
         public RelayCommand(Action methodToExecute, Func<bool> canExecuteEvaluator)
         {
@@ -27,20 +27,20 @@ namespace MVVMLibrary
 
         public bool CanExecute(object parameter)
         {
-            if (this.canExecuteEvaluator == null)
+            if (canExecuteEvaluator == null)
             {
                 return true;
             }
             else
             {
-                bool result = this.canExecuteEvaluator.Invoke();
+                var result = canExecuteEvaluator.Invoke();
                 return result;
             }
         }
 
         public void Execute(object parameter)
         {
-            this.methodToExecute.Invoke();
+            methodToExecute.Invoke();
         }
     }
 }

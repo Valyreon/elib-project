@@ -6,77 +6,67 @@ using System.Threading.Tasks;
 
 namespace OnlineBookApi.OpenLibrary
 {
-    public static class Query
-    {
-        public enum SearchType
-        {
-            Query,
-            Title,
-            Author
-        }
+	public static class Query
+	{
+		public enum SearchType
+		{
+			Query,
+			Title,
+			Author
+		}
 
-        public static async Task<SearchQuery> GeneralQueryAsync(string queryString, SearchType searchType)
-        {
-            queryString = queryString.Trim().Replace(' ', '+');
-            string searchLink = null;
+		public static async Task<SearchQuery> GeneralQueryAsync(string queryString, SearchType searchType)
+		{
+			queryString = queryString.Trim().Replace(' ', '+');
+			string searchLink = null;
 
-            switch (searchType)
-            {
-                case SearchType.Title:
-                    searchLink = "http://openlibrary.org/search.json?title=";
-                    break;
+			searchLink = searchType switch
+			{
+				SearchType.Title => "http://openlibrary.org/search.json?title=",
+				SearchType.Author => "http://openlibrary.org/search.json?author=",
+				_ => "http://openlibrary.org/search.json?q=",
+			};
+			var client = new HttpClient();
+			var response = await client.GetAsync(searchLink + queryString);
 
-                case SearchType.Author:
-                    searchLink = "http://openlibrary.org/search.json?author=";
-                    break;
+			var JsonResponse = await response.Content.ReadAsStringAsync();
 
-                case SearchType.Query:
-                default:
-                    searchLink = "http://openlibrary.org/search.json?q=";
-                    break;
-            }
+			return await Task.Run(() => JsonConvert.DeserializeObject<SearchQuery>(JsonResponse));
+		}
 
-            HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.GetAsync(searchLink + queryString);
+		public static async Task<IsbnDetailed> IsbnQueryAsync(string isbn)
+		{
+			isbn = isbn.Trim();
 
-            string JsonResponse = await response.Content.ReadAsStringAsync();
+			var client = new HttpClient();
+			var response =
+				await client.GetAsync("http://openlibrary.org/api/books?bibkeys=ISBN:" + isbn +
+									  "&format=json&jscmd=data");
 
-            return await Task.Run(() => JsonConvert.DeserializeObject<SearchQuery>(JsonResponse));
-        }
+			var jObject = JObject.Parse(await response.Content.ReadAsStringAsync());
+			var jToken = jObject["ISBN:" + isbn];
 
-        public static async Task<IsbnDetailed> IsbnQueryAsync(string isbn)
-        {
-            isbn = isbn.Trim();
+			return await Task.Run(() => JsonConvert.DeserializeObject<IsbnDetailed>(jToken.ToString()));
+		}
 
-            HttpClient client = new HttpClient();
-            HttpResponseMessage response =
-                await client.GetAsync("http://openlibrary.org/api/books?bibkeys=ISBN:" + isbn +
-                                      "&format=json&jscmd=data");
+		public static async Task<byte[]> GetImageFromOLidAsync(string OLid)
+		{
+			OLid = OLid.Trim();
 
-            JObject jObject = JObject.Parse(await response.Content.ReadAsStringAsync());
-            JToken jToken = jObject["ISBN:" + isbn];
+			var client = new HttpClient();
+			var response = await client.GetAsync("http://covers.openlibrary.org/b/olid/" + OLid + "-L.jpg");
 
-            return await Task.Run(() => JsonConvert.DeserializeObject<IsbnDetailed>(jToken.ToString()));
-        }
+			return await response.Content.ReadAsByteArrayAsync();
+		}
 
-        public static async Task<byte[]> GetImageFromOLidAsync(string OLid)
-        {
-            OLid = OLid.Trim();
+		public static async Task<byte[]> GetImageFromImageIdAsync(string ImageID)
+		{
+			ImageID = ImageID.Trim();
 
-            HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.GetAsync("http://covers.openlibrary.org/b/olid/" + OLid + "-L.jpg");
+			var client = new HttpClient();
+			var response = await client.GetAsync("http://covers.openlibrary.org/b/id/" + ImageID + "-L.jpg");
 
-            return await response.Content.ReadAsByteArrayAsync();
-        }
-
-        public static async Task<byte[]> GetImageFromImageIdAsync(string ImageID)
-        {
-            ImageID = ImageID.Trim();
-
-            HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.GetAsync("http://covers.openlibrary.org/b/id/" + ImageID + "-L.jpg");
-
-            return await response.Content.ReadAsByteArrayAsync();
-        }
-    }
+			return await response.Content.ReadAsByteArrayAsync();
+		}
+	}
 }

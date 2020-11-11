@@ -21,17 +21,9 @@ namespace ElibWpf.Converters
         public object Convert(object value, Type targetType, object parameter,
             CultureInfo culture)
         {
-            if (targetType != typeof(Visibility))
-            {
-                throw new InvalidOperationException("The target must be a VisibilityProperty");
-            }
-
-            if ((bool)value)
-            {
-                return Visibility.Visible;
-            }
-
-            return Visibility.Collapsed;
+            return targetType != typeof(Visibility)
+                ? throw new InvalidOperationException("The target must be a VisibilityProperty")
+                : (bool)value ? Visibility.Visible : (object)Visibility.Collapsed;
         }
 
         /// <summary>

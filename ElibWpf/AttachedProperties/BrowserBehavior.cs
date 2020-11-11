@@ -25,9 +25,10 @@ namespace ElibWpf.AttachedProperties
 
         private static void OnHtmlChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            ChromiumWebBrowser wb = d as ChromiumWebBrowser;
-            if (wb != null)
+            if (d is ChromiumWebBrowser wb)
+            {
                 wb.LoadHtml(e.NewValue as string, "http://rendering/");
+            }
         }
     }
 }

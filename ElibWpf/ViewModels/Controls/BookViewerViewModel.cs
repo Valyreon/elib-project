@@ -1,15 +1,3 @@
-﻿using DataLayer;
-using Domain;
-using EbookTools;
-using ElibWpf.BindingItems;
-using ElibWpf.Extensions;
-using ElibWpf.Messages;
-using ElibWpf.ViewModels.Dialogs;
-using ElibWpf.Views.Dialogs;
-using MahApps.Metro.Controls.Dialogs;
-using Models;
-using MVVMLibrary;
-using MVVMLibrary.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -19,6 +7,18 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
+using DataLayer;
+using Domain;
+using EbookTools;
+using ElibWpf.BindingItems;
+using ElibWpf.Extensions;
+using ElibWpf.Messages;
+using ElibWpf.Models;
+using ElibWpf.ViewModels.Dialogs;
+using ElibWpf.Views.Dialogs;
+using MahApps.Metro.Controls.Dialogs;
+using MVVMLibrary;
+using MVVMLibrary.Messaging;
 
 namespace ElibWpf.ViewModels.Controls
 {
@@ -47,14 +47,14 @@ namespace ElibWpf.ViewModels.Controls
 
         public BookViewerViewModel(FilterParameters filter, Selector selector)
         {
-            this.Filter = filter;
-            this.Books = new ObservableCollection<Book>();
+            Filter = filter;
+            Books = new ObservableCollection<Book>();
             this.selector = selector;
             ApplyFilterOptionsToFilter(filterOptions, filter);
             UpdateSubcaption();
         }
 
-        public ICommand BackCommand => new RelayCommand(this.Back);
+        public ICommand BackCommand => new RelayCommand(Back);
 
         public ObservableCollection<Book> Books { get; set; }
 
@@ -64,19 +64,19 @@ namespace ElibWpf.ViewModels.Controls
         public ICommand GoToSeries =>
             new RelayCommand<BookSeries>(s => Messenger.Default.Send(new SeriesSelectedMessage(s)));
 
-        public ICommand LoadMoreCommand => new RelayCommand(this.LoadMore);
+        public ICommand LoadMoreCommand => new RelayCommand(LoadMore);
 
-        public ICommand OpenBookDetails => new RelayCommand<Book>(this.HandleBookClick);
+        public ICommand OpenBookDetails => new RelayCommand<Book>(HandleBookClick);
 
-        public bool IsBackEnabled { get => Back != null; }
+        public bool IsBackEnabled => Back != null;
 
-        public ICommand RefreshCommand => new RelayCommand(this.Refresh);
+        public ICommand RefreshCommand => new RelayCommand(Refresh);
 
-        public ICommand FilterBooksCommand => new RelayCommand(this.HandleFilter);
+        public ICommand FilterBooksCommand => new RelayCommand(HandleFilter);
 
-        public ICommand ClearSelectedBooksCommand => new RelayCommand(this.HandleClearButton);
+        public ICommand ClearSelectedBooksCommand => new RelayCommand(HandleClearButton);
 
-        public bool IsSelectedBooksViewer => this.Filter.Selected != null && this.Filter.Selected.Value == true;
+        public bool IsSelectedBooksViewer => Filter.Selected != null && Filter.Selected.Value == true;
 
         public bool IsResultEmpty
         {
@@ -86,20 +86,20 @@ namespace ElibWpf.ViewModels.Controls
 
         private void HandleClearButton()
         {
-            this.selector.Clear();
-            this.Refresh();
+            selector.Clear();
+            Refresh();
         }
 
         public double ScrollVertical
         {
-            get => this.scrollVerticalOffset;
-            set => this.Set(() => ScrollVertical, ref this.scrollVerticalOffset, value);
+            get => scrollVerticalOffset;
+            set => Set(() => ScrollVertical, ref scrollVerticalOffset, value);
         }
 
         public ICommand SelectBookCommand => new RelayCommand<Book>(b =>
         {
             b.IsMarked = !b.IsMarked;
-            this.HandleSelectBook(b);
+            HandleSelectBook(b);
         });
 
         private FilterParameters filter = null;
@@ -111,44 +111,46 @@ namespace ElibWpf.ViewModels.Controls
             {
                 filter = value;
                 if (Books != null)
-                    this.Refresh();
+                {
+                    Refresh();
+                }
             }
         }
 
         public string Caption
         {
-            get => this.caption;
-            set => this.Set(() => Caption, ref this.caption, value);
+            get => caption;
+            set => Set(() => Caption, ref caption, value);
         }
 
         private string subCaption;
 
         public string SubCaption
         {
-            get => this.subCaption;
-            set => this.Set(() => SubCaption, ref this.subCaption, value);
+            get => subCaption;
+            set => Set(() => SubCaption, ref subCaption, value);
         }
 
         public int CurrentCount => Books.Count;
 
         private void HandleSelectBook(Book obj)
         {
-            bool isSelected = this.selector.Select(obj);
-            bool isThisSelectedView = Filter.Selected.HasValue && Filter.Selected.Value;
-            if (isThisSelectedView && !isSelected && this.Books.Count == 1)
+            var isSelected = selector.Select(obj);
+            var isThisSelectedView = Filter.Selected.HasValue && Filter.Selected.Value;
+            if (isThisSelectedView && !isSelected && Books.Count == 1)
             {
-                this.MessengerInstance.Send(new ResetPaneSelectionMessage());
+                MessengerInstance.Send(new ResetPaneSelectionMessage());
             }
-            else if (isThisSelectedView && !isSelected && this.Books.Count > 1)
+            else if (isThisSelectedView && !isSelected && Books.Count > 1)
             {
-                this.Books.Remove(obj);
+                Books.Remove(obj);
             }
             else
             {
-                this.lastSelectedBook = obj;
+                lastSelectedBook = obj;
             }
 
-            this.MessengerInstance.Send(new BookSelectedMessage());
+            MessengerInstance.Send(new BookSelectedMessage());
         }
 
         private void HandleBookClick(Book arg)
@@ -156,23 +158,23 @@ namespace ElibWpf.ViewModels.Controls
             if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
             {
                 arg.IsMarked = !arg.IsMarked;
-                this.HandleSelectBook(arg);
-                this.RaisePropertyChanged(() => arg.IsMarked);
+                HandleSelectBook(arg);
+                RaisePropertyChanged(() => arg.IsMarked);
             }
             else if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
             {
-                int lastSelectedIndex = this.lastSelectedBook == null ? 0 : this.Books.IndexOf(this.lastSelectedBook);
-                int currentIndex = this.Books.IndexOf(arg);
+                var lastSelectedIndex = lastSelectedBook == null ? 0 : Books.IndexOf(lastSelectedBook);
+                var currentIndex = Books.IndexOf(arg);
                 var ascIndexArray = new int[2];
                 ascIndexArray[0] = currentIndex > lastSelectedIndex ? lastSelectedIndex : currentIndex;
                 ascIndexArray[1] = currentIndex > lastSelectedIndex ? currentIndex : lastSelectedIndex;
 
-                for (int i = ascIndexArray[0]; i <= ascIndexArray[1]; i++)
+                for (var i = ascIndexArray[0]; i <= ascIndexArray[1]; i++)
                 {
-                    Book book = this.Books.ElementAt(i);
+                    var book = Books.ElementAt(i);
                     book.IsMarked = true;
-                    this.HandleSelectBook(book);
-                    this.RaisePropertyChanged(() => book.IsMarked);
+                    HandleSelectBook(book);
+                    RaisePropertyChanged(() => book.IsMarked);
                 }
             }
             else
@@ -184,13 +186,18 @@ namespace ElibWpf.ViewModels.Controls
         private async void LoadMore()
         {
             if (semaphore.CurrentCount == 0)
+            {
                 return;
+            }
 
             await semaphore.WaitAsync();
-            string callingMethod = (new System.Diagnostics.StackTrace()).GetFrame(1).GetMethod().Name;
+            var callingMethod = new System.Diagnostics.StackTrace().GetFrame(1).GetMethod().Name;
             Console.WriteLine(callingMethod);
 
-            if (dontLoad) return;
+            if (dontLoad)
+            {
+                return;
+            }
 
             await Task.Factory.StartNew(() =>
             {
@@ -201,54 +208,61 @@ namespace ElibWpf.ViewModels.Controls
                     return uow.BookRepository.GetBooks(selector.SelectedIds).ToList();
                 }
                 else
+                {
                     return uow.BookRepository.FindPageByFilter(filter, Books.Count, 25).ToList();
+                }
             }).ContinueWith((x) =>
             {
                 using var uow = ApplicationSettings.CreateUnitOfWork();
 
                 if (x.Result.Count == 0)
                 {
-                    this.IsResultEmpty = this.Books.Count == 0;
+                    IsResultEmpty = Books.Count == 0;
                     return;
                 }
 
-                foreach (Book item in x.Result)
+                foreach (var item in x.Result)
                 {
-                    this.Books.Add(this.selector.SetMarked(item).LoadMembers(uow));
+                    Books.Add(selector.SetMarked(item).LoadMembers(uow));
                 }
             }, TaskScheduler.FromCurrentSynchronizationContext());
-            semaphore.Release();
+            _ = semaphore.Release();
         }
 
         public void Refresh()
         {
-            this.ScrollVertical = 0;
-            this.Books.Clear();
+            ScrollVertical = 0;
+            Books.Clear();
             using var uow = ApplicationSettings.CreateUnitOfWork();
             uow.ClearCache();
             uow.Dispose();
-            this.UpdateSubcaption();
+            UpdateSubcaption();
         }
 
         public IViewer Search(SearchParameters searchOptions)
         {
-            var filterWithSearch = this.filter.Clone();
+            var filterWithSearch = filter.Clone();
 
             if (!string.IsNullOrEmpty(searchOptions.Token))
             {
                 filterWithSearch.SearchParameters = searchOptions.Clone();
             }
-            else return null;
+            else
+            {
+                return null;
+            }
 
             using var uow = ApplicationSettings.CreateUnitOfWork();
-            int resultCount = uow.BookRepository.Count(filterWithSearch);
+            var resultCount = uow.BookRepository.Count(filterWithSearch);
 
             if (resultCount == 0)
+            {
                 return null;
+            }
 
             var res = new BookViewerViewModel(filterWithSearch, selector)
             {
-                Caption = $"Search results for '{searchOptions.Token}' in {this.Caption}"
+                Caption = $"Search results for '{searchOptions.Token}' in {Caption}"
             };
 
             return res;
@@ -256,32 +270,34 @@ namespace ElibWpf.ViewModels.Controls
 
         private async void HandleFilter()
         {
-            FilterOptionsDialog dialog = new FilterOptionsDialog();
-            dialog.DataContext = new FilterOptionsDialogViewModel(filterOptions, f =>
+            var dialog = new FilterOptionsDialog
             {
-                filterOptions = f;
-                ApplyFilterOptionsToFilter(f, filter);
-                this.Refresh();
-                this.LoadMore();
-            });
-            await DialogCoordinator.Instance.ShowMetroDialogAsync(App.Current.MainWindow.DataContext, dialog);
+                DataContext = new FilterOptionsDialogViewModel(filterOptions, f =>
+                {
+                    filterOptions = f;
+                    ApplyFilterOptionsToFilter(f, filter);
+                    Refresh();
+                    LoadMore();
+                })
+            };
+            await DialogCoordinator.Instance.ShowMetroDialogAsync(System.Windows.Application.Current.MainWindow.DataContext, dialog);
         }
 
-        public ICommand ExportSelectedBooksCommand => new RelayCommand(this.HandleExport);
+        public ICommand ExportSelectedBooksCommand => new RelayCommand(HandleExport);
 
         private async void HandleExport()
         {
-            ExportOptionsDialog dialog = new ExportOptionsDialog();
+            var dialog = new ExportOptionsDialog();
             using var uow = ApplicationSettings.CreateUnitOfWork();
-            dialog.DataContext = new ExportOptionsDialogViewModel(this.selector.GetSelectedBooks(uow), dialog);
-            await DialogCoordinator.Instance.ShowMetroDialogAsync(App.Current.MainWindow.DataContext, dialog);
+            dialog.DataContext = new ExportOptionsDialogViewModel(selector.GetSelectedBooks(uow), dialog);
+            await DialogCoordinator.Instance.ShowMetroDialogAsync(System.Windows.Application.Current.MainWindow.DataContext, dialog);
         }
 
-        public ICommand AddBookCommand => new RelayCommand(this.ProcessAddBook);
+        public ICommand AddBookCommand => new RelayCommand(ProcessAddBook);
 
         private async void ProcessAddBook()
         {
-            using OpenFileDialog dlg = new OpenFileDialog
+            using var dlg = new OpenFileDialog
             {
                 Filter = "Epub files|*.epub|Mobi files|*.mobi|All files|*.*",
                 CheckFileExists = true,
@@ -289,16 +305,16 @@ namespace ElibWpf.ViewModels.Controls
                 FilterIndex = 3,
                 Multiselect = true
             };
-            DialogResult result = dlg.ShowDialog();
+            var result = dlg.ShowDialog();
             if (result == DialogResult.OK && dlg.FileNames.Any())
             {
                 var booksToAdd = new List<Book>();
-                ProgressDialogController controller =
-                    await DialogCoordinator.Instance.ShowProgressAsync(App.Current.MainWindow.DataContext,
+                var controller =
+                    await DialogCoordinator.Instance.ShowProgressAsync(System.Windows.Application.Current.MainWindow.DataContext,
                         "Please wait...", "");
                 controller.Maximum = dlg.FileNames.Length;
                 controller.Minimum = 1;
-                for (int i = 0; i < dlg.FileNames.Length; i++)
+                for (var i = 0; i < dlg.FileNames.Length; i++)
                 {
                     await Task.Run(() =>
                     {
@@ -309,15 +325,14 @@ namespace ElibWpf.ViewModels.Controls
                     {
                         await Task.Run(() =>
                         {
-                            ParsedBook pBook = EbookParserFactory.Create(dlg.FileNames[i]).Parse();
+                            var pBook = EbookParserFactory.Create(dlg.FileNames[i]).Parse();
                             using var uow = ApplicationSettings.CreateUnitOfWork();
-                            Book book = pBook.ToBook(uow);
+                            var book = pBook.ToBook(uow);
                             booksToAdd.Add(book);
                         });
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
-                        Logger.Log("BOOK_PARSE_ERROR", $"\nMESSAGE:{e.Message}\nSTACK:{e.StackTrace}");
                         var content = File.ReadAllBytes(dlg.FileNames[i]);
                         booksToAdd.Add(new Book
                         {
@@ -334,7 +349,7 @@ namespace ElibWpf.ViewModels.Controls
                 }
 
                 await controller.CloseAsync();
-                this.MessengerInstance.Send(new OpenAddBooksFormMessage(booksToAdd));
+                MessengerInstance.Send(new OpenAddBooksFormMessage(booksToAdd));
             }
         }
 
@@ -342,9 +357,18 @@ namespace ElibWpf.ViewModels.Controls
         {
             if (f != null && p != null)
             {
-                if (f.ShowAll) p.Read = null;
-                else if (f.ShowRead) p.Read = true;
-                else if (f.ShowUnread) p.Read = false;
+                if (f.ShowAll)
+                {
+                    p.Read = null;
+                }
+                else if (f.ShowRead)
+                {
+                    p.Read = true;
+                }
+                else if (f.ShowUnread)
+                {
+                    p.Read = false;
+                }
 
                 p.SortByAuthor = f.SortByAuthor;
                 p.SortByImportOrder = f.SortByImportTime;
@@ -356,22 +380,27 @@ namespace ElibWpf.ViewModels.Controls
 
         public void Clear()
         {
-            this.Books.Clear();
-            this.ScrollVertical = 0;
+            Books.Clear();
+            ScrollVertical = 0;
         }
 
         private void UpdateSubcaption()
         {
             _ = Task.Run(() =>
-            {
-                using var uow = ApplicationSettings.CreateUnitOfWork();
-                int count = uow.BookRepository.Count(filter);
-                SubCaption = $"{count} book";
-                if (count != 1)
-                    SubCaption += "s";
-                if (this.Filter.Read != null)
-                    SubCaption += ", filter is applied";
-            });
+{
+    using var uow = ApplicationSettings.CreateUnitOfWork();
+    var count = uow.BookRepository.Count(filter);
+    SubCaption = $"{count} book";
+    if (count != 1)
+    {
+        SubCaption += "s";
+    }
+
+    if (Filter.Read != null)
+    {
+        SubCaption += ", filter is applied";
+    }
+});
         }
     }
 }

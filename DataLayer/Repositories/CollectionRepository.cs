@@ -29,7 +29,7 @@ namespace DataLayer.Repositories
         {
             if (collection.Id == 0)
             {
-                this.Add(collection);
+                Add(collection);
             }
 
             Connection.Execute("INSERT INTO UserCollectionBooks(UserCollectionId, BookId) VALUES (@CollectionId, @BookId)", new { CollectionId = collection.Id, BookId = bookId }, Transaction);
@@ -43,9 +43,13 @@ namespace DataLayer.Repositories
             {
                 var itemInCache = cache.Find(x => x.Id == uc.Id);
                 if (itemInCache == null)
+                {
                     cache.Add(uc);
+                }
                 else
+                {
                     itemInCache.Tag = uc.Tag;
+                }
             }
 
             return cache.ToList();
@@ -53,10 +57,10 @@ namespace DataLayer.Repositories
 
         public void CleanCollections()
         {
-            var allCollections = this.All();
+            var allCollections = All();
             foreach (var collection in allCollections)
             {
-                int count = Connection.QueryFirst<int>(@"SELECT COUNT(*) FROM (
+                var count = Connection.QueryFirst<int>(@"SELECT COUNT(*) FROM (
                                                        SELECT UserCollectionBooks.UserCollectionId,
                                                               Books.Id
                                                          FROM Books
@@ -67,7 +71,7 @@ namespace DataLayer.Repositories
 
                 if (count == 0)
                 {
-                    this.Remove(collection.Id);
+                    Remove(collection.Id);
                 }
             }
         }
@@ -87,7 +91,9 @@ namespace DataLayer.Repositories
             var cacheResult = cache.Find(x => x.Id == id);
 
             if (cacheResult != null)
+            {
                 return cacheResult;
+            }
 
             var result = Connection.QueryFirst<UserCollection>("SELECT * FROM UserCollections WHERE Id = @CollectionId LIMIT 1",
                 new { CollectionId = id },
@@ -106,19 +112,23 @@ namespace DataLayer.Repositories
             var fromCache = cache.Find(x => x.Tag == tag);
 
             if (fromCache != null)
+            {
                 return fromCache;
+            }
 
-            UserCollection fromDb = Connection.Query<UserCollection>("SELECT * FROM UserCollections WHERE Tag = @Tag LIMIT 1", new { Tag = tag }, Transaction).FirstOrDefault();
+            var fromDb = Connection.Query<UserCollection>("SELECT * FROM UserCollections WHERE Tag = @Tag LIMIT 1", new { Tag = tag }, Transaction).FirstOrDefault();
 
             if (fromDb != null)
+            {
                 cache.Add(fromDb);
+            }
 
             return fromDb;
         }
 
         public IEnumerable<UserCollection> GetUserCollectionsOfBook(int bookId)
         {
-            List<UserCollection> result = new List<UserCollection>();
+            var result = new List<UserCollection>();
             var dbResult = Connection.Query<UserCollection>("SELECT Id, Tag FROM BookId_Collection_View WHERE BookId = @BookId", new { BookId = bookId }, Transaction).AsEnumerable();
 
             foreach (var uc in dbResult)
@@ -144,12 +154,14 @@ namespace DataLayer.Repositories
             Connection.Execute("DELETE FROM UserCollections WHERE Id = @RemoveId", new { RemoveId = id }, Transaction);
             var inCache = cache.Find(x => x.Id == id);
             if (inCache != null)
+            {
                 cache.Remove(inCache);
+            }
         }
 
         public void Remove(UserCollection entity)
         {
-            this.Remove(entity.Id);
+            Remove(entity.Id);
             entity.Id = 0;
         }
 

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace DataLayer
 {
@@ -24,53 +24,53 @@ namespace DataLayer
         {
             return new FilterParameters
             {
-                SearchParameters = this.SearchParameters?.Clone(),
-                AuthorId = this.AuthorId,
-                SeriesId = this.SeriesId,
-                CollectionId = this.CollectionId,
-                Read = this.Read,
-                Favorite = this.Favorite,
-                Selected = this.Selected,
-                SortByTitle = this.SortByTitle,
-                SortByImportOrder = this.SortByImportOrder,
-                SortByAuthor = this.SortByAuthor,
-                SortBySeries = this.SortBySeries,
-                Ascending = this.Ascending
+                SearchParameters = SearchParameters?.Clone(),
+                AuthorId = AuthorId,
+                SeriesId = SeriesId,
+                CollectionId = CollectionId,
+                Read = Read,
+                Favorite = Favorite,
+                Selected = Selected,
+                SortByTitle = SortByTitle,
+                SortByImportOrder = SortByImportOrder,
+                SortByAuthor = SortByAuthor,
+                SortBySeries = SortBySeries,
+                Ascending = Ascending
             };
         }
 
         public override bool Equals(object obj)
         {
             return obj is FilterParameters parameters &&
-                   this.AuthorId == parameters.AuthorId &&
-                   this.SeriesId == parameters.SeriesId &&
-                   this.CollectionId == parameters.CollectionId &&
-                   this.Read == parameters.Read &&
-                   this.Favorite == parameters.Favorite &&
-                   this.Selected == parameters.Selected &&
-                   this.SortByTitle == parameters.SortByTitle &&
-                   this.SortByImportOrder == parameters.SortByImportOrder &&
-                   this.SortBySeries == parameters.SortBySeries &&
-                   this.SortByAuthor == parameters.SortByAuthor &&
-                   this.Ascending == parameters.Ascending &&
-                   EqualityComparer<SearchParameters>.Default.Equals(this.SearchParameters, parameters.SearchParameters);
+                   AuthorId == parameters.AuthorId &&
+                   SeriesId == parameters.SeriesId &&
+                   CollectionId == parameters.CollectionId &&
+                   Read == parameters.Read &&
+                   Favorite == parameters.Favorite &&
+                   Selected == parameters.Selected &&
+                   SortByTitle == parameters.SortByTitle &&
+                   SortByImportOrder == parameters.SortByImportOrder &&
+                   SortBySeries == parameters.SortBySeries &&
+                   SortByAuthor == parameters.SortByAuthor &&
+                   Ascending == parameters.Ascending &&
+                   EqualityComparer<SearchParameters>.Default.Equals(SearchParameters, parameters.SearchParameters);
         }
 
         public override int GetHashCode()
         {
-            int hashCode = -1485931979;
-            hashCode = hashCode * -1521134295 + this.AuthorId.GetHashCode();
-            hashCode = hashCode * -1521134295 + this.SeriesId.GetHashCode();
-            hashCode = hashCode * -1521134295 + this.CollectionId.GetHashCode();
-            hashCode = hashCode * -1521134295 + this.Read.GetHashCode();
-            hashCode = hashCode * -1521134295 + this.Favorite.GetHashCode();
-            hashCode = hashCode * -1521134295 + this.Selected.GetHashCode();
-            hashCode = hashCode * -1521134295 + this.SortByTitle.GetHashCode();
-            hashCode = hashCode * -1521134295 + this.SortByImportOrder.GetHashCode();
-            hashCode = hashCode * -1521134295 + this.SortBySeries.GetHashCode();
-            hashCode = hashCode * -1521134295 + this.SortByAuthor.GetHashCode();
-            hashCode = hashCode * -1521134295 + this.Ascending.GetHashCode();
-            hashCode = hashCode * -1521134295 + EqualityComparer<SearchParameters>.Default.GetHashCode(this.SearchParameters);
+            var hashCode = -1485931979;
+            hashCode = (hashCode * -1521134295) + AuthorId.GetHashCode();
+            hashCode = (hashCode * -1521134295) + SeriesId.GetHashCode();
+            hashCode = (hashCode * -1521134295) + CollectionId.GetHashCode();
+            hashCode = (hashCode * -1521134295) + Read.GetHashCode();
+            hashCode = (hashCode * -1521134295) + Favorite.GetHashCode();
+            hashCode = (hashCode * -1521134295) + Selected.GetHashCode();
+            hashCode = (hashCode * -1521134295) + SortByTitle.GetHashCode();
+            hashCode = (hashCode * -1521134295) + SortByImportOrder.GetHashCode();
+            hashCode = (hashCode * -1521134295) + SortBySeries.GetHashCode();
+            hashCode = (hashCode * -1521134295) + SortByAuthor.GetHashCode();
+            hashCode = (hashCode * -1521134295) + Ascending.GetHashCode();
+            hashCode = (hashCode * -1521134295) + EqualityComparer<SearchParameters>.Default.GetHashCode(SearchParameters);
             return hashCode;
         }
     }

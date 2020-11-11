@@ -1,5 +1,5 @@
-﻿using ElibWpf.ViewModels;
 using System.Collections.Generic;
+using ElibWpf.ViewModels;
 
 namespace ElibWpf.CustomDataStructures
 {
@@ -7,11 +7,11 @@ namespace ElibWpf.CustomDataStructures
     {
         private readonly Stack<IViewer> stack = new Stack<IViewer>();
 
-        public int Count => this.stack.Count;
+        public int Count => stack.Count;
 
         public void Clear()
         {
-            this.stack.Clear();
+            stack.Clear();
         }
 
         public IViewer Peek()
@@ -27,7 +27,7 @@ namespace ElibWpf.CustomDataStructures
         public void Push(IViewer element)
         {
             element.Clear();
-            this.stack.Push(element);
+            stack.Push(element);
         }
     }
 }

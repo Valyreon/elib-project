@@ -1,6 +1,6 @@
-﻿using MVVMLibrary;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using MVVMLibrary;
 
 namespace Domain
 {
@@ -18,13 +18,13 @@ namespace Domain
         [Required]
         public string Text
         {
-            get => this.text;
+            get => text;
             set => Set(() => Text, ref text, value);
         }
 
         public string Note
         {
-            get => this.note;
+            get => note;
             set => Set(() => Note, ref note, value);
         }
     }

@@ -3,7 +3,7 @@ using CefSharp.Wpf;
 using Domain;
 using EbookTools;
 using ElibWpf.BindingItems;
-using Models;
+using ElibWpf.Models;
 using MVVMLibrary;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,26 +17,24 @@ namespace ElibWpf.ViewModels.Windows
 
         public ReaderViewModel(Book book)
         {
-            this.Book = book;
+            Book = book;
         }
 
-        public ICommand LoadCommand { get => new RelayCommand<ChromiumWebBrowser>(this.HandleLoad); }
+        public ICommand LoadCommand => new RelayCommand<ChromiumWebBrowser>(HandleLoad);
 
-        public ICommand UnloadCommand { get => new RelayCommand<ChromiumWebBrowser>(this.HandleUnload); }
+        public ICommand UnloadCommand => new RelayCommand<ChromiumWebBrowser>(HandleUnload);
 
         private void HandleUnload(ChromiumWebBrowser obj)
         {
             var r = obj.EvaluateScriptAsync(@"document.body[""scrollTop""]");
-            int scrollTop = (int)r.Result.Result;
+            var scrollTop = (int)r.Result.Result;
 
             r = obj.EvaluateScriptAsync(@"document.documentElement[""scrollHeight""]");
-            int height = (int)r.Result.Result;
+            var height = (int)r.Result.Result;
 
-            if (scrollTop == 0)
-                Book.PercentageRead = 0;
-            else
-                Book.PercentageRead = decimal.Divide(scrollTop, height) * 100m;
-            Book toUpdate = this.Book;
+            Book.PercentageRead = scrollTop == 0 ? 0 : decimal.Divide(scrollTop, height) * 100m;
+
+            var toUpdate = Book;
 
             using var uow = ApplicationSettings.CreateUnitOfWork();
             uow.BookRepository.Update(toUpdate);
@@ -44,6 +42,7 @@ namespace ElibWpf.ViewModels.Windows
         }
 
         private string bookHtml;
+
         public string BookHtml
         {
             get => bookHtml;
@@ -52,17 +51,17 @@ namespace ElibWpf.ViewModels.Windows
 
         private async void HandleLoad(ChromiumWebBrowser obj)
         {
-            obj.JavascriptObjectRepository.Register("QuoteHelper", new QuoteJsHelper(this.Book), true);
+            obj.JavascriptObjectRepository.Register("QuoteHelper", new QuoteJsHelper(Book), true);
 
             await Task.Run(() =>
             {
                 using var uow = ApplicationSettings.CreateUnitOfWork();
                 var rawFile = uow.RawFileRepository.Find(Book.File.RawFileId);
                 var parser = EbookParserFactory.Create(Book.File.Format, rawFile.RawContent);
-                StringBuilder html = new StringBuilder("<html>" + parser.GenerateHtml());
-                if (this.Book.PercentageRead != 0)
+                var html = new StringBuilder("<html>" + parser.GenerateHtml());
+                if (Book.PercentageRead != 0)
                 {
-                    html.Append($"<script>let scrollPercentage = {this.Book.PercentageRead}; document.addEventListener('DOMContentLoaded', function(){{document.body[\"scrollTop\"] = document.documentElement[\"scrollHeight\"]* (scrollPercentage / 100);}}, false);</script>");
+                    html.Append($"<script>let scrollPercentage = {Book.PercentageRead}; document.addEventListener('DOMContentLoaded', function(){{document.body[\"scrollTop\"] = document.documentElement[\"scrollHeight\"]* (scrollPercentage / 100);}}, false);</script>");
                 }
 
                 html.Append($"<script>{Resources.JavascriptCode.CtxMenuJS}</script>");

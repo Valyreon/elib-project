@@ -36,9 +36,13 @@ namespace DataLayer.Repositories
             {
                 var itemInCache = cache.Find(x => x.Id == series.Id);
                 if (itemInCache == null)
+                {
                     cache.Add(series);
+                }
                 else
+                {
                     itemInCache.Title = series.Title;
+                }
             }
 
             return cache.ToList();
@@ -48,7 +52,9 @@ namespace DataLayer.Repositories
         {
             var cacheResult = cache.Find(s => s.Id == id);
             if (cacheResult != null)
+            {
                 return cacheResult;
+            }
 
             var res = Connection.QueryFirst<Book>("SELECT * FROM Books WHERE Id = @BookId LIMIT 1",
                 new { BookId = id },
@@ -59,7 +65,7 @@ namespace DataLayer.Repositories
 
         public IEnumerable<Book> FindByCollectionId(int collectionId)
         {
-            List<Book> result = new List<Book>();
+            var result = new List<Book>();
             var dbResult = Connection.Query<Book>("SELECT * FROM CollectionId_Book_View WHERE CollectionId = @CollectionId", new { CollectionId = collectionId }, Transaction);
 
             foreach (var uc in dbResult)
@@ -81,7 +87,7 @@ namespace DataLayer.Repositories
 
         public IEnumerable<Book> FindBySeriesId(int seriesId)
         {
-            List<Book> result = new List<Book>();
+            var result = new List<Book>();
             var dbResult = Connection.Query<Book>("SELECT * FROM Books WHERE SeriesId = @SeriesId", new { SeriesId = seriesId }, Transaction);
 
             foreach (var uc in dbResult)
@@ -103,7 +109,7 @@ namespace DataLayer.Repositories
 
         public IEnumerable<Book> FindByAuthorId(int authorId)
         {
-            List<Book> result = new List<Book>();
+            var result = new List<Book>();
             var dbResult = Connection.Query<Book>("SELECT * FROM AuthorId_Book_View WHERE AuthorId = @AuthorId", new { AuthorId = authorId }, Transaction);
 
             foreach (var uc in dbResult)
@@ -135,7 +141,7 @@ namespace DataLayer.Repositories
 
         public void Remove(Book entity)
         {
-            this.Remove(entity.Id);
+            Remove(entity.Id);
             entity.Id = 0;
         }
 
@@ -166,15 +172,15 @@ namespace DataLayer.Repositories
                 throw new ArgumentException("Offset and page size should both be null, or both have values.");
             }
 
-            bool conditionSet = filter.AuthorId.HasValue || filter.CollectionId.HasValue || filter.SeriesId.HasValue ||
+            var conditionSet = filter.AuthorId.HasValue || filter.CollectionId.HasValue || filter.SeriesId.HasValue ||
                                 filter.Read.HasValue || filter.Favorite.HasValue;
 
-            DynamicParameters parameters = new DynamicParameters();
+            var parameters = new DynamicParameters();
 
-            StringBuilder queryBuilder = new StringBuilder(@$"SELECT MIN(Id) AS Id, Title, SeriesId, IsFavorite, IsRead, WhenRead, CoverId, NumberInSeries, PercentageRead,
+            var queryBuilder = new StringBuilder(@$"SELECT MIN(Id) AS Id, Title, SeriesId, IsFavorite, IsRead, WhenRead, CoverId, NumberInSeries, PercentageRead,
                                                             FileId, SeriesName, AuthorName, AuthorId, Tag, CollectionId FROM Full_Join{(conditionSet ? " WHERE (" : " ")}");
 
-            bool conditionsAdded = false;
+            var conditionsAdded = false;
 
             if (conditionSet)
             {
@@ -214,7 +220,7 @@ namespace DataLayer.Repositories
             if (filter.SearchParameters != null && !string.IsNullOrWhiteSpace(filter.SearchParameters.Token))
             {
                 queryBuilder.Append($" {(conditionSet ? " AND " : " WHERE ")} (");
-                bool searchAdded = false;
+                var searchAdded = false;
                 parameters.Add("@Token", $"%{filter.SearchParameters.Token}%");
                 if (filter.SearchParameters.SearchByTitle)
                 {
@@ -249,7 +255,9 @@ namespace DataLayer.Repositories
             {
                 queryBuilder.Append($" ORDER BY SeriesName {(filter.Ascending ? " ASC" : " DESC")}, NumberInSeries ASC");
                 if (offset != null && pageSize != null)
+                {
                     queryBuilder.Append($" LIMIT {offset}, {pageSize}");
+                }
             }
             else // title
             {
@@ -260,7 +268,9 @@ namespace DataLayer.Repositories
             {
                 queryBuilder.Append(filter.Ascending ? " ASC" : " DESC");
                 if (offset != null && pageSize != null)
+                {
                     queryBuilder.Append($" LIMIT {offset}, {pageSize}");
+                }
             }
 
             return new Tuple<string, DynamicParameters>(queryBuilder.ToString(), parameters);
@@ -271,7 +281,7 @@ namespace DataLayer.Repositories
             var queryTuple = CreateQueryFromFilter(filter, offset, pageSize);
 
             var dbResult = Connection.Query<Book>(queryTuple.Item1.ToString(), queryTuple.Item2, Transaction);
-            List<Book> result = new List<Book>();
+            var result = new List<Book>();
 
             foreach (var uc in dbResult)
             {
@@ -292,17 +302,22 @@ namespace DataLayer.Repositories
 
         private Tuple<string, DynamicParameters> CreateIdQuery(string initial, IEnumerable<int> bookIds)
         {
-            DynamicParameters parameters = new DynamicParameters();
+            var parameters = new DynamicParameters();
 
-            StringBuilder query = new StringBuilder(initial);
-            int counter = 0;
-            foreach (int id in bookIds)
+            var query = new StringBuilder(initial);
+            var counter = 0;
+            foreach (var id in bookIds)
             {
-                string parameterName = $"@Id{counter}";
+                var parameterName = $"@Id{counter}";
                 if (counter == 0)
+                {
                     query.Append($"Id = {parameterName}");
+                }
                 else
+                {
                     query.Append($" OR Id = {parameterName}");
+                }
+
                 counter++;
                 parameters.Add(parameterName, id);
             }
@@ -326,7 +341,7 @@ namespace DataLayer.Repositories
         {
             var queryTuple = CreateQueryFromFilter(filter, null, null);
 
-            string query = $"SELECT COUNT(*) FROM ({queryTuple.Item1});";
+            var query = $"SELECT COUNT(*) FROM ({queryTuple.Item1});";
 
             return Connection.QueryFirst<int>(query, queryTuple.Item2, Transaction);
         }

@@ -15,13 +15,8 @@ namespace ElibWpf.Converters.BookTileConverters
             {
                 try
                 {
-                    int maxLength = int.Parse(maxLengthStr);
-                    if (str.Length > maxLength)
-                    {
-                        return true;
-                    }
-
-                    return false;
+                    var maxLength = int.Parse(maxLengthStr);
+                    return str.Length > maxLength;
                 }
                 catch (Exception)
                 {

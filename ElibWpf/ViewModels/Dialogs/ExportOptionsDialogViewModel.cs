@@ -1,14 +1,14 @@
-﻿using Domain;
-using ElibWpf.ValidationAttributes;
-using MahApps.Metro.Controls.Dialogs;
-using Models;
-using Models.Options;
-using MVVMLibrary;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
+using Domain;
+using ElibWpf.Models;
+using ElibWpf.Models.Options;
+using ElibWpf.ValidationAttributes;
+using MahApps.Metro.Controls.Dialogs;
+using MVVMLibrary;
 using Application = System.Windows.Application;
 
 namespace ElibWpf.ViewModels.Dialogs
@@ -30,83 +30,82 @@ namespace ElibWpf.ViewModels.Dialogs
             this.dialog = dialog;
         }
 
-        public ICommand CancelCommand => new RelayCommand(this.Cancel);
+        public ICommand CancelCommand => new RelayCommand(Cancel);
 
-        public ICommand ChooseDestinationCommand => new RelayCommand(this.ChooseDestination);
+        public ICommand ChooseDestinationCommand => new RelayCommand(ChooseDestination);
 
         [Required(ErrorMessage = "You must specify destination directory.")]
         [DirectoryExists(ErrorMessage = "This directory does not exist.")]
         public string DestinationPath
         {
-            get => this.destinationPath;
-            set => this.Set(() => this.DestinationPath, ref this.destinationPath, value);
+            get => destinationPath;
+            set => Set(() => DestinationPath, ref destinationPath, value);
         }
 
-        public ICommand ExportCommand => new RelayCommand(this.Export);
+        public ICommand ExportCommand => new RelayCommand(Export);
 
         public bool IsGroupByAuthorChecked
         {
-            get => this.groupByAuthor;
-            set => this.Set(() => this.IsGroupByAuthorChecked, ref this.groupByAuthor, value);
+            get => groupByAuthor;
+            set => Set(() => IsGroupByAuthorChecked, ref groupByAuthor, value);
         }
 
         public bool IsGroupBySeriesChecked
         {
-            get => this.groupBySeries;
-            set => this.Set(() => this.IsGroupBySeriesChecked, ref this.groupBySeries, value);
+            get => groupBySeries;
+            set => Set(() => IsGroupBySeriesChecked, ref groupBySeries, value);
         }
 
         private void ChooseDestination()
         {
-            using FolderBrowserDialog fbd = new FolderBrowserDialog();
-            DialogResult result = fbd.ShowDialog();
+            using var fbd = new FolderBrowserDialog();
+            var result = fbd.ShowDialog();
 
             if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
             {
-                this.DestinationPath = fbd.SelectedPath;
+                DestinationPath = fbd.SelectedPath;
             }
         }
 
         private async void Export()
         {
             using var uow = ApplicationSettings.CreateUnitOfWork();
-            Exporter exporter = new Exporter(uow);
+            var exporter = new Exporter(uow);
 
-            await DialogCoordinator.Instance.HideMetroDialogAsync(Application.Current.MainWindow.DataContext, this.dialog);
-            ProgressDialogController controlProgress =
+            await DialogCoordinator.Instance.HideMetroDialogAsync(Application.Current.MainWindow.DataContext, dialog);
+            var controlProgress =
                 await DialogCoordinator.Instance.ShowProgressAsync(Application.Current.MainWindow.DataContext,
                     "Exporting books", "");
             controlProgress.Minimum = 1;
-            controlProgress.Maximum = this.booksToExport.Count * 2;
+            controlProgress.Maximum = booksToExport.Count * 2;
 
-            int counter = 0;
+            var counter = 0;
 
             void SetProgress(string message)
             {
                 controlProgress.SetMessage("Exporting book: " + message);
                 controlProgress.SetProgress(++counter);
-                Logger.Log("TEST", message);
             }
 
-            foreach (Book b in this.booksToExport)
+            foreach (var b in booksToExport)
             {
                 controlProgress.SetMessage("Loading book files...");
                 controlProgress.SetProgress(++counter);
             }
 
-            await Task.Run(() => exporter.ExportBooks(this.booksToExport,
+            await Task.Run(() => exporter.ExportBooks(booksToExport,
                 new ExporterOptions
                 {
-                    DestinationDirectory = this.DestinationPath,
-                    GroupByAuthor = this.IsGroupByAuthorChecked,
-                    GroupBySeries = this.IsGroupBySeriesChecked
-                }, uow, SetProgress));
+                    DestinationDirectory = DestinationPath,
+                    GroupByAuthor = IsGroupByAuthorChecked,
+                    GroupBySeries = IsGroupBySeriesChecked
+                }, SetProgress));
             await controlProgress.CloseAsync();
         }
 
         private async void Cancel()
         {
-            await DialogCoordinator.Instance.HideMetroDialogAsync(Application.Current.MainWindow.DataContext, this.dialog);
+            await DialogCoordinator.Instance.HideMetroDialogAsync(Application.Current.MainWindow.DataContext, dialog);
         }
     }
 }

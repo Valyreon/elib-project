@@ -18,21 +18,16 @@ namespace ElibWpf.ValidationAttributes
 
         public override bool IsValid(object value)
         {
-            string strValue = value as string;
+            var strValue = value as string;
 
             if (value is null)
             {
                 return true;
             }
 
-            bool res = Directory.Exists(strValue);
+            var res = Directory.Exists(strValue);
 
-            if (this.invert)
-            {
-                return !res;
-            }
-
-            return res;
+            return invert ? !res : res;
         }
     }
 }

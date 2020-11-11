@@ -1,28 +1,28 @@
-﻿using DataLayer;
-using Domain;
-using Models.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using DataLayer;
+using Domain;
+using ElibWpf.Models.Options;
 
-namespace Models
+namespace ElibWpf.Models
 {
     public class Exporter
     {
-        private readonly IUnitOfWork database;
+        private readonly IUnitOfWork _uow;
 
-        public Exporter(IUnitOfWork db)
+        public Exporter(IUnitOfWork uow)
         {
-            this.database = db;
+            _uow = uow;
         }
 
         public static string GenerateName(Book book)
         {
-            StringBuilder fileNameBuilder = new StringBuilder();
+            var fileNameBuilder = new StringBuilder();
             // there can be more than one author
-            int index = 1;
+            var index = 1;
             fileNameBuilder.Append(
                 $"{book.Title}{(book.SeriesId == null ? "" : $"({book.Series.Name} #{book.NumberInSeries})")} by {book.Authors.ElementAt(0).Name}");
             while (index < book.Authors.Count)
@@ -33,35 +33,35 @@ namespace Models
             }
 
             fileNameBuilder.Append(book.File.Format);
-            string fileName = fileNameBuilder.ToString();
+            var fileName = fileNameBuilder.ToString();
 
             fileName = Path.GetInvalidFileNameChars().Aggregate(fileName, (current, invalid) => current.Replace(char.ToString(invalid), ""));
 
             return fileName;
         }
 
-        public void Export(RawFile file, string filePath)
+        public static void Export(RawFile file, string filePath)
         {
-            using FileStream fs = File.Create(filePath);
+            using var fs = File.Create(filePath);
             fs.Write(file.RawContent, 0, file.RawContent.Length);
         }
 
         private void ExportBookToFolder(Book book, string destinationFolder)
         {
-            string fileName = GenerateName(book);
-            using FileStream fs = File.Create(Path.Combine(destinationFolder, fileName));
+            var fileName = GenerateName(book);
+            using var fs = File.Create(Path.Combine(destinationFolder, fileName));
             fs.Write(book.File.RawFile.RawContent, 0, book.File.RawFile.RawContent.Length);
         }
 
-        public void ExportBooks(IEnumerable<Book> books, ExporterOptions options, IUnitOfWork uow, Action<string> progressSet = null)
+        public void ExportBooks(IEnumerable<Book> books, ExporterOptions options, Action<string> progressSet = null)
         {
             void ExportAllInList(IEnumerable<Book> list, string outPath)
             {
-                foreach (Book book in list)
+                foreach (var book in list)
                 {
                     progressSet?.Invoke(book.Title);
 
-                    this.ExportBookToFolder(book, outPath);
+                    ExportBookToFolder(book, outPath);
                 }
             }
 
@@ -98,9 +98,9 @@ namespace Models
             }
 
             // Load everything needed
-            foreach (Book book in enumerable)
+            foreach (var book in enumerable)
             {
-                book.File.RawFile = uow.RawFileRepository.Find(book.File.Id);
+                book.File.RawFile = _uow.RawFileRepository.Find(book.File.Id);
             }
 
             Directory.CreateDirectory(options.DestinationDirectory);
@@ -121,7 +121,7 @@ namespace Models
                 foreach (var group in groups)
                 {
                     // create directory for this author
-                    string thisGroupsDestPath = Path.Combine(options.DestinationDirectory, $"{group.Key}");
+                    var thisGroupsDestPath = Path.Combine(options.DestinationDirectory, $"{group.Key}");
                     Directory.CreateDirectory(thisGroupsDestPath);
                     ExportAllInList(group, thisGroupsDestPath);
                 }
@@ -134,7 +134,7 @@ namespace Models
                 foreach (var authorGroup in authorGroups)
                 {
                     // create directory for this author
-                    string thisAuthorsDestPath = Path.Combine(options.DestinationDirectory, $"{authorGroup.Key}");
+                    var thisAuthorsDestPath = Path.Combine(options.DestinationDirectory, $"{authorGroup.Key}");
                     Directory.CreateDirectory(thisAuthorsDestPath);
 
                     // then we group one authors(that is combination of authors) by series

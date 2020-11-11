@@ -1,7 +1,7 @@
-﻿using MVVMLibrary;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using MVVMLibrary;
 
 namespace Domain
 {
@@ -17,7 +17,7 @@ namespace Domain
         [StringLength(100)]
         public string Name
         {
-            get => this.name;
+            get => name;
             set => Set(() => Name, ref name, value);
         }
     }

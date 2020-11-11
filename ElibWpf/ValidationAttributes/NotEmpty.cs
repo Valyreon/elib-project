@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace ElibWpf.ValidationAttributes
 {
@@ -7,12 +7,7 @@ namespace ElibWpf.ValidationAttributes
         // TODO: try to implement this
         public override bool IsValid(object value)
         {
-            if (value is null)
-            {
-                return true;
-            }
-
-            return true;
+            return value is null || true;
         }
     }
 }

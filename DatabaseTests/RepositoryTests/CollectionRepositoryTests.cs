@@ -1,7 +1,7 @@
 ﻿using DataLayer;
 using Domain;
+using ElibWpf.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Models;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -24,7 +24,7 @@ namespace DatabaseTests.RepositoryTests
                 new UserCollection { Tag = "Three Collection" }
             };
 
-            foreach (UserCollection col in addedCollections)
+            foreach (var col in addedCollections)
             {
                 unitOfWork.CollectionRepository.Add(col);
             }
@@ -50,8 +50,10 @@ namespace DatabaseTests.RepositoryTests
             var collections = unitOfWork.CollectionRepository.All();
 
             Assert.IsTrue(collections.Count() >= 3);
-            foreach (UserCollection x in addedCollections)
+            foreach (var x in addedCollections)
+            {
                 Assert.IsTrue(collections.Where(a => a.Tag == x.Tag).Count() == 1);
+            }
         }
 
         [TestMethod]
@@ -96,7 +98,7 @@ namespace DatabaseTests.RepositoryTests
         [TestMethod]
         public void TestAddCollectionForBook()
         {
-            Book toAdd = new Book
+            var toAdd = new Book
             {
                 Title = "Test Book Title",
                 FileId = 868

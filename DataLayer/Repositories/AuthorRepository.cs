@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using Domain;
 using System.Collections.Generic;
 using System.Data;
@@ -29,7 +29,7 @@ namespace DataLayer.Repositories
         {
             if (author.Id == 0)
             {
-                this.Add(author);
+                Add(author);
             }
 
             Connection.Execute("INSERT INTO AuthorBooks(AuthorId, BookId) VALUES (@AuthorId, @BookId)", new { AuthorId = author.Id, BookId = bookId }, Transaction);
@@ -43,9 +43,13 @@ namespace DataLayer.Repositories
             {
                 var itemInCache = cache.Find(x => x.Id == author.Id);
                 if (itemInCache == null)
+                {
                     cache.Add(author);
+                }
                 else
+                {
                     itemInCache.Name = author.Name;
+                }
             }
 
             return cache.ToList();
@@ -53,10 +57,10 @@ namespace DataLayer.Repositories
 
         public void CleanAuthors()
         {
-            var allAuthors = this.All();
+            var allAuthors = All();
             foreach (var author in allAuthors)
             {
-                int count = Connection.QueryFirst<int>(@"SELECT COUNT(*) FROM (
+                var count = Connection.QueryFirst<int>(@"SELECT COUNT(*) FROM (
                                                        SELECT AuthorBooks.AuthorId,
                                                               Books.Id
                                                          FROM Books
@@ -67,9 +71,14 @@ namespace DataLayer.Repositories
 
                 if (count == 0)
                 {
-                    this.Remove(author.Id);
+                    Remove(author.Id);
                 }
             }
+        }
+
+        public void ClearCache()
+        {
+            cache.Clear();
         }
 
         public int CountBooksByAuthor(int authorId)
@@ -81,20 +90,25 @@ namespace DataLayer.Repositories
         {
             var cacheResult = cache.Find(s => s.Id == id);
             if (cacheResult != null)
+            {
                 return cacheResult;
+            }
 
             var result = Connection.Query<Author>("SELECT * FROM Authors WHERE Id = @AuthorId LIMIT 1",
                 new { AuthorId = id },
                 Transaction).FirstOrDefault();
 
-            if (result != null) cache.Add(result);
+            if (result != null)
+            {
+                cache.Add(result);
+            }
 
             return result;
         }
 
         public IEnumerable<Author> GetAuthorsOfBook(int bookId)
         {
-            List<Author> result = new List<Author>();
+            var result = new List<Author>();
             var dbResult = Connection.Query<Author>("SELECT Id, Name FROM BookId_Author_View WHERE BookId = @BookId", new { BookId = bookId }, Transaction);
 
             foreach (var uc in dbResult)
@@ -118,11 +132,9 @@ namespace DataLayer.Repositories
         public Author GetAuthorWithName(string name)
         {
             var results = cache.Find(x => x.Name == name);
-            if (results == null)
-                return Connection.Query<Author>("SELECT * FROM Authors WHERE Name = @AuthorName LIMIT 1",
+            return results ?? Connection.Query<Author>("SELECT * FROM Authors WHERE Name = @AuthorName LIMIT 1",
                                                 new { AuthorName = name },
                                                 Transaction).FirstOrDefault();
-            return results;
         }
 
         public void Remove(int id)
@@ -130,12 +142,14 @@ namespace DataLayer.Repositories
             Connection.Execute("DELETE FROM Authors WHERE Id = @RemoveId", new { RemoveId = id }, Transaction);
             var inCache = cache.Find(x => x.Id == id);
             if (inCache != null)
+            {
                 cache.Remove(inCache);
+            }
         }
 
         public void Remove(Author entity)
         {
-            this.Remove(entity.Id);
+            Remove(entity.Id);
             entity.Id = 0;
         }
 
@@ -147,11 +161,6 @@ namespace DataLayer.Repositories
         public void Update(Author entity)
         {
             Connection.Execute("UPDATE Authors SET Name = @Name WHERE Id = @Id", entity, Transaction);
-        }
-
-        public void ClearCache()
-        {
-            cache.Clear();
         }
     }
 }

@@ -1,13 +1,13 @@
-﻿using DataLayer;
-using Domain;
-using EbookTools;
-using ElibWpf.Extensions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Models;
-using Models.Options;
 using System;
 using System.IO;
 using System.Linq;
+using DataLayer;
+using Domain;
+using EbookTools;
+using ElibWpf.Extensions;
+using ElibWpf.Models;
+using ElibWpf.Models.Options;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DatabaseTests
 {
@@ -18,23 +18,23 @@ namespace DatabaseTests
         public void ExporterTest()
         {
             using var uow = ApplicationSettings.CreateUnitOfWork();
-            Exporter exp = new Exporter(uow);
+            var exp = new Exporter(uow);
 
-            ExporterOptions options = new ExporterOptions
+            var options = new ExporterOptions
             {
                 GroupByAuthor = true,
                 GroupBySeries = true,
                 DestinationDirectory = @"C:\Users\Luka\Desktop"
             };
 
-            exp.ExportBooks(uow.BookRepository.All(), options, uow);
+            exp.ExportBooks(uow.BookRepository.All(), options);
         }
 
         [TestMethod]
         public void BookToHtml()
         {
-            string inputPath = @"D:\Documents\Ebooks\Miscellaneous\I Will Teach You to Be Rich, Second Edition No Guilt. No Excuses. No B.S. Just a 6-Week Program That Works. by Ramit Sethi (z-lib.org).epub";
-            string outputPath = @"C:\Users\Luka\Desktop\IWillTeachYouToBeRich.html";
+            var inputPath = @"D:\Documents\Ebooks\Miscellaneous\I Will Teach You to Be Rich, Second Edition No Guilt. No Excuses. No B.S. Just a 6-Week Program That Works. by Ramit Sethi (z-lib.org).epub";
+            var outputPath = @"C:\Users\Luka\Desktop\IWillTeachYouToBeRich.html";
 
             var html = EbookParserFactory.Create(inputPath).GenerateHtml();
             File.WriteAllText(outputPath, html);
@@ -43,7 +43,7 @@ namespace DatabaseTests
         [TestMethod]
         public void MoreCollections()
         {
-            Random random = new Random();
+            var random = new Random();
 
             string RandomString(int length)
             {
@@ -53,7 +53,7 @@ namespace DatabaseTests
             }
 
             using var context = ApplicationSettings.CreateUnitOfWork();
-            for (int i = 0; i < 15; i++)
+            for (var i = 0; i < 15; i++)
             {
                 context.CollectionRepository.Add(new UserCollection { Tag = RandomString(5) });
             }
@@ -64,31 +64,31 @@ namespace DatabaseTests
         [TestMethod]
         public void AddBookSeriesFromMyComputer()
         {
-            string bookSeriesPath = @"D:\Documents\Ebooks\Book Series";
+            var bookSeriesPath = @"D:\Documents\Ebooks\Book Series";
             using var uow = ApplicationSettings.CreateUnitOfWork();
             uow.Truncate();
             uow.Commit();
-            foreach (string dirPath in Directory.GetDirectories(bookSeriesPath))
+            foreach (var dirPath in Directory.GetDirectories(bookSeriesPath))
             {
                 var splitDirName = Path.GetFileName(dirPath).Split(new[] { " by " }, StringSplitOptions.None);
-                string seriesName = splitDirName[0];
-                string authorsName = splitDirName[1];
+                var seriesName = splitDirName[0];
+                var authorsName = splitDirName[1];
 
                 void DirSearch(string sDir)
                 {
                     try
                     {
-                        foreach (string d in Directory.GetDirectories(sDir))
+                        foreach (var d in Directory.GetDirectories(sDir))
                         {
-                            foreach (string f in Directory.GetFiles(d))
+                            foreach (var f in Directory.GetFiles(d))
                             {
                                 if (!f.EndsWith(".epub"))
                                 {
                                     continue;
                                 }
 
-                                ParsedBook parsedBook = EbookParserFactory.Create(f).Parse();
-                                Book newBook = parsedBook.ToBook(uow);
+                                var parsedBook = EbookParserFactory.Create(f).Parse();
+                                var newBook = parsedBook.ToBook(uow);
 
                                 if (newBook.Cover != null)
                                 {
@@ -106,7 +106,7 @@ namespace DatabaseTests
                                     var existingSeries = uow.SeriesRepository.GetByName(seriesName);
                                     if (existingSeries == null)
                                     {
-                                        BookSeries series = new BookSeries { Name = seriesName };
+                                        var series = new BookSeries { Name = seriesName };
                                         uow.SeriesRepository.Add(series);
                                         newBook.SeriesId = series.Id;
                                     }
@@ -118,10 +118,10 @@ namespace DatabaseTests
 
                                 uow.BookRepository.Add(newBook);
 
-                                Author existingAuthor = uow.AuthorRepository.GetAuthorWithName(authorsName);
+                                var existingAuthor = uow.AuthorRepository.GetAuthorWithName(authorsName);
                                 if (existingAuthor == null)
                                 {
-                                    Author newAuthor = new Author { Name = authorsName };
+                                    var newAuthor = new Author { Name = authorsName };
                                     uow.AuthorRepository.AddAuthorForBook(newAuthor, newBook.Id);
                                 }
                                 else
@@ -148,9 +148,9 @@ namespace DatabaseTests
         [TestMethod]
         public void OptimizeImages()
         {
-            using UnitOfWork context = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath);
+            using var context = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath);
 
-            foreach (Book book in context.BookRepository.All().Select(b => b.LoadMembers(context)))
+            foreach (var book in context.BookRepository.All().Select(b => b.LoadMembers(context)))
             {
                 if (book.Cover != null)
                 {
@@ -172,7 +172,7 @@ namespace DatabaseTests
         [TestMethod]
         public void TestHash()
         {
-            string path =
+            var path =
                 @"D:\Documents\Ebooks\Miscellaneous\The Farseer Trilogy by Robin Hobb\[Robin_Hobb]_Assassin's_Apprentice_(The_Farseer_Tr(zlibraryexau2g3p.onion).epub";
 
             Signer.ComputeHash(File.ReadAllBytes(path));

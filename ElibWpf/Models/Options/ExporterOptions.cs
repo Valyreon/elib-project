@@ -1,4 +1,4 @@
-﻿namespace Models.Options
+﻿namespace ElibWpf.Models.Options
 {
     public class ExporterOptions
     {

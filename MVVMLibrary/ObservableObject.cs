@@ -16,7 +16,7 @@ namespace MVVMLibrary
 
         protected void RaisePropertyChanged(string property)
         {
-            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
         public void RaisePropertyChanged<T>(Expression<Func<T>> propertyExpression)
@@ -28,7 +28,7 @@ namespace MVVMLibrary
         {
             if (!(exp.Body is MemberExpression body))
             {
-                UnaryExpression ubody = (UnaryExpression)exp.Body;
+                var ubody = (UnaryExpression)exp.Body;
                 body = ubody.Operand as MemberExpression;
             }
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -20,31 +20,31 @@ namespace ElibWpf.Animations
 
         public BrushAnimation(Brush to, Duration duration)
         {
-            this.To = to;
-            this.Duration = duration;
-            this.FillBehavior = FillBehavior.Stop;
+            To = to;
+            Duration = duration;
+            FillBehavior = FillBehavior.Stop;
         }
 
         //we must define From and To, AnimationTimeline does not have this properties
         public Brush From
         {
-            get => (Brush)this.GetValue(FromProperty);
-            set => this.SetValue(FromProperty, value);
+            get => (Brush)GetValue(FromProperty);
+            set => SetValue(FromProperty, value);
         }
 
         public override Type TargetPropertyType => typeof(Brush);
 
         public Brush To
         {
-            get => (Brush)this.GetValue(ToProperty);
-            set => this.SetValue(ToProperty, value);
+            get => (Brush)GetValue(ToProperty);
+            set => SetValue(ToProperty, value);
         }
 
         public override object GetCurrentValue(object defaultOriginValue,
             object defaultDestinationValue,
             AnimationClock animationClock)
         {
-            return this.GetCurrentValue(defaultOriginValue as Brush,
+            return GetCurrentValue(defaultOriginValue as Brush,
                 defaultDestinationValue as Brush,
                 animationClock);
         }
@@ -60,8 +60,8 @@ namespace ElibWpf.Animations
 
             //use the standard values if From and To are not set
             //(it is the value of the given property)
-            defaultOriginValue = this.From ?? defaultOriginValue;
-            defaultDestinationValue = this.To ?? defaultDestinationValue;
+            defaultOriginValue = From ?? defaultOriginValue;
+            defaultDestinationValue = To ?? defaultDestinationValue;
 
             if (animationClock.CurrentProgress.Value == 0)
             {

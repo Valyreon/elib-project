@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
@@ -11,12 +11,9 @@ namespace ElibWpf.Converters
         {
             if (value is string str)
             {
-                if (string.IsNullOrWhiteSpace(str))
-                {
-                    return Visibility.Collapsed;
-                }
-
-                return Visibility.Visible;
+                return string.IsNullOrWhiteSpace(str)
+                    ? Visibility.Collapsed
+                    : Visibility.Visible;
             }
 
             return Visibility.Collapsed;

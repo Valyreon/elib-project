@@ -2,11 +2,11 @@
 
 namespace ElibWpf.Views.Controls
 {
-    public partial class BookViewerControl : UserControl
-    {
-        public BookViewerControl()
-        {
-            this.InitializeComponent();
-        }
-    }
+	public partial class BookViewerControl : UserControl
+	{
+		public BookViewerControl()
+		{
+			InitializeComponent();
+		}
+	}
 }

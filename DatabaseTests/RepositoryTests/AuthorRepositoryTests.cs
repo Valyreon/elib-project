@@ -1,7 +1,7 @@
 ﻿using DataLayer;
 using Domain;
+using ElibWpf.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Models;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -20,13 +20,13 @@ namespace DatabaseTests.RepositoryTests
         {
             using var unitOfWork = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath);
 
-            Author one = new Author { Name = "One Author" };
+            var one = new Author { Name = "One Author" };
             unitOfWork.AuthorRepository.Add(one);
 
-            Author two = new Author { Name = "Two Author" };
+            var two = new Author { Name = "Two Author" };
             unitOfWork.AuthorRepository.Add(two);
 
-            Author three = new Author { Name = "Three Author" };
+            var three = new Author { Name = "Three Author" };
             unitOfWork.AuthorRepository.Add(three);
 
             unitOfWork.Commit();
@@ -52,8 +52,10 @@ namespace DatabaseTests.RepositoryTests
             var authors = unitOfWork.AuthorRepository.All();
 
             Assert.IsTrue(authors.Count() >= 3);
-            foreach (Author x in addedAuthors)
+            foreach (var x in addedAuthors)
+            {
                 Assert.IsTrue(authors.Where(a => a.Name == x.Name).Count() == 1);
+            }
         }
 
         [TestMethod]
@@ -98,7 +100,7 @@ namespace DatabaseTests.RepositoryTests
         [TestMethod]
         public void TestAddAuthorForBook()
         {
-            Book toAdd = new Book
+            var toAdd = new Book
             {
                 Title = "Test Book Title",
                 FileId = 868

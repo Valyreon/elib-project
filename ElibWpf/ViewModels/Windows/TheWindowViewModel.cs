@@ -10,99 +10,99 @@ using System.Windows.Input;
 
 namespace ElibWpf.ViewModels.Windows
 {
-    public class TheWindowViewModel : ViewModelBase
-    {
-        private object flyoutControl;
-        private bool isBookDetailsFlyoutOpen;
-        private ITabViewModel selectedTab;
+	public class TheWindowViewModel : ViewModelBase
+	{
+		private object flyoutControl;
+		private bool isBookDetailsFlyoutOpen;
+		private ITabViewModel selectedTab;
 
-        public TheWindowViewModel()
-        {
-            this.MessengerInstance.Register<ShowBookDetailsMessage>(this, this.HandleBookFlyout);
-            this.MessengerInstance.Register(this, (ShowDialogMessage m) => this.ShowDialog(m.Title, m.Text));
-            this.MessengerInstance.Register<ShowInputDialogMessage>(this, this.HandleInputDialog);
-            this.MessengerInstance.Register(this, (CloseFlyoutMessage m) =>
-            {
-                this.IsBookDetailsFlyoutOpen = false;
-                this.FlyoutControl = null;
-            });
-            this.MessengerInstance.Register(this, (OpenAddBooksFormMessage m) => { this.HandleAddBooksFlyout(m.BooksToAdd); });
-            this.MessengerInstance.Register(this, (EditBookMessage m) => { this.HandleEditBookFlyout(m.Book); });
+		public TheWindowViewModel()
+		{
+			MessengerInstance.Register<ShowBookDetailsMessage>(this, HandleBookFlyout);
+			MessengerInstance.Register(this, (ShowDialogMessage m) => ShowDialog(m.Title, m.Text));
+			MessengerInstance.Register<ShowInputDialogMessage>(this, HandleInputDialog);
+			MessengerInstance.Register(this, (CloseFlyoutMessage m) =>
+			{
+				IsBookDetailsFlyoutOpen = false;
+				FlyoutControl = null;
+			});
+			MessengerInstance.Register(this, (OpenAddBooksFormMessage m) => HandleAddBooksFlyout(m.BooksToAdd));
+			MessengerInstance.Register(this, (EditBookMessage m) => HandleEditBookFlyout(m.Book));
 
-            this.Tabs = new ObservableCollection<ITabViewModel>
-            {
-                new BooksTabViewModel(),
-                new QuotesTabViewModel(),
-                new SettingsTabViewModel()
-            };
-            this.SelectedTab = this.Tabs[0];
-        }
+			Tabs = new ObservableCollection<ITabViewModel>
+			{
+				new BooksTabViewModel(),
+				new QuotesTabViewModel(),
+				new SettingsTabViewModel()
+			};
+			SelectedTab = Tabs[0];
+		}
 
-        public ICommand CloseDetailsCommand => new RelayCommand(() =>
-        {
-            this.IsBookDetailsFlyoutOpen = false;
-            this.FlyoutControl = null;
-        });
+		public ICommand CloseDetailsCommand => new RelayCommand(() =>
+		{
+			IsBookDetailsFlyoutOpen = false;
+			FlyoutControl = null;
+		});
 
-        public ICommand EscKeyCommand => new RelayCommand(this.ProcessEscKey);
+		public ICommand EscKeyCommand => new RelayCommand(ProcessEscKey);
 
-        public object FlyoutControl
-        {
-            get => this.flyoutControl;
-            set => this.Set(() => FlyoutControl, ref this.flyoutControl, value);
-        }
+		public object FlyoutControl
+		{
+			get => flyoutControl;
+			set => Set(() => FlyoutControl, ref flyoutControl, value);
+		}
 
-        public bool IsBookDetailsFlyoutOpen
-        {
-            get => this.isBookDetailsFlyoutOpen;
-            set => this.Set(() => IsBookDetailsFlyoutOpen, ref this.isBookDetailsFlyoutOpen, value);
-        }
+		public bool IsBookDetailsFlyoutOpen
+		{
+			get => isBookDetailsFlyoutOpen;
+			set => Set(() => IsBookDetailsFlyoutOpen, ref isBookDetailsFlyoutOpen, value);
+		}
 
-        public ITabViewModel SelectedTab
-        {
-            get => this.selectedTab;
-            set => this.Set(() => SelectedTab, ref this.selectedTab, value);
-        }
+		public ITabViewModel SelectedTab
+		{
+			get => selectedTab;
+			set => Set(() => SelectedTab, ref selectedTab, value);
+		}
 
-        public ObservableCollection<ITabViewModel> Tabs { get; set; }
+		public ObservableCollection<ITabViewModel> Tabs { get; set; }
 
-        private async void HandleInputDialog(ShowInputDialogMessage obj)
-        {
-            string input = await DialogCoordinator.Instance.ShowInputAsync(this, obj.Title, obj.Text);
-            obj.CallOnResult(input);
-        }
+		private async void HandleInputDialog(ShowInputDialogMessage obj)
+		{
+			var input = await DialogCoordinator.Instance.ShowInputAsync(this, obj.Title, obj.Text);
+			obj.CallOnResult(input);
+		}
 
-        private void HandleEditBookFlyout(Book book)
-        {
-            this.FlyoutControl = new EditBookViewModel(book);
-            this.IsBookDetailsFlyoutOpen = true;
-        }
+		private void HandleEditBookFlyout(Book book)
+		{
+			FlyoutControl = new EditBookViewModel(book);
+			IsBookDetailsFlyoutOpen = true;
+		}
 
-        private void HandleAddBooksFlyout(IList<Book> booksToAdd)
-        {
-            this.FlyoutControl = new AddNewBooksViewModel(booksToAdd);
-            this.IsBookDetailsFlyoutOpen = true;
-        }
+		private void HandleAddBooksFlyout(IList<Book> booksToAdd)
+		{
+			FlyoutControl = new AddNewBooksViewModel(booksToAdd);
+			IsBookDetailsFlyoutOpen = true;
+		}
 
-        private async void ShowDialog(string title, string text)
-        {
-            //await ((MetroWindow)Application.Current.MainWindow).ShowMessageAsync(title, text);
-            await DialogCoordinator.Instance.ShowMessageAsync(this, title, text);
-        }
+		private async void ShowDialog(string title, string text)
+		{
+			//await ((MetroWindow)Application.Current.MainWindow).ShowMessageAsync(title, text);
+			await DialogCoordinator.Instance.ShowMessageAsync(this, title, text);
+		}
 
-        private void ProcessEscKey()
-        {
-            if (this.IsBookDetailsFlyoutOpen)
-            {
-                this.IsBookDetailsFlyoutOpen = false;
-                this.FlyoutControl = null;
-            }
-        }
+		private void ProcessEscKey()
+		{
+			if(IsBookDetailsFlyoutOpen)
+			{
+				IsBookDetailsFlyoutOpen = false;
+				FlyoutControl = null;
+			}
+		}
 
-        private void HandleBookFlyout(ShowBookDetailsMessage obj)
-        {
-            this.FlyoutControl = new BookDetailsViewModel(obj.Book);
-            this.IsBookDetailsFlyoutOpen = true;
-        }
-    }
+		private void HandleBookFlyout(ShowBookDetailsMessage obj)
+		{
+			FlyoutControl = new BookDetailsViewModel(obj.Book);
+			IsBookDetailsFlyoutOpen = true;
+		}
+	}
 }

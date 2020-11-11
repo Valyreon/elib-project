@@ -9,107 +9,107 @@ using System.Runtime.CompilerServices;
 
 namespace ElibWpf.ViewModels
 {
-    public abstract class ViewModelWithValidation : ViewModelBase, INotifyDataErrorInfo
-    {
-        private readonly Dictionary<string, List<string>> errors = new Dictionary<string, List<string>>();
+	public abstract class ViewModelWithValidation : ViewModelBase, INotifyDataErrorInfo
+	{
+		private readonly Dictionary<string, List<string>> errors = new Dictionary<string, List<string>>();
 
-        private readonly object lockObject = new object();
+		private readonly object lockObject = new object();
 
-        public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
+		public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
 
-        public bool HasErrors
-        {
-            get
-            {
-                lock (this.lockObject)
-                {
-                    return this.errors.Any(propErrors => propErrors.Value != null && propErrors.Value.Count > 0);
-                }
-            }
-        }
+		public bool HasErrors
+		{
+			get
+			{
+				lock(lockObject)
+				{
+					return errors.Any(propErrors => propErrors.Value != null && propErrors.Value.Count > 0);
+				}
+			}
+		}
 
-        public IEnumerable GetErrors(string propertyName = null)
-        {
-            lock (this.lockObject)
-            {
-                if (string.IsNullOrEmpty(propertyName))
-                {
-                    return this.errors.SelectMany(err => err.Value.ToList());
-                }
+		public IEnumerable GetErrors(string propertyName = null)
+		{
+			lock(lockObject)
+			{
+				if(string.IsNullOrEmpty(propertyName))
+				{
+					return errors.SelectMany(err => err.Value.ToList());
+				}
 
-                if (this.errors.ContainsKey(propertyName) && this.errors[propertyName] != null && this.errors[propertyName].Count > 0)
-                {
-                    return this.errors[propertyName].ToList();
-                }
-            }
+				if(errors.ContainsKey(propertyName) && errors[propertyName] != null && errors[propertyName].Count > 0)
+				{
+					return errors[propertyName].ToList();
+				}
+			}
 
-            return null;
-        }
+			return null;
+		}
 
-        public void ClearErrors()
-        {
-            lock (this.lockObject)
-            {
-                this.errors.Clear();
-            }
-        }
+		public void ClearErrors()
+		{
+			lock(lockObject)
+			{
+				errors.Clear();
+			}
+		}
 
-        public void OnErrorsChanged(string propertyName)
-        {
-            this.ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
-        }
+		public void OnErrorsChanged(string propertyName)
+		{
+			ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
+		}
 
-        public void Validate()
-        {
-            lock (this.lockObject)
-            {
-                ValidationContext validationContext = new ValidationContext(this, null, null);
-                var validationResults = new List<ValidationResult>();
-                Validator.TryValidateObject(this, validationContext, validationResults, true);
+		public void Validate()
+		{
+			lock(lockObject)
+			{
+				var validationContext = new ValidationContext(this, null, null);
+				var validationResults = new List<ValidationResult>();
+				Validator.TryValidateObject(this, validationContext, validationResults, true);
 
-                //clear all previous _errors
-                var propNames = this.errors.Keys.ToList();
-                this.errors.Clear();
-                propNames.ForEach(pn => this.OnErrorsChanged(pn));
-                this.HandleValidationResults(validationResults);
-            }
-        }
+				//clear all previous _errors
+				var propNames = errors.Keys.ToList();
+				errors.Clear();
+				propNames.ForEach(pn => OnErrorsChanged(pn));
+				HandleValidationResults(validationResults);
+			}
+		}
 
-        public void ValidateProperty(object value, [CallerMemberName] string propertyName = null)
-        {
-            lock (this.lockObject)
-            {
-                ValidationContext validationContext = new ValidationContext(this, null, null)
-                {
-                    MemberName = propertyName
-                };
-                var validationResults = new List<ValidationResult>();
-                Validator.TryValidateProperty(value, validationContext, validationResults);
+		public void ValidateProperty(object value, [CallerMemberName] string propertyName = null)
+		{
+			lock(lockObject)
+			{
+				var validationContext = new ValidationContext(this, null, null)
+				{
+					MemberName = propertyName
+				};
+				var validationResults = new List<ValidationResult>();
+				Validator.TryValidateProperty(value, validationContext, validationResults);
 
-                //clear previous _errors from tested property
-                if (this.errors.ContainsKey(propertyName))
-                {
-                    this.errors.Remove(propertyName);
-                }
+				//clear previous _errors from tested property
+				if(errors.ContainsKey(propertyName))
+				{
+					errors.Remove(propertyName);
+				}
 
-                this.OnErrorsChanged(propertyName);
-                this.HandleValidationResults(validationResults);
-            }
-        }
+				OnErrorsChanged(propertyName);
+				HandleValidationResults(validationResults);
+			}
+		}
 
-        private void HandleValidationResults(IEnumerable<ValidationResult> validationResults)
-        {
-            var resultsByPropNames = from res in validationResults
-                                     from mname in res.MemberNames
-                                     group res by mname
-                                     into g
-                                     select g;
-            foreach (var prop in resultsByPropNames)
-            {
-                var messages = prop.Select(r => r.ErrorMessage).ToList();
-                this.errors.Add(prop.Key, messages);
-                this.OnErrorsChanged(prop.Key);
-            }
-        }
-    }
+		private void HandleValidationResults(IEnumerable<ValidationResult> validationResults)
+		{
+			var resultsByPropNames = from res in validationResults
+									 from mname in res.MemberNames
+									 group res by mname
+									 into g
+									 select g;
+			foreach(var prop in resultsByPropNames)
+			{
+				var messages = prop.Select(r => r.ErrorMessage).ToList();
+				errors.Add(prop.Key, messages);
+				OnErrorsChanged(prop.Key);
+			}
+		}
+	}
 }
