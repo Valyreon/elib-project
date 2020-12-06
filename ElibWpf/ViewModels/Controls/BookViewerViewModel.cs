@@ -94,20 +94,21 @@ namespace ElibWpf.ViewModels.Controls
                 {
                     return;
                 }
-
-                var dialog = new ExportOptionsDialog();
-                using var uow = ApplicationSettings.CreateUnitOfWork();
-                var selectedBooks = selector.GetSelectedBooks(uow);
-                uow.Dispose();
-                var deleteDialogViewModel = new DeleteBooksDialogViewModel(selectedBooks, dialog);
-                deleteDialogViewModel.SetActionOnClose(() =>
-                {
-                    HandleClearButton();
-                    Messenger.Default.Send(new RefreshSidePaneCollectionsMessage());
-                });
-                dialog.DataContext = deleteDialogViewModel;
-                await DialogCoordinator.Instance.ShowMetroDialogAsync(System.Windows.Application.Current.MainWindow.DataContext, dialog);
             }
+
+            var dialog = new DeleteBooksDialog();
+            using var uow = ApplicationSettings.CreateUnitOfWork();
+            var selectedBooks = selector.GetSelectedBooks(uow);
+            uow.Dispose();
+            var deleteDialogViewModel = new DeleteBooksDialogViewModel(selectedBooks, dialog);
+            deleteDialogViewModel.SetActionOnClose(() =>
+            {
+                HandleClearButton();
+                Messenger.Default.Send(new RefreshSidePaneCollectionsMessage());
+            });
+            dialog.DataContext = deleteDialogViewModel;
+            await DialogCoordinator.Instance.ShowMetroDialogAsync(System.Windows.Application.Current.MainWindow.DataContext, dialog);
+
         }
 
         public bool IsSelectedBooksViewer => Filter.Selected != null && Filter.Selected.Value == true;

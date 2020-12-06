@@ -16,7 +16,7 @@ namespace ElibWpf.Models
 
         [JsonProperty("LogFilePath")] public string LogFilePath { get; set; } = "log.txt";
 
-        [JsonProperty("ForceExportBeforeDelete")] public bool IsExportForcedBeforeDelete = true;
+        [JsonProperty("ForceExportBeforeDelete")] public bool IsExportForcedBeforeDelete = false;
 
         [JsonIgnore] public string PropertiesPath { get; private set; }
 

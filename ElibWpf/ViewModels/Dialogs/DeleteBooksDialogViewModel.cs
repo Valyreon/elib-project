@@ -31,11 +31,17 @@ namespace ElibWpf.ViewModels.Dialogs
         {
             this.booksToExport = booksToExport;
             this.dialog = dialog;
+            IsExportPartVisible = ApplicationSettings.GetInstance().IsExportForcedBeforeDelete;
         }
 
-        public bool IsExportComplete { get; private set; } = false;
+        public bool IsExportPartVisible { get; set; }
 
-        public ICommand CancelCommand => new RelayCommand(Close);
+        public ICommand CancelCommand => new RelayCommand(HandleCancel);
+
+        private async void HandleCancel()
+        {
+            await DialogCoordinator.Instance.HideMetroDialogAsync(Application.Current.MainWindow.DataContext, dialog);
+        }
 
         public ICommand ChooseDestinationCommand => new RelayCommand(ChooseDestination);
 
@@ -48,6 +54,46 @@ namespace ElibWpf.ViewModels.Dialogs
         }
 
         public ICommand ExportCommand => new RelayCommand(Export);
+
+        public ICommand ContinueCommand => new RelayCommand(ContinueDeletionProxy);
+
+        private async void ContinueDeletionProxy()
+        {
+            var cp = await ContinueDeletion();
+            await DialogCoordinator.Instance.HideMetroDialogAsync(Application.Current.MainWindow.DataContext, dialog);
+            await cp.CloseAsync();
+            onCloseAction();
+        }
+
+        private async Task<ProgressDialogController> ContinueDeletion(ProgressDialogController controlProgress = null)
+        {
+            if (controlProgress == null)
+            {
+                controlProgress =
+                await DialogCoordinator.Instance.ShowProgressAsync(Application.Current.MainWindow.DataContext, "", "");
+            }
+
+            using var uow = ApplicationSettings.CreateUnitOfWork();
+            await Task.Run(async () =>
+            {
+                var counter = 0;
+                controlProgress.Minimum = 1;
+                controlProgress.Maximum = booksToExport.Count;
+                controlProgress.SetTitle("Deleting books");
+                foreach (var book in booksToExport)
+                {
+                    controlProgress.SetMessage("Deleting book: " + book.Title);
+                    controlProgress.SetProgress(++counter);
+                    uow.BookRepository.Remove(book);
+                    await Task.Delay(50);
+                }
+                uow.ClearCache();
+                uow.Commit();
+            });
+
+            uow.Dispose();
+            return controlProgress;
+        }
 
         public bool IsGroupByAuthorChecked
         {
@@ -111,25 +157,10 @@ namespace ElibWpf.ViewModels.Dialogs
                     GroupByAuthor = IsGroupByAuthorChecked,
                     GroupBySeries = IsGroupBySeriesChecked
                 }, SetProgress));
-
-            await Task.Run(async () =>
-               {
-                   var counter = 0;
-                   controlProgress.Minimum = 1;
-                   controlProgress.Maximum = booksToExport.Count;
-                   controlProgress.SetTitle("Deleting books");
-                   foreach (var book in booksToExport)
-                   {
-                       controlProgress.SetMessage("Deleting book: " + book.Title);
-                       controlProgress.SetProgress(++counter);
-                       uow.BookRepository.Remove(book);
-                       await Task.Delay(50);
-                   }
-                   uow.ClearCache();
-                   uow.Commit();
-               });
-
             uow.Dispose();
+
+            await ContinueDeletion(controlProgress);
+
             await DialogCoordinator.Instance.HideMetroDialogAsync(Application.Current.MainWindow.DataContext, dialog);
             await controlProgress.CloseAsync();
             onCloseAction();
