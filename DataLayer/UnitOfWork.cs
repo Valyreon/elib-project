@@ -23,7 +23,8 @@ namespace DataLayer
         {
             var connectionString = new SQLiteConnectionStringBuilder
             {
-                DataSource = dbPath
+                DataSource = dbPath,
+                ForeignKeys = true
             }.ConnectionString;
 
             connection = new SQLiteConnection(connectionString);
@@ -92,6 +93,7 @@ namespace DataLayer
             BookRepository.ClearCache();
             SeriesRepository.ClearCache();
             AuthorRepository.ClearCache();
+            CollectionRepository.ClearCache();
         }
 
         public void Truncate()

@@ -1,5 +1,5 @@
 --
--- File generated with SQLiteStudio v3.2.1 on Sun Jun 21 15:22:40 2020
+-- File generated with SQLiteStudio v3.2.1 on Sun Dec 6 22:52:13 2020
 --
 -- Text encoding used: System
 --
@@ -111,6 +111,106 @@ CREATE INDEX Author_Book_BookId_Index ON AuthorBooks (
 CREATE INDEX User_Collection_BookId_Index ON UserCollectionBooks (
     BookId
 );
+
+
+-- Trigger: BeforeBookDelete
+CREATE TRIGGER BeforeBookDelete
+        BEFORE DELETE
+            ON Books
+BEGIN
+    DELETE FROM AuthorBooks
+          WHERE BookId = OLD.Id;
+    DELETE FROM UserCollectionBooks
+          WHERE BookId = OLD.Id;
+    UPDATE Quotes
+       SET BookId = NULL
+     WHERE BookId = OLD.Id;
+END;
+
+
+-- Trigger: CleanAuthorsAfterBookDelete
+CREATE TRIGGER CleanAuthorsAfterBookDelete
+         AFTER DELETE
+            ON AuthorBooks
+          WHEN NOT EXISTS (
+                       SELECT 1
+                         FROM AuthorBooks
+                        WHERE AuthorId = OLD.AuthorId
+                   )
+BEGIN
+    DELETE FROM Authors
+          WHERE Id = OLD.AuthorId;
+END;
+
+
+-- Trigger: CleanCollectionsAfterBookDelete
+CREATE TRIGGER CleanCollectionsAfterBookDelete
+         AFTER DELETE
+            ON UserCollectionBooks
+          WHEN NOT EXISTS (
+                       SELECT 1
+                         FROM UserCollectionBooks
+                        WHERE UserCollectionId = OLD.UserCollectionId
+                   )
+BEGIN
+    DELETE FROM UserCollections
+          WHERE Id = OLD.UserCollectionId;
+END;
+
+
+-- Trigger: CleanEFilesAfterBookDelete
+CREATE TRIGGER CleanEFilesAfterBookDelete
+         AFTER DELETE
+            ON Books
+BEGIN
+    DELETE FROM EBookFiles
+          WHERE Id = OLD.FileId;
+END;
+
+
+-- Trigger: CleanSeriesAfterBookDelete
+CREATE TRIGGER CleanSeriesAfterBookDelete
+         AFTER DELETE
+            ON Books
+          WHEN NOT EXISTS (
+                       SELECT 1
+                         FROM Books
+                        WHERE SeriesId = OLD.SeriesId
+                   )
+BEGIN
+    DELETE FROM Series
+          WHERE Id = OLD.SeriesId;
+END;
+
+
+-- Trigger: DeleteCoverAfterBookDelete
+CREATE TRIGGER DeleteCoverAfterBookDelete
+         AFTER DELETE
+            ON Books
+BEGIN
+    DELETE FROM Covers
+          WHERE Id = OLD.CoverId;
+END;
+
+
+-- Trigger: DeleteEFileAfterBookDelete
+CREATE TRIGGER DeleteEFileAfterBookDelete
+         AFTER DELETE
+            ON Books
+BEGIN
+    DELETE FROM EBookFiles
+          WHERE Id = OLD.FileId;
+END;
+
+
+-- Trigger: DeleteRawFileAfterEFileDelete
+CREATE TRIGGER DeleteRawFileAfterEFileDelete
+         AFTER DELETE
+            ON EBookFiles
+BEGIN
+    DELETE FROM RawFiles
+          WHERE Id = OLD.RawFileId;
+END;
 
 
 -- View: AuthorId_Book_View

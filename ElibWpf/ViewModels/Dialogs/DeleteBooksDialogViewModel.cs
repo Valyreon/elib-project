@@ -125,6 +125,7 @@ namespace ElibWpf.ViewModels.Dialogs
                        uow.BookRepository.Remove(book);
                        await Task.Delay(50);
                    }
+                   uow.ClearCache();
                    uow.Commit();
                });
 

@@ -100,7 +100,11 @@ namespace ElibWpf.ViewModels.Controls
                 var selectedBooks = selector.GetSelectedBooks(uow);
                 uow.Dispose();
                 var deleteDialogViewModel = new DeleteBooksDialogViewModel(selectedBooks, dialog);
-                deleteDialogViewModel.SetActionOnClose(HandleClearButton);
+                deleteDialogViewModel.SetActionOnClose(() =>
+                {
+                    HandleClearButton();
+                    Messenger.Default.Send(new RefreshSidePaneCollectionsMessage());
+                });
                 dialog.DataContext = deleteDialogViewModel;
                 await DialogCoordinator.Instance.ShowMetroDialogAsync(System.Windows.Application.Current.MainWindow.DataContext, dialog);
             }
