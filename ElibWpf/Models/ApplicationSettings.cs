@@ -1,54 +1,56 @@
-﻿using DataLayer;
-using Newtonsoft.Json;
 using System;
 using System.IO;
+using DataLayer;
+using Newtonsoft.Json;
 
 namespace ElibWpf.Models
 {
-	public class ApplicationSettings
-	{
-		private static ApplicationSettings _instance;
+    public class ApplicationSettings
+    {
+        private static ApplicationSettings _instance;
 
-		[JsonProperty("DatabasePath")]
-		public string
-			DatabasePath
-		{ get; set; } //= Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ElibApp", "elib_db");
+        [JsonProperty("DatabasePath")]
+        public string
+            DatabasePath
+        { get; set; } //= Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ElibApp", "elib_db");
 
-		[JsonProperty("LogFilePath")] public string LogFilePath { get; set; } = "log.txt";
+        [JsonProperty("LogFilePath")] public string LogFilePath { get; set; } = "log.txt";
 
-		[JsonIgnore] public string PropertiesPath { get; private set; }
+        [JsonProperty("ForceExportBeforeDelete")] public bool IsExportForcedBeforeDelete = true;
 
-		public static ApplicationSettings GetInstance()
-		{
-			if(_instance != null)
-			{
-				return _instance;
-			}
+        [JsonIgnore] public string PropertiesPath { get; private set; }
 
-			var propertiesInCurrentPath = @"properties.json";
-			var appDataProperties = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-				"ElibApp", "properties.json");
+        public static ApplicationSettings GetInstance()
+        {
+            if (_instance != null)
+            {
+                return _instance;
+            }
 
-			if(File.Exists(@"./properties.json"))
-			{
-				_instance = JsonConvert.DeserializeObject<ApplicationSettings>(File.ReadAllText(@"properties.json"));
-				_instance.PropertiesPath = propertiesInCurrentPath;
-				return _instance;
-			}
+            var propertiesInCurrentPath = @"properties.json";
+            var appDataProperties = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "ElibApp", "properties.json");
 
-			if(File.Exists(appDataProperties))
-			{
-				_instance = JsonConvert.DeserializeObject<ApplicationSettings>(File.ReadAllText(appDataProperties));
-				_instance.PropertiesPath = appDataProperties;
-				return _instance;
-			}
+            if (File.Exists(@"./properties.json"))
+            {
+                _instance = JsonConvert.DeserializeObject<ApplicationSettings>(File.ReadAllText(@"properties.json"));
+                _instance.PropertiesPath = propertiesInCurrentPath;
+                return _instance;
+            }
 
-			throw new FileNotFoundException("Couldn't find properties.json in current or in AppData folder.");
-		}
+            if (File.Exists(appDataProperties))
+            {
+                _instance = JsonConvert.DeserializeObject<ApplicationSettings>(File.ReadAllText(appDataProperties));
+                _instance.PropertiesPath = appDataProperties;
+                return _instance;
+            }
 
-		public static IUnitOfWork CreateUnitOfWork()
-		{
-			return new UnitOfWork(GetInstance().DatabasePath);
-		}
-	}
+            throw new FileNotFoundException("Couldn't find properties.json in current or in AppData folder.");
+        }
+
+        public static IUnitOfWork CreateUnitOfWork()
+        {
+            return new UnitOfWork(GetInstance().DatabasePath);
+        }
+    }
 }
