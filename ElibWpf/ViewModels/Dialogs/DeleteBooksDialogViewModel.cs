@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
 using Domain;
+using ElibWpf.Interfaces;
 using ElibWpf.Models;
 using ElibWpf.Models.Options;
 using ElibWpf.ValidationAttributes;
@@ -13,7 +15,7 @@ using Application = System.Windows.Application;
 
 namespace ElibWpf.ViewModels.Dialogs
 {
-    public class ExportOptionsDialogViewModel : ViewModelWithValidation
+    public class DeleteBooksDialogViewModel : ViewModelWithValidation, IActionOnClose
     {
         private readonly IList<Book> booksToExport;
         private readonly BaseMetroDialog dialog;
@@ -23,8 +25,9 @@ namespace ElibWpf.ViewModels.Dialogs
         private bool groupByAuthor;
 
         private bool groupBySeries;
+        private Action onCloseAction;
 
-        public ExportOptionsDialogViewModel(IList<Book> booksToExport, BaseMetroDialog dialog)
+        public DeleteBooksDialogViewModel(IList<Book> booksToExport, BaseMetroDialog dialog)
         {
             this.booksToExport = booksToExport;
             this.dialog = dialog;
@@ -32,7 +35,7 @@ namespace ElibWpf.ViewModels.Dialogs
 
         public bool IsExportComplete { get; private set; } = false;
 
-        public ICommand CancelCommand => new RelayCommand(Cancel);
+        public ICommand CancelCommand => new RelayCommand(Close);
 
         public ICommand ChooseDestinationCommand => new RelayCommand(ChooseDestination);
 
@@ -87,16 +90,18 @@ namespace ElibWpf.ViewModels.Dialogs
 
             var counter = 0;
 
-            void SetProgress(string message)
+            async void SetProgress(string message)
             {
                 controlProgress.SetMessage("Exporting book: " + message);
                 controlProgress.SetProgress(++counter);
+                await Task.Delay(50);
             }
 
             foreach (var b in booksToExport)
             {
                 controlProgress.SetMessage("Loading book files...");
                 controlProgress.SetProgress(++counter);
+                await Task.Delay(50);
             }
 
             await Task.Run(() => exporter.ExportBooks(booksToExport,
@@ -105,15 +110,38 @@ namespace ElibWpf.ViewModels.Dialogs
                     DestinationDirectory = DestinationPath,
                     GroupByAuthor = IsGroupByAuthorChecked,
                     GroupBySeries = IsGroupBySeriesChecked
-                }, SetProgress))
-                .ContinueWith(x => IsExportComplete = true);
+                }, SetProgress));
 
-            await controlProgress.CloseAsync();
+            await Task.Run(async () =>
+               {
+                   var counter = 0;
+                   controlProgress.Minimum = 1;
+                   controlProgress.Maximum = booksToExport.Count;
+                   controlProgress.SetTitle("Deleting books");
+                   foreach (var book in booksToExport)
+                   {
+                       controlProgress.SetMessage("Deleting book: " + book.Title);
+                       controlProgress.SetProgress(++counter);
+                       uow.BookRepository.Remove(book);
+                       await Task.Delay(50);
+                   }
+                   uow.Commit();
+               });
+
+            uow.Dispose();
             await DialogCoordinator.Instance.HideMetroDialogAsync(Application.Current.MainWindow.DataContext, dialog);
+            await controlProgress.CloseAsync();
+            onCloseAction();
         }
 
-        private async void Cancel()
+        public void SetActionOnClose(Action action)
         {
+            onCloseAction = action;
+        }
+
+        public async void Close()
+        {
+            onCloseAction();
             await DialogCoordinator.Instance.HideMetroDialogAsync(Application.Current.MainWindow.DataContext, dialog);
         }
     }

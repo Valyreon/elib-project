@@ -100,7 +100,7 @@ namespace ElibWpf.Models
             // Load everything needed
             foreach (var book in enumerable)
             {
-                book.File.RawFile = _uow.RawFileRepository.Find(book.File.Id);
+                book.File.RawFile = _uow.RawFileRepository.Find(book.File.RawFileId);
             }
 
             Directory.CreateDirectory(options.DestinationDirectory);

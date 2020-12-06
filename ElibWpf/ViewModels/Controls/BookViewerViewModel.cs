@@ -76,6 +76,36 @@ namespace ElibWpf.ViewModels.Controls
 
         public ICommand ClearSelectedBooksCommand => new RelayCommand(HandleClearButton);
 
+        public ICommand DeleteSelectedBooksCommand => new RelayCommand(HandleDeleteButton);
+
+        private async void HandleDeleteButton()
+        {
+            if (ApplicationSettings.GetInstance().IsExportForcedBeforeDelete)
+            {
+                var choice = await DialogCoordinator.Instance.ShowMessageAsync(
+                                    System.Windows.Application.Current.MainWindow.DataContext,
+                                    "Confirm Export",
+                                    "Books will have to be exported before deleting for security. You can change this in the settings.\n" +
+                                    "Do you want to continue?",
+                                    MessageDialogStyle.AffirmativeAndNegative,
+                                    new MetroDialogSettings { AffirmativeButtonText = "Continue", DefaultButtonFocus = MessageDialogResult.Negative });
+
+                if (choice == MessageDialogResult.Negative)
+                {
+                    return;
+                }
+
+                var dialog = new ExportOptionsDialog();
+                using var uow = ApplicationSettings.CreateUnitOfWork();
+                var selectedBooks = selector.GetSelectedBooks(uow);
+                uow.Dispose();
+                var deleteDialogViewModel = new DeleteBooksDialogViewModel(selectedBooks, dialog);
+                deleteDialogViewModel.SetActionOnClose(HandleClearButton);
+                dialog.DataContext = deleteDialogViewModel;
+                await DialogCoordinator.Instance.ShowMetroDialogAsync(System.Windows.Application.Current.MainWindow.DataContext, dialog);
+            }
+        }
+
         public bool IsSelectedBooksViewer => Filter.Selected != null && Filter.Selected.Value == true;
 
         public bool IsResultEmpty
@@ -87,7 +117,8 @@ namespace ElibWpf.ViewModels.Controls
         private void HandleClearButton()
         {
             selector.Clear();
-            Refresh();
+            Messenger.Default.Send(new ResetPaneSelectionMessage());
+            Messenger.Default.Send(new BookSelectedMessage());
         }
 
         public double ScrollVertical
@@ -144,6 +175,7 @@ namespace ElibWpf.ViewModels.Controls
             else if (isThisSelectedView && !isSelected && Books.Count > 1)
             {
                 Books.Remove(obj);
+                UpdateSubcaption();
             }
             else
             {
@@ -387,20 +419,29 @@ namespace ElibWpf.ViewModels.Controls
         private void UpdateSubcaption()
         {
             _ = Task.Run(() =>
-{
-    using var uow = ApplicationSettings.CreateUnitOfWork();
-    var count = uow.BookRepository.Count(filter);
-    SubCaption = $"{count} book";
-    if (count != 1)
-    {
-        SubCaption += "s";
-    }
+            {
+                var count = 0;
+                if (!IsSelectedBooksViewer)
+                {
+                    using var uow = ApplicationSettings.CreateUnitOfWork();
+                    count = uow.BookRepository.Count(filter);
+                }
+                else
+                {
+                    count = selector.Count;
+                }
 
-    if (Filter.Read != null)
-    {
-        SubCaption += ", filter is applied";
-    }
-});
+                SubCaption = $"{count} book";
+                if (count != 1)
+                {
+                    SubCaption += "s";
+                }
+
+                if (Filter.Read != null)
+                {
+                    SubCaption += ", filter is applied";
+                }
+            });
         }
     }
 }

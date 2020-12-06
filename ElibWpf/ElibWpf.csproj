@@ -22,7 +22,10 @@
     <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <PublishUrl>publish\</PublishUrl>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <TargetFrameworkProfile />
+    <LangVersion>preview</LangVersion>
+    <PublishUrl>C:\Users\Luka\Desktop\ExportTesting\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>
@@ -32,13 +35,11 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationRevision>1</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile />
-    <LangVersion>preview</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
@@ -71,6 +72,18 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <PlatformTarget>x64</PlatformTarget>
     <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>179CE321CF93F58E740EEEC597B5261F580FF684</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>ElibWpf_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>true</SignManifests>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CommonServiceLocator, Version=2.0.5.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
@@ -230,6 +243,7 @@
     <Compile Include="Converters\StringToVisibilityConverter.cs" />
     <Compile Include="CustomDataStructures\ViewerHistory.cs" />
     <Compile Include="Extensions\DomainExtensions.cs" />
+    <Compile Include="Interfaces\IActionOnClose.cs" />
     <Compile Include="Messages\AuthorSelectedMessage.cs" />
     <Compile Include="Messages\BookSelectedMessage.cs" />
     <Compile Include="Messages\CloseFlyoutMessage.cs" />
@@ -284,6 +298,7 @@
     <Compile Include="ViewModels\Controls\BookViewerViewModel.cs" />
     <Compile Include="ViewModels\Dialogs\ChooseAuthorDialogViewModel.cs" />
     <Compile Include="ViewModels\Dialogs\ChooseSeriesDialogViewModel.cs" />
+    <Compile Include="ViewModels\Dialogs\DeleteBooksDialogViewModel.cs" />
     <Compile Include="ViewModels\Dialogs\ExportOptionsDialogViewModel.cs" />
     <Compile Include="ViewModels\Dialogs\FilterOptionsDialogViewModel.cs" />
     <Compile Include="ViewModels\Flyouts\AddNewBooksViewModel.cs" />
@@ -301,6 +316,9 @@
     </Compile>
     <Compile Include="Views\Dialogs\ChooseSeriesDialog.xaml.cs">
       <DependentUpon>ChooseSeriesDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Dialogs\DeleteBooksDialog.xaml.cs">
+      <DependentUpon>DeleteBooksDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Dialogs\ExportOptionsDialog.xaml.cs">
       <DependentUpon>ExportOptionsDialog.xaml</DependentUpon>
@@ -375,6 +393,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Dialogs\ChooseSeriesDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Dialogs\DeleteBooksDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -456,6 +478,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <Resource Include="Fonts\SofiaProRegular.ttf" />
+    <None Include="ElibWpf_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
