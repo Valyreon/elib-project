@@ -238,6 +238,7 @@
     <Compile Include="BindingItems\BindingProxy.cs" />
     <Compile Include="BindingItems\FilterOptions.cs" />
     <Compile Include="BindingItems\QuoteJsHelper.cs" />
+    <Compile Include="Converters\AuthorTileConverters\AuthorToBookCountStringConverter.cs" />
     <Compile Include="Converters\BookTileConverters\TitleToVisibilityConverter.cs" />
     <Compile Include="Converters\ImageConverter.cs" />
     <Compile Include="Converters\StringToVisibilityConverter.cs" />
@@ -271,6 +272,9 @@
     </Compile>
     <Compile Include="Themes\CustomComponents\ConditionalEventTrigger.cs" />
     <Compile Include="Themes\CustomComponents\CheckboxButton.cs" />
+    <Compile Include="Themes\CustomComponents\Controls\AuthorTileControl.xaml.cs">
+      <DependentUpon>AuthorTileControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Themes\CustomComponents\Controls\BookTileControl.xaml.cs">
       <DependentUpon>BookTileControl.xaml</DependentUpon>
     </Compile>
@@ -294,6 +298,7 @@
     <Compile Include="Themes\CustomComponents\TextLinkButton.cs" />
     <Compile Include="ValidationAttributes\DirectoryExists.cs" />
     <Compile Include="ValidationAttributes\NotEmpty.cs" />
+    <Compile Include="ViewModels\Controls\AuthorViewerViewModel.cs" />
     <Compile Include="ViewModels\Controls\BooksTabViewModel.cs" />
     <Compile Include="ViewModels\Controls\BookViewerViewModel.cs" />
     <Compile Include="ViewModels\Dialogs\ChooseAuthorDialogViewModel.cs" />
@@ -311,6 +316,9 @@
     <Compile Include="ViewModels\ViewModelWithValidation.cs" />
     <Compile Include="ViewModels\Windows\ReaderViewModel.cs" />
     <Compile Include="ViewModels\Windows\TheWindowViewModel.cs" />
+    <Compile Include="Views\Controls\AuthorViewerControl.xaml.cs">
+      <DependentUpon>AuthorViewerControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Dialogs\ChooseAuthorDialog.xaml.cs">
       <DependentUpon>ChooseAuthorDialog.xaml</DependentUpon>
     </Compile>
@@ -384,7 +392,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Themes\CustomComponents\Controls\AuthorTileControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Themes\Generic.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Controls\AuthorViewerControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

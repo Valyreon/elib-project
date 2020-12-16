@@ -1,4 +1,7 @@
-﻿using DataLayer;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows.Input;
+using DataLayer;
 using Domain;
 using ElibWpf.BindingItems;
 using ElibWpf.CustomDataStructures;
@@ -6,9 +9,6 @@ using ElibWpf.Messages;
 using ElibWpf.Models;
 using MahApps.Metro.IconPacks;
 using MVVMLibrary;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Windows.Input;
 
 namespace ElibWpf.ViewModels.Controls
 {
@@ -47,7 +47,8 @@ namespace ElibWpf.ViewModels.Controls
             MainPaneItems = new ObservableCollection<PaneMainItem>
             {
                 new PaneMainItem("All", PackIconBoxIconsKind.SolidBook, "All Books", null),
-                new PaneMainItem("Favorite", PackIconFontAwesomeKind.StarSolid, "Favorite Books", new FilterParameters { Favorite = true })
+                new PaneMainItem("Favorite", PackIconFontAwesomeKind.StarSolid, "Favorite Books", new FilterParameters { Favorite = true }),
+                new PaneMainItem("Authors", PackIconFontAwesomeKind.PersonBoothSolid, "Authors", null)
             };
             SelectedMainPaneItem = MainPaneItems[0];
             PaneSelectionChanged();
@@ -264,10 +265,20 @@ namespace ElibWpf.ViewModels.Controls
             uow.ClearCache();
             uow.Dispose();
 
-            CurrentViewer = new BookViewerViewModel(filter, selector)
+            if (SelectedMainPaneItem.PaneCaption == "Authors")
             {
-                Caption = SelectedMainPaneItem.ViewerCaption
-            };
+                CurrentViewer = new AuthorViewerViewModel()
+                {
+                    Caption = SelectedMainPaneItem.PaneCaption
+                };
+            }
+            else
+            {
+                CurrentViewer = new BookViewerViewModel(filter, selector)
+                {
+                    Caption = SelectedMainPaneItem.ViewerCaption
+                };
+            }
         }
     }
 }
