@@ -245,7 +245,7 @@ namespace ElibWpf.ViewModels.Flyouts
 
                 _ = Task.Run(() =>
                 {
-                    using var uow = ApplicationSettings.CreateUnitOfWork();
+                    using var uow = App.UnitOfWorkFactory.Create();
                     uow.AuthorRepository.Add(newAuthor);
                 });
             }
@@ -274,7 +274,7 @@ namespace ElibWpf.ViewModels.Flyouts
                 var book = CurrentBook;
                 await Task.Run(() =>
                 {
-                    using var uow = ApplicationSettings.CreateUnitOfWork();
+                    using var uow = App.UnitOfWorkFactory.Create();
 
                     book.Series = Series;
                     if (Series != null && Series.Id == 0)
@@ -395,7 +395,6 @@ namespace ElibWpf.ViewModels.Flyouts
             var name = await DialogCoordinator.Instance.ShowInputAsync(this, "Adding New Series", "Series name:");
             if (!string.IsNullOrWhiteSpace(name))
             {
-                using var uow = ApplicationSettings.CreateUnitOfWork();
                 name = name.Trim();
                 var newSeries = new BookSeries { Name = name };
                 var temp = Series;
@@ -403,7 +402,7 @@ namespace ElibWpf.ViewModels.Flyouts
 
                 _ = Task.Run(() =>
                 {
-                    using var uow = ApplicationSettings.CreateUnitOfWork();
+                    using var uow = App.UnitOfWorkFactory.Create();
                     uow.SeriesRepository.Add(newSeries);
                 });
             }
@@ -411,9 +410,7 @@ namespace ElibWpf.ViewModels.Flyouts
 
         private void HandleClearSeries()
         {
-            var temp = Series;
             Series = null;
-            using var uow = ApplicationSettings.CreateUnitOfWork();
         }
 
         private async void HandleEditSeries()
@@ -422,9 +419,9 @@ namespace ElibWpf.ViewModels.Flyouts
                 new MetroDialogSettings { DefaultText = Series.Name });
         }
 
-        private void CheckDuplicate(Book book)
+        private async void CheckDuplicate(Book book)
         {
-            using var uow = ApplicationSettings.CreateUnitOfWork();
+            using var uow = await App.UnitOfWorkFactory.CreateAsync();
             if (uow.EFileRepository.SignatureExists(book.File.Signature))
             {
                 WarningText = "This book is a duplicate of a book already in the database.";

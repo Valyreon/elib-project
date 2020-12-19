@@ -78,11 +78,11 @@ namespace ElibWpf.ViewModels.Flyouts
                 RaisePropertyChanged(() => IsBookFavorite);
 
                 Task.Run(() =>
-                {
-                    using var uow = ApplicationSettings.CreateUnitOfWork();
-                    uow.BookRepository.Update(Book);
-                    uow.Commit();
-                });
+               {
+                   using var uow = App.UnitOfWorkFactory.Create();
+                   uow.BookRepository.Update(Book);
+                   uow.Commit();
+               });
             }
         }
 
@@ -96,7 +96,7 @@ namespace ElibWpf.ViewModels.Flyouts
 
                 Task.Run(() =>
                 {
-                    using var uow = ApplicationSettings.CreateUnitOfWork();
+                    using var uow = App.UnitOfWorkFactory.Create();
                     uow.BookRepository.Update(Book);
                     uow.Commit();
                 });
@@ -126,7 +126,7 @@ namespace ElibWpf.ViewModels.Flyouts
 
             Task.Run(() =>
             {
-                using var uow = ApplicationSettings.CreateUnitOfWork();
+                using var uow = App.UnitOfWorkFactory.Create();
                 uow.CollectionRepository.RemoveCollectionForBook(collection, Book.Id);
                 if (uow.CollectionRepository.CountBooksInUserCollection(collection.Id) <= 1)
                 {
@@ -153,7 +153,7 @@ namespace ElibWpf.ViewModels.Flyouts
                     Book.Collections.Add(newCollection);
                     Task.Run(() =>
                     {
-                        using var uow = ApplicationSettings.CreateUnitOfWork();
+                        using var uow = App.UnitOfWorkFactory.Create();
                         var existingCollection = uow.CollectionRepository.GetByTag(tag);
                         if (existingCollection == null)
                         {
@@ -184,7 +184,7 @@ namespace ElibWpf.ViewModels.Flyouts
 
         public ICommand ExportButtonCommand => new RelayCommand(HandleExport);
 
-        private void HandleExport()
+        private async void HandleExport()
         {
             var dlg = new Microsoft.Win32.SaveFileDialog
             {
@@ -203,8 +203,12 @@ namespace ElibWpf.ViewModels.Flyouts
                 if (result == true)
                 {
                     var filePath = dlg.FileName;
-                    using var uow = ApplicationSettings.CreateUnitOfWork();
-                    var fileToExport = uow.RawFileRepository.Find(Book.File.RawFileId);
+                    RawFile fileToExport = null;
+                    using (var uow = await App.UnitOfWorkFactory.CreateAsync())
+                    {
+                        fileToExport = uow.RawFileRepository.Find(Book.File.RawFileId);
+                    }
+
                     Exporter.Export(fileToExport, filePath);
                 }
             }
@@ -216,12 +220,15 @@ namespace ElibWpf.ViewModels.Flyouts
 
         public ICommand ShowFileInfoCommand => new RelayCommand(HandleShowFileInfo);
 
-        private void HandleShowFileInfo()
+        private async void HandleShowFileInfo()
         {
-            using var uow = ApplicationSettings.CreateUnitOfWork();
-            var fileToExport = uow.RawFileRepository.Find(Book.File.RawFileId);
+            RawFile rawFile = null;
+            using (var uow = await App.UnitOfWorkFactory.CreateAsync())
+            {
+                rawFile = uow.RawFileRepository.Find(Book.File.RawFileId);
+            }
 
-            var x = EbookParserFactory.Create(Book.File.Format, fileToExport.RawContent).Parse();
+            var x = EbookParserFactory.Create(Book.File.Format, rawFile.RawContent).Parse();
 
             var builder = new StringBuilder("");
             builder.AppendLine($"ISBN: {x.Isbn}");

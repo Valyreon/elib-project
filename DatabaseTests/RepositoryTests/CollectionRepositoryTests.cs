@@ -1,9 +1,9 @@
-﻿using DataLayer;
+using System.Collections.Generic;
+using System.Linq;
+using DataLayer;
 using Domain;
 using ElibWpf.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace DatabaseTests.RepositoryTests
 {
@@ -15,7 +15,8 @@ namespace DatabaseTests.RepositoryTests
         [TestInitialize]
         public void Initialize()
         {
-            using var unitOfWork = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath);
+            var factory = new UnitOfWorkFactory(ApplicationSettings.GetInstance().DatabasePath);
+            using var unitOfWork = factory.Create();
 
             addedCollections = new List<UserCollection>
             {
@@ -35,9 +36,10 @@ namespace DatabaseTests.RepositoryTests
         [TestCleanup]
         public void Clean()
         {
+            var factory = new UnitOfWorkFactory(ApplicationSettings.GetInstance().DatabasePath);
             foreach (var collection in addedCollections)
             {
-                using var unitOfWork = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath);
+                using var unitOfWork = factory.Create();
                 unitOfWork.CollectionRepository.Remove(collection.Id);
                 unitOfWork.Commit();
             }
@@ -46,7 +48,8 @@ namespace DatabaseTests.RepositoryTests
         [TestMethod]
         public void TestGetAll()
         {
-            using var unitOfWork = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath);
+            var factory = new UnitOfWorkFactory(ApplicationSettings.GetInstance().DatabasePath);
+            using var unitOfWork = factory.Create();
             var collections = unitOfWork.CollectionRepository.All();
 
             Assert.IsTrue(collections.Count() >= 3);
@@ -59,19 +62,20 @@ namespace DatabaseTests.RepositoryTests
         [TestMethod]
         public void TestRemoveAndFind()
         {
-            using (var unitOfWork = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath))
+            var factory = new UnitOfWorkFactory(ApplicationSettings.GetInstance().DatabasePath);
+            using (var unitOfWork = factory.Create())
             {
                 var found = unitOfWork.CollectionRepository.Find(addedCollections[0].Id);
                 Assert.IsTrue(found.Id == addedCollections[0].Id && found.Tag == addedCollections[0].Tag);
             }
 
-            using (var unitOfWork = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath))
+            using (var unitOfWork = factory.Create())
             {
                 unitOfWork.CollectionRepository.Remove(addedCollections[0]);
                 unitOfWork.Commit();
             }
 
-            using (var unitOfWork = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath))
+            using (var unitOfWork = factory.Create())
             {
                 var found = unitOfWork.CollectionRepository.Find(addedCollections[0].Id);
                 Assert.IsTrue(found == null);
@@ -81,14 +85,15 @@ namespace DatabaseTests.RepositoryTests
         [TestMethod]
         public void TestUpdate()
         {
-            using (var unitOfWork = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath))
+            var factory = new UnitOfWorkFactory(ApplicationSettings.GetInstance().DatabasePath);
+            using (var unitOfWork = factory.Create())
             {
                 addedCollections[0].Tag = "Updated";
                 unitOfWork.CollectionRepository.Update(addedCollections[0]);
                 unitOfWork.Commit();
             }
 
-            using (var unitOfWork = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath))
+            using (var unitOfWork = factory.Create())
             {
                 var found = unitOfWork.CollectionRepository.Find(addedCollections[0].Id);
                 Assert.IsTrue(found.Id == addedCollections[0].Id && found.Tag == "Updated");
@@ -104,26 +109,27 @@ namespace DatabaseTests.RepositoryTests
                 FileId = 868
             };
 
-            using (var unitOfWork = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath))
+            var factory = new UnitOfWorkFactory(ApplicationSettings.GetInstance().DatabasePath);
+            using (var unitOfWork = factory.Create())
             {
                 unitOfWork.BookRepository.Add(toAdd);
                 unitOfWork.Commit();
             }
 
-            using (var unitOfWork = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath))
+            using (var unitOfWork = factory.Create())
             {
                 unitOfWork.CollectionRepository.AddCollectionForBook(addedCollections[0], toAdd.Id);
                 unitOfWork.Commit();
             }
 
-            using (var unitOfWork = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath))
+            using (var unitOfWork = factory.Create())
             {
                 var authors = unitOfWork.CollectionRepository.GetUserCollectionsOfBook(toAdd.Id);
                 Assert.IsTrue(authors.Count() == 1);
                 Assert.IsTrue(authors.First().Id == addedCollections[0].Id);
             }
 
-            using (var unitOfWork = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath))
+            using (var unitOfWork = factory.Create())
             {
                 unitOfWork.CollectionRepository.RemoveCollectionForBook(addedCollections[0], toAdd.Id);
                 var cols = unitOfWork.CollectionRepository.GetUserCollectionsOfBook(toAdd.Id);

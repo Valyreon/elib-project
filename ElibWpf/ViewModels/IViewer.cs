@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Threading.Tasks;
 using DataLayer;
 
 namespace ElibWpf.ViewModels
@@ -11,7 +12,7 @@ namespace ElibWpf.ViewModels
 
         public abstract void Refresh();
 
-        public abstract IViewer Search(SearchParameters searchOptions);
+        public abstract Task<IViewer> Search(SearchParameters searchOptions);
 
         public abstract Action Back { get; set; }
 

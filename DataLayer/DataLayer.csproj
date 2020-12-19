@@ -100,6 +100,7 @@
     <Compile Include="Repositories\SeriesRepository.cs" />
     <Compile Include="SearchParameters.cs" />
     <Compile Include="UnitOfWork.cs" />
+    <Compile Include="UnitOfWorkFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -109,10 +110,6 @@
     <ProjectReference Include="..\Domain\Domain.csproj">
       <Project>{1A7E4187-0A14-4B7F-BA7E-A5E618C0BFC8}</Project>
       <Name>Domain</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MVVMLibrary\MVVMLibrary.csproj">
-      <Project>{814AE470-0BAF-4D21-A917-59BF7DC887AE}</Project>
-      <Name>MVVMLibrary</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

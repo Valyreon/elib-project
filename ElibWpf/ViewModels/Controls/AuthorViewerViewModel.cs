@@ -7,7 +7,6 @@ using System.Windows.Input;
 using DataLayer;
 using Domain;
 using ElibWpf.Messages;
-using ElibWpf.Models;
 using MVVMLibrary;
 using MVVMLibrary.Messaging;
 
@@ -58,13 +57,11 @@ namespace ElibWpf.ViewModels.Controls
         public void Refresh()
         {
             Authors.Clear();
-            using var uow = ApplicationSettings.CreateUnitOfWork();
-            uow.ClearCache();
-            uow.Dispose();
+            UnitOfWork.ClearCache();
             LoadMore();
         }
 
-        public IViewer Search(SearchParameters searchOptions)
+        public Task<IViewer> Search(SearchParameters searchOptions)
         {
             throw new NotImplementedException();
         }
@@ -82,7 +79,7 @@ namespace ElibWpf.ViewModels.Controls
 
             await Task.Factory.StartNew(() =>
             {
-                using var uow = ApplicationSettings.CreateUnitOfWork();
+                using var uow = App.UnitOfWorkFactory.Create();
                 return uow.AuthorRepository.All().ToList();
 
             }).ContinueWith((x) =>

@@ -143,7 +143,7 @@ namespace ElibWpf.ViewModels.Flyouts
 
             _ = Task.Run(() =>
             {
-                using var uow = ApplicationSettings.CreateUnitOfWork();
+                using var uow = App.UnitOfWorkFactory.Create();
                 uow.AuthorRepository.Add(newAuthor);
                 uow.Commit();
             });
@@ -161,7 +161,7 @@ namespace ElibWpf.ViewModels.Flyouts
 
             Task.Run(() =>
             {
-                using var uow = ApplicationSettings.CreateUnitOfWork();
+                using var uow = App.UnitOfWorkFactory.Create();
                 if (uow.AuthorRepository.CountBooksByAuthor(id) > 1)
                 {
                     return;
@@ -198,7 +198,7 @@ namespace ElibWpf.ViewModels.Flyouts
 
             Task.Run(() =>
             {
-                using var uow = ApplicationSettings.CreateUnitOfWork();
+                using var uow = App.UnitOfWorkFactory.Create();
 
                 if ((book.Series == null && Series != null) || (Series != null && book.Series.Id != Series.Id))
                 {
@@ -332,7 +332,7 @@ namespace ElibWpf.ViewModels.Flyouts
 
             _ = Task.Run(() =>
             {
-                using var uow = ApplicationSettings.CreateUnitOfWork();
+                using var uow = App.UnitOfWorkFactory.Create();
                 uow.SeriesRepository.Add(newSeries);
                 uow.Commit();
             });
@@ -350,7 +350,7 @@ namespace ElibWpf.ViewModels.Flyouts
 
             _ = Task.Run(() =>
             {
-                using var uow = ApplicationSettings.CreateUnitOfWork();
+                using var uow = App.UnitOfWorkFactory.Create();
                 uow.SeriesRepository.Update(Series);
                 uow.Commit();
             });

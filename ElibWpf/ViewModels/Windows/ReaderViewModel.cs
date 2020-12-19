@@ -1,13 +1,12 @@
-﻿using CefSharp;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using CefSharp;
 using CefSharp.Wpf;
 using Domain;
 using EbookTools;
 using ElibWpf.BindingItems;
-using ElibWpf.Models;
 using MVVMLibrary;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace ElibWpf.ViewModels.Windows
 {
@@ -24,7 +23,7 @@ namespace ElibWpf.ViewModels.Windows
 
         public ICommand UnloadCommand => new RelayCommand<ChromiumWebBrowser>(HandleUnload);
 
-        private void HandleUnload(ChromiumWebBrowser obj)
+        private async void HandleUnload(ChromiumWebBrowser obj)
         {
             var r = obj.EvaluateScriptAsync(@"document.body[""scrollTop""]");
             var scrollTop = (int)r.Result.Result;
@@ -36,7 +35,7 @@ namespace ElibWpf.ViewModels.Windows
 
             var toUpdate = Book;
 
-            using var uow = ApplicationSettings.CreateUnitOfWork();
+            using var uow = await App.UnitOfWorkFactory.CreateAsync();
             uow.BookRepository.Update(toUpdate);
             uow.Commit();
         }
@@ -53,10 +52,14 @@ namespace ElibWpf.ViewModels.Windows
         {
             obj.JavascriptObjectRepository.Register("QuoteHelper", new QuoteJsHelper(Book), true);
 
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
-                using var uow = ApplicationSettings.CreateUnitOfWork();
-                var rawFile = uow.RawFileRepository.Find(Book.File.RawFileId);
+                RawFile rawFile = null;
+                using (var uow = await App.UnitOfWorkFactory.CreateAsync())
+                {
+                    rawFile = uow.RawFileRepository.Find(Book.File.RawFileId);
+                }
+
                 var parser = EbookParserFactory.Create(Book.File.Format, rawFile.RawContent);
                 var html = new StringBuilder("<html>" + parser.GenerateHtml());
                 if (Book.PercentageRead != 0)

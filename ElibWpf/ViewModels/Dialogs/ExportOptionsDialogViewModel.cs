@@ -76,8 +76,6 @@ namespace ElibWpf.ViewModels.Dialogs
             {
                 return;
             }
-            using var uow = ApplicationSettings.CreateUnitOfWork();
-            var exporter = new Exporter(uow);
 
             var controlProgress =
                 await DialogCoordinator.Instance.ShowProgressAsync(Application.Current.MainWindow.DataContext,
@@ -99,14 +97,17 @@ namespace ElibWpf.ViewModels.Dialogs
                 controlProgress.SetProgress(++counter);
             }
 
-            await Task.Run(() => exporter.ExportBooks(booksToExport,
-                new ExporterOptions
-                {
-                    DestinationDirectory = DestinationPath,
-                    GroupByAuthor = IsGroupByAuthorChecked,
-                    GroupBySeries = IsGroupBySeriesChecked
-                }, SetProgress))
-                .ContinueWith(x => IsExportComplete = true);
+            using (var uow = await App.UnitOfWorkFactory.CreateAsync())
+            {
+                var exporter = new Exporter(uow);
+                await Task.Run(() => exporter.ExportBooks(booksToExport,
+                    new ExporterOptions
+                    {
+                        DestinationDirectory = DestinationPath,
+                        GroupByAuthor = IsGroupByAuthorChecked,
+                        GroupBySeries = IsGroupBySeriesChecked
+                    }, SetProgress));
+            }
 
             await controlProgress.CloseAsync();
             await DialogCoordinator.Instance.HideMetroDialogAsync(Application.Current.MainWindow.DataContext, dialog);

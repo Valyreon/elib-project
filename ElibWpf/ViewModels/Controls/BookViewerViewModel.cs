@@ -98,9 +98,12 @@ namespace ElibWpf.ViewModels.Controls
             }
 
             var dialog = new DeleteBooksDialog();
-            using var uow = ApplicationSettings.CreateUnitOfWork();
-            var selectedBooks = selector.GetSelectedBooks(uow);
-            uow.Dispose();
+            IList<Book> selectedBooks = null;
+            using (var uow = await App.UnitOfWorkFactory.CreateAsync())
+            {
+                selectedBooks = selector.GetSelectedBooks(uow);
+            }
+
             var deleteDialogViewModel = new DeleteBooksDialogViewModel(selectedBooks, dialog);
             deleteDialogViewModel.SetActionOnClose(() =>
             {
@@ -239,7 +242,7 @@ namespace ElibWpf.ViewModels.Controls
 
             await Task.Factory.StartNew(() =>
             {
-                using var uow = ApplicationSettings.CreateUnitOfWork();
+                using var uow = App.UnitOfWorkFactory.Create();
                 if (filter.Selected.HasValue && filter.Selected == true)
                 {
                     dontLoad = true;
@@ -249,9 +252,9 @@ namespace ElibWpf.ViewModels.Controls
                 {
                     return uow.BookRepository.FindPageByFilter(filter, Books.Count, 25).ToList();
                 }
-            }).ContinueWith((x) =>
+            }).ContinueWith(x =>
             {
-                using var uow = ApplicationSettings.CreateUnitOfWork();
+                using var uow = App.UnitOfWorkFactory.Create();
 
                 if (x.Result.Count == 0)
                 {
@@ -271,13 +274,11 @@ namespace ElibWpf.ViewModels.Controls
         {
             ScrollVertical = 0;
             Books.Clear();
-            using var uow = ApplicationSettings.CreateUnitOfWork();
-            uow.ClearCache();
-            uow.Dispose();
+            UnitOfWork.ClearCache();
             UpdateSubcaption();
         }
 
-        public IViewer Search(SearchParameters searchOptions)
+        public async Task<IViewer> Search(SearchParameters searchOptions)
         {
             var filterWithSearch = filter.Clone();
 
@@ -290,8 +291,11 @@ namespace ElibWpf.ViewModels.Controls
                 return null;
             }
 
-            using var uow = ApplicationSettings.CreateUnitOfWork();
-            var resultCount = uow.BookRepository.Count(filterWithSearch);
+            var resultCount = 0;
+            using (var uow = await App.UnitOfWorkFactory.CreateAsync())
+            {
+                resultCount = uow.BookRepository.Count(filterWithSearch);
+            }
 
             if (resultCount == 0)
             {
@@ -326,8 +330,10 @@ namespace ElibWpf.ViewModels.Controls
         private async void HandleExport()
         {
             var dialog = new ExportOptionsDialog();
-            using var uow = ApplicationSettings.CreateUnitOfWork();
-            dialog.DataContext = new ExportOptionsDialogViewModel(selector.GetSelectedBooks(uow), dialog);
+            using (var uow = await App.UnitOfWorkFactory.CreateAsync())
+            {
+                dialog.DataContext = new ExportOptionsDialogViewModel(selector.GetSelectedBooks(uow), dialog);
+            }
             await DialogCoordinator.Instance.ShowMetroDialogAsync(System.Windows.Application.Current.MainWindow.DataContext, dialog);
         }
 
@@ -364,7 +370,7 @@ namespace ElibWpf.ViewModels.Controls
                         await Task.Run(() =>
                         {
                             var pBook = EbookParserFactory.Create(dlg.FileNames[i]).Parse();
-                            using var uow = ApplicationSettings.CreateUnitOfWork();
+                            using var uow = App.UnitOfWorkFactory.Create();
                             var book = pBook.ToBook(uow);
                             booksToAdd.Add(book);
                         });
@@ -429,7 +435,7 @@ namespace ElibWpf.ViewModels.Controls
                 var count = 0;
                 if (!IsSelectedBooksViewer)
                 {
-                    using var uow = ApplicationSettings.CreateUnitOfWork();
+                    using var uow = App.UnitOfWorkFactory.Create();
                     count = uow.BookRepository.Count(filter);
                 }
                 else

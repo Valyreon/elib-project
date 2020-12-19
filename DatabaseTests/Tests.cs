@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using DataLayer;
+using DataLayer.Extensions;
 using Domain;
 using EbookTools;
 using ElibWpf.Extensions;
@@ -17,7 +18,8 @@ namespace DatabaseTests
         [TestMethod]
         public void ExporterTest()
         {
-            using var uow = ApplicationSettings.CreateUnitOfWork();
+            var factory = new UnitOfWorkFactory(ApplicationSettings.GetInstance().DatabasePath);
+            using var uow = factory.Create();
             var exp = new Exporter(uow);
 
             var options = new ExporterOptions
@@ -52,20 +54,22 @@ namespace DatabaseTests
                     .Select(s => s[random.Next(s.Length)]).ToArray());
             }
 
-            using var context = ApplicationSettings.CreateUnitOfWork();
+            var factory = new UnitOfWorkFactory(ApplicationSettings.GetInstance().DatabasePath);
+            using var uow = factory.Create();
             for (var i = 0; i < 15; i++)
             {
-                context.CollectionRepository.Add(new UserCollection { Tag = RandomString(5) });
+                uow.CollectionRepository.Add(new UserCollection { Tag = RandomString(5) });
             }
 
-            context.Commit();
+            uow.Commit();
         }
 
         [TestMethod]
         public void AddBookSeriesFromMyComputer()
         {
             var bookSeriesPath = @"D:\Documents\Ebooks\Book Series";
-            using var uow = ApplicationSettings.CreateUnitOfWork();
+            var factory = new UnitOfWorkFactory(ApplicationSettings.GetInstance().DatabasePath);
+            using var uow = factory.Create();
             uow.Truncate();
             uow.Commit();
             foreach (var dirPath in Directory.GetDirectories(bookSeriesPath))
@@ -148,7 +152,8 @@ namespace DatabaseTests
         [TestMethod]
         public void OptimizeImages()
         {
-            using var context = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath);
+            var factory = new UnitOfWorkFactory(ApplicationSettings.GetInstance().DatabasePath);
+            using var context = factory.Create();
 
             foreach (var book in context.BookRepository.All().Select(b => b.LoadMembers(context)))
             {

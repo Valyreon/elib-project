@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using DataLayer;
 using Newtonsoft.Json;
 
 namespace ElibWpf.Models
@@ -46,11 +45,6 @@ namespace ElibWpf.Models
             }
 
             throw new FileNotFoundException("Couldn't find properties.json in current or in AppData folder.");
-        }
-
-        public static IUnitOfWork CreateUnitOfWork()
-        {
-            return new UnitOfWork(GetInstance().DatabasePath);
         }
     }
 }

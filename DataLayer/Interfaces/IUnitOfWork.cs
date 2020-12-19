@@ -16,8 +16,6 @@ namespace DataLayer
 
         void Truncate();
 
-        void ClearCache();
-
         void Commit();
     }
 }

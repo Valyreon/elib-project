@@ -20,7 +20,7 @@ namespace DataLayer
         private ICoverRepository coverRepository;
         private IQuoteRepository quoteRepository;
 
-        public UnitOfWork(string dbPath)
+        internal UnitOfWork(string dbPath)
         {
             var connectionString = new SQLiteConnectionStringBuilder
             {
@@ -92,14 +92,16 @@ namespace DataLayer
                 connection.Dispose();
                 connection = null;
             }
+            UnitOfWorkFactory.ReleaseSemaphore();
         }
 
-        public void ClearCache()
+        public static void ClearCache()
         {
-            BookRepository.ClearCache();
-            SeriesRepository.ClearCache();
-            AuthorRepository.ClearCache();
-            CollectionRepository.ClearCache();
+            new BookRepository(null).ClearCache();
+            new SeriesRepository(null).ClearCache();
+            new AuthorRepository(null).ClearCache();
+            new CollectionRepository(null).ClearCache();
+            new QuoteRepository(null).ClearCache();
         }
 
         public void Truncate()

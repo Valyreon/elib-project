@@ -2,7 +2,6 @@ using System;
 using System.Globalization;
 using System.Windows.Data;
 using Domain;
-using ElibWpf.Models;
 
 namespace ElibWpf.Converters.AuthorTileConverters
 {
@@ -12,7 +11,7 @@ namespace ElibWpf.Converters.AuthorTileConverters
         {
             if (value is Author str)
             {
-                using var uow = ApplicationSettings.CreateUnitOfWork();
+                using var uow = App.UnitOfWorkFactory.Create();
                 var count = uow.AuthorRepository.CountBooksByAuthor(str.Id);
 
                 return $"{count } book{(count > 1 ? "s" : "")}";

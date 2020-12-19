@@ -59,7 +59,7 @@ namespace ElibWpf.ViewModels.Controls
         {
             get
             {
-                using var uow = ApplicationSettings.CreateUnitOfWork();
+                using var uow = App.UnitOfWorkFactory.Create();
                 return new ObservableCollection<UserCollection>(uow.CollectionRepository.All());
             }
         }
@@ -96,10 +96,7 @@ namespace ElibWpf.ViewModels.Controls
                 if (selectedCollection != null)
                 {
                     history.Clear();
-
-                    using var uow = ApplicationSettings.CreateUnitOfWork();
-                    uow.ClearCache();
-                    uow.Dispose();
+                    UnitOfWork.ClearCache();
 
                     var filter = new FilterParameters
                     {
@@ -145,14 +142,14 @@ namespace ElibWpf.ViewModels.Controls
             SelectedCollection = Collections.FirstOrDefault(c => c.Id == message.CollectionId);
         }
 
-        private void ProcessSearchInput(string token)
+        private async void ProcessSearchInput(string token)
         {
             if (!string.IsNullOrWhiteSpace(token))
             {
                 token = token.ToLower();
                 SearchOptions.Token = token;
 
-                var resultViewModel = CurrentViewer.Search(SearchOptions);
+                var resultViewModel = await CurrentViewer.Search(SearchOptions);
 
                 if (resultViewModel == null)
                 {
@@ -195,8 +192,6 @@ namespace ElibWpf.ViewModels.Controls
 
         private void HandleAuthorSelection(AuthorSelectedMessage obj)
         {
-            using var uow = ApplicationSettings.CreateUnitOfWork();
-
             var viewerCaption = $"Books by {obj.Author.Name}";
             if (viewerCaption == CurrentViewer.Caption)
             {
@@ -219,14 +214,12 @@ namespace ElibWpf.ViewModels.Controls
             history.Push(temp);
         }
 
-        private void HandleSeriesSelection(SeriesSelectedMessage obj)
+        private async void HandleSeriesSelection(SeriesSelectedMessage obj)
         {
             if (obj.Series == null)
             {
                 return;
             }
-
-            using var uow = ApplicationSettings.CreateUnitOfWork();
 
             var viewerCaption = $"{obj.Series.Name} Series";
             if (viewerCaption == CurrentViewer.Caption)
@@ -250,7 +243,7 @@ namespace ElibWpf.ViewModels.Controls
             history.Push(temp);
         }
 
-        private void PaneSelectionChanged()
+        private async void PaneSelectionChanged()
         {
             if (SelectedMainPaneItem == null)
             {
@@ -261,9 +254,7 @@ namespace ElibWpf.ViewModels.Controls
 
             var filter = SelectedMainPaneItem.Filter?.Clone() ?? new FilterParameters();
 
-            using var uow = ApplicationSettings.CreateUnitOfWork();
-            uow.ClearCache();
-            uow.Dispose();
+            UnitOfWork.ClearCache();
 
             if (SelectedMainPaneItem.PaneCaption == "Authors")
             {

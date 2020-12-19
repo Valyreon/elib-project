@@ -73,25 +73,22 @@ namespace ElibWpf.ViewModels.Dialogs
                 await DialogCoordinator.Instance.ShowProgressAsync(Application.Current.MainWindow.DataContext, "", "");
             }
 
-            using var uow = ApplicationSettings.CreateUnitOfWork();
-            await Task.Run(async () =>
+            await Task.Run(() =>
             {
                 var counter = 0;
                 controlProgress.Minimum = 1;
                 controlProgress.Maximum = booksToExport.Count;
                 controlProgress.SetTitle("Deleting books");
+                using var uow = App.UnitOfWorkFactory.Create();
                 foreach (var book in booksToExport)
                 {
                     controlProgress.SetMessage("Deleting book: " + book.Title);
                     controlProgress.SetProgress(++counter);
                     uow.BookRepository.Remove(book);
-                    await Task.Delay(50);
                 }
-                uow.ClearCache();
                 uow.Commit();
             });
 
-            uow.Dispose();
             return controlProgress;
         }
 
@@ -125,8 +122,6 @@ namespace ElibWpf.ViewModels.Dialogs
             {
                 return;
             }
-            using var uow = ApplicationSettings.CreateUnitOfWork();
-            var exporter = new Exporter(uow);
 
             var controlProgress =
                 await DialogCoordinator.Instance.ShowProgressAsync(Application.Current.MainWindow.DataContext,
@@ -150,14 +145,17 @@ namespace ElibWpf.ViewModels.Dialogs
                 await Task.Delay(50);
             }
 
-            await Task.Run(() => exporter.ExportBooks(booksToExport,
-                new ExporterOptions
-                {
-                    DestinationDirectory = DestinationPath,
-                    GroupByAuthor = IsGroupByAuthorChecked,
-                    GroupBySeries = IsGroupBySeriesChecked
-                }, SetProgress));
-            uow.Dispose();
+            using (var uow = await App.UnitOfWorkFactory.CreateAsync())
+            {
+                var exporter = new Exporter(uow);
+                await Task.Run(() => exporter.ExportBooks(booksToExport,
+                    new ExporterOptions
+                    {
+                        DestinationDirectory = DestinationPath,
+                        GroupByAuthor = IsGroupByAuthorChecked,
+                        GroupBySeries = IsGroupBySeriesChecked
+                    }, SetProgress));
+            }
 
             await ContinueDeletion(controlProgress);
 

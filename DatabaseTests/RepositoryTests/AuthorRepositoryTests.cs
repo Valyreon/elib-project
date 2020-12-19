@@ -1,9 +1,9 @@
-﻿using DataLayer;
+using System.Collections.Generic;
+using System.Linq;
+using DataLayer;
 using Domain;
 using ElibWpf.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace DatabaseTests.RepositoryTests
 {
@@ -18,7 +18,8 @@ namespace DatabaseTests.RepositoryTests
         [TestInitialize]
         public void Initialize()
         {
-            using var unitOfWork = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath);
+            var factory = new UnitOfWorkFactory(ApplicationSettings.GetInstance().DatabasePath);
+            using var unitOfWork = factory.Create();
 
             var one = new Author { Name = "One Author" };
             unitOfWork.AuthorRepository.Add(one);
@@ -39,7 +40,8 @@ namespace DatabaseTests.RepositoryTests
         {
             foreach (var author in addedAuthors)
             {
-                using var unitOfWork = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath);
+                var factory = new UnitOfWorkFactory(ApplicationSettings.GetInstance().DatabasePath);
+                using var unitOfWork = factory.Create();
                 unitOfWork.AuthorRepository.Remove(author.Id);
                 unitOfWork.Commit();
             }
@@ -48,7 +50,8 @@ namespace DatabaseTests.RepositoryTests
         [TestMethod]
         public void TestGetAll()
         {
-            using var unitOfWork = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath);
+            var factory = new UnitOfWorkFactory(ApplicationSettings.GetInstance().DatabasePath);
+            using var unitOfWork = factory.Create();
             var authors = unitOfWork.AuthorRepository.All();
 
             Assert.IsTrue(authors.Count() >= 3);
@@ -61,19 +64,20 @@ namespace DatabaseTests.RepositoryTests
         [TestMethod]
         public void TestRemoveAndFind()
         {
-            using (var unitOfWork = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath))
+            var factory = new UnitOfWorkFactory(ApplicationSettings.GetInstance().DatabasePath);
+            using (var unitOfWork = factory.Create())
             {
                 var found = unitOfWork.AuthorRepository.Find(addedAuthors[0].Id);
                 Assert.IsTrue(found.Id == addedAuthors[0].Id && found.Name == addedAuthors[0].Name);
             }
 
-            using (var unitOfWork = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath))
+            using (var unitOfWork = factory.Create())
             {
                 unitOfWork.AuthorRepository.Remove(addedAuthors[0]);
                 unitOfWork.Commit();
             }
 
-            using (var unitOfWork = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath))
+            using (var unitOfWork = factory.Create())
             {
                 var found = unitOfWork.AuthorRepository.Find(addedAuthors[0].Id);
                 Assert.IsTrue(found == null);
@@ -83,14 +87,15 @@ namespace DatabaseTests.RepositoryTests
         [TestMethod]
         public void TestUpdate()
         {
-            using (var unitOfWork = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath))
+            var factory = new UnitOfWorkFactory(ApplicationSettings.GetInstance().DatabasePath);
+            using (var unitOfWork = factory.Create())
             {
                 addedAuthors[0].Name = "Updated";
                 unitOfWork.AuthorRepository.Update(addedAuthors[0]);
                 unitOfWork.Commit();
             }
 
-            using (var unitOfWork = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath))
+            using (var unitOfWork = factory.Create())
             {
                 var found = unitOfWork.AuthorRepository.Find(addedAuthors[0].Id);
                 Assert.IsTrue(found.Id == addedAuthors[0].Id && found.Name == "Updated");
@@ -100,32 +105,33 @@ namespace DatabaseTests.RepositoryTests
         [TestMethod]
         public void TestAddAuthorForBook()
         {
+            var factory = new UnitOfWorkFactory(ApplicationSettings.GetInstance().DatabasePath);
             var toAdd = new Book
             {
                 Title = "Test Book Title",
                 FileId = 868
             };
 
-            using (var unitOfWork = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath))
+            using (var unitOfWork = factory.Create())
             {
                 unitOfWork.BookRepository.Add(toAdd);
                 unitOfWork.Commit();
             }
 
-            using (var unitOfWork = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath))
+            using (var unitOfWork = factory.Create())
             {
                 unitOfWork.AuthorRepository.AddAuthorForBook(addedAuthors[0], toAdd.Id);
                 unitOfWork.Commit();
             }
 
-            using (var unitOfWork = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath))
+            using (var unitOfWork = factory.Create())
             {
                 var authors = unitOfWork.AuthorRepository.GetAuthorsOfBook(toAdd.Id);
                 Assert.IsTrue(authors.Count() == 1);
                 Assert.IsTrue(authors.First().Id == addedAuthors[0].Id);
             }
 
-            using (var unitOfWork = new UnitOfWork(ApplicationSettings.GetInstance().DatabasePath))
+            using (var unitOfWork = factory.Create())
             {
                 unitOfWork.AuthorRepository.RemoveAuthorForBook(addedAuthors[0], toAdd.Id);
                 var authors = unitOfWork.AuthorRepository.GetAuthorsOfBook(toAdd.Id);

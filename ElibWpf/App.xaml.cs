@@ -1,5 +1,6 @@
 using System.IO;
 using System.Windows;
+using DataLayer;
 using ElibWpf.Models;
 using Newtonsoft.Json;
 
@@ -10,7 +11,7 @@ namespace ElibWpf
     /// </summary>
     public partial class App : Application
     {
-        //private Dispatcher splashScreenDispacher;
+        public static UnitOfWorkFactory UnitOfWorkFactory { get; } = new UnitOfWorkFactory(ApplicationSettings.GetInstance().DatabasePath);
 
         private void OnStartup(object sender, StartupEventArgs e)
         {

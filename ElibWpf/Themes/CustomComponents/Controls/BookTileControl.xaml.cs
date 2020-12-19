@@ -172,7 +172,7 @@ namespace ElibWpf.Themes.CustomComponents.Controls
             if (selectedCheckbox.IsChecked != null && !selectedCheckbox.IsChecked.Value)
             {
                 var opacAnim = new DoubleAnimation(0, duration, FillBehavior.Stop);
-                opacAnim.Completed += async (e, s) =>
+                opacAnim.Completed += (e, s) =>
                 {
                     if (selectedCheckbox.IsChecked.Value == false)
                     {
