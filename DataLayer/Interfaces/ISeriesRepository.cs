@@ -1,9 +1,9 @@
-﻿using Domain;
 using System.Collections.Generic;
+using Domain;
 
-namespace DataLayer.Repositories
+namespace DataLayer.Interfaces
 {
-    public interface ISeriesRepository
+    public interface ISeriesRepository : ICache<BookSeries>
     {
         void Add(BookSeries entity);
 
@@ -18,11 +18,5 @@ namespace DataLayer.Repositories
         void Remove(BookSeries entity);
 
         void Update(BookSeries entity);
-
-        void CleanSeries();
-
-        void CleanSeries(int seriesId);
-
-        void ClearCache();
     }
 }

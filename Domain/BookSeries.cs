@@ -1,16 +1,14 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using MVVMLibrary;
 
 namespace Domain
 {
     [Table("Series")]
-    public class BookSeries : ObservableObject
+    public class BookSeries : ObservableEntity
     {
         private string name;
 
         public IEnumerable<Book> Books { get; set; }
-        public int Id { get; set; }
 
         public string Name
         {

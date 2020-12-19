@@ -1,9 +1,9 @@
-﻿using Domain;
 using System.Collections.Generic;
+using Domain;
 
-namespace DataLayer.Repositories
+namespace DataLayer.Interfaces
 {
-    public interface IAuthorRepository
+    public interface IAuthorRepository : ICache<Author>
     {
         void Add(Author entity);
 
@@ -26,9 +26,5 @@ namespace DataLayer.Repositories
         void Remove(Author entity);
 
         void Update(Author entity);
-
-        void CleanAuthors();
-
-        void ClearCache();
     }
 }

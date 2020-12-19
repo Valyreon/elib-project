@@ -400,7 +400,6 @@ namespace ElibWpf.ViewModels.Flyouts
                 var newSeries = new BookSeries { Name = name };
                 var temp = Series;
                 Series = newSeries;
-                uow.SeriesRepository.CleanSeries(temp.Id);
 
                 _ = Task.Run(() =>
                 {
@@ -415,7 +414,6 @@ namespace ElibWpf.ViewModels.Flyouts
             var temp = Series;
             Series = null;
             using var uow = ApplicationSettings.CreateUnitOfWork();
-            uow.SeriesRepository.CleanSeries(temp.Id);
         }
 
         private async void HandleEditSeries()

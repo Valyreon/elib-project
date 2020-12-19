@@ -1,14 +1,16 @@
-﻿using Dapper;
-using Domain;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using Dapper;
+using DataLayer.Extensions;
+using DataLayer.Interfaces;
+using Domain;
 
 namespace DataLayer.Repositories
 {
     public class CollectionRepository : RepositoryBase, ICollectionRepository
     {
-        private static readonly List<UserCollection> cache = new List<UserCollection>();
+        private static readonly IDictionary<int, UserCollection> cache = new Dictionary<int, UserCollection>();
 
         public CollectionRepository(IDbTransaction transaction) : base(transaction)
         {
@@ -22,7 +24,7 @@ namespace DataLayer.Repositories
                 Transaction
             );
 
-            cache.Add(entity);
+            cache.Add(entity.Id, entity);
         }
 
         public void AddCollectionForBook(UserCollection collection, int bookId)
@@ -38,42 +40,7 @@ namespace DataLayer.Repositories
         public IEnumerable<UserCollection> All()
         {
             var allList = Connection.Query<UserCollection>("SELECT * FROM UserCollections", Transaction).AsList();
-
-            foreach (var uc in allList)
-            {
-                var itemInCache = cache.Find(x => x.Id == uc.Id);
-                if (itemInCache == null)
-                {
-                    cache.Add(uc);
-                }
-                else
-                {
-                    itemInCache.Tag = uc.Tag;
-                }
-            }
-
-            return cache.ToList();
-        }
-
-        public void CleanCollections()
-        {
-            var allCollections = All();
-            foreach (var collection in allCollections)
-            {
-                var count = Connection.QueryFirst<int>(@"SELECT COUNT(*) FROM (
-                                                       SELECT UserCollectionBooks.UserCollectionId,
-                                                              Books.Id
-                                                         FROM Books
-                                                              INNER JOIN
-                                                              UserCollectionBooks ON Books.Id = UserCollectionBooks.BookId
-                                                    ) WHERE Id = @Id"
-                , collection, Transaction);
-
-                if (count == 0)
-                {
-                    Remove(collection.Id);
-                }
-            }
+            return cache.FilterAndUpdateCache(allList);
         }
 
         public int CountBooksInUserCollection(int collectionId)
@@ -88,11 +55,9 @@ namespace DataLayer.Repositories
 
         public UserCollection Find(int id)
         {
-            var cacheResult = cache.Find(x => x.Id == id);
-
-            if (cacheResult != null)
+            if (cache.TryGetValue(id, out var collectionFromCache))
             {
-                return cacheResult;
+                return collectionFromCache;
             }
 
             var result = Connection.QueryFirst<UserCollection>("SELECT * FROM UserCollections WHERE Id = @CollectionId LIMIT 1",
@@ -101,7 +66,7 @@ namespace DataLayer.Repositories
 
             if (result != null)
             {
-                cache.Add(result);
+                cache.Add(result.Id, result);
             }
 
             return result;
@@ -109,7 +74,7 @@ namespace DataLayer.Repositories
 
         public UserCollection GetByTag(string tag)
         {
-            var fromCache = cache.Find(x => x.Tag == tag);
+            var fromCache = cache.Values.FirstOrDefault(x => x.Tag == tag);
 
             if (fromCache != null)
             {
@@ -120,7 +85,7 @@ namespace DataLayer.Repositories
 
             if (fromDb != null)
             {
-                cache.Add(fromDb);
+                cache.Add(fromDb.Id, fromDb);
             }
 
             return fromDb;
@@ -128,35 +93,14 @@ namespace DataLayer.Repositories
 
         public IEnumerable<UserCollection> GetUserCollectionsOfBook(int bookId)
         {
-            var result = new List<UserCollection>();
             var dbResult = Connection.Query<UserCollection>("SELECT Id, Tag FROM BookId_Collection_View WHERE BookId = @BookId", new { BookId = bookId }, Transaction).AsEnumerable();
-
-            foreach (var uc in dbResult)
-            {
-                var inCache = cache.Find(x => x.Id == uc.Id);
-                if (inCache == null)
-                {
-                    cache.Add(uc);
-                    result.Add(uc);
-                }
-                else
-                {
-                    inCache.Tag = uc.Tag;
-                    result.Add(inCache);
-                }
-            }
-
-            return result;
+            return cache.FilterAndUpdateCache(dbResult);
         }
 
         public void Remove(int id)
         {
             Connection.Execute("DELETE FROM UserCollections WHERE Id = @RemoveId", new { RemoveId = id }, Transaction);
-            var inCache = cache.Find(x => x.Id == id);
-            if (inCache != null)
-            {
-                cache.Remove(inCache);
-            }
+            cache.Remove(id);
         }
 
         public void Remove(UserCollection entity)
@@ -178,6 +122,11 @@ namespace DataLayer.Repositories
         public void ClearCache()
         {
             cache.Clear();
+        }
+
+        public IEnumerable<UserCollection> GetCachedObjects()
+        {
+            return cache.Values.ToList();
         }
     }
 }

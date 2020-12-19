@@ -1,11 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using MVVMLibrary;
 
 namespace Domain
 {
     [Table("Quotes")]
-    public class Quote : ObservableObject
+    public class Quote : ObservableEntity
     {
         private string text;
         private string note;
@@ -13,7 +12,6 @@ namespace Domain
         [ForeignKey("BookId")] public Book Book { get; set; }
 
         public int? BookId { get; set; }
-        public int Id { get; set; }
 
         [Required]
         public string Text

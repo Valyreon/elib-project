@@ -1,9 +1,9 @@
-﻿using Domain;
 using System.Collections.Generic;
+using Domain;
 
-namespace DataLayer.Repositories
+namespace DataLayer.Interfaces
 {
-    public interface IQuoteRepository
+    public interface IQuoteRepository : ICache<Quote>
     {
         void Add(Quote entity);
 

@@ -1,14 +1,16 @@
-using Dapper;
-using Domain;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using Dapper;
+using DataLayer.Extensions;
+using DataLayer.Interfaces;
+using Domain;
 
 namespace DataLayer.Repositories
 {
     public class AuthorRepository : RepositoryBase, IAuthorRepository
     {
-        private static readonly List<Author> cache = new List<Author>();
+        private static readonly IDictionary<int, Author> cache = new Dictionary<int, Author>();
 
         public AuthorRepository(IDbTransaction transaction) : base(transaction)
         {
@@ -22,7 +24,7 @@ namespace DataLayer.Repositories
                 Transaction
             );
 
-            cache.Add(entity);
+            cache.Add(entity.Id, entity);
         }
 
         public void AddAuthorForBook(Author author, int bookId)
@@ -39,41 +41,12 @@ namespace DataLayer.Repositories
         {
             var allList = Connection.Query<Author>("SELECT * FROM Authors", Transaction);
 
-            foreach (var author in allList)
+            foreach (var author in allList.Where(x => !cache.ContainsKey(x.Id)))
             {
-                var itemInCache = cache.Find(x => x.Id == author.Id);
-                if (itemInCache == null)
-                {
-                    cache.Add(author);
-                }
-                else
-                {
-                    itemInCache.Name = author.Name;
-                }
+                cache.Add(author.Id, author);
             }
 
-            return cache.ToList();
-        }
-
-        public void CleanAuthors()
-        {
-            var allAuthors = All();
-            foreach (var author in allAuthors)
-            {
-                var count = Connection.QueryFirst<int>(@"SELECT COUNT(*) FROM (
-                                                       SELECT AuthorBooks.AuthorId,
-                                                              Books.Id
-                                                         FROM Books
-                                                              INNER JOIN
-                                                              AuthorBooks ON Books.Id = AuthorBooks.BookId
-                                                    ) WHERE Id = @Id"
-                , author, Transaction);
-
-                if (count == 0)
-                {
-                    Remove(author.Id);
-                }
-            }
+            return cache.Values.ToList();
         }
 
         public void ClearCache()
@@ -88,19 +61,18 @@ namespace DataLayer.Repositories
 
         public Author Find(int id)
         {
-            var cacheResult = cache.Find(s => s.Id == id);
-            if (cacheResult != null)
+            if (cache.TryGetValue(id, out var authorFromCache))
             {
-                return cacheResult;
+                return authorFromCache;
             }
 
-            var result = Connection.Query<Author>("SELECT * FROM Authors WHERE Id = @AuthorId LIMIT 1",
+            var result = Connection.QueryFirst<Author>("SELECT * FROM Authors WHERE Id = @AuthorId LIMIT 1",
                 new { AuthorId = id },
-                Transaction).FirstOrDefault();
+                Transaction);
 
             if (result != null)
             {
-                cache.Add(result);
+                cache.Add(result.Id, result);
             }
 
             return result;
@@ -108,43 +80,31 @@ namespace DataLayer.Repositories
 
         public IEnumerable<Author> GetAuthorsOfBook(int bookId)
         {
-            var result = new List<Author>();
             var dbResult = Connection.Query<Author>("SELECT Id, Name FROM BookId_Author_View WHERE BookId = @BookId", new { BookId = bookId }, Transaction);
-
-            foreach (var uc in dbResult)
-            {
-                var inCache = cache.Find(x => x.Id == uc.Id);
-                if (inCache == null)
-                {
-                    cache.Add(uc);
-                    result.Add(uc);
-                }
-                else
-                {
-                    inCache.Name = uc.Name;
-                    result.Add(inCache);
-                }
-            }
-
-            return result;
+            return cache.FilterAndUpdateCache(dbResult);
         }
 
         public Author GetAuthorWithName(string name)
         {
-            var results = cache.Find(x => x.Name == name);
-            return results ?? Connection.Query<Author>("SELECT * FROM Authors WHERE Name = @AuthorName LIMIT 1",
-                                                new { AuthorName = name },
-                                                Transaction).FirstOrDefault();
+            var result = cache.Values.FirstOrDefault(x => x.Name == name);
+
+            if (result != null)
+            {
+                return result;
+            }
+
+            return Connection.QueryFirst<Author>("SELECT * FROM Authors WHERE Name = @AuthorName LIMIT 1", new { AuthorName = name }, Transaction);
+        }
+
+        public IEnumerable<Author> GetCachedObjects()
+        {
+            return cache.Values.ToList();
         }
 
         public void Remove(int id)
         {
             Connection.Execute("DELETE FROM Authors WHERE Id = @RemoveId", new { RemoveId = id }, Transaction);
-            var inCache = cache.Find(x => x.Id == id);
-            if (inCache != null)
-            {
-                cache.Remove(inCache);
-            }
+            cache.Remove(id);
         }
 
         public void Remove(Author entity)
@@ -156,6 +116,7 @@ namespace DataLayer.Repositories
         public void RemoveAuthorForBook(Author author, int bookId)
         {
             Connection.Execute("DELETE FROM AuthorBooks WHERE AuthorId = @AuthorId AND BookId = @BookId", new { AuthorId = author.Id, BookId = bookId }, Transaction);
+            cache.Remove(author.Id);
         }
 
         public void Update(Author entity)

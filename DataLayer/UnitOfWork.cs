@@ -1,6 +1,7 @@
 using System.Data;
 using System.Data.SQLite;
 using Dapper;
+using DataLayer.Interfaces;
 using DataLayer.Repositories;
 
 namespace DataLayer
@@ -50,7 +51,6 @@ namespace DataLayer
 
         public void Commit()
         {
-            //await semaphore.WaitAsync();
             try
             {
                 transaction.Commit();
@@ -66,12 +66,18 @@ namespace DataLayer
                 transaction = connection.BeginTransaction();
                 ResetRepositories();
             }
-            //semaphore.Release();
         }
 
         private void ResetRepositories()
         {
             bookRepository = null;
+            authorRepository = null;
+            collectionRepository = null;
+            seriesRepository = null;
+            eFileRepository = null;
+            rawFileRepository = null;
+            coverRepository = null;
+            quoteRepository = null;
         }
 
         public void Dispose()

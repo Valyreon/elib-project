@@ -1,9 +1,9 @@
-﻿using Domain;
 using System.Collections.Generic;
+using Domain;
 
-namespace DataLayer.Repositories
+namespace DataLayer.Interfaces
 {
-    public interface ICollectionRepository
+    public interface ICollectionRepository : ICache<UserCollection>
     {
         void Add(UserCollection entity);
 
@@ -28,9 +28,5 @@ namespace DataLayer.Repositories
         void Remove(UserCollection entity);
 
         void Update(UserCollection entity);
-
-        void CleanCollections();
-
-        void ClearCache();
     }
 }

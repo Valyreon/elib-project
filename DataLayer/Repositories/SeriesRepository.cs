@@ -1,14 +1,16 @@
-﻿using Dapper;
-using Domain;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using Dapper;
+using DataLayer.Extensions;
+using DataLayer.Interfaces;
+using Domain;
 
 namespace DataLayer.Repositories
 {
     public class SeriesRepository : RepositoryBase, ISeriesRepository
     {
-        private static readonly List<BookSeries> cache = new List<BookSeries>();
+        private static readonly IDictionary<int, BookSeries> cache = new Dictionary<int, BookSeries>();
 
         public SeriesRepository(IDbTransaction transaction) : base(transaction)
         {
@@ -22,71 +24,32 @@ namespace DataLayer.Repositories
                 Transaction
             );
 
-            cache.Add(entity);
+            cache.Add(entity.Id, entity);
         }
 
         public IEnumerable<BookSeries> All()
         {
             var allList = Connection.Query<BookSeries>("SELECT * FROM Series", Transaction).AsList();
-
-            foreach (var series in allList)
-            {
-                var itemInCache = cache.Find(x => x.Id == series.Id);
-                if (itemInCache == null)
-                {
-                    cache.Add(series);
-                }
-                else
-                {
-                    itemInCache.Name = series.Name;
-                }
-            }
-
-            return cache.ToList();
-        }
-
-        public void CleanSeries()
-        {
-            var allSeries = All();
-            foreach (var series in allSeries)
-            {
-                var count = Connection.QueryFirst<int>(@"SELECT COUNT(*) FROM Books WHERE SeriesId = @Id", series, Transaction);
-
-                if (count == 0)
-                {
-                    Remove(series.Id);
-                }
-            }
-        }
-
-        public void CleanSeries(int seriesId)
-        {
-            var count = Connection.QueryFirst<int>(@"SELECT COUNT(*) FROM Books WHERE SeriesId = @Id", new { Id = seriesId }, Transaction);
-
-            if (count == 0)
-            {
-                Remove(seriesId);
-            }
+            return cache.FilterAndUpdateCache(allList);
         }
 
         public BookSeries Find(int id)
         {
-            var cacheResult = cache.Find(s => s.Id == id);
-            if (cacheResult != null)
+            if (cache.TryGetValue(id, out var seriesFromCache))
             {
-                return cacheResult;
+                return seriesFromCache;
             }
 
             var res = Connection.QueryFirst<BookSeries>("SELECT * FROM Series WHERE Id = @SeriesId LIMIT 1",
                 new { SeriesId = id },
                 Transaction);
-            cache.Add(res);
+            cache.Add(res.Id, res);
             return res;
         }
 
         public BookSeries GetByName(string name)
         {
-            var cacheResult = cache.Find(s => s.Name == name);
+            var cacheResult = cache.Values.Where(s => s.Name == name).FirstOrDefault();
             return cacheResult ?? Connection.Query<BookSeries>("SELECT * FROM Series WHERE Name = @Name LIMIT 1",
                 new { Name = name },
                 Transaction).FirstOrDefault();
@@ -95,11 +58,7 @@ namespace DataLayer.Repositories
         public void Remove(int id)
         {
             Connection.Execute("DELETE FROM Series WHERE Id = @RemoveId", new { RemoveId = id }, Transaction);
-            var cacheItem = cache.Find(x => x.Id == id);
-            if (cacheItem != null)
-            {
-                cache.Remove(cacheItem);
-            }
+            cache.Remove(id);
         }
 
         public void Remove(BookSeries entity)
@@ -116,6 +75,11 @@ namespace DataLayer.Repositories
         public void ClearCache()
         {
             cache.Clear();
+        }
+
+        public IEnumerable<BookSeries> GetCachedObjects()
+        {
+            return cache.Values.ToList();
         }
     }
 }

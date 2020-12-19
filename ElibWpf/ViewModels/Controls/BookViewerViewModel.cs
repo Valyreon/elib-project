@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
 using DataLayer;
+using DataLayer.Extensions;
 using Domain;
 using EbookTools;
 using ElibWpf.BindingItems;

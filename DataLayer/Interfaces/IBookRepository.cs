@@ -1,9 +1,9 @@
-﻿using Domain;
 using System.Collections.Generic;
+using Domain;
 
-namespace DataLayer.Repositories
+namespace DataLayer.Interfaces
 {
-    public interface IBookRepository
+    public interface IBookRepository : ICache<Book>
     {
         void Add(Book entity);
 
@@ -28,7 +28,5 @@ namespace DataLayer.Repositories
         void Remove(Book entity);
 
         void Update(Book entity);
-
-        void ClearCache();
     }
 }

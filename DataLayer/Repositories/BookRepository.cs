@@ -1,16 +1,18 @@
-﻿using Dapper;
-using Domain;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using Dapper;
+using DataLayer.Extensions;
+using DataLayer.Interfaces;
+using Domain;
 
 namespace DataLayer.Repositories
 {
     public class BookRepository : RepositoryBase, IBookRepository
     {
-        private static readonly List<Book> cache = new List<Book>();
+        private static readonly IDictionary<int, Book> cache = new Dictionary<int, Book>();
 
         public BookRepository(IDbTransaction transaction) : base(transaction)
         {
@@ -25,118 +27,66 @@ namespace DataLayer.Repositories
                 Transaction
             );
 
-            cache.Add(entity);
+            cache.Add(entity.Id, entity);
         }
 
         public IEnumerable<Book> All()
         {
-            var allList = Connection.Query<Book>("SELECT * FROM Books", Transaction).AsList();
+            var allList = Connection.Query<Book>("SELECT * FROM Books", Transaction);
 
-            foreach (var series in allList)
+            foreach (var book in allList.Where(x => !cache.ContainsKey(x.Id)))
             {
-                var itemInCache = cache.Find(x => x.Id == series.Id);
-                if (itemInCache == null)
-                {
-                    cache.Add(series);
-                }
-                else
-                {
-                    itemInCache.Title = series.Title;
-                }
+                cache.Add(book.Id, book);
             }
 
-            return cache.ToList();
+            return cache.Values.ToList();
         }
 
         public Book Find(int id)
         {
-            var cacheResult = cache.Find(s => s.Id == id);
-            if (cacheResult != null)
+            if (cache.TryGetValue(id, out var bookFromCache))
             {
-                return cacheResult;
+                return bookFromCache;
             }
 
             var res = Connection.QueryFirst<Book>("SELECT * FROM Books WHERE Id = @BookId LIMIT 1",
                 new { BookId = id },
                 Transaction);
-            cache.Add(res);
+
+            if (res != null)
+            {
+                cache.Add(res.Id, res);
+            }
+
             return res;
         }
 
         public IEnumerable<Book> FindByCollectionId(int collectionId)
         {
-            var result = new List<Book>();
-            var dbResult = Connection.Query<Book>("SELECT * FROM CollectionId_Book_View WHERE CollectionId = @CollectionId", new { CollectionId = collectionId }, Transaction);
+            var dbResult = Connection.Query<Book>(
+                "SELECT * FROM CollectionId_Book_View WHERE CollectionId = @CollectionId",
+                new { CollectionId = collectionId },
+                Transaction);
 
-            foreach (var uc in dbResult)
-            {
-                var inCache = cache.Find(x => x.Id == uc.Id);
-                if (inCache == null)
-                {
-                    cache.Add(uc);
-                    result.Add(uc);
-                }
-                else
-                {
-                    result.Add(inCache);
-                }
-            }
-
-            return result;
+            return cache.FilterAndUpdateCache(dbResult);
         }
 
         public IEnumerable<Book> FindBySeriesId(int seriesId)
         {
-            var result = new List<Book>();
             var dbResult = Connection.Query<Book>("SELECT * FROM Books WHERE SeriesId = @SeriesId", new { SeriesId = seriesId }, Transaction);
-
-            foreach (var uc in dbResult)
-            {
-                var inCache = cache.Find(x => x.Id == uc.Id);
-                if (inCache == null)
-                {
-                    cache.Add(uc);
-                    result.Add(uc);
-                }
-                else
-                {
-                    result.Add(inCache);
-                }
-            }
-
-            return result;
+            return cache.FilterAndUpdateCache(dbResult);
         }
 
         public IEnumerable<Book> FindByAuthorId(int authorId)
         {
-            var result = new List<Book>();
             var dbResult = Connection.Query<Book>("SELECT * FROM AuthorId_Book_View WHERE AuthorId = @AuthorId", new { AuthorId = authorId }, Transaction);
-
-            foreach (var uc in dbResult)
-            {
-                var inCache = cache.Find(x => x.Id == uc.Id);
-                if (inCache == null)
-                {
-                    cache.Add(uc);
-                    result.Add(uc);
-                }
-                else
-                {
-                    result.Add(inCache);
-                }
-            }
-
-            return result;
+            return cache.FilterAndUpdateCache(dbResult);
         }
 
         public void Remove(int id)
         {
             Connection.Execute("DELETE FROM Books WHERE Id = @RemoveId", new { RemoveId = id });
-            var cacheItem = cache.Find(x => x.Id == id);
-            if (cacheItem != null)
-            {
-                cache.Remove(cacheItem);
-            }
+            cache.Remove(id);
         }
 
         public void Remove(Book entity)
@@ -279,25 +229,8 @@ namespace DataLayer.Repositories
         public IEnumerable<Book> FindPageByFilter(FilterParameters filter, int offset = 0, int pageSize = 25)
         {
             var queryTuple = CreateQueryFromFilter(filter, offset, pageSize);
-
             var dbResult = Connection.Query<Book>(queryTuple.Item1.ToString(), queryTuple.Item2, Transaction);
-            var result = new List<Book>();
-
-            foreach (var uc in dbResult)
-            {
-                var inCache = cache.Find(x => x.Id == uc.Id);
-                if (inCache == null)
-                {
-                    cache.Add(uc);
-                    result.Add(uc);
-                }
-                else
-                {
-                    result.Add(inCache);
-                }
-            }
-
-            return result;
+            return cache.FilterAndUpdateCache(dbResult);
         }
 
         private Tuple<string, DynamicParameters> CreateIdQuery(string initial, IEnumerable<int> bookIds)
@@ -344,6 +277,11 @@ namespace DataLayer.Repositories
             var query = $"SELECT COUNT(*) FROM ({queryTuple.Item1});";
 
             return Connection.QueryFirst<int>(query, queryTuple.Item2, Transaction);
+        }
+
+        public IEnumerable<Book> GetCachedObjects()
+        {
+            return cache.Values.ToList();
         }
     }
 }

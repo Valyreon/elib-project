@@ -1,6 +1,6 @@
-﻿using Domain;
+using Domain;
 
-namespace DataLayer.Repositories
+namespace DataLayer.Interfaces
 {
     public interface ICoverRepository
     {
