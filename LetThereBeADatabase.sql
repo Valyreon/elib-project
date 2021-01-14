@@ -31,10 +31,10 @@ CREATE TABLE Books (
     SeriesId       INTEGER       REFERENCES Series (Id),
     IsRead         BOOL          DEFAULT (false),
     WhenRead       INT,
-    NumberInSeries DECIMAL,
+    NumberInSeries REAL,
     IsFavorite     BOOLEAN       NOT NULL
                                  DEFAULT (false),
-    PercentageRead DECIMAL       NOT NULL
+    PercentageRead REAL          NOT NULL
                                  DEFAULT (0),
     FileId         INT           REFERENCES EBookFiles (Id) 
                                  NOT NULL,

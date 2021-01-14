@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0-windows</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.2" />
+    <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="5.0.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.1.2" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.1.2" />
+    <PackageReference Include="coverlet.collector" Version="3.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="SQLite" Version="3.13.0" />
+    <PackageReference Include="Stub.System.Data.SQLite.Core.NetStandard" Version="1.0.113.2" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.113.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Valyreon.Elib.DataLayer\Valyreon.Elib.DataLayer.csproj" />
+    <ProjectReference Include="..\Valyreon.Elib.Domain\Valyreon.Elib.Domain.csproj" />
+    <ProjectReference Include="..\Valyreon.Elib.EBookTools\Valyreon.Elib.EBookTools.csproj" />
+    <ProjectReference Include="..\Valyreon.Elib.Wpf\Valyreon.Elib.Wpf.csproj" />
+  </ItemGroup>
+
+</Project>

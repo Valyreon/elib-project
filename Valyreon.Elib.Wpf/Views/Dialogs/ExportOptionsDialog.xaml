@@ -1,0 +1,94 @@
+<dialogs:BaseMetroDialog
+    x:Class="Valyreon.Elib.Wpf.Views.Dialogs.ExportOptionsDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dialogs="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <Grid Margin="0,0,0,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="50" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="5" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Label
+            Grid.Row="1"
+            Grid.Column="1"
+            FontSize="20">
+            Export Options
+        </Label>
+        <CheckBox
+            Grid.Row="2"
+            Grid.Column="1"
+            Focusable="False"
+            IsChecked="{Binding IsGroupByAuthorChecked}">
+            Group by author
+        </CheckBox>
+        <CheckBox
+            Grid.Row="3"
+            Grid.Column="1"
+            Focusable="False"
+            IsChecked="{Binding IsGroupBySeriesChecked}">
+            Group by series
+        </CheckBox>
+
+        <Grid Grid.Row="5" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100" />
+                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="300" />
+                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="150" />
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0">Export location:</Label>
+            <TextBox
+                Grid.Column="2"
+                VerticalContentAlignment="Center"
+                Text="{Binding DestinationPath}" />
+            <Button Grid.Column="4" Command="{Binding ChooseDestinationCommand}">Choose folder</Button>
+        </Grid>
+
+        <Grid Grid.Row="7" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Button
+                Grid.Column="1"
+                MinHeight="30"
+                Background="CornflowerBlue"
+                Command="{Binding ExportCommand}"
+                Style="{StaticResource MahApps.Styles.Button.Dialogs.Accent}">
+                <TextBlock>
+                    Export
+                </TextBlock>
+            </Button>
+            <Button
+                Grid.Column="3"
+                MinHeight="30"
+                Command="{Binding CancelCommand}"
+                Style="{StaticResource MahApps.Styles.Button.Dialogs}">
+                Cancel
+            </Button>
+        </Grid>
+    </Grid>
+</dialogs:BaseMetroDialog>
