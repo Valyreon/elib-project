@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Domain;
 
 namespace DataLayer.Interfaces
@@ -18,5 +19,19 @@ namespace DataLayer.Interfaces
         void Remove(Quote entity);
 
         void Update(Quote entity);
+
+        Task AddAsync(Quote entity);
+
+        Task<IEnumerable<Quote>> AllAsync();
+
+        Task<Quote> FindAsync(int id);
+
+        Task<IEnumerable<Quote>> GetQuotesFromBookAsync(int bookId);
+
+        Task RemoveAsync(int id);
+
+        Task RemoveAsync(Quote entity);
+
+        Task UpdateAsync(Quote entity);
     }
 }

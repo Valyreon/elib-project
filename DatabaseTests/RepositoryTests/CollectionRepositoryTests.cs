@@ -55,7 +55,7 @@ namespace DatabaseTests.RepositoryTests
             Assert.IsTrue(collections.Count() >= 3);
             foreach (var x in addedCollections)
             {
-                Assert.IsTrue(collections.Where(a => a.Tag == x.Tag).Count() == 1);
+                Assert.IsTrue(collections.Count(a => a.Tag == x.Tag) == 1);
             }
         }
 
@@ -133,7 +133,7 @@ namespace DatabaseTests.RepositoryTests
             {
                 unitOfWork.CollectionRepository.RemoveCollectionForBook(addedCollections[0], toAdd.Id);
                 var cols = unitOfWork.CollectionRepository.GetUserCollectionsOfBook(toAdd.Id);
-                Assert.IsTrue(cols.Count() == 0);
+                Assert.IsTrue(!cols.Any());
                 unitOfWork.CollectionRepository.Remove(addedCollections[0]);
                 unitOfWork.BookRepository.Remove(toAdd);
                 unitOfWork.Commit();

@@ -63,8 +63,7 @@ namespace EbookTools.Epub
                 {
                     var innerValue = identifier.InnerText.Trim();
                     if (identifier.Attributes != null &&
-                        (innerValue.Length == 13 || (identifier.Attributes["opf:scheme"] != null &&
-                            identifier.Attributes["opf:scheme"].Value.ToUpper().Equals("ISBN"))))
+                        (innerValue.Length == 13 || (identifier.Attributes["opf:scheme"]?.Value.Equals("ISBN", StringComparison.OrdinalIgnoreCase) == true)))
                     {
                         isbn = innerValue;
                         break;
@@ -89,7 +88,7 @@ namespace EbookTools.Epub
         {
             foreach (var entry in zip.Entries)
             {
-                if (entry.Name.ToLower().Contains("cover"))
+                if (entry.Name.IndexOf("cover", StringComparison.OrdinalIgnoreCase) >= 0)
                 {
                     using var ms = new MemoryStream();
                     entry.Open().CopyTo(ms);
@@ -144,7 +143,7 @@ namespace EbookTools.Epub
                             var bodyContent = htmlDoc.DocumentNode.SelectSingleNode("//body"); // get the <body> node
 
                             var chapterId = "chapter" + chapterCounter;
-                            builder.Append("<div id=" + chapterId + ">\n"); // enclose the chapter in <div> with id
+                            builder.Append("<div id=").Append(chapterId).Append(">\n"); // enclose the chapter in <div> with id
                             var trimmedFileName = itemFile.Name.TrimStart('.', '/', '\\');
                             linkList.Add(trimmedFileName,
                                 "#" + chapterId); // remember the chapter name and its id so we can update the links later

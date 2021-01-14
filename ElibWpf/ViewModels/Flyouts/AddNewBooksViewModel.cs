@@ -152,18 +152,7 @@ namespace ElibWpf.ViewModels.Flyouts
             }
         }
 
-        public Brush SeriesColor
-        {
-            get
-            {
-                if (!IsSeriesSelected)
-                {
-                    return Brushes.Gray;
-                }
-
-                return (Brush)new BrushConverter().ConvertFrom("#bbb");
-            }
-        }
+        public Brush SeriesColor => !IsSeriesSelected ? Brushes.Gray : (Brush)new BrushConverter().ConvertFrom("#bbb");
 
         public string SeriesNumberFieldText
         {
@@ -213,14 +202,9 @@ namespace ElibWpf.ViewModels.Flyouts
                     IsFavoriteCheck = CurrentBook.IsFavorite;
                     IsReadCheck = CurrentBook.IsRead;
 
-                    if (CurrentBook.Cover != null)
-                    {
-                        Cover = new Cover() { Id = CurrentBook.Cover.Id, Image = CurrentBook.Cover.Image };
-                    }
-                    else
-                    {
-                        Cover = null;
-                    }
+                    Cover = CurrentBook.Cover != null
+                        ? new Cover() { Id = CurrentBook.Cover.Id, Image = CurrentBook.Cover.Image }
+                        : null;
                 }
             }
         }
@@ -277,7 +261,7 @@ namespace ElibWpf.ViewModels.Flyouts
                     using var uow = App.UnitOfWorkFactory.Create();
 
                     book.Series = Series;
-                    if (Series != null && Series.Id == 0)
+                    if (Series?.Id == 0)
                     {
                         uow.SeriesRepository.Add(book.Series);
                         book.SeriesId = book.Series.Id;
@@ -305,7 +289,7 @@ namespace ElibWpf.ViewModels.Flyouts
                     uow.EFileRepository.Add(book.File);
                     book.FileId = book.File.Id;
 
-                    if (Cover != null && Cover.Id == 0 && Cover.Image != null)
+                    if (Cover?.Id == 0 && Cover.Image != null)
                     {
                         book.Cover = Cover;
                         uow.CoverRepository.Add(book.Cover);

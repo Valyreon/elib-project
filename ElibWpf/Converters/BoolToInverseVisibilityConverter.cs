@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
@@ -26,12 +26,9 @@ namespace ElibWpf.Converters
                 throw new InvalidOperationException("The target must be a VisibilityProperty");
             }
 
-            if (!(bool)value)
-            {
-                return Visibility.Visible;
-            }
-
-            return Visibility.Collapsed;
+            return !(bool)value
+                ? Visibility.Visible
+                : (object)Visibility.Collapsed;
         }
 
         /// <summary>

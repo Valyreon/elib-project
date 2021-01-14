@@ -14,13 +14,13 @@ namespace DataLayer
             this.connection = connection;
         }
 
-        public async Task<UnitOfWork> CreateAsync()
+        public async Task<IUnitOfWork> CreateAsync()
         {
             await semaphore.WaitAsync();
             return new UnitOfWork(connection);
         }
 
-        public UnitOfWork Create()
+        public IUnitOfWork Create()
         {
             semaphore.Wait();
             return new UnitOfWork(connection);

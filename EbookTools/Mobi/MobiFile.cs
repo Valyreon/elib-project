@@ -110,7 +110,7 @@ namespace EbookTools.Mobi
                                 {
                                     blockbuilder.Add(blockbuilder[uncompressedpos + i]);
                                 }
-                                catch (Exception)
+                                catch
                                 {
                                     // ignored
                                 }
@@ -178,7 +178,7 @@ namespace EbookTools.Mobi
                 for (var i = 0; i < 64; i++)
                 {
                     temp.Clear();
-                    temp.AddRange(huffdata.GetRange((int)(off2 + i * 4), 4));
+                    temp.AddRange(huffdata.GetRange((int)(off2 + (i * 4)), 4));
                     huffdict2.Add(BitConverter.ToUInt32(temp.ToArray(), 0));
                 }
 
@@ -236,11 +236,11 @@ namespace EbookTools.Mobi
                 {
                     while (code < huffdict2[(codelen - 1) * 2])
                     {
-                        codelen += 1;
+                        ++codelen;
                         code = dw >> (int)(32 - codelen);
                     }
 
-                    r = huffdict2[(codelen - 1) * 2 + 1];
+                    r = huffdict2[((codelen - 1) * 2) + 1];
                 }
 
                 r -= code;
@@ -251,10 +251,10 @@ namespace EbookTools.Mobi
                 }
 
                 var dicno = r >> entrybits;
-                var off1 = 16 + (r - (dicno << entrybits)) * 2;
+                var off1 = 16 + ((r - (dicno << entrybits)) * 2);
                 var dic = huffdicts[(int)(long)dicno];
-                var off2 = 16 + (char)dic[(int)(long)off1] * 256 + (char)dic[(int)(long)off1 + 1];
-                var blen = (char)dic[off2] * 256 + (char)dic[off2 + 1];
+                var off2 = 16 + ((char)dic[(int)(long)off1] * 256) + (char)dic[(int)(long)off1 + 1];
+                var blen = ((char)dic[off2] * 256) + (char)dic[off2 + 1];
                 var slicelist = dic.GetRange(off2 + 2, blen & 0x7fff);
                 var slice = slicelist.ToArray();
                 retval.Append((blen & 0x8000) > 0
@@ -291,7 +291,7 @@ namespace EbookTools.Mobi
                 uint v = (char)ptr[size - 1];
                 retval |= (v & 0x7F) << bitpos;
                 bitpos += 7;
-                size -= 1;
+                --size;
                 if ((v & 0x80) != 0 || bitpos >= 28 || size == 0)
                 {
                     return retval;

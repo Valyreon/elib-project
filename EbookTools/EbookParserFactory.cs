@@ -1,12 +1,12 @@
-﻿using EbookTools.Epub;
-using EbookTools.Mobi;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using EbookTools.Epub;
+using EbookTools.Mobi;
 
 namespace EbookTools
 {
-    public class EbookParserFactory
+    public static class EbookParserFactory
     {
         public static IEnumerable<string> SupportedExtensions { get; } = new[] { ".epub", ".mobi" };
 

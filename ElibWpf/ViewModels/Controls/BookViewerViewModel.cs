@@ -112,10 +112,9 @@ namespace ElibWpf.ViewModels.Controls
             });
             dialog.DataContext = deleteDialogViewModel;
             await DialogCoordinator.Instance.ShowMetroDialogAsync(System.Windows.Application.Current.MainWindow.DataContext, dialog);
-
         }
 
-        public bool IsSelectedBooksViewer => Filter.Selected != null && Filter.Selected.Value == true;
+        public bool IsSelectedBooksViewer => Filter.Selected == true;
 
         public bool IsResultEmpty
         {
@@ -176,7 +175,7 @@ namespace ElibWpf.ViewModels.Controls
         private void HandleSelectBook(Book obj)
         {
             var isSelected = selector.Select(obj);
-            var isThisSelectedView = Filter.Selected.HasValue && Filter.Selected.Value;
+            var isThisSelectedView = Filter.Selected == true;
             if (isThisSelectedView && !isSelected && Books.Count == 1)
             {
                 MessengerInstance.Send(new ResetPaneSelectionMessage());
@@ -350,7 +349,7 @@ namespace ElibWpf.ViewModels.Controls
                 Multiselect = true
             };
             var result = dlg.ShowDialog();
-            if (result == DialogResult.OK && dlg.FileNames.Any())
+            if (result == DialogResult.OK && dlg.FileNames.Length > 0)
             {
                 var booksToAdd = new List<Book>();
                 var controller =

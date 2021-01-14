@@ -17,5 +17,7 @@ namespace DataLayer
         void Truncate();
 
         void Commit();
+
+        void Vacuum();
     }
 }

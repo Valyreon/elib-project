@@ -103,8 +103,6 @@ namespace ElibWpf.ViewModels.Flyouts
             }
         }
 
-        public ICommand LoadOnlineApiCommand => new RelayCommand(LoadOnlineApiAsync);
-
         public ICommand RemoveCollectionCommand => new RelayCommand<string>(RemoveCollection);
 
         private void GoToCollection(UserCollection obj)
@@ -172,11 +170,6 @@ namespace ElibWpf.ViewModels.Flyouts
             }
         }
 
-        private void LoadOnlineApiAsync()
-        {
-            // fill here stuff from online api
-        }
-
         private void HandleEditButton()
         {
             MessengerInstance.Send(new EditBookMessage(Book));
@@ -231,8 +224,8 @@ namespace ElibWpf.ViewModels.Flyouts
             var x = EbookParserFactory.Create(Book.File.Format, rawFile.RawContent).Parse();
 
             var builder = new StringBuilder("");
-            builder.AppendLine($"ISBN: {x.Isbn}");
-            builder.AppendLine($"Publisher: {x.Publisher}");
+            builder.Append("ISBN: ").AppendLine(x.Isbn);
+            builder.Append("Publisher: ").AppendLine(x.Publisher);
 
             MessengerInstance.Send(new ShowDialogMessage("File Information", builder.ToString()));
         }

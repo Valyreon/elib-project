@@ -12,18 +12,7 @@ namespace MVVMLibrary.Messaging
 
         private Dictionary<Type, List<WeakActionAndToken>> _recipientsStrictAction;
 
-        public static Messenger Default
-        {
-            get
-            {
-                if (_defaultInstance == null)
-                {
-                    _defaultInstance = new Messenger();
-                }
-
-                return _defaultInstance;
-            }
-        }
+        public static Messenger Default => _defaultInstance ?? (_defaultInstance = new Messenger());
 
         public static void OverrideDefault(Messenger newMessenger)
         {
@@ -160,8 +149,7 @@ namespace MVVMLibrary.Messaging
                 var recipientsToRemove = new List<WeakActionAndToken>();
                 foreach (var item in list.Value)
                 {
-                    if (item.Action == null
-                        || !item.Action.IsAlive)
+                    if (item.Action?.IsAlive != true)
                     {
                         recipientsToRemove.Add(item);
                     }
@@ -225,7 +213,7 @@ namespace MVVMLibrary.Messaging
                             || item.Action.Target.GetType() == messageTargetType
                             || Implements(item.Action.Target.GetType(), messageTargetType))
                         && ((item.Token == null && token == null)
-                            || (item.Token != null && item.Token.Equals(token))))
+                            || (item.Token?.Equals(token) == true)))
                     {
                         executeAction.ExecuteWithObject(message);
                     }
@@ -314,8 +302,7 @@ namespace MVVMLibrary.Messaging
                         && recipient == weakActionCasted.Target
                         && (action == null
                             || action == weakActionCasted.Action)
-                        && (token == null
-                            || token.Equals(item.Token)))
+                        && (token?.Equals(item.Token) != false))
                     {
                         item.Action.MarkForDeletion();
                     }
@@ -335,9 +322,7 @@ namespace MVVMLibrary.Messaging
 
             if (_recipientsOfSubclassesAction != null)
             {
-                var listClone = _recipientsOfSubclassesAction.Keys.Take(_recipientsOfSubclassesAction.Count()).ToList();
-
-                foreach (var type in listClone)
+                foreach (var type in _recipientsOfSubclassesAction.Keys.Take(_recipientsOfSubclassesAction.Count).ToList())
                 {
                     List<WeakActionAndToken> list = null;
 

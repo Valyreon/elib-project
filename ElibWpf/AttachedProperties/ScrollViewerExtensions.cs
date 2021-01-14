@@ -25,7 +25,7 @@ namespace ElibWpf.AttachedProperties
         private static readonly DependencyProperty VerticalScrollBindingProperty =
             DependencyProperty.RegisterAttached("VerticalScrollBinding", typeof(bool?), typeof(ScrollViewerExtensions));
 
-        public static void BindVerticalOffset(ScrollViewer scrollViewer)
+        public static void BindVerticalOffset(this ScrollViewer scrollViewer)
         {
             if (scrollViewer.GetValue(VerticalScrollBindingProperty) != null)
             {
@@ -44,22 +44,22 @@ namespace ElibWpf.AttachedProperties
             };
         }
 
-        public static ICommand GetScrollToBottom(DependencyObject ob)
+        public static ICommand GetScrollToBottom(this DependencyObject ob)
         {
             return (ICommand)ob.GetValue(ScrollToBottomProperty);
         }
 
-        public static double GetVerticalOffset(DependencyObject depObj)
+        public static double GetVerticalOffset(this DependencyObject depObj)
         {
             return (double)depObj.GetValue(VerticalOffsetProperty);
         }
 
-        public static void SetScrollToBottom(DependencyObject ob, ICommand value)
+        public static void SetScrollToBottom(this DependencyObject ob, ICommand value)
         {
             ob.SetValue(ScrollToBottomProperty, value);
         }
 
-        public static void SetVerticalOffset(DependencyObject depObj, double value)
+        public static void SetVerticalOffset(this DependencyObject depObj, double value)
         {
             depObj.SetValue(VerticalOffsetProperty, value);
         }
@@ -88,7 +88,7 @@ namespace ElibWpf.AttachedProperties
             if (scrollViewer.VerticalOffset >= scrollViewer.ScrollableHeight)
             {
                 var command = GetScrollToBottom(sender as ScrollViewer);
-                if (command == null || !command.CanExecute(null))
+                if (command?.CanExecute(null) != true)
                 {
                     return;
                 }

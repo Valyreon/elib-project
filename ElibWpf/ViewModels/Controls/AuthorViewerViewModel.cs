@@ -81,7 +81,6 @@ namespace ElibWpf.ViewModels.Controls
             {
                 using var uow = App.UnitOfWorkFactory.Create();
                 return uow.AuthorRepository.All().ToList();
-
             }).ContinueWith((x) =>
             {
                 if (x.Result.Count == 0)

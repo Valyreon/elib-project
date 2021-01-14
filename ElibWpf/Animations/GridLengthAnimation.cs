@@ -45,12 +45,12 @@ namespace ElibWpf.Animations
             var toVal = ((GridLength)GetValue(ToProperty)).Value;
             if (fromVal > toVal)
             {
-                return new GridLength((1 - animationClock.CurrentProgress.Value) *
-                    (fromVal - toVal) + toVal, GridUnitType.Pixel);
+                return new GridLength(((1 - animationClock.CurrentProgress.Value) *
+                    (fromVal - toVal)) + toVal, GridUnitType.Pixel);
             }
 
-            return new GridLength(animationClock.CurrentProgress.Value *
-                (toVal - fromVal) + fromVal, GridUnitType.Pixel);
+            return new GridLength((animationClock.CurrentProgress.Value *
+                (toVal - fromVal)) + fromVal, GridUnitType.Pixel);
         }
     }
 }

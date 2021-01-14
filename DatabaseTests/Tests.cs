@@ -35,8 +35,8 @@ namespace DatabaseTests
         [TestMethod]
         public void BookToHtml()
         {
-            var inputPath = @"D:\Documents\Ebooks\Miscellaneous\I Will Teach You to Be Rich, Second Edition No Guilt. No Excuses. No B.S. Just a 6-Week Program That Works. by Ramit Sethi (z-lib.org).epub";
-            var outputPath = @"C:\Users\Luka\Desktop\IWillTeachYouToBeRich.html";
+            const string inputPath = @"D:\Documents\Ebooks\Miscellaneous\I Will Teach You to Be Rich, Second Edition No Guilt. No Excuses. No B.S. Just a 6-Week Program That Works. by Ramit Sethi (z-lib.org).epub";
+            const string outputPath = @"C:\Users\Luka\Desktop\IWillTeachYouToBeRich.html";
 
             var html = EbookParserFactory.Create(inputPath).GenerateHtml();
             File.WriteAllText(outputPath, html);
@@ -67,11 +67,13 @@ namespace DatabaseTests
         [TestMethod]
         public void AddBookSeriesFromMyComputer()
         {
-            var bookSeriesPath = @"D:\Documents\Ebooks\Book Series";
+            const string bookSeriesPath = @"D:\Documents\Ebooks\Book Series";
             var factory = new UnitOfWorkFactory(ApplicationSettings.GetInstance().DatabasePath);
             using var uow = factory.Create();
             uow.Truncate();
+            uow.Vacuum();
             uow.Commit();
+
             foreach (var dirPath in Directory.GetDirectories(bookSeriesPath))
             {
                 var splitDirName = Path.GetFileName(dirPath).Split(new[] { " by " }, StringSplitOptions.None);
@@ -132,6 +134,7 @@ namespace DatabaseTests
                                 {
                                     uow.AuthorRepository.AddAuthorForBook(existingAuthor, newBook.Id);
                                 }
+                                uow.Commit();
                             }
 
                             DirSearch(d);
@@ -146,7 +149,6 @@ namespace DatabaseTests
 
                 DirSearch(dirPath);
             }
-            uow.Commit();
         }
 
         [TestMethod]
@@ -177,7 +179,7 @@ namespace DatabaseTests
         [TestMethod]
         public void TestHash()
         {
-            var path =
+            const string path =
                 @"D:\Documents\Ebooks\Miscellaneous\The Farseer Trilogy by Robin Hobb\[Robin_Hobb]_Assassin's_Apprentice_(The_Farseer_Tr(zlibraryexau2g3p.onion).epub";
 
             Signer.ComputeHash(File.ReadAllBytes(path));

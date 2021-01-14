@@ -108,14 +108,25 @@ namespace DataLayer
         {
             connection.Execute("DELETE FROM [AuthorBooks]");
             connection.Execute("DELETE FROM [Authors]");
-            connection.Execute("DELETE FROM [EBookFiles]");
-            connection.Execute("DELETE FROM [Covers]");
             connection.Execute("DELETE FROM [Books]");
+            connection.Execute("DELETE FROM [Covers]");
+            connection.Execute("DELETE FROM [EBookFiles]");
             connection.Execute("DELETE FROM [Quotes]");
             connection.Execute("DELETE FROM [RawFiles]");
             connection.Execute("DELETE FROM [Series]");
             connection.Execute("DELETE FROM [UserCollectionBooks]");
             connection.Execute("DELETE FROM [UserCollections]");
+        }
+
+        public void Vacuum()
+        {
+            transaction.Dispose();
+            /* It is important to note that the VACCUM command requires storage to hold the original file
+             * and also the copy. Also, the VACUUM command requires exclusive access to the database file.
+             * In other words, the VACUUM command will not run successfully if the database has a pending
+             * SQL statement or an open transaction. */
+            connection.Execute("VACUUM;");
+            transaction = connection.BeginTransaction();
         }
     }
 }

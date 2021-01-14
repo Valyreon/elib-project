@@ -57,7 +57,7 @@ namespace DatabaseTests.RepositoryTests
             Assert.IsTrue(authors.Count() >= 3);
             foreach (var x in addedAuthors)
             {
-                Assert.IsTrue(authors.Where(a => a.Name == x.Name).Count() == 1);
+                Assert.IsTrue(authors.Count(a => a.Name == x.Name) == 1);
             }
         }
 
@@ -135,7 +135,7 @@ namespace DatabaseTests.RepositoryTests
             {
                 unitOfWork.AuthorRepository.RemoveAuthorForBook(addedAuthors[0], toAdd.Id);
                 var authors = unitOfWork.AuthorRepository.GetAuthorsOfBook(toAdd.Id);
-                Assert.IsTrue(authors.Count() == 0);
+                Assert.IsTrue(!authors.Any());
                 unitOfWork.AuthorRepository.Remove(addedAuthors[0]);
                 unitOfWork.BookRepository.Remove(toAdd);
                 unitOfWork.Commit();

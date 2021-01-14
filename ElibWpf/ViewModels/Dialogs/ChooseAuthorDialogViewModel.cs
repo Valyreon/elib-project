@@ -53,7 +53,7 @@ namespace ElibWpf.ViewModels.Dialogs
             Application.Current.Dispatcher.Invoke(() =>
             {
                 ShownAuthors.Clear();
-                foreach (var a in AllAuthors.Where(a => a.Name.ToLower().Contains(FilterText.ToLower())))
+                foreach (var a in AllAuthors.Where(a => a.Name.IndexOf(FilterText, StringComparison.OrdinalIgnoreCase) >= 0))
                 {
                     ShownAuthors.Add(a);
                 }

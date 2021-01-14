@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Domain;
 
 namespace DataLayer.Interfaces
@@ -13,5 +14,15 @@ namespace DataLayer.Interfaces
         void Remove(int id);
 
         void Remove(Cover entity);
+
+        Task AddAsync(Cover entity);
+
+        Task UpdateAsync(Cover entity);
+
+        Task<Cover> FindAsync(int id);
+
+        Task RemoveAsync(int id);
+
+        Task RemoveAsync(Cover entity);
     }
 }

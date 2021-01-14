@@ -52,7 +52,7 @@ namespace ElibWpf.ViewModels.Dialogs
             Application.Current.Dispatcher.Invoke(() =>
             {
                 ShownSeries.Clear();
-                foreach (var a in AllSeries.Where(a => a.Name.ToLower().Contains(FilterText.ToLower())))
+                foreach (var a in AllSeries.Where(a => a.Name.IndexOf(FilterText, StringComparison.OrdinalIgnoreCase) >= 0))
                 {
                     ShownSeries.Add(a);
                 }

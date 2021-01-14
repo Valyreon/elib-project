@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace MVVMLibrary.Messaging
 {
@@ -19,7 +19,7 @@ namespace MVVMLibrary.Messaging
 
         public Action Action { get; }
 
-        public bool IsAlive => _reference != null && _reference.IsAlive;
+        public bool IsAlive => _reference?.IsAlive == true;
 
         public object Target => _reference?.Target;
 

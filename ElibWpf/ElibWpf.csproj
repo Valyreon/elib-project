@@ -536,10 +536,6 @@
       <Project>{814AE470-0BAF-4D21-A917-59BF7DC887AE}</Project>
       <Name>MVVMLibrary</Name>
     </ProjectReference>
-    <ProjectReference Include="..\OnlineBookApi\OnlineBookApi.csproj">
-      <Project>{4802D3B7-F3FB-4057-AA1E-D17E12DA161F}</Project>
-      <Name>OnlineBookApi</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="icon.ico" />

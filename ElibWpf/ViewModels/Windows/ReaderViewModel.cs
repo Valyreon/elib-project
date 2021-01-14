@@ -12,7 +12,7 @@ namespace ElibWpf.ViewModels.Windows
 {
     public class ReaderViewModel : ViewModelBase
     {
-        private Book Book { get; set; }
+        private Book Book { get; }
 
         public ReaderViewModel(Book book)
         {
@@ -64,31 +64,31 @@ namespace ElibWpf.ViewModels.Windows
                 var html = new StringBuilder("<html>" + parser.GenerateHtml());
                 if (Book.PercentageRead != 0)
                 {
-                    html.Append($"<script>let scrollPercentage = {Book.PercentageRead}; document.addEventListener('DOMContentLoaded', function(){{document.body[\"scrollTop\"] = document.documentElement[\"scrollHeight\"]* (scrollPercentage / 100);}}, false);</script>");
+                    html.Append("<script>let scrollPercentage = ").Append(Book.PercentageRead).Append("; document.addEventListener('DOMContentLoaded', function(){document.body[\"scrollTop\"] = document.documentElement[\"scrollHeight\"]* (scrollPercentage / 100);}, false);</script>");
                 }
 
-                html.Append($"<script>{Resources.JavascriptCode.CtxMenuJS}</script>");
-                html.Append($"<style>{Resources.JavascriptCode.CtxMenuCss}</style>");
-                html.Append(@$"<script>// Initialize a context menu for the entire page
+                html.Append("<script>").Append(Resources.JavascriptCode.CtxMenuJS).Append("</script>");
+                html.Append("<style>").Append(Resources.JavascriptCode.CtxMenuCss).Append("</style>");
+                html.Append(@"<script>// Initialize a context menu for the entire page
                                 var contextMenu = CtxMenu();
 
-                                function getSelectionText() {{
+                                function getSelectionText() {
                                     var text = """";
-                                    if (window.getSelection) {{
+                                    if (window.getSelection) {
                                         text = window.getSelection().toString();
-                                    }} else if (document.selection && document.selection.type != ""Control"") {{
+                                    } else if (document.selection && document.selection.type != ""Control"") {
                                         text = document.selection.createRange().text;
-                                    }}
+                                    }
                                     return text;
-                                }}
+                                }
 
-                                function ContextMenuExampleFunction() {{
-                                     (async function() {{
+                                function ContextMenuExampleFunction() {
+                                     (async function() {
                                         await CefSharp.BindObjectAsync(""QuoteHelper"");
 
                                         QuoteHelper.registerQuote(getSelectionText());
-                                     }})();
-                                }}
+                                     })();
+                                }
 
                                 // Add our custom function to the menu
                                 contextMenu.addItem(""Save Quote"", ContextMenuExampleFunction);

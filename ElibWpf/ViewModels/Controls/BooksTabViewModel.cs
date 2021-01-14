@@ -35,14 +35,14 @@ namespace ElibWpf.ViewModels.Controls
             MessengerInstance.Register<BookSelectedMessage>(this, HandleBookChecked);
             MessengerInstance.Register<SeriesSelectedMessage>(this, HandleSeriesSelection);
             MessengerInstance.Register<CollectionSelectedMessage>(this, HandleCollectionSelection);
-            MessengerInstance.Register<GoBackMessage>(this, x => GoToPreviousViewer());
-            MessengerInstance.Register<ResetPaneSelectionMessage>(this, x =>
+            MessengerInstance.Register<GoBackMessage>(this, _ => GoToPreviousViewer());
+            MessengerInstance.Register<ResetPaneSelectionMessage>(this, _ =>
             {
                 SelectedMainPaneItem = MainPaneItems[0];
                 PaneSelectionChanged();
             });
             MessengerInstance.Register<RefreshSidePaneCollectionsMessage>(this,
-                x => RaisePropertyChanged(() => Collections));
+                _ => RaisePropertyChanged(() => Collections));
 
             MainPaneItems = new ObservableCollection<PaneMainItem>
             {
@@ -214,7 +214,7 @@ namespace ElibWpf.ViewModels.Controls
             history.Push(temp);
         }
 
-        private async void HandleSeriesSelection(SeriesSelectedMessage obj)
+        private void HandleSeriesSelection(SeriesSelectedMessage obj)
         {
             if (obj.Series == null)
             {
@@ -243,7 +243,7 @@ namespace ElibWpf.ViewModels.Controls
             history.Push(temp);
         }
 
-        private async void PaneSelectionChanged()
+        private void PaneSelectionChanged()
         {
             if (SelectedMainPaneItem == null)
             {

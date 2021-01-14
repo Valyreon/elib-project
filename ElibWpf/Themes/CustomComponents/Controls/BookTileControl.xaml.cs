@@ -138,7 +138,7 @@ namespace ElibWpf.Themes.CustomComponents.Controls
 
         private void BookContainer_MouseEnter(object sender, MouseEventArgs ev)
         {
-            if (selectedCheckbox.IsChecked != null && !selectedCheckbox.IsChecked.Value)
+            if (selectedCheckbox.IsChecked == false)
             {
                 var borderAnim = new BrushAnimation(Brushes.CornflowerBlue, duration);
                 borderAnim.Completed += (e, s) => tileBorder.BorderBrush = Brushes.CornflowerBlue;
@@ -169,12 +169,12 @@ namespace ElibWpf.Themes.CustomComponents.Controls
             var titleAnim = new BrushAnimation(Brushes.Black, duration);
             titleAnim.Completed += (e, s) => theBookTitle.Foreground = Brushes.Black;
 
-            if (selectedCheckbox.IsChecked != null && !selectedCheckbox.IsChecked.Value)
+            if (selectedCheckbox.IsChecked == false)
             {
                 var opacAnim = new DoubleAnimation(0, duration, FillBehavior.Stop);
                 opacAnim.Completed += (e, s) =>
                 {
-                    if (selectedCheckbox.IsChecked.Value == false)
+                    if (!selectedCheckbox.IsChecked.Value)
                     {
                         selectedCheckbox.Opacity = 0;
                     }

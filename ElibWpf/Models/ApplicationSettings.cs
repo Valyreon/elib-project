@@ -26,13 +26,13 @@ namespace ElibWpf.Models
                 return _instance;
             }
 
-            var propertiesInCurrentPath = @"properties.json";
+            const string propertiesInCurrentPath = "properties.json";
             var appDataProperties = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 "ElibApp", "properties.json");
 
-            if (File.Exists(@"./properties.json"))
+            if (File.Exists("./properties.json"))
             {
-                _instance = JsonConvert.DeserializeObject<ApplicationSettings>(File.ReadAllText(@"properties.json"));
+                _instance = JsonConvert.DeserializeObject<ApplicationSettings>(File.ReadAllText("properties.json"));
                 _instance.PropertiesPath = propertiesInCurrentPath;
                 return _instance;
             }

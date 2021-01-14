@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Domain;
 
 namespace DataLayer.Interfaces
@@ -28,5 +29,29 @@ namespace DataLayer.Interfaces
         void Remove(Book entity);
 
         void Update(Book entity);
+
+        Task AddAsync(Book entity);
+
+        Task<IEnumerable<Book>> AllAsync();
+
+        Task<Book> FindAsync(int id);
+
+        Task<IEnumerable<Book>> GetBooksAsync(IEnumerable<int> Ids);
+
+        Task<IEnumerable<Book>> FindBySeriesIdAsync(int seriesId);
+
+        Task<IEnumerable<Book>> FindByCollectionIdAsync(int collectionId);
+
+        Task<IEnumerable<Book>> FindByAuthorIdAsync(int authorId);
+
+        Task<IEnumerable<Book>> FindPageByFilterAsync(FilterParameters filter, int offset, int pageSize);
+
+        Task<int> CountAsync(FilterParameters filter);
+
+        Task RemoveAsync(int id);
+
+        Task RemoveAsync(Book entity);
+
+        Task UpdateAsync(Book entity);
     }
 }

@@ -30,7 +30,7 @@ namespace ElibWpf.ViewModels.Dialogs
             this.dialog = dialog;
         }
 
-        public bool IsExportComplete { get; private set; } = false;
+        public bool IsExportComplete { get; }
 
         public ICommand CancelCommand => new RelayCommand(Cancel);
 

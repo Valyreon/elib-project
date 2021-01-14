@@ -24,20 +24,18 @@ namespace ElibWpf.Models
             // there can be more than one author
             var index = 1;
             fileNameBuilder.Append(
-                $"{book.Title}{(book.SeriesId == null ? "" : $"({book.Series.Name} #{book.NumberInSeries})")} by {book.Authors.ElementAt(0).Name}");
+                book.Title).Append(book.SeriesId == null ? "" : $"({book.Series.Name} #{book.NumberInSeries})").Append(" by ").Append(book.Authors.ElementAt(0).Name);
             while (index < book.Authors.Count)
             {
                 fileNameBuilder.Append(index == book.Authors.Count - 1 ? " and" : ",");
-                fileNameBuilder.Append($" {book.Authors.ElementAt(index).Name}");
+                fileNameBuilder.Append(' ').Append(book.Authors.ElementAt(index).Name);
                 ++index;
             }
 
             fileNameBuilder.Append(book.File.Format);
             var fileName = fileNameBuilder.ToString();
 
-            fileName = Path.GetInvalidFileNameChars().Aggregate(fileName, (current, invalid) => current.Replace(char.ToString(invalid), ""));
-
-            return fileName;
+            return Path.GetInvalidFileNameChars().Aggregate(fileName, (current, invalid) => current.Replace(char.ToString(invalid), ""));
         }
 
         public static void Export(RawFile file, string filePath)
@@ -92,7 +90,7 @@ namespace ElibWpf.Models
             }
 
             var enumerable = books.ToList();
-            if (!enumerable.Any())
+            if (enumerable.Count == 0)
             {
                 return;
             }

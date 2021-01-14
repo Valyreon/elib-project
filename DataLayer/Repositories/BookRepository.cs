@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Dapper;
 using DataLayer.Extensions;
 using DataLayer.Interfaces;
@@ -143,7 +144,7 @@ namespace DataLayer.Repositories
 
                 if (filter.Favorite.HasValue)
                 {
-                    queryBuilder.Append($"{(conditionsAdded ? " AND " : "")}IsFavorite = @IsFavorite");
+                    queryBuilder.Append(conditionsAdded ? " AND " : "").Append("IsFavorite = @IsFavorite");
                     parameters.Add("@IsFavorite", filter.Favorite.Value);
                     conditionsAdded = true;
                 }
@@ -151,17 +152,17 @@ namespace DataLayer.Repositories
                 if (filter.AuthorId.HasValue)
                 {
                     parameters.Add("@AuthorId", filter.AuthorId.Value);
-                    queryBuilder.Append($"{(conditionsAdded ? " AND " : "")}AuthorId = @AuthorId");
+                    queryBuilder.Append(conditionsAdded ? " AND " : "").Append("AuthorId = @AuthorId");
                 }
                 else if (filter.CollectionId.HasValue)
                 {
                     parameters.Add("@CollectionId", filter.CollectionId.Value);
-                    queryBuilder.Append($"{(conditionsAdded ? " AND " : "")}CollectionId = @CollectionId");
+                    queryBuilder.Append(conditionsAdded ? " AND " : "").Append("CollectionId = @CollectionId");
                 }
                 else if (filter.SeriesId.HasValue)
                 {
                     parameters.Add("@SeriesId", filter.SeriesId.Value);
-                    queryBuilder.Append($"{(conditionsAdded ? " AND " : "")}SeriesId = @SeriesId");
+                    queryBuilder.Append(conditionsAdded ? " AND " : "").Append("SeriesId = @SeriesId");
                 }
 
                 queryBuilder.Append(")");
@@ -169,24 +170,24 @@ namespace DataLayer.Repositories
 
             if (filter.SearchParameters != null && !string.IsNullOrWhiteSpace(filter.SearchParameters.Token))
             {
-                queryBuilder.Append($" {(conditionSet ? " AND " : " WHERE ")} (");
+                queryBuilder.Append(' ').Append(conditionSet ? " AND " : " WHERE ").Append(" (");
                 var searchAdded = false;
                 parameters.Add("@Token", $"%{filter.SearchParameters.Token}%");
                 if (filter.SearchParameters.SearchByTitle)
                 {
-                    queryBuilder.Append($"Title LIKE @Token");
+                    queryBuilder.Append("Title LIKE @Token");
                     searchAdded = true;
                 }
 
                 if (filter.SearchParameters.SearchByAuthor)
                 {
-                    queryBuilder.Append($"{(searchAdded ? " OR " : "")}AuthorName LIKE @Token");
+                    queryBuilder.Append(searchAdded ? " OR " : "").Append("AuthorName LIKE @Token");
                     searchAdded = true;
                 }
 
                 if (filter.SearchParameters.SearchBySeries)
                 {
-                    queryBuilder.Append($"{(searchAdded ? " OR " : "")}SeriesName LIKE @Token");
+                    queryBuilder.Append(searchAdded ? " OR " : "").Append("SeriesName LIKE @Token");
                 }
                 queryBuilder.Append(")");
             }
@@ -203,10 +204,10 @@ namespace DataLayer.Repositories
             }
             else if (filter.SortBySeries)
             {
-                queryBuilder.Append($" ORDER BY SeriesName {(filter.Ascending ? " ASC" : " DESC")}, NumberInSeries ASC");
+                queryBuilder.Append(" ORDER BY SeriesName ").Append(filter.Ascending ? " ASC" : " DESC").Append(", NumberInSeries ASC");
                 if (offset != null && pageSize != null)
                 {
-                    queryBuilder.Append($" LIMIT {offset}, {pageSize}");
+                    queryBuilder.Append(" LIMIT ").Append(offset).Append(", ").Append(pageSize);
                 }
             }
             else // title
@@ -219,7 +220,7 @@ namespace DataLayer.Repositories
                 queryBuilder.Append(filter.Ascending ? " ASC" : " DESC");
                 if (offset != null && pageSize != null)
                 {
-                    queryBuilder.Append($" LIMIT {offset}, {pageSize}");
+                    queryBuilder.Append(" LIMIT ").Append(offset).Append(", ").Append(pageSize);
                 }
             }
 
@@ -229,7 +230,7 @@ namespace DataLayer.Repositories
         public IEnumerable<Book> FindPageByFilter(FilterParameters filter, int offset = 0, int pageSize = 25)
         {
             var queryTuple = CreateQueryFromFilter(filter, offset, pageSize);
-            var dbResult = Connection.Query<Book>(queryTuple.Item1.ToString(), queryTuple.Item2, Transaction);
+            var dbResult = Connection.Query<Book>(queryTuple.Item1, queryTuple.Item2, Transaction);
             return cache.FilterAndUpdateCache(dbResult);
         }
 
@@ -244,11 +245,11 @@ namespace DataLayer.Repositories
                 var parameterName = $"@Id{counter}";
                 if (counter == 0)
                 {
-                    query.Append($"Id = {parameterName}");
+                    query.Append("Id = ").Append(parameterName);
                 }
                 else
                 {
-                    query.Append($" OR Id = {parameterName}");
+                    query.Append(" OR Id = ").Append(parameterName);
                 }
 
                 counter++;
@@ -282,6 +283,122 @@ namespace DataLayer.Repositories
         public IEnumerable<Book> GetCachedObjects()
         {
             return cache.Values.ToList();
+        }
+
+        public async Task AddAsync(Book entity)
+        {
+            entity.Id = await Connection.ExecuteScalarAsync<int>(
+                @"INSERT INTO Books(Title, SeriesId, IsRead, CoverId, WhenRead, NumberInSeries, IsFavorite, PercentageRead, FileId)
+                VALUES (@Title, @SeriesId, @IsRead, @CoverId, @WhenRead, @NumberInSeries, @IsFavorite, @PercentageRead, @FileId); SELECT last_insert_rowid() ",
+                entity,
+                Transaction
+            );
+
+            cache.Add(entity.Id, entity);
+        }
+
+        public async Task<IEnumerable<Book>> AllAsync()
+        {
+            var allList = await Connection.QueryAsync<Book>("SELECT * FROM Books", Transaction);
+
+            foreach (var book in allList.Where(x => !cache.ContainsKey(x.Id)))
+            {
+                cache.Add(book.Id, book);
+            }
+
+            return cache.Values.ToList();
+        }
+
+        public async Task<Book> FindAsync(int id)
+        {
+            if (cache.TryGetValue(id, out var bookFromCache))
+            {
+                return bookFromCache;
+            }
+
+            var res = await Connection.QueryFirstAsync<Book>("SELECT * FROM Books WHERE Id = @BookId LIMIT 1",
+                new { BookId = id },
+                Transaction);
+
+            if (res != null)
+            {
+                cache.Add(res.Id, res);
+            }
+
+            return res;
+        }
+
+        public async Task<IEnumerable<Book>> GetBooksAsync(IEnumerable<int> Ids)
+        {
+            var x = CreateIdQuery("SELECT * FROM Books WHERE ", Ids);
+
+            return await Connection.QueryAsync<Book>(x.Item1, x.Item2, Transaction);
+        }
+
+        public async Task<IEnumerable<Book>> FindBySeriesIdAsync(int seriesId)
+        {
+            var dbResult = await Connection.QueryAsync<Book>("SELECT * FROM Books WHERE SeriesId = @SeriesId", new { SeriesId = seriesId }, Transaction);
+            return cache.FilterAndUpdateCache(dbResult);
+        }
+
+        public async Task<IEnumerable<Book>> FindByCollectionIdAsync(int collectionId)
+        {
+            var dbResult = await Connection.QueryAsync<Book>(
+                "SELECT * FROM CollectionId_Book_View WHERE CollectionId = @CollectionId",
+                new { CollectionId = collectionId },
+                Transaction);
+
+            return cache.FilterAndUpdateCache(dbResult);
+        }
+
+        public async Task<IEnumerable<Book>> FindByAuthorIdAsync(int authorId)
+        {
+            var dbResult = await Connection.QueryAsync<Book>("SELECT * FROM AuthorId_Book_View WHERE AuthorId = @AuthorId", new { AuthorId = authorId }, Transaction);
+            return cache.FilterAndUpdateCache(dbResult);
+        }
+
+        public async Task<IEnumerable<Book>> FindPageByFilterAsync(FilterParameters filter, int offset, int pageSize)
+        {
+            var queryTuple = await Task.Run(() => CreateQueryFromFilter(filter, offset, pageSize));
+            var dbResult = await Connection.QueryAsync<Book>(queryTuple.Item1, queryTuple.Item2, Transaction);
+            return cache.FilterAndUpdateCache(dbResult);
+        }
+
+        public async Task<int> CountAsync(FilterParameters filter)
+        {
+            var queryTuple = CreateQueryFromFilter(filter, null, null);
+
+            var query = $"SELECT COUNT(*) FROM ({queryTuple.Item1});";
+
+            return await Connection.QueryFirstAsync<int>(query, queryTuple.Item2, Transaction);
+        }
+
+        public async Task RemoveAsync(int id)
+        {
+            await Connection.ExecuteAsync("DELETE FROM Books WHERE Id = @RemoveId", new { RemoveId = id });
+            cache.Remove(id);
+        }
+
+        public async Task RemoveAsync(Book entity)
+        {
+            await RemoveAsync(entity.Id);
+            entity.Id = 0;
+        }
+
+        public async Task UpdateAsync(Book entity)
+        {
+            await Connection.ExecuteAsync(@"UPDATE Books
+                                    SET
+                                        Title = @Title,
+                                        IsRead = @IsRead,
+                                        IsFavorite = @IsFavorite,
+                                        SeriesId = @SeriesId,
+                                        CoverId = @CoverId,
+                                        WhenRead = @WhenRead,
+                                        NumberInSeries = @NumberInSeries,
+                                        FileId = @FileId,
+                                        PercentageRead = @PercentageRead
+                                    WHERE Id = @Id", entity, Transaction);
         }
     }
 }
