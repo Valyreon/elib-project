@@ -1,8 +1,8 @@
 using System.IO;
+using System.Text.Json;
 using System.Windows;
 using DataLayer;
 using ElibWpf.Models;
-using Newtonsoft.Json;
 
 namespace ElibWpf
 {
@@ -29,7 +29,7 @@ namespace ElibWpf
         {
             //Database.Vacuum(); this slows the shutdown of application
             File.WriteAllText(ApplicationSettings.GetInstance().PropertiesPath,
-                JsonConvert.SerializeObject(ApplicationSettings.GetInstance(), Formatting.Indented));
+                JsonSerializer.Serialize(ApplicationSettings.GetInstance()));
         }
     }
 }

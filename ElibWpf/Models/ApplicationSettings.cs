@@ -1,6 +1,7 @@
 using System;
 using System.IO;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ElibWpf.Models
 {
@@ -8,14 +9,14 @@ namespace ElibWpf.Models
     {
         private static ApplicationSettings _instance;
 
-        [JsonProperty("DatabasePath")]
+        [JsonPropertyName("DatabasePath")]
         public string
             DatabasePath
         { get; set; } //= Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ElibApp", "elib_db");
 
-        [JsonProperty("LogFilePath")] public string LogFilePath { get; set; } = "log.txt";
+        [JsonPropertyName("LogFilePath")] public string LogFilePath { get; set; } = "log.txt";
 
-        [JsonProperty("ForceExportBeforeDelete")] public bool IsExportForcedBeforeDelete = false;
+        [JsonPropertyName("ForceExportBeforeDelete")] public bool IsExportForcedBeforeDelete = false;
 
         [JsonIgnore] public string PropertiesPath { get; private set; }
 
@@ -32,14 +33,14 @@ namespace ElibWpf.Models
 
             if (File.Exists("./properties.json"))
             {
-                _instance = JsonConvert.DeserializeObject<ApplicationSettings>(File.ReadAllText("properties.json"));
+                _instance = JsonSerializer.Deserialize<ApplicationSettings>(File.ReadAllText("properties.json"));
                 _instance.PropertiesPath = propertiesInCurrentPath;
                 return _instance;
             }
 
             if (File.Exists(appDataProperties))
             {
-                _instance = JsonConvert.DeserializeObject<ApplicationSettings>(File.ReadAllText(appDataProperties));
+                _instance = JsonSerializer.Deserialize<ApplicationSettings>(File.ReadAllText(appDataProperties));
                 _instance.PropertiesPath = appDataProperties;
                 return _instance;
             }
