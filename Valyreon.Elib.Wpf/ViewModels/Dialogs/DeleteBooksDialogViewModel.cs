@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Windows.Input;
 using MahApps.Metro.Controls.Dialogs;
 using Valyreon.Elib.Domain;
@@ -18,11 +19,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
     {
         private readonly IList<Book> booksToExport;
         private readonly BaseMetroDialog dialog;
-
         private string destinationPath;
-
         private bool groupByAuthor;
-
         private bool groupBySeries;
         private Action onCloseAction;
 
@@ -105,13 +103,13 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
 
         private void ChooseDestination()
         {
-            /*using var fbd = new FolderBrowserDialog();
+            using var fbd = new FolderBrowserDialog();
             var result = fbd.ShowDialog();
 
             if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
             {
                 DestinationPath = fbd.SelectedPath;
-            }*/
+            }
         }
 
         private async void Export()

@@ -12,6 +12,7 @@
   <ItemGroup>
     <PackageReference Include="cef.redist.x64" Version="86.0.24" />
     <PackageReference Include="cef.redist.x86" Version="86.0.24" />
+    <PackageReference Include="CefSharp.Common" Version="86.0.241" />
     <PackageReference Include="CefSharp.Wpf" Version="86.0.241" />
     <PackageReference Include="ControlzEx" Version="4.4.0" />
     <PackageReference Include="MahApps.Metro" Version="2.4.3" />
@@ -30,6 +31,33 @@
     <ProjectReference Include="..\Valyreon.Elib.Domain\Valyreon.Elib.Domain.csproj" />
     <ProjectReference Include="..\Valyreon.Elib.EBookTools\Valyreon.Elib.EBookTools.csproj" />
     <ProjectReference Include="..\Valyreon.Elib.Mvvm\Valyreon.Elib.Mvvm.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resources\JavascriptCode.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>JavascriptCode.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\JavascriptCode.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>JavascriptCode.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Update="CefSharp">
+      <Private>true</Private>
+    </Reference>
+    <Reference Update="CefSharp.Core">
+      <Private>true</Private>
+    </Reference>
+    <Reference Update="CefSharp.Wpf">
+      <Private>true</Private>
+    </Reference>
   </ItemGroup>
 
 </Project>

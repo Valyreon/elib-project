@@ -39,7 +39,7 @@ namespace Valyreon.Elib.Wpf.Resources {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ElibWpf.Resources.JavascriptCode", typeof(JavascriptCode).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Valyreon.Elib.Wpf.Resources.JavascriptCode", typeof(JavascriptCode).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
