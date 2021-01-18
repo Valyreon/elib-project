@@ -7,7 +7,12 @@
     <UseWindowsForms>true</UseWindowsForms>
     <Platforms>AnyCPU;x64</Platforms>
     <StartupObject></StartupObject>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\CoverPlaceholder.png" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="cef.redist.x64" Version="86.0.24" />
@@ -31,6 +36,10 @@
     <ProjectReference Include="..\Valyreon.Elib.Domain\Valyreon.Elib.Domain.csproj" />
     <ProjectReference Include="..\Valyreon.Elib.EBookTools\Valyreon.Elib.EBookTools.csproj" />
     <ProjectReference Include="..\Valyreon.Elib.Mvvm\Valyreon.Elib.Mvvm.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\CoverPlaceholder.png" />
   </ItemGroup>
 
   <ItemGroup>

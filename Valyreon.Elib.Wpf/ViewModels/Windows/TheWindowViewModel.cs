@@ -1,18 +1,20 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
-using Valyreon.Elib.Mvvm;using MahApps.Metro.Controls.Dialogs;
+using MahApps.Metro.Controls.Dialogs;
 using Valyreon.Elib.Domain;
+using Valyreon.Elib.Mvvm;
+using Valyreon.Elib.Wpf.Controls;
+using Valyreon.Elib.Wpf.Interfaces;
 using Valyreon.Elib.Wpf.Messages;
 using Valyreon.Elib.Wpf.ViewModels.Controls;
 using Valyreon.Elib.Wpf.ViewModels.Flyouts;
+using Valyreon.Elib.Wpf.Views.Flyouts;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Windows
 {
     public class TheWindowViewModel : ViewModelBase
     {
-        private object flyoutControl;
-        private bool isBookDetailsFlyoutOpen;
         private ITabViewModel selectedTab;
 
         public TheWindowViewModel()
@@ -22,8 +24,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
             MessengerInstance.Register<ShowInputDialogMessage>(this, HandleInputDialog);
             MessengerInstance.Register(this, (CloseFlyoutMessage _) =>
             {
-                IsBookDetailsFlyoutOpen = false;
-                FlyoutControl = null;
+                FlyoutControl.IsOpen = false;
+                FlyoutControl.ContentControl = null;
             });
             MessengerInstance.Register(this, (OpenAddBooksFormMessage m) => HandleAddBooksFlyout(m.BooksToAdd));
             MessengerInstance.Register(this, (EditBookMessage m) => HandleEditBookFlyout(m.Book));
@@ -35,27 +37,19 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
                 new SettingsTabViewModel()
             };
             SelectedTab = Tabs[0];
+
+            FlyoutControl = new FlyoutPanel();
         }
 
         public ICommand CloseDetailsCommand => new RelayCommand(() =>
         {
-            IsBookDetailsFlyoutOpen = false;
-            FlyoutControl = null;
+            FlyoutControl.IsOpen = false;
+            FlyoutControl.ContentControl = null;
         });
 
         public ICommand EscKeyCommand => new RelayCommand(ProcessEscKey);
 
-        public object FlyoutControl
-        {
-            get => flyoutControl;
-            set => Set(() => FlyoutControl, ref flyoutControl, value);
-        }
-
-        public bool IsBookDetailsFlyoutOpen
-        {
-            get => isBookDetailsFlyoutOpen;
-            set => Set(() => IsBookDetailsFlyoutOpen, ref isBookDetailsFlyoutOpen, value);
-        }
+        public IFlyoutPanel FlyoutControl { get; }
 
         public ITabViewModel SelectedTab
         {
@@ -73,35 +67,37 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
 
         private void HandleEditBookFlyout(Book book)
         {
-            FlyoutControl = new EditBookViewModel(book);
-            IsBookDetailsFlyoutOpen = true;
+            FlyoutControl.ContentControl = new EditBookViewModel(book);
+            FlyoutControl.IsOpen = true;
         }
 
         private void HandleAddBooksFlyout(IList<Book> booksToAdd)
         {
-            FlyoutControl = new AddNewBooksViewModel(booksToAdd);
-            IsBookDetailsFlyoutOpen = true;
+            FlyoutControl.ContentControl = new AddNewBooksViewModel(booksToAdd);
+            FlyoutControl.IsOpen = true;
         }
 
         private async void ShowDialog(string title, string text)
         {
-            //await ((MetroWindow)Application.Current.MainWindow).ShowMessageAsync(title, text);
             await DialogCoordinator.Instance.ShowMessageAsync(this, title, text);
         }
 
         private void ProcessEscKey()
         {
-            if (IsBookDetailsFlyoutOpen)
+            if (FlyoutControl.IsOpen)
             {
-                IsBookDetailsFlyoutOpen = false;
-                FlyoutControl = null;
+                FlyoutControl.IsOpen = false;
+                FlyoutControl.ContentControl = null;
             }
         }
 
         private void HandleBookFlyout(ShowBookDetailsMessage obj)
         {
-            FlyoutControl = new BookDetailsViewModel(obj.Book);
-            IsBookDetailsFlyoutOpen = true;
+            FlyoutControl.ContentControl = new BookDetailsControl
+            {
+                DataContext = new BookDetailsViewModel(obj.Book),
+            };
+            FlyoutControl.IsOpen = true;
         }
     }
 }
