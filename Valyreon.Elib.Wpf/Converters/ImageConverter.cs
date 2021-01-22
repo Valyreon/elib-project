@@ -17,7 +17,7 @@ namespace Valyreon.Elib.Wpf.Converters
         {
             placeholder = new BitmapImage();
             placeholder.BeginInit();
-            placeholder.UriSource = new Uri("pack://application:,,,/Valyreon.Elib.Wpf;component/Resources/CoverPlaceholder.png");
+            placeholder.UriSource = new Uri("/Resources/CoverPlaceholder.png", UriKind.Relative);
             placeholder.EndInit();
         }
 

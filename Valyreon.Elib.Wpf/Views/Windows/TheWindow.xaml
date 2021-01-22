@@ -43,12 +43,31 @@
         <ResourceDictionary Source="WindowResources.xaml" />
     </Window.Resources>
 
+    <MetroControls:MetroWindow.Flyouts>
+        <MetroControls:FlyoutsControl>
+            <MetroControls:Flyout
+                Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MetroWindow}, Path=ActualWidth, Mode=OneWay}"
+                Margin="0.01,0,0,0"
+                AnimateOpacity="True"
+                CloseCommand="{Binding CloseDetailsCommand}"
+                Focusable="True"
+                IsOpen="{Binding IsBookDetailsFlyoutOpen}"
+                Position="Right">
+                <MetroControls:Flyout.Background>
+                    <SolidColorBrush Opacity="0.97" Color="#222222" />
+                </MetroControls:Flyout.Background>
+                <ContentControl Content="{Binding FlyoutControl}" />
+            </MetroControls:Flyout>
+        </MetroControls:FlyoutsControl>
+    </MetroControls:MetroWindow.Flyouts>
+
     <Grid Background="#222222">
-        <ContentControl
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
-            Panel.ZIndex="1000"
-            Content="{Binding FlyoutControl}" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
         <Components:TabControlWithCache
             Grid.Row="0"
             Grid.Column="0"
