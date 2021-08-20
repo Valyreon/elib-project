@@ -1,0 +1,510 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="CtxMenuCss" xml:space="preserve">
+    <value>@font-face {
+  font-family: 'CtxMenuFont';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Segoe UI');
+}
+
+/* Background that covers entire page when right clicking, invisible by default */
+#ctx-menu-background {
+  /* background-color: rgba(0, 0, 0, 0.1);  Tint entire page darker when context menu appears */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 998;
+}
+
+/* The Context Menu itself */
+.ctx-menu-wrapper {
+
+  background-color: rgb(250, 250, 250);
+  box-shadow: 4px 4px 3px -2px rgba(0, 0, 0, .1);
+
+  padding: 3px 0 3px 0;
+  border: 1px solid #b1b1b1;
+  border-radius: 1px;
+
+
+  font-family: "CtxMenuFont";
+  font-size: 12px;
+
+  /* Make all the elements un-selectable */
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  /* Do not edit these properties */
+  position: absolute;
+  z-index: 999;
+  white-space:nowrap;
+
+}
+
+/* Context Menu Items */
+.ctx-menu-item {
+  padding: 2px 10px 2px 10px;
+  border-radius: 1px;
+  cursor: pointer;
+  transition: background-color 0.1s;
+}
+
+.ctx-menu-item:hover {
+  background-color: rgba(0,0,0,0.13);
+}
+
+.ctx-menu-item:active {
+  transition: background-color 0s;
+  background-color: rgba(0,0,0,0.2);
+}
+
+/* Icons */
+
+.ctx-menu-hasIcon img {
+  min-width: 16px;
+  max-width: 16px;
+  max-height: 16px;
+  position: relative;
+  margin-right: 8px;
+  pointer-events: none;
+  user-select: none;
+}
+.ctx-menu-item img[src] {
+  float: left;
+}
+
+.ctx-menu-hasIcon .ctx-menu-item {
+  vertical-align:middle;
+  max-height: 20px;
+}
+
+.ctx-menu-seperator {
+  height: 1px;
+  margin: 3px 0 3px 0;
+  background-color: rgba(0, 0, 0, 0.2);
+}</value>
+    <comment>Css for context menu</comment>
+  </data>
+  <data name="CtxMenuJS" xml:space="preserve">
+    <value>/*
+* CtxMenu
+* Author: Nils Soderman &lt;contact@nilssoderman.com&gt;
+* Repo: https://github.com/nils-soderman/Javascript-contextMenu
+*/
+
+const ECtxMenuNames = {
+	menu: 			"ctx-menu-wrapper",
+	item: 			"ctx-menu-item",
+	seperator:		"ctx-menu-seperator",
+	hasIcon: 		"ctx-menu-hasIcon"
+};
+
+
+class CtxMenuManagerClass {
+	constructor(){
+		this._currentMenuVisible = null;
+		this._ctxMenus = new Map();
+
+		document.addEventListener('contextmenu', this._eventOpenMenu.bind(this));
+
+		const scripts = document.getElementsByTagName('script');
+		const path = scripts[scripts.length - 1].src.split('?')[0];
+		const CtxMenuDirectory = path.split('/').slice(0, -1).join('/') + '/';
+
+		// Load the stylesheet
+		var link = document.createElement( "link" );
+		link.href = CtxMenuDirectory + "ctxmenu.css";
+		link.type = "text/css";
+		link.rel = "stylesheet";
+		document.getElementsByTagName("head")[0].appendChild(link);
+
+	};
+
+	_eventOpenMenu(e){
+		if (e.path != undefined) {
+			var menuAndElement = this._traceCtxMenu(e.path);
+		} else {
+			// Microsoft Edge
+			var menuAndElement = this._msEdgeTraceCtxMenu(e.target);
+		}
+		
+		// Close any menu open right now
+		this.closeCurrentlyOpenedMenu();
+
+		if (menuAndElement == null) {
+			// Open default context menu if no custom menus where found.
+			return;
+		}
+
+		const menu = menuAndElement[0];
+		const elementClicked = menuAndElement[1];
+
+		if (menu == false){
+			// All context menus from appearing if the user has blocked the menu using CtxMenuBlock()
+			e.preventDefault();
+			return;
+		}
+		else if (menu == true){
+			// Open the defaulty menu if user has set it to default using CtxMenuDefault()
+			return;
+		}
+		
+		// Open the menu
+		menu._elementClicked = elementClicked;
+		menu.openMenu(e.pageX, e.pageY);
+		this._currentMenuVisible = menu;
+
+		// Add event listeners to close the window
+		document.addEventListener("click", CtxCloseCurrentlyOpenedMenus);
+		window.addEventListener("resize", CtxCloseCurrentlyOpenedMenus);
+		e.preventDefault();
+		if(menu._openEventListener != undefined) {
+			menu._openEventListener();
+		}
+		
+
+	};
+
+	closeMenu(menu){
+		//this.ctxMenuBackground.style.display = "none";
+		menu.closeMenu();
+		this._currentMenuVisible = null;
+		document.removeEventListener("click", CtxCloseCurrentlyOpenedMenus);
+		window.removeEventListener("resize", CtxCloseCurrentlyOpenedMenus);
+	};
+
+	closeCurrentlyOpenedMenu(){
+		if (this._currentMenuVisible != null){
+			this.closeMenu(this._currentMenuVisible);
+		}
+	};
+
+	_traceCtxMenu(path){
+		for (var i = 0; i &lt; path.length; ++i) {
+			const menu = this._ctxMenusHas(path[i]);
+			if (menu != null){
+				return [menu, path[i]];
+			}
+		}
+		return null;
+	};
+
+	_msEdgeTraceCtxMenu(element){
+		while (element != null) {
+			const menu = this._ctxMenusHas(element);
+			if (menu != null){
+				return [menu, element];
+			}
+			element = element.parentNode;
+		}
+		return null;
+	};
+
+	_ctxMenusHas(element){
+		if (this._ctxMenus.has(element)) {
+			return this._ctxMenus.get(element);
+		}
+		if(this._ctxMenus.has("#"+element.id)){
+			return   this._ctxMenus.get("#"+element.id);
+		}
+		if (element.className != undefined){
+			const classNames = element.className.split(" ");
+			for(var i = 0; i &lt; classNames.length; i++) {
+				if(this._ctxMenus.has("."+classNames[i])){
+					return this._ctxMenus.get("."+classNames[i]);
+				}
+			}
+		}
+		if (this._ctxMenus.has(element.nodeName)) {
+			return this._ctxMenus.get(element.nodeName);
+		}
+		return null;
+	};
+
+	getMenuFromElement(element){
+		return this._ctxMenus.get(element);
+	};
+
+	createNewMenu(element){
+		var menu = new CtxMenuClass();
+		this._ctxMenus.set(element, menu);
+		return menu;
+	};
+
+	setCustomContexMenuValue(element, value){
+		this._ctxMenus.set(element,  value);
+	};
+
+};
+
+class CtxMenuClass {
+	constructor(){
+
+		// Add the html to the body and hide it
+		this.menuContainer = document.createElement("div");
+		this.menuContainer.className = ECtxMenuNames.menu;
+		document.body.appendChild(this.menuContainer);
+		this.closeMenu();
+
+		this._items = [];
+		this._elementClicked = undefined;
+
+		// Event listeners
+		this._openEventListener = undefined;
+		this._closeEventListener = undefined;
+		this._clickEventListener = undefined;
+	}
+
+	addItem(text, customFunction, icon = undefined, index = undefined) {
+		var item = {};
+		// Create the element
+		var element = document.createElement("div");
+		element.className = ECtxMenuNames.item;
+
+		// Icon
+		var iconElement = document.createElement("img");
+		if (icon != undefined &amp;&amp; icon != null) {
+			iconElement.src = icon;
+			var bHasIcon = true;
+		} else {
+			var bHasIcon = false;
+		}
+		element.appendChild(iconElement);
+
+		element.innerHTML += text;
+
+		element.addEventListener("click", function(){
+			this._callItem(customFunction);
+		}.bind(this));
+
+		if (bHasIcon){
+			this.menuContainer.classList.add(ECtxMenuNames.hasIcon);
+		}
+
+		this.menuContainer.insertBefore(element, this.menuContainer.childNodes[index]);
+		return element;
+	}
+
+	addSeperator(index = undefined){
+		// Add a seperator
+		var seperator = document.createElement("div");
+		seperator.className = ECtxMenuNames.seperator;
+		this.menuContainer.insertBefore(seperator, this.menuContainer.childNodes[index]);
+	}
+
+	removeItem(item) {
+		// Remove an item from the menu
+		this.menuContainer.removeChild(item.element);
+	}
+
+	addEventListener(type, listener){
+		if (type == "open"){
+			this._openEventListener = listener;
+		}
+		else if (type == "close") {
+			this._closeEventListener = listener;
+		}
+		else if (type == "click") {
+			this._clickEventListener = listener;
+		}
+	}
+
+	openMenu(x, y){
+		this.menuContainer.style.display = "block";
+		// Set the screen position of the menu
+
+		// Ensure the menu doesn't go outside of the widnow
+		const PageWidth = (document.documentElement.clientWidth + document.documentElement.scrollLeft);
+		const PageHeight = (document.documentElement.clientHeight + document.documentElement.scrollTop);
+		if (x + this.menuContainer.offsetWidth &gt; PageWidth) {
+			x = PageWidth - this.menuContainer.offsetWidth - 1;
+		}
+
+		if (y + this.menuContainer.offsetHeight &gt; PageHeight) {
+			y = PageHeight - this.menuContainer.offsetHeight - 1;
+		}
+
+		this.menuContainer.style.left = x + "px";
+		this.menuContainer.style.top = y + "px";
+	}
+
+	closeMenu(){
+		// Hide the menu
+		this.menuContainer.style.left = "0px";
+		this.menuContainer.style.top = "0px";
+		this.menuContainer.style.display = "none";
+		if (this._closeEventListener != undefined){
+			this._closeEventListener();
+		}
+	}
+
+	_callItem(customFunction){
+		// Called when an item has been clicked
+		this.closeMenu();
+		// Delay function one tick so the page has time to redraw the page and hide the context menu
+		setTimeout(function(){
+			customFunction(this._elementClicked);
+			if (this._clickEventListener != undefined) {
+				this._clickEventListener(item);
+			}
+		}.bind(this), 1);
+
+
+	}
+
+}
+
+function CtxMenu(element){
+	// Initialize a context meun
+	if (element == undefined){
+		element = document;
+	}
+	if (ctxMenuManager.getMenuFromElement(element) != undefined) {
+		return ctxMenuManager.getMenuFromElement(element);
+	}
+	return ctxMenuManager.createNewMenu(element);
+
+}
+
+function CtxMenuBlock(element){
+	// Block the context menu from appearing on an element
+	ctxMenuManager.setCustomContexMenuValue(element, false);
+}
+
+function CtxMenuDefault(element){
+	// Set an element to use the browsers default context menu
+	ctxMenuManager.setCustomContexMenuValue(element, true);
+}
+
+function CtxCloseCurrentlyOpenedMenus(){
+	ctxMenuManager.closeCurrentlyOpenedMenu();
+}
+
+// Initialize the ctxMenuManager
+var ctxMenuManager = new CtxMenuManagerClass();</value>
+    <comment>Javascript file for working with custom right click context menu</comment>
+  </data>
+</root>
