@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
     x:Class="Valyreon.Elib.Wpf.Views.Flyouts.BookDetailsControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -116,19 +116,6 @@
                             Margin="12,0"
                             Command="{Binding ExportButtonCommand}"
                             Content="Export"
-                            Focusable="False"
-                            
-                            FontSize="12"
-                            Style="{StaticResource MahApps.Styles.Button}"
-                             />
-
-                        <Button
-                            Grid.Row="6"
-                            Grid.ColumnSpan="2"
-                            Height="30"
-                            Margin="12,0"
-                            Command="{Binding ReadBookCommand}"
-                            Content="READ"
                             Focusable="False"
                             
                             FontSize="12"

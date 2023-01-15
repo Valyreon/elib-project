@@ -81,9 +81,9 @@
                 <DataTemplate DataType="{x:Type ControlViewModels:BooksTabViewModel}">
                     <ControlViews:BooksTabControl />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type ControlViewModels:QuotesTabViewModel}">
+                <!--<DataTemplate DataType="{x:Type ControlViewModels:QuotesTabViewModel}">
                     <ControlViews:QuotesTabControl />
-                </DataTemplate>
+                </DataTemplate>-->
                 <DataTemplate DataType="{x:Type ControlViewModels:SettingsTabViewModel}">
                     <ControlViews:SettingsTabControl />
                 </DataTemplate>

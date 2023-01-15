@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
@@ -140,13 +141,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             name = name.Trim();
             var newAuthor = new Author { Name = name };
             AuthorsCollection.Add(newAuthor);
-
-            _ = Task.Run(() =>
-            {
-                using var uow = App.UnitOfWorkFactory.Create();
-                uow.AuthorRepository.Add(newAuthor);
-                uow.Commit();
-            });
         }
 
         private void HandleRemoveAuthor(int id)
@@ -158,18 +152,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             }
 
             AuthorsCollection.Remove(obsAuthor);
-
-            Task.Run(() =>
-            {
-                using var uow = App.UnitOfWorkFactory.Create();
-                if (uow.AuthorRepository.CountBooksByAuthor(id) > 1)
-                {
-                    return;
-                }
-
-                uow.AuthorRepository.Remove(id);
-                uow.Commit();
-            });
         }
 
         private void HandleRevert()
@@ -234,22 +216,18 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                 book.IsFavorite = IsFavoriteCheck;
                 book.IsRead = IsReadCheck;
 
+                var removedAuthorIds = new List<int>();
                 var oldAndNewCommonIds = AuthorsCollection.Select(a => a.Id).Intersect(book.Authors.Select(a => a.Id));
 
-                foreach (var author in AuthorsCollection)
+                foreach (var author in AuthorsCollection.Where(a => !oldAndNewCommonIds.Contains(a.Id)))
                 {
-                    if (!oldAndNewCommonIds.Contains(author.Id))
-                    {
-                        uow.AuthorRepository.AddAuthorForBook(author, book.Id);
-                    }
+                    uow.AuthorRepository.AddAuthorForBook(author, book.Id);
                 }
 
-                foreach (var author in book.Authors)
+                foreach (var author in book.Authors.Where(a => !oldAndNewCommonIds.Contains(a.Id)))
                 {
-                    if (!oldAndNewCommonIds.Contains(author.Id))
-                    {
-                        uow.AuthorRepository.RemoveAuthorForBook(author, book.Id);
-                    }
+                    uow.AuthorRepository.RemoveAuthorForBook(author, book.Id);
+                    removedAuthorIds.Add(author.Id);
                 }
 
                 book.Authors = AuthorsCollection;
@@ -270,6 +248,13 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                 }
 
                 uow.BookRepository.Update(book);
+                uow.Commit();
+
+                foreach (var id in removedAuthorIds.Where(i => uow.AuthorRepository.CountBooksByAuthor(i) == 0))
+                {
+                    uow.AuthorRepository.Remove(id);
+                }
+
                 uow.Commit();
             });
 

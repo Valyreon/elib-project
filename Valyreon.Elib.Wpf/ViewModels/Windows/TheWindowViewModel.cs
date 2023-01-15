@@ -31,7 +31,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
             Tabs = new ObservableCollection<ITabViewModel>
             {
                 new BooksTabViewModel(),
-                new QuotesTabViewModel(),
+                //new QuotesTabViewModel(),
                 new SettingsTabViewModel()
             };
             SelectedTab = Tabs[0];

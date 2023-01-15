@@ -68,7 +68,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
                 list = uow.AuthorRepository.All();
             }
 
-            foreach (var author in list.Where(a => AddedAuthors.Contains(a.Id)))
+            foreach (var author in list.Where(a => !AddedAuthors.Contains(a.Id)))
             {
                 AllAuthors.Add(author);
                 ShownAuthors.Add(author);

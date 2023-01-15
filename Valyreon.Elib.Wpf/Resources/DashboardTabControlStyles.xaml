@@ -1,4 +1,4 @@
-﻿<ResourceDictionary
+<ResourceDictionary
     x:Class="Valyreon.Elib.Wpf.Resources.DashboardTabControlStyles"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -96,7 +96,7 @@
                                     Width="36"
                                     Height="36"
                                     VerticalAlignment="Center"
-                                    Source="../icon.ico" />
+                                    Source="/icon.ico" />
                                 <TextBlock
                                     Margin="10,0,0,0"
                                     VerticalAlignment="Center"

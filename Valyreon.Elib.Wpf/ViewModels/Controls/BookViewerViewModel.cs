@@ -30,7 +30,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         private Book lastSelectedBook;
         private double scrollVerticalOffset;
         private bool dontLoad = false;
-        private readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
         private static FilterOptions filterOptions = new FilterOptions();
         private bool isResultEmpty = false;
 
@@ -225,15 +224,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         private async void LoadMore()
         {
-            if (semaphore.CurrentCount == 0)
-            {
-                return;
-            }
-
-            await semaphore.WaitAsync();
-            var callingMethod = new System.Diagnostics.StackTrace().GetFrame(1).GetMethod().Name;
-            Console.WriteLine(callingMethod);
-
             if (dontLoad)
             {
                 return;
@@ -266,7 +256,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                     Books.Add(selector.SetMarked(item).LoadMembers(uow));
                 }
             }, TaskScheduler.FromCurrentSynchronizationContext());
-            _ = semaphore.Release();
         }
 
         public void Refresh()

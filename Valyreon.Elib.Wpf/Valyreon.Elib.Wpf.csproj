@@ -45,15 +45,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Update="CefSharp">
-      <Private>true</Private>
-    </Reference>
-    <Reference Update="CefSharp.Core">
-      <Private>true</Private>
-    </Reference>
-    <Reference Update="CefSharp.Wpf">
-      <Private>true</Private>
-    </Reference>
+    <Resource Include="Resources/CoverPlaceholder.png"></Resource>
+    <Resource Include="icon.ico"></Resource>
   </ItemGroup>
 
 </Project>

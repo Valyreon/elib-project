@@ -14,7 +14,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 {
     public class AuthorViewerViewModel : ViewModelBase, IViewer
     {
-        private readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
         private bool isResultEmpty;
         private string caption;
 
@@ -70,13 +69,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         private async void LoadMore()
         {
-            if (semaphore.CurrentCount == 0)
-            {
-                return;
-            }
-
-            await semaphore.WaitAsync();
-
             await Task.Factory.StartNew(() =>
             {
                 using var uow = App.UnitOfWorkFactory.Create();
@@ -94,7 +86,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                     Authors.Add(item);
                 }
             }, TaskScheduler.FromCurrentSynchronizationContext());
-            _ = semaphore.Release();
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Valyreon.Elib.DataLayer
     {
         private readonly string connection;
 
-        private static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
+        private static readonly SemaphoreSlim semaphore = new(1, 1);
 
         public UnitOfWorkFactory(string connection)
         {
