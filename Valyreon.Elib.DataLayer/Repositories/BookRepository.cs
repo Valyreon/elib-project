@@ -22,8 +22,8 @@ namespace Valyreon.Elib.DataLayer.Repositories
         public void Add(Book entity)
         {
             entity.Id = Connection.ExecuteScalar<int>(
-                @"INSERT INTO Books(Title, SeriesId, IsRead, CoverId, WhenRead, NumberInSeries, IsFavorite, PercentageRead, FileId)
-                VALUES (@Title, @SeriesId, @IsRead, @CoverId, @WhenRead, @NumberInSeries, @IsFavorite, @PercentageRead, @FileId); SELECT last_insert_rowid() ",
+                @"INSERT INTO Books(Title, SeriesId, IsRead, CoverId, WhenRead, NumberInSeries, IsFavorite, FileId)
+                VALUES (@Title, @SeriesId, @IsRead, @CoverId, @WhenRead, @NumberInSeries, @IsFavorite, @FileId); SELECT last_insert_rowid() ",
                 entity,
                 Transaction
             );
@@ -107,8 +107,7 @@ namespace Valyreon.Elib.DataLayer.Repositories
                                         CoverId = @CoverId,
                                         WhenRead = @WhenRead,
                                         NumberInSeries = @NumberInSeries,
-                                        FileId = @FileId,
-                                        PercentageRead = @PercentageRead
+                                        FileId = @FileId
                                     WHERE Id = @Id", entity, Transaction);
         }
 
@@ -128,8 +127,8 @@ namespace Valyreon.Elib.DataLayer.Repositories
 
             var parameters = new DynamicParameters();
 
-            var queryBuilder = new StringBuilder(@$"SELECT MIN(Id) AS Id, Title, SeriesId, IsFavorite, IsRead, WhenRead, CoverId, NumberInSeries, PercentageRead,
-                                                            FileId, SeriesName, AuthorName, AuthorId, Tag, CollectionId FROM Full_Join{(conditionSet ? " WHERE (" : " ")}");
+            var queryBuilder = new StringBuilder(@$"SELECT MIN(Id) AS Id, Title, SeriesId, IsFavorite, IsRead, WhenRead, CoverId, NumberInSeries, 
+                                                            FileId, SeriesName, AuthorName, AuthorId, Tag, CollectionId FROM Full_Join {(conditionSet ? " WHERE (" : " ")}");
 
             var conditionsAdded = false;
 
@@ -288,8 +287,8 @@ namespace Valyreon.Elib.DataLayer.Repositories
         public async Task AddAsync(Book entity)
         {
             entity.Id = await Connection.ExecuteScalarAsync<int>(
-                @"INSERT INTO Books(Title, SeriesId, IsRead, CoverId, WhenRead, NumberInSeries, IsFavorite, PercentageRead, FileId)
-                VALUES (@Title, @SeriesId, @IsRead, @CoverId, @WhenRead, @NumberInSeries, @IsFavorite, @PercentageRead, @FileId); SELECT last_insert_rowid() ",
+                @"INSERT INTO Books(Title, SeriesId, IsRead, CoverId, WhenRead, NumberInSeries, IsFavorite, FileId)
+                VALUES (@Title, @SeriesId, @IsRead, @CoverId, @WhenRead, @NumberInSeries, @IsFavorite, @FileId); SELECT last_insert_rowid() ",
                 entity,
                 Transaction
             );
@@ -396,8 +395,7 @@ namespace Valyreon.Elib.DataLayer.Repositories
                                         CoverId = @CoverId,
                                         WhenRead = @WhenRead,
                                         NumberInSeries = @NumberInSeries,
-                                        FileId = @FileId,
-                                        PercentageRead = @PercentageRead
+                                        FileId = @FileId
                                     WHERE Id = @Id", entity, Transaction);
         }
     }

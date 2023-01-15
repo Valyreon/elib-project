@@ -21,8 +21,6 @@ namespace Valyreon.Elib.Domain
         public int FileId { get; set; }
         public int? CoverId { get; set; }
 
-        public decimal PercentageRead { get; set; } = 0;
-
         private BookSeries series;
 
         public BookSeries Series

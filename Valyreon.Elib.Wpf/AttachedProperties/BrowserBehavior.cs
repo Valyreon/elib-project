@@ -1,18 +1,16 @@
-﻿using CefSharp;
-using CefSharp.Wpf;
 using System.Windows;
 
 namespace Valyreon.Elib.Wpf.AttachedProperties
 {
     public static class BrowserBehavior
     {
-        public static readonly DependencyProperty HtmlProperty = DependencyProperty.RegisterAttached(
+        /*public static readonly DependencyProperty HtmlProperty = DependencyProperty.RegisterAttached(
             "Html",
             typeof(string),
             typeof(BrowserBehavior),
-            new FrameworkPropertyMetadata(OnHtmlChanged));
+            new FrameworkPropertyMetadata(OnHtmlChanged));*/
 
-        [AttachedPropertyBrowsableForType(typeof(ChromiumWebBrowser))]
+        /*[AttachedPropertyBrowsableForType(typeof(ChromiumWebBrowser))]
         public static string GetHtml(ChromiumWebBrowser d)
         {
             return (string)d.GetValue(HtmlProperty);
@@ -29,6 +27,6 @@ namespace Valyreon.Elib.Wpf.AttachedProperties
             {
                 wb.LoadHtml(e.NewValue as string, "http://rendering/");
             }
-        }
+        }*/
     }
 }

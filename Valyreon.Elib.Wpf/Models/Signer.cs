@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -9,7 +9,7 @@ namespace Valyreon.Elib.Wpf.Models
 		public static string ComputeHash(byte[] file)
 		{
 			using var stream = new MemoryStream(file);
-			var sha = new SHA256Managed();
+			var sha = SHA256.Create();
 			return sha.ComputeHash(stream).ToHex();
 		}
 

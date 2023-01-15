@@ -9,7 +9,6 @@
     xmlns:ControlViews="clr-namespace:Valyreon.Elib.Wpf.Views.Controls"
     xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
     xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
-    xmlns:chrome="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
     xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Valyreon.Elib.Wpf.Views.Windows"
@@ -35,19 +34,15 @@
     WindowState="Maximized"
     WindowTitleBrush="#222222"
     mc:Ignorable="d">
-    <Behaviors:Interaction.Triggers>
+    <!--<Behaviors:Interaction.Triggers>
         <Behaviors:EventTrigger EventName="Loaded">
             <Behaviors:InvokeCommandAction Command="{Binding LoadCommand}" CommandParameter="{Binding ElementName=Browser}" />
         </Behaviors:EventTrigger>
         <Behaviors:EventTrigger EventName="Closing">
             <Behaviors:InvokeCommandAction Command="{Binding UnloadCommand}" CommandParameter="{Binding ElementName=Browser}" />
         </Behaviors:EventTrigger>
-    </Behaviors:Interaction.Triggers>
+    </Behaviors:Interaction.Triggers>-->
     <Grid>
         <!--<WebBrowser AttachedProperties:BrowserBehavior.Html="{Binding BookHtml}" TextOptions.TextRenderingMode="ClearType" />-->
-        <chrome:ChromiumWebBrowser
-            x:Name="Browser"
-            AttachedProperties:BrowserBehavior.Html="{Binding BookHtml}"
-            LostFocus="Browser_LostFocus" />
     </Grid>
 </MetroControls:MetroWindow>

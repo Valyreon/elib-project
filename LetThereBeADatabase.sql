@@ -34,8 +34,6 @@ CREATE TABLE Books (
     NumberInSeries REAL,
     IsFavorite     BOOLEAN       NOT NULL
                                  DEFAULT (false),
-    PercentageRead REAL          NOT NULL
-                                 DEFAULT (0),
     FileId         INT           REFERENCES EBookFiles (Id) 
                                  NOT NULL,
     CoverId        INTEGER       REFERENCES Covers (Id) 
