@@ -1,8 +1,6 @@
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using CefSharp;
-using CefSharp.Wpf;
 using Valyreon.Elib.Mvvm;using Valyreon.Elib.Domain;
 using Valyreon.Elib.EBookTools;
 using Valyreon.Elib.Wpf.BindingItems;
@@ -18,11 +16,11 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
             Book = book;
         }
 
-        public ICommand LoadCommand => new RelayCommand<ChromiumWebBrowser>(HandleLoad);
+        // public ICommand LoadCommand => new RelayCommand<ChromiumWebBrowser>(HandleLoad);
 
-        public ICommand UnloadCommand => new RelayCommand<ChromiumWebBrowser>(HandleUnload);
+        // public ICommand UnloadCommand => new RelayCommand<ChromiumWebBrowser>(HandleUnload);
 
-        private async void HandleUnload(ChromiumWebBrowser obj)
+        /*private async void HandleUnload(ChromiumWebBrowser obj)
         {
             var r = obj.EvaluateScriptAsync(@"document.body[""scrollTop""]");
             var scrollTop = (int)r.Result.Result;
@@ -37,7 +35,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
             using var uow = await App.UnitOfWorkFactory.CreateAsync();
             uow.BookRepository.Update(toUpdate);
             uow.Commit();
-        }
+        }*/
 
         private string bookHtml;
 
@@ -47,7 +45,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
             set => Set(() => BookHtml, ref bookHtml, value);
         }
 
-        private async void HandleLoad(ChromiumWebBrowser obj)
+        /*private async void HandleLoad(ChromiumWebBrowser obj)
         {
             obj.JavascriptObjectRepository.Register("QuoteHelper", new QuoteJsHelper(Book), true);
 
@@ -96,6 +94,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
 
                 BookHtml = html.ToString();
             });
-        }
+        }*/
     }
 }

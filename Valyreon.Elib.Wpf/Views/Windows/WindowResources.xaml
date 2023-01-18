@@ -24,6 +24,9 @@
     <DataTemplate DataType="{x:Type ControlViewModels:AuthorViewerViewModel}">
         <ControlViews:AuthorViewerControl />
     </DataTemplate>
+    <DataTemplate DataType="{x:Type ControlViewModels:SeriesViewerViewModel}">
+        <ControlViews:SeriesViewerControl />
+    </DataTemplate>
     <!--#endregion-->
 
     <!--#region FLYOUTS-->

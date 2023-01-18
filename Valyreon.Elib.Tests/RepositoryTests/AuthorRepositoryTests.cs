@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Valyreon.Elib.DataLayer;
 using Valyreon.Elib.Domain;
@@ -16,19 +17,19 @@ namespace Valyreon.Elib.Tests.RepositoryTests
         private readonly List<Author> addedAuthors = new List<Author>();
 
         [TestInitialize]
-        public void Initialize()
+        public async Task Initialize()
         {
             var factory = new UnitOfWorkFactory(ApplicationSettings.GetInstance().DatabasePath);
             using var unitOfWork = factory.Create();
 
             var one = new Author { Name = "One Author" };
-            unitOfWork.AuthorRepository.Add(one);
+            await unitOfWork.AuthorRepository.CreateAsync(one);
 
             var two = new Author { Name = "Two Author" };
-            unitOfWork.AuthorRepository.Add(two);
+            await unitOfWork.AuthorRepository.CreateAsync(two);
 
             var three = new Author { Name = "Three Author" };
-            unitOfWork.AuthorRepository.Add(three);
+            await unitOfWork.AuthorRepository.CreateAsync(three);
 
             unitOfWork.Commit();
 
@@ -36,23 +37,23 @@ namespace Valyreon.Elib.Tests.RepositoryTests
         }
 
         [TestCleanup]
-        public void Clean()
+        public async Task Clean()
         {
             foreach (var author in addedAuthors)
             {
                 var factory = new UnitOfWorkFactory(ApplicationSettings.GetInstance().DatabasePath);
                 using var unitOfWork = factory.Create();
-                unitOfWork.AuthorRepository.Remove(author.Id);
+                await unitOfWork.AuthorRepository.DeleteAsync(author.Id);
                 unitOfWork.Commit();
             }
         }
 
         [TestMethod]
-        public void TestGetAll()
+        public async Task TestGetAll()
         {
             var factory = new UnitOfWorkFactory(ApplicationSettings.GetInstance().DatabasePath);
             using var unitOfWork = factory.Create();
-            var authors = unitOfWork.AuthorRepository.All();
+            var authors = await unitOfWork.AuthorRepository.GetAllAsync();
 
             Assert.IsTrue(authors.Count() >= 3);
             foreach (var x in addedAuthors)
@@ -62,48 +63,48 @@ namespace Valyreon.Elib.Tests.RepositoryTests
         }
 
         [TestMethod]
-        public void TestRemoveAndFind()
+        public async Task TestRemoveAndFind()
         {
             var factory = new UnitOfWorkFactory(ApplicationSettings.GetInstance().DatabasePath);
             using (var unitOfWork = factory.Create())
             {
-                var found = unitOfWork.AuthorRepository.Find(addedAuthors[0].Id);
+                var found = await unitOfWork.AuthorRepository.FindAsync(addedAuthors[0].Id);
                 Assert.IsTrue(found.Id == addedAuthors[0].Id && found.Name == addedAuthors[0].Name);
             }
 
             using (var unitOfWork = factory.Create())
             {
-                unitOfWork.AuthorRepository.Remove(addedAuthors[0]);
+                await unitOfWork.AuthorRepository.DeleteAsync(addedAuthors[0]);
                 unitOfWork.Commit();
             }
 
             using (var unitOfWork = factory.Create())
             {
-                var found = unitOfWork.AuthorRepository.Find(addedAuthors[0].Id);
+                var found = await unitOfWork.AuthorRepository.FindAsync(addedAuthors[0].Id);
                 Assert.IsTrue(found == null);
             }
         }
 
         [TestMethod]
-        public void TestUpdate()
+        public async Task TestUpdate()
         {
             var factory = new UnitOfWorkFactory(ApplicationSettings.GetInstance().DatabasePath);
             using (var unitOfWork = factory.Create())
             {
                 addedAuthors[0].Name = "Updated";
-                unitOfWork.AuthorRepository.Update(addedAuthors[0]);
+                await unitOfWork.AuthorRepository.UpdateAsync(addedAuthors[0]);
                 unitOfWork.Commit();
             }
 
             using (var unitOfWork = factory.Create())
             {
-                var found = unitOfWork.AuthorRepository.Find(addedAuthors[0].Id);
+                var found = await unitOfWork.AuthorRepository.FindAsync(addedAuthors[0].Id);
                 Assert.IsTrue(found.Id == addedAuthors[0].Id && found.Name == "Updated");
             }
         }
 
         [TestMethod]
-        public void TestAddAuthorForBook()
+        public async Task TestAddAuthorForBook()
         {
             var factory = new UnitOfWorkFactory(ApplicationSettings.GetInstance().DatabasePath);
             var toAdd = new Book
@@ -114,30 +115,30 @@ namespace Valyreon.Elib.Tests.RepositoryTests
 
             using (var unitOfWork = factory.Create())
             {
-                unitOfWork.BookRepository.Add(toAdd);
+                await unitOfWork.BookRepository.CreateAsync(toAdd);
                 unitOfWork.Commit();
             }
 
             using (var unitOfWork = factory.Create())
             {
-                unitOfWork.AuthorRepository.AddAuthorForBook(addedAuthors[0], toAdd.Id);
+                await unitOfWork.AuthorRepository.AddAuthorForBookAsync(addedAuthors[0], toAdd.Id);
                 unitOfWork.Commit();
             }
 
             using (var unitOfWork = factory.Create())
             {
-                var authors = unitOfWork.AuthorRepository.GetAuthorsOfBook(toAdd.Id);
+                var authors = await unitOfWork.AuthorRepository.GetAuthorsOfBookAsync(toAdd.Id);
                 Assert.IsTrue(authors.Count() == 1);
                 Assert.IsTrue(authors.First().Id == addedAuthors[0].Id);
             }
 
             using (var unitOfWork = factory.Create())
             {
-                unitOfWork.AuthorRepository.RemoveAuthorForBook(addedAuthors[0], toAdd.Id);
-                var authors = unitOfWork.AuthorRepository.GetAuthorsOfBook(toAdd.Id);
+                await unitOfWork.AuthorRepository.RemoveAuthorForBookAsync(addedAuthors[0], toAdd.Id);
+                var authors = await unitOfWork.AuthorRepository.GetAuthorsOfBookAsync(toAdd.Id);
                 Assert.IsTrue(!authors.Any());
-                unitOfWork.AuthorRepository.Remove(addedAuthors[0]);
-                unitOfWork.BookRepository.Remove(toAdd);
+                await unitOfWork.AuthorRepository.DeleteAsync(addedAuthors[0]);
+                await unitOfWork.BookRepository.DeleteAsync(toAdd);
                 unitOfWork.Commit();
             }
         }

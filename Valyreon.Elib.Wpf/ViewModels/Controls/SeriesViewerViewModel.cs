@@ -11,12 +11,12 @@ using Valyreon.Elib.Wpf.Messages;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Controls
 {
-    public class AuthorViewerViewModel : ViewModelBase, IViewer
+    public class SeriesViewerViewModel : ViewModelBase, IViewer
     {
         private bool isResultEmpty;
         private string caption;
 
-        public ObservableCollection<Author> Authors { get; set; } = new ObservableCollection<Author>();
+        public ObservableCollection<BookSeries> Series { get; set; } = new ObservableCollection<BookSeries>();
 
         public ICommand LoadCommand => new RelayCommand(LoadMore);
         public ICommand BackCommand => new RelayCommand(Back);
@@ -49,12 +49,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         public void Clear()
         {
-            Authors.Clear();
+            Series.Clear();
         }
 
         public void Refresh()
         {
-            Authors.Clear();
+            Series.Clear();
             LoadMore();
         }
 
@@ -63,12 +63,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             throw new NotImplementedException();
         }
 
-        public ICommand GoToAuthor => new RelayCommand<Author>(a => Messenger.Default.Send(new AuthorSelectedMessage(a)));
+        public ICommand GoToSeries => new RelayCommand<BookSeries>(a => Messenger.Default.Send(new SeriesSelectedMessage(a)));
 
         private async void LoadMore()
         {
             using var uow = await App.UnitOfWorkFactory.CreateAsync();
-            var x = await uow.AuthorRepository.GetAllAsync();
+            var x = await uow.SeriesRepository.GetAllAsync();
 
             if (!x.Any())
             {
@@ -78,8 +78,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             foreach (var item in x)
             {
-                item.NumberOfBooks = await uow.AuthorRepository.CountBooksByAuthorAsync(item.Id);
-                Authors.Add(item);
+                item.NumberOfBooks = await uow.SeriesRepository.CountBooksInSeriesAsync(item.Id);
+                Series.Add(item);
                 await Task.Delay(6);
             }
         }

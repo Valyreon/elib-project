@@ -4,7 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Valyreon.Elib.Mvvm;using Valyreon.Elib.Mvvm.Messaging;
+using Valyreon.Elib.Mvvm;
+using Valyreon.Elib.Mvvm.Messaging;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.EBookTools;
 using Valyreon.Elib.Wpf.Messages;
@@ -76,12 +77,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                 Book.IsFavorite = value;
                 RaisePropertyChanged(() => IsBookFavorite);
 
-                Task.Run(() =>
-               {
-                   using var uow = App.UnitOfWorkFactory.Create();
-                   uow.BookRepository.Update(Book);
-                   uow.Commit();
-               });
+                Task.Run(async () =>
+                {
+                    using var uow = await App.UnitOfWorkFactory.CreateAsync();
+                    await uow.BookRepository.UpdateAsync(Book);
+                    uow.Commit();
+                });
             }
         }
 
@@ -93,10 +94,10 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                 Book.IsRead = value;
                 RaisePropertyChanged(() => IsBookRead);
 
-                Task.Run(() =>
+                Task.Run(async () =>
                 {
-                    using var uow = App.UnitOfWorkFactory.Create();
-                    uow.BookRepository.Update(Book);
+                    using var uow = await App.UnitOfWorkFactory.CreateAsync();
+                    await uow.BookRepository.UpdateAsync(Book);
                     uow.Commit();
                 });
             }
@@ -121,13 +122,13 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
             Book.Collections.Remove(collection);
 
-            Task.Run(() =>
+            Task.Run(async () =>
             {
-                using var uow = App.UnitOfWorkFactory.Create();
-                uow.CollectionRepository.RemoveCollectionForBook(collection, Book.Id);
-                if (uow.CollectionRepository.CountBooksInUserCollection(collection.Id) <= 1)
+                using var uow = await App.UnitOfWorkFactory.CreateAsync();
+                await uow.CollectionRepository.RemoveCollectionForBookAsync(collection, Book.Id);
+                if (await uow.CollectionRepository.CountBooksInUserCollectionAsync(collection.Id) == 0)
                 {
-                    uow.CollectionRepository.Remove(collection);
+                    await uow.CollectionRepository.DeleteAsync(collection);
                     MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
                 }
                 uow.Commit();
@@ -136,37 +137,37 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
         private void AddCollection(string tag)
         {
-            if (!string.IsNullOrWhiteSpace(tag))
+            if (string.IsNullOrWhiteSpace(tag))
             {
-                tag = tag.Trim();
-                AddCollectionFieldText = "";
-                if (Book.Collections.Any(c => c.Tag == tag)) // check if book is already in that collection
-                {
-                    return;
-                }
-                else // if not
-                {
-                    var newCollection = new UserCollection { Tag = tag };
-                    Book.Collections.Add(newCollection);
-                    Task.Run(() =>
-                    {
-                        using var uow = App.UnitOfWorkFactory.Create();
-                        var existingCollection = uow.CollectionRepository.GetByTag(tag);
-                        if (existingCollection == null)
-                        {
-                            uow.CollectionRepository.AddCollectionForBook(newCollection, Book.Id);
-                            MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
-                        }
-                        else
-                        {
-                            newCollection.Id = existingCollection.Id;
-                            uow.CollectionRepository.AddCollectionForBook(existingCollection, Book.Id);
-                        }
-
-                        uow.Commit();
-                    });
-                }
+                return;
             }
+
+            tag = tag.Trim();
+            AddCollectionFieldText = "";
+            if (Book.Collections.Any(c => c.Tag == tag)) // check if book is already in that collection
+            {
+                return;
+            }
+
+            var newCollection = new UserCollection { Tag = tag };
+            Book.Collections.Add(newCollection);
+            Task.Run(async () =>
+            {
+                using var uow = await App.UnitOfWorkFactory.CreateAsync();
+                var existingCollection = await uow.CollectionRepository.GetByTagAsync(tag);
+                if (existingCollection == null)
+                {
+                    await uow.CollectionRepository.AddCollectionForBookAsync(newCollection, Book.Id);
+                    MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
+                }
+                else
+                {
+                    newCollection.Id = existingCollection.Id;
+                    await uow.CollectionRepository.AddCollectionForBookAsync(existingCollection, Book.Id);
+                }
+
+                uow.Commit();
+            });
         }
 
         private void HandleEditButton()
@@ -198,7 +199,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                     RawFile fileToExport = null;
                     using (var uow = await App.UnitOfWorkFactory.CreateAsync())
                     {
-                        fileToExport = uow.RawFileRepository.Find(Book.File.RawFileId);
+                        fileToExport = await uow.RawFileRepository.FindAsync(Book.File.RawFileId);
                     }
 
                     Exporter.Export(fileToExport, filePath);
@@ -217,7 +218,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             RawFile rawFile = null;
             using (var uow = await App.UnitOfWorkFactory.CreateAsync())
             {
-                rawFile = uow.RawFileRepository.Find(Book.File.RawFileId);
+                rawFile = await uow.RawFileRepository.FindAsync(Book.File.RawFileId);
             }
 
             var x = EbookParserFactory.Create(Book.File.Format, rawFile.RawContent).Parse();

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
@@ -140,13 +141,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             name = name.Trim();
             var newAuthor = new Author { Name = name };
             AuthorsCollection.Add(newAuthor);
-
-            _ = Task.Run(() =>
-            {
-                using var uow = App.UnitOfWorkFactory.Create();
-                uow.AuthorRepository.Add(newAuthor);
-                uow.Commit();
-            });
         }
 
         private void HandleRemoveAuthor(int id)
@@ -158,18 +152,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             }
 
             AuthorsCollection.Remove(obsAuthor);
-
-            Task.Run(() =>
-            {
-                using var uow = App.UnitOfWorkFactory.Create();
-                if (uow.AuthorRepository.CountBooksByAuthor(id) > 1)
-                {
-                    return;
-                }
-
-                uow.AuthorRepository.Remove(id);
-                uow.Commit();
-            });
         }
 
         private void HandleRevert()
@@ -196,13 +178,13 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
             var book = Book;
 
-            Task.Run(() =>
+            Task.Run(async () =>
             {
-                using var uow = App.UnitOfWorkFactory.Create();
+                using var uow = await App.UnitOfWorkFactory.CreateAsync();
 
                 if ((book.Series == null && Series != null) || (Series != null && book.Series.Id != Series.Id))
                 {
-                    book.Series = uow.SeriesRepository.Find(Series.Id);
+                    book.Series = await uow.SeriesRepository.FindAsync(Series.Id);
                     book.SeriesId = book.Series.Id;
                 }
                 else if (book.Series != null && Series != null && book.Series.Id == Series.Id)
@@ -210,7 +192,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                     var series = book.Series;
                     series.Name = Series.Name;
                     book.Series = series; // to trgger SeriesInfo update in UI
-                    uow.SeriesRepository.Update(book.Series);
+                    await uow.SeriesRepository.UpdateAsync(book.Series);
                 }
                 else if (book.Series != null && Series == null)
                 {
@@ -234,22 +216,18 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                 book.IsFavorite = IsFavoriteCheck;
                 book.IsRead = IsReadCheck;
 
+                var removedAuthorIds = new List<int>();
                 var oldAndNewCommonIds = AuthorsCollection.Select(a => a.Id).Intersect(book.Authors.Select(a => a.Id));
 
-                foreach (var author in AuthorsCollection)
+                foreach (var author in AuthorsCollection.Where(a => !oldAndNewCommonIds.Contains(a.Id)))
                 {
-                    if (!oldAndNewCommonIds.Contains(author.Id))
-                    {
-                        uow.AuthorRepository.AddAuthorForBook(author, book.Id);
-                    }
+                    await uow.AuthorRepository.AddAuthorForBookAsync(author, book.Id);
                 }
 
-                foreach (var author in book.Authors)
+                foreach (var author in book.Authors.Where(a => !oldAndNewCommonIds.Contains(a.Id)))
                 {
-                    if (!oldAndNewCommonIds.Contains(author.Id))
-                    {
-                        uow.AuthorRepository.RemoveAuthorForBook(author, book.Id);
-                    }
+                    await uow.AuthorRepository.RemoveAuthorForBookAsync(author, book.Id);
+                    removedAuthorIds.Add(author.Id);
                 }
 
                 book.Authors = AuthorsCollection;
@@ -259,17 +237,27 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                     if (book.Cover == null) // add new
                     {
                         book.Cover = new Cover { Image = Cover };
-                        uow.CoverRepository.Add(book.Cover);
+                        await uow.CoverRepository.CreateAsync(book.Cover);
                         book.CoverId = book.Cover.Id;
                     }
                     else // update
                     {
                         book.Cover.Image = Cover;
-                        uow.CoverRepository.Update(book.Cover);
+                        await uow.CoverRepository.UpdateAsync(book.Cover);
                     }
                 }
 
-                uow.BookRepository.Update(book);
+                await uow.BookRepository.UpdateAsync(book);
+                uow.Commit();
+
+                foreach (var id in removedAuthorIds)
+                {
+                    if (await uow.AuthorRepository.CountBooksByAuthorAsync(id) == 0)
+                    {
+                        await uow.AuthorRepository.DeleteAsync(id);
+                    }
+                }
+
                 uow.Commit();
             });
 
@@ -330,10 +318,10 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             var newSeries = new BookSeries { Name = name };
             Series = newSeries;
 
-            _ = Task.Run(() =>
+            _ = Task.Run(async () =>
             {
-                using var uow = App.UnitOfWorkFactory.Create();
-                uow.SeriesRepository.Add(newSeries);
+                using var uow = await App.UnitOfWorkFactory.CreateAsync();
+                await uow.SeriesRepository.CreateAsync(newSeries);
                 uow.Commit();
             });
         }
@@ -348,10 +336,10 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             Series.Name = await DialogCoordinator.Instance.ShowInputAsync(this, "Edit Series", "Series name:",
                 new MetroDialogSettings { DefaultText = Series.Name });
 
-            _ = Task.Run(() =>
+            _ = Task.Run(async () =>
             {
-                using var uow = App.UnitOfWorkFactory.Create();
-                uow.SeriesRepository.Update(Series);
+                using var uow = await App.UnitOfWorkFactory.CreateAsync();
+                await uow.SeriesRepository.UpdateAsync(Series);
                 uow.Commit();
             });
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.Wpf.Models.Options;
@@ -51,7 +52,7 @@ namespace Valyreon.Elib.Wpf.Models
             fs.Write(book.File.RawFile.RawContent, 0, book.File.RawFile.RawContent.Length);
         }
 
-        public void ExportBooks(IEnumerable<Book> books, ExporterOptions options, Action<string> progressSet = null)
+        public async Task ExportBooks(IEnumerable<Book> books, ExporterOptions options, Action<string> progressSet = null)
         {
             void ExportAllInList(IEnumerable<Book> list, string outPath)
             {
@@ -98,8 +99,8 @@ namespace Valyreon.Elib.Wpf.Models
             // Load everything needed
             foreach (var book in enumerable)
             {
-                book.File ??= _uow.EFileRepository.Find(book.FileId);
-                book.File.RawFile ??= _uow.RawFileRepository.Find(book.File.RawFileId);
+                book.File ??= await _uow.EFileRepository.FindAsync(book.FileId);
+                book.File.RawFile ??= await _uow.RawFileRepository.FindAsync(book.File.RawFileId);
             }
 
             Directory.CreateDirectory(options.DestinationDirectory);

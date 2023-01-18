@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using Dapper;
 using Microsoft.Data.Sqlite;
@@ -92,10 +93,11 @@ namespace Valyreon.Elib.DataLayer
                 connection.Dispose();
                 connection = null;
             }
+            GC.SuppressFinalize(this);
             UnitOfWorkFactory.ReleaseSemaphore();
         }
 
-        public static void ClearCache()
+        private static void ClearCache()
         {
             new BookRepository(null).ClearCache();
             new SeriesRepository(null).ClearCache();

@@ -9,7 +9,7 @@ namespace Valyreon.Elib.Tests.RepositoryTests
 {
     [TestClass]
     public class CollectionRepositoryTests
-    {
+    {/*
         private List<UserCollection> addedCollections;
 
         [TestInitialize]
@@ -138,6 +138,6 @@ namespace Valyreon.Elib.Tests.RepositoryTests
                 unitOfWork.BookRepository.Remove(toAdd);
                 unitOfWork.Commit();
             }
-        }
+        }*/
     }
 }

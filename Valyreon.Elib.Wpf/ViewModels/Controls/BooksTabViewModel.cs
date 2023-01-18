@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using MahApps.Metro.IconPacks;
 using Valyreon.Elib.DataLayer;
@@ -41,33 +42,37 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 SelectedMainPaneItem = MainPaneItems[0];
                 PaneSelectionChanged();
             });
-            MessengerInstance.Register<RefreshSidePaneCollectionsMessage>(this,
-                _ => RaisePropertyChanged(() => Collections));
+            MessengerInstance.Register<RefreshSidePaneCollectionsMessage>(this, CollectionsRefreshHandler);
 
             MainPaneItems = new ObservableCollection<PaneMainItem>
             {
                 new PaneMainItem("All", PackIconBoxIconsKind.SolidBook, "All Books", null),
                 new PaneMainItem("Favorite", PackIconFontAwesomeKind.StarSolid, "Favorite Books", new FilterParameters { Favorite = true }),
-                new PaneMainItem("Authors", PackIconFontAwesomeKind.PersonBoothSolid, "Authors", null)
+                new PaneMainItem("Authors", PackIconFontAwesomeKind.PersonBoothSolid, "Authors", null),
+                new PaneMainItem("Series", PackIconFontAwesomeKind.LinkSolid, "Series", null)
             };
             SelectedMainPaneItem = MainPaneItems[0];
             PaneSelectionChanged();
             SearchOptions = new SearchParameters();
+            MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
         }
 
-        public ObservableCollection<UserCollection> Collections
+        public ObservableCollection<UserCollection> Collections { get; set; }
+
+        public async void CollectionsRefreshHandler(RefreshSidePaneCollectionsMessage msg)
         {
-            get
-            {
-                using var uow = App.UnitOfWorkFactory.Create();
-                return new ObservableCollection<UserCollection>(uow.CollectionRepository.All());
-            }
+            using var uow = await App.UnitOfWorkFactory.CreateAsync();
+            Collections = new ObservableCollection<UserCollection>(await uow.CollectionRepository.GetAllAsync());
+            RaisePropertyChanged(() => Collections);
         }
 
-        public IViewer CurrentViewer
+        public IViewer CurrentViewer => currentViewer;
+
+        private async void SetCurrentViewer(IViewer value)
         {
-            get => currentViewer;
-            set => Set(() => CurrentViewer, ref currentViewer, value);
+            Set(() => CurrentViewer, ref currentViewer, value);
+            await Task.Delay(20);
+            CurrentViewer.Refresh();
         }
 
         public bool IsBackEnabled => history.Count > 0;
@@ -93,21 +98,25 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             set
             {
                 Set(() => SelectedCollection, ref selectedCollection, value);
-                if (selectedCollection != null)
+
+                if (value == null)
                 {
-                    history.Clear();
-                    UnitOfWork.ClearCache();
-
-                    var filter = new FilterParameters
-                    {
-                        CollectionId = selectedCollection.Id
-                    };
-
-                    CurrentViewer = new BookViewerViewModel(filter, selector)
-                    {
-                        Caption = $"Collection {selectedCollection.Tag}"
-                    };
+                    return;
                 }
+
+                history.Clear();
+
+                var filter = new FilterParameters
+                {
+                    CollectionId = selectedCollection.Id
+                };
+
+                var newViewer = new BookViewerViewModel(filter, selector)
+                {
+                    Caption = $"Collection {selectedCollection.Tag}"
+                };
+
+                SetCurrentViewer(newViewer);
             }
         }
 
@@ -144,29 +153,31 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         private async void ProcessSearchInput(string token)
         {
-            if (!string.IsNullOrWhiteSpace(token))
+            if (string.IsNullOrWhiteSpace(token))
             {
-                token = token.ToLower();
-                SearchOptions.Token = token;
+                return;
+            }
 
-                var resultViewModel = await CurrentViewer.Search(SearchOptions);
+            token = token.ToLower();
+            SearchOptions.Token = token;
 
-                if (resultViewModel == null)
+            var resultViewModel = await CurrentViewer.Search(SearchOptions);
+
+            if (resultViewModel == null)
+            {
+                MessengerInstance.Send(new ShowDialogMessage("No matches", "No books found matching the search conditions."));
+            }
+            else
+            {
+                resultViewModel.Back = GoToPreviousViewer;
+                var temp = currentViewer;
+                SetCurrentViewer(resultViewModel);
+                if (!isInSearchResults)
                 {
-                    MessengerInstance.Send(new ShowDialogMessage("No matches", "No books found matching the search conditions."));
+                    history.Push(temp);
                 }
-                else
-                {
-                    resultViewModel.Back = GoToPreviousViewer;
-                    var temp = currentViewer;
-                    CurrentViewer = resultViewModel;
-                    if (!isInSearchResults)
-                    {
-                        history.Push(temp);
-                    }
 
-                    isInSearchResults = true;
-                }
+                isInSearchResults = true;
             }
         }
 
@@ -187,7 +198,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             isInSearchResults = false;
             SearchOptions.Token = "";
-            CurrentViewer = history.Pop();
+            SetCurrentViewer(history.Pop());
         }
 
         private void HandleAuthorSelection(AuthorSelectedMessage obj)
@@ -205,11 +216,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 AuthorId = obj.Author.Id
             };
 
-            CurrentViewer = new BookViewerViewModel(filter, selector)
+            var newViewer = new BookViewerViewModel(filter, selector)
             {
                 Caption = viewerCaption,
                 Back = GoToPreviousViewer
             };
+            SetCurrentViewer(newViewer);
 
             history.Push(temp);
         }
@@ -234,11 +246,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             var temp = CurrentViewer;
 
-            CurrentViewer = new BookViewerViewModel(filter, selector)
-            {
-                Caption = viewerCaption,
-                Back = GoToPreviousViewer
-            };
+            SetCurrentViewer(new BookViewerViewModel(filter, selector) { Caption = viewerCaption, Back = GoToPreviousViewer });
 
             history.Push(temp);
         }
@@ -254,21 +262,18 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             var filter = SelectedMainPaneItem.Filter?.Clone() ?? new FilterParameters();
 
-            UnitOfWork.ClearCache();
 
             if (SelectedMainPaneItem.PaneCaption == "Authors")
             {
-                CurrentViewer = new AuthorViewerViewModel()
-                {
-                    Caption = SelectedMainPaneItem.PaneCaption
-                };
+                SetCurrentViewer(new AuthorViewerViewModel() { Caption = SelectedMainPaneItem.PaneCaption });
+            }
+            else if ( SelectedMainPaneItem.PaneCaption == "Series")
+            {
+                SetCurrentViewer(new SeriesViewerViewModel() { Caption = SelectedMainPaneItem.PaneCaption });
             }
             else
             {
-                CurrentViewer = new BookViewerViewModel(filter, selector)
-                {
-                    Caption = SelectedMainPaneItem.ViewerCaption
-                };
+                SetCurrentViewer(new BookViewerViewModel(filter, selector) { Caption = SelectedMainPaneItem.ViewerCaption });
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿using MahApps.Metro.Controls;
+using MahApps.Metro.Controls;
 
 namespace Valyreon.Elib.Wpf.Views.Windows
 {
@@ -17,7 +17,7 @@ namespace Valyreon.Elib.Wpf.Views.Windows
             }*/
 
             InitializeComponent();
-            Browser.Focus();
+            //Browser.Focus();
         }
 
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -27,7 +27,7 @@ namespace Valyreon.Elib.Wpf.Views.Windows
 
         private void Browser_LostFocus(object sender, System.Windows.RoutedEventArgs e)
         {
-            Browser.Focus();
+            //Browser.Focus();
         }
     }
 }

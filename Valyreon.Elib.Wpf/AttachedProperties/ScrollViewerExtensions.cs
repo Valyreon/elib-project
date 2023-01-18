@@ -85,7 +85,7 @@ namespace Valyreon.Elib.Wpf.AttachedProperties
         private static void OnScrollViewerScrollChanged(object sender, ScrollChangedEventArgs e)
         {
             var scrollViewer = (ScrollViewer)sender;
-            if (scrollViewer.VerticalOffset >= scrollViewer.ScrollableHeight)
+            if (scrollViewer.VerticalOffset >= scrollViewer.ScrollableHeight && scrollViewer.VerticalOffset > 0)
             {
                 var command = GetScrollToBottom(sender as ScrollViewer);
                 if (command?.CanExecute(null) != true)

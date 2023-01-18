@@ -98,7 +98,7 @@ namespace Valyreon.Elib.EbookTools.Mobi
                             temps.Add(0);
                             var bb = (byte)(ab & 63); // do this to drop the first 2 bits
                             temps.Add(bb);
-                            temps.Add(pos < datatemp.Count ? datatemp[pos++] : 0);
+                            temps.Add(pos < datatemp.Count ? datatemp[pos++] : (byte)0);
 
                             var b = BytesToUint(temps.ToArray());
                             var dist = (b >> 3) * 1;

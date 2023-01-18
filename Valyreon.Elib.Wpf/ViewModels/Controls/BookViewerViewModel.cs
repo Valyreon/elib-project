@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.Metrics;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Threading;
 using MahApps.Metro.Controls.Dialogs;
 using Valyreon.Elib.DataLayer;
 using Valyreon.Elib.DataLayer.Extensions;
@@ -30,7 +33,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         private Book lastSelectedBook;
         private double scrollVerticalOffset;
         private bool dontLoad = false;
-        private readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
         private static FilterOptions filterOptions = new FilterOptions();
         private bool isResultEmpty = false;
 
@@ -101,7 +103,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             IList<Book> selectedBooks = null;
             using (var uow = await App.UnitOfWorkFactory.CreateAsync())
             {
-                selectedBooks = selector.GetSelectedBooks(uow);
+                selectedBooks = await selector.GetSelectedBooks(uow);
             }
 
             var deleteDialogViewModel = new DeleteBooksDialogViewModel(selectedBooks, dialog);
@@ -222,59 +224,56 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 Messenger.Default.Send(new ShowBookDetailsMessage(arg));
             }
         }
-
         private async void LoadMore()
         {
-            if (semaphore.CurrentCount == 0)
-            {
-                return;
-            }
-
-            await semaphore.WaitAsync();
-            var callingMethod = new System.Diagnostics.StackTrace().GetFrame(1).GetMethod().Name;
-            Console.WriteLine(callingMethod);
-
             if (dontLoad)
             {
                 return;
             }
 
-            await Task.Factory.StartNew(() =>
+            using var uow = await App.UnitOfWorkFactory.CreateAsync();
+            IEnumerable<Book> results;
+            if (filter.Selected.HasValue && filter.Selected == true)
             {
-                using var uow = App.UnitOfWorkFactory.Create();
-                if (filter.Selected.HasValue && filter.Selected == true)
-                {
-                    dontLoad = true;
-                    return uow.BookRepository.GetBooks(selector.SelectedIds).ToList();
-                }
-                else
-                {
-                    return uow.BookRepository.FindPageByFilter(filter, Books.Count, 25).ToList();
-                }
-            }).ContinueWith(x =>
+                dontLoad = true;
+                results = await uow.BookRepository.FindAsync(selector.SelectedIds);
+            }
+            else
             {
-                using var uow = App.UnitOfWorkFactory.Create();
+                results = await uow.BookRepository.FindPageByFilterAsync(filter, Books.Count, 25);
+            }
 
-                if (x.Result.Count == 0)
+            if (!results.Any())
+            {
+                IsResultEmpty = Books.Count == 0;
+                return;
+            }
+
+            foreach (var book in results)
+            {
+                book.Authors = new ObservableCollection<Author>(await uow.AuthorRepository.GetAuthorsOfBookAsync(book.Id));
+                if (book.SeriesId.HasValue)
                 {
-                    IsResultEmpty = Books.Count == 0;
-                    return;
+                    book.Series = await uow.SeriesRepository.FindAsync(book.SeriesId.Value);
                 }
 
-                foreach (var item in x.Result)
+                if (book.CoverId.HasValue)
                 {
-                    Books.Add(selector.SetMarked(item).LoadMembers(uow));
+                    book.Cover = await uow.CoverRepository.FindAsync(book.CoverId.Value);
                 }
-            }, TaskScheduler.FromCurrentSynchronizationContext());
-            _ = semaphore.Release();
+
+                selector.SetMarked(book);
+                Books.Add(book);
+                await Task.Delay(10);
+            }
         }
 
         public void Refresh()
         {
             ScrollVertical = 0;
             Books.Clear();
-            UnitOfWork.ClearCache();
             UpdateSubcaption();
+            LoadMore();
         }
 
         public async Task<IViewer> Search(SearchParameters searchOptions)
@@ -293,7 +292,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             var resultCount = 0;
             using (var uow = await App.UnitOfWorkFactory.CreateAsync())
             {
-                resultCount = uow.BookRepository.Count(filterWithSearch);
+                resultCount = await uow.BookRepository.CountAsync(filterWithSearch);
             }
 
             if (resultCount == 0)
@@ -331,7 +330,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             var dialog = new ExportOptionsDialog();
             using (var uow = await App.UnitOfWorkFactory.CreateAsync())
             {
-                dialog.DataContext = new ExportOptionsDialogViewModel(selector.GetSelectedBooks(uow), dialog);
+                dialog.DataContext = new ExportOptionsDialogViewModel(await selector.GetSelectedBooks(uow), dialog);
             }
             await DialogCoordinator.Instance.ShowMetroDialogAsync(System.Windows.Application.Current.MainWindow.DataContext, dialog);
         }
@@ -366,11 +365,11 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                     });
                     try
                     {
-                        await Task.Run(() =>
+                        await Task.Run(async () =>
                         {
                             var pBook = EbookParserFactory.Create(dlg.FileNames[i]).Parse();
-                            using var uow = App.UnitOfWorkFactory.Create();
-                            var book = pBook.ToBook(uow);
+                            using var uow = await App.UnitOfWorkFactory.CreateAsync();
+                            var book = await pBook.ToBookAsync(uow);
                             booksToAdd.Add(book);
                         });
                     }
@@ -427,32 +426,29 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             ScrollVertical = 0;
         }
 
-        private void UpdateSubcaption()
+        private async void UpdateSubcaption()
         {
-            _ = Task.Run(() =>
+            var count = 0;
+            if (!IsSelectedBooksViewer)
             {
-                var count = 0;
-                if (!IsSelectedBooksViewer)
-                {
-                    using var uow = App.UnitOfWorkFactory.Create();
-                    count = uow.BookRepository.Count(filter);
-                }
-                else
-                {
-                    count = selector.Count;
-                }
+                using var uow = await App.UnitOfWorkFactory.CreateAsync();
+                count = await uow.BookRepository.CountAsync(filter);
+            }
+            else
+            {
+                count = selector.Count;
+            }
 
-                SubCaption = $"{count} book";
-                if (count != 1)
-                {
-                    SubCaption += "s";
-                }
+            SubCaption = $"{count} book";
+            if (count != 1)
+            {
+                SubCaption += "s";
+            }
 
-                if (Filter.Read != null)
-                {
-                    SubCaption += ", filter is applied";
-                }
-            });
+            if (Filter.Read != null)
+            {
+                SubCaption += ", filter is applied";
+            }
         }
     }
 }

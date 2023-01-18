@@ -64,24 +64,21 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
 
         private async Task<ProgressDialogController> ContinueDeletion(ProgressDialogController controlProgress = null)
         {
-            if (controlProgress == null)
-            {
-                controlProgress =
+            controlProgress ??=
                 await DialogCoordinator.Instance.ShowProgressAsync(Application.Current.MainWindow.DataContext, "", "");
-            }
 
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
                 var counter = 0;
                 controlProgress.Minimum = 1;
                 controlProgress.Maximum = booksToExport.Count;
                 controlProgress.SetTitle("Deleting books");
-                using var uow = App.UnitOfWorkFactory.Create();
+                using var uow = await App.UnitOfWorkFactory.CreateAsync();
                 foreach (var book in booksToExport)
                 {
                     controlProgress.SetMessage("Deleting book: " + book.Title);
                     controlProgress.SetProgress(++counter);
-                    uow.BookRepository.Remove(book);
+                    await uow.BookRepository.DeleteAsync(book);
                 }
                 uow.Commit();
             });
@@ -145,13 +142,13 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
             using (var uow = await App.UnitOfWorkFactory.CreateAsync())
             {
                 var exporter = new Exporter(uow);
-                await Task.Run(() => exporter.ExportBooks(booksToExport,
+                await exporter.ExportBooks(booksToExport,
                     new ExporterOptions
                     {
                         DestinationDirectory = DestinationPath,
                         GroupByAuthor = IsGroupByAuthorChecked,
                         GroupBySeries = IsGroupBySeriesChecked
-                    }, SetProgress));
+                    }, SetProgress);
             }
 
             await ContinueDeletion(controlProgress);
