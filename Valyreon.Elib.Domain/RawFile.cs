@@ -4,10 +4,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Valyreon.Elib.Domain
 {
     [Table("RawFiles")]
-    public class RawFile
+    public class RawFile : ObservableEntity
     {
-        public int Id { get; set; }
-
-        [Required] public byte[] RawContent { get; set; }
+        [Required]
+        [Column]
+        public byte[] RawContent { get; set; }
     }
 }

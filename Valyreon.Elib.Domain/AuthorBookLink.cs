@@ -1,7 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain
 {
+    [Table("AuthorBooks")]
     public class AuthorBookLink
     {
         public int Id { get; set; }

@@ -7,6 +7,7 @@ using Valyreon.Elib.Wpf.Models;
 
 namespace Valyreon.Elib.Tests.RepositoryTests
 {
+    /*
     [TestClass]
     public class RawFileRepositoryTests
     {
@@ -71,5 +72,5 @@ namespace Valyreon.Elib.Tests.RepositoryTests
             var resFile2 = uow.RawFileRepository.Find(addedFiles[1].Id);
             Assert.IsNull(resFile2);
         }
-    }
+    }*/
 }

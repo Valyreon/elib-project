@@ -16,7 +16,7 @@ namespace Valyreon.Elib.DataLayer
         public bool SortByImportOrder { get; set; } = true;
         public bool SortBySeries { get; set; }
         public bool SortByAuthor { get; set; }
-        public bool Ascending { get; set; } = false;
+        public bool Ascending { get; set; }
 
         public SearchParameters SearchParameters { get; set; }
 

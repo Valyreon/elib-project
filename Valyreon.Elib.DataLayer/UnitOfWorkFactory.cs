@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Valyreon.Elib.DataLayer.Interfaces;
@@ -9,6 +11,7 @@ namespace Valyreon.Elib.DataLayer
         private readonly string connection;
 
         private static readonly SemaphoreSlim semaphore = new(1, 1);
+        private static string holderCallstack;
 
         public UnitOfWorkFactory(string connection)
         {
@@ -24,6 +27,7 @@ namespace Valyreon.Elib.DataLayer
         public IUnitOfWork Create()
         {
             semaphore.Wait();
+            holderCallstack = Environment.StackTrace;
             return new UnitOfWork(connection);
         }
 

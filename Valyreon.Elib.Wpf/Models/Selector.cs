@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Valyreon.Elib.DataLayer.Extensions;
+using System.Threading.Tasks;
 using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Domain;
 
@@ -19,13 +19,14 @@ namespace Valyreon.Elib.Wpf.Models
 
         public IEnumerable<int> SelectedIds => selectedBookIds.AsEnumerable();
 
-        public IList<Book> GetSelectedBooks(IUnitOfWork uow)
+        public async Task<IList<Book>> GetSelectedBooks(IUnitOfWork uow)
         {
             // TODO: replace this with filter later
             var result = new List<Book>();
             foreach (var id in selectedBookIds)
             {
-                result.Add(uow.BookRepository.Find(id).LoadMembers(uow));
+                var book = await uow.BookRepository.FindAsync(id);
+                result.Add(book);
             }
             return result;
         }

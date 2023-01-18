@@ -12,6 +12,7 @@ namespace Valyreon.Elib.Domain
         public ICollection<Book> Books { get; set; }
 
         [Required]
+        [Column]
         [StringLength(50)]
         public string Tag
         {

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
@@ -11,107 +10,13 @@ using Valyreon.Elib.Domain;
 
 namespace Valyreon.Elib.DataLayer.Repositories
 {
-    public class BookRepository : RepositoryBase, IBookRepository
+    public class BookRepository : RepositoryBase<Book>, IBookRepository
     {
-        private static readonly IDictionary<int, Book> cache = new Dictionary<int, Book>();
-
         public BookRepository(IDbTransaction transaction) : base(transaction)
         {
         }
 
-        public void Add(Book entity)
-        {
-            entity.Id = Connection.ExecuteScalar<int>(
-                @"INSERT INTO Books(Title, SeriesId, IsRead, CoverId, WhenRead, NumberInSeries, IsFavorite, FileId)
-                VALUES (@Title, @SeriesId, @IsRead, @CoverId, @WhenRead, @NumberInSeries, @IsFavorite, @FileId); SELECT last_insert_rowid() ",
-                entity,
-                Transaction
-            );
-
-            cache.Add(entity.Id, entity);
-        }
-
-        public IEnumerable<Book> All()
-        {
-            var allList = Connection.Query<Book>("SELECT * FROM Books", Transaction);
-
-            foreach (var book in allList.Where(x => !cache.ContainsKey(x.Id)))
-            {
-                cache.Add(book.Id, book);
-            }
-
-            return cache.Values.ToList();
-        }
-
-        public Book Find(int id)
-        {
-            if (cache.TryGetValue(id, out var bookFromCache))
-            {
-                return bookFromCache;
-            }
-
-            var res = Connection.QueryFirst<Book>("SELECT * FROM Books WHERE Id = @BookId LIMIT 1",
-                new { BookId = id },
-                Transaction);
-
-            if (res != null)
-            {
-                cache.Add(res.Id, res);
-            }
-
-            return res;
-        }
-
-        public IEnumerable<Book> FindByCollectionId(int collectionId)
-        {
-            var dbResult = Connection.Query<Book>(
-                "SELECT * FROM CollectionId_Book_View WHERE CollectionId = @CollectionId",
-                new { CollectionId = collectionId },
-                Transaction);
-
-            return cache.FilterAndUpdateCache(dbResult);
-        }
-
-        public IEnumerable<Book> FindBySeriesId(int seriesId)
-        {
-            var dbResult = Connection.Query<Book>("SELECT * FROM Books WHERE SeriesId = @SeriesId", new { SeriesId = seriesId }, Transaction);
-            return cache.FilterAndUpdateCache(dbResult);
-        }
-
-        public IEnumerable<Book> FindByAuthorId(int authorId)
-        {
-            var dbResult = Connection.Query<Book>("SELECT * FROM AuthorId_Book_View WHERE AuthorId = @AuthorId", new { AuthorId = authorId }, Transaction);
-            return cache.FilterAndUpdateCache(dbResult);
-        }
-
-        public void Remove(int id)
-        {
-            Connection.Execute("DELETE FROM Books WHERE Id = @RemoveId", new { RemoveId = id });
-            cache.Remove(id);
-        }
-
-        public void Remove(Book entity)
-        {
-            Remove(entity.Id);
-            entity.Id = 0;
-        }
-
-        public void Update(Book entity)
-        {
-            Connection.Execute(@"UPDATE Books
-                                    SET
-                                        Title = @Title,
-                                        IsRead = @IsRead,
-                                        IsFavorite = @IsFavorite,
-                                        SeriesId = @SeriesId,
-                                        CoverId = @CoverId,
-                                        WhenRead = @WhenRead,
-                                        NumberInSeries = @NumberInSeries,
-                                        FileId = @FileId
-                                    WHERE Id = @Id", entity, Transaction);
-        }
-
-        private Tuple<string, DynamicParameters> CreateQueryFromFilter(FilterParameters filter, int? offset, int? pageSize)
+        private static Tuple<string, DynamicParameters> CreateQueryFromFilter(FilterParameters filter, int? offset, int? pageSize)
         {
             if (filter == null)
             {
@@ -164,7 +69,7 @@ namespace Valyreon.Elib.DataLayer.Repositories
                     queryBuilder.Append(conditionsAdded ? " AND " : "").Append("SeriesId = @SeriesId");
                 }
 
-                queryBuilder.Append(")");
+                queryBuilder.Append(')');
             }
 
             if (filter.SearchParameters != null && !string.IsNullOrWhiteSpace(filter.SearchParameters.Token))
@@ -188,7 +93,7 @@ namespace Valyreon.Elib.DataLayer.Repositories
                 {
                     queryBuilder.Append(searchAdded ? " OR " : "").Append("SeriesName LIKE @Token");
                 }
-                queryBuilder.Append(")");
+                queryBuilder.Append(')');
             }
 
             queryBuilder.Append(" GROUP BY Id");
@@ -226,50 +131,6 @@ namespace Valyreon.Elib.DataLayer.Repositories
             return new Tuple<string, DynamicParameters>(queryBuilder.ToString(), parameters);
         }
 
-        public IEnumerable<Book> FindPageByFilter(FilterParameters filter, int offset = 0, int pageSize = 25)
-        {
-            var queryTuple = CreateQueryFromFilter(filter, offset, pageSize);
-            var dbResult = Connection.Query<Book>(queryTuple.Item1, queryTuple.Item2, Transaction);
-            return cache.FilterAndUpdateCache(dbResult);
-        }
-
-        private Tuple<string, DynamicParameters> CreateIdQuery(string initial, IEnumerable<int> bookIds)
-        {
-            var parameters = new DynamicParameters();
-
-            var query = new StringBuilder(initial);
-            var counter = 0;
-            foreach (var id in bookIds)
-            {
-                var parameterName = $"@Id{counter}";
-                if (counter == 0)
-                {
-                    query.Append("Id = ").Append(parameterName);
-                }
-                else
-                {
-                    query.Append(" OR Id = ").Append(parameterName);
-                }
-
-                counter++;
-                parameters.Add(parameterName, id);
-            }
-
-            return new Tuple<string, DynamicParameters>(query.ToString(), parameters);
-        }
-
-        public IEnumerable<Book> GetBooks(IEnumerable<int> Ids)
-        {
-            var x = CreateIdQuery("SELECT * FROM Books WHERE ", Ids);
-
-            return Connection.Query<Book>(x.Item1, x.Item2, Transaction);
-        }
-
-        public void ClearCache()
-        {
-            cache.Clear();
-        }
-
         public int Count(FilterParameters filter)
         {
             var queryTuple = CreateQueryFromFilter(filter, null, null);
@@ -279,88 +140,35 @@ namespace Valyreon.Elib.DataLayer.Repositories
             return Connection.QueryFirst<int>(query, queryTuple.Item2, Transaction);
         }
 
-        public IEnumerable<Book> GetCachedObjects()
-        {
-            return cache.Values.ToList();
-        }
-
-        public async Task AddAsync(Book entity)
-        {
-            entity.Id = await Connection.ExecuteScalarAsync<int>(
-                @"INSERT INTO Books(Title, SeriesId, IsRead, CoverId, WhenRead, NumberInSeries, IsFavorite, FileId)
-                VALUES (@Title, @SeriesId, @IsRead, @CoverId, @WhenRead, @NumberInSeries, @IsFavorite, @FileId); SELECT last_insert_rowid() ",
-                entity,
-                Transaction
-            );
-
-            cache.Add(entity.Id, entity);
-        }
-
-        public async Task<IEnumerable<Book>> AllAsync()
-        {
-            var allList = await Connection.QueryAsync<Book>("SELECT * FROM Books", Transaction);
-
-            foreach (var book in allList.Where(x => !cache.ContainsKey(x.Id)))
-            {
-                cache.Add(book.Id, book);
-            }
-
-            return cache.Values.ToList();
-        }
-
-        public async Task<Book> FindAsync(int id)
-        {
-            if (cache.TryGetValue(id, out var bookFromCache))
-            {
-                return bookFromCache;
-            }
-
-            var res = await Connection.QueryFirstAsync<Book>("SELECT * FROM Books WHERE Id = @BookId LIMIT 1",
-                new { BookId = id },
-                Transaction);
-
-            if (res != null)
-            {
-                cache.Add(res.Id, res);
-            }
-
-            return res;
-        }
-
-        public async Task<IEnumerable<Book>> GetBooksAsync(IEnumerable<int> Ids)
-        {
-            var x = CreateIdQuery("SELECT * FROM Books WHERE ", Ids);
-
-            return await Connection.QueryAsync<Book>(x.Item1, x.Item2, Transaction);
-        }
-
         public async Task<IEnumerable<Book>> FindBySeriesIdAsync(int seriesId)
         {
-            var dbResult = await Connection.QueryAsync<Book>("SELECT * FROM Books WHERE SeriesId = @SeriesId", new { SeriesId = seriesId }, Transaction);
-            return cache.FilterAndUpdateCache(dbResult);
+            var result = await Connection.QueryAsync<Book>("SELECT * FROM Books WHERE SeriesId = @SeriesId", new { SeriesId = seriesId }, Transaction);
+
+            return Cache.FilterAndUpdateCache(result);
         }
 
         public async Task<IEnumerable<Book>> FindByCollectionIdAsync(int collectionId)
         {
-            var dbResult = await Connection.QueryAsync<Book>(
+            var result = await Connection.QueryAsync<Book>(
                 "SELECT * FROM CollectionId_Book_View WHERE CollectionId = @CollectionId",
                 new { CollectionId = collectionId },
                 Transaction);
 
-            return cache.FilterAndUpdateCache(dbResult);
+            return Cache.FilterAndUpdateCache(result);
         }
 
         public async Task<IEnumerable<Book>> FindByAuthorIdAsync(int authorId)
         {
-            var dbResult = await Connection.QueryAsync<Book>("SELECT * FROM AuthorId_Book_View WHERE AuthorId = @AuthorId", new { AuthorId = authorId }, Transaction);
-            return cache.FilterAndUpdateCache(dbResult);
+            var result = await Connection.QueryAsync<Book>("SELECT * FROM AuthorId_Book_View WHERE AuthorId = @AuthorId", new { AuthorId = authorId }, Transaction);
+            return Cache.FilterAndUpdateCache(result);
         }
 
         public async Task<IEnumerable<Book>> FindPageByFilterAsync(FilterParameters filter, int offset, int pageSize)
         {
-            var queryTuple = await Task.Run(() => CreateQueryFromFilter(filter, offset, pageSize));
-            var dbResult = await Connection.QueryAsync<Book>(queryTuple.Item1, queryTuple.Item2, Transaction);
-            return cache.FilterAndUpdateCache(dbResult);
+            var queryTuple = CreateQueryFromFilter(filter, offset, pageSize);
+            var result = await Connection.QueryAsync<Book>(queryTuple.Item1, queryTuple.Item2, Transaction);
+
+            return Cache.FilterAndUpdateCache(result);
         }
 
         public async Task<int> CountAsync(FilterParameters filter)
@@ -370,33 +178,6 @@ namespace Valyreon.Elib.DataLayer.Repositories
             var query = $"SELECT COUNT(*) FROM ({queryTuple.Item1});";
 
             return await Connection.QueryFirstAsync<int>(query, queryTuple.Item2, Transaction);
-        }
-
-        public async Task RemoveAsync(int id)
-        {
-            await Connection.ExecuteAsync("DELETE FROM Books WHERE Id = @RemoveId", new { RemoveId = id });
-            cache.Remove(id);
-        }
-
-        public async Task RemoveAsync(Book entity)
-        {
-            await RemoveAsync(entity.Id);
-            entity.Id = 0;
-        }
-
-        public async Task UpdateAsync(Book entity)
-        {
-            await Connection.ExecuteAsync(@"UPDATE Books
-                                    SET
-                                        Title = @Title,
-                                        IsRead = @IsRead,
-                                        IsFavorite = @IsFavorite,
-                                        SeriesId = @SeriesId,
-                                        CoverId = @CoverId,
-                                        WhenRead = @WhenRead,
-                                        NumberInSeries = @NumberInSeries,
-                                        FileId = @FileId
-                                    WHERE Id = @Id", entity, Transaction);
         }
     }
 }

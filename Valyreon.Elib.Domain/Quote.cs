@@ -11,15 +11,18 @@ namespace Valyreon.Elib.Domain
 
         [ForeignKey("BookId")] public Book Book { get; set; }
 
+        [Column]
         public int? BookId { get; set; }
 
         [Required]
+        [Column]
         public string Text
         {
             get => text;
             set => Set(() => Text, ref text, value);
         }
 
+        [Column]
         public string Note
         {
             get => note;

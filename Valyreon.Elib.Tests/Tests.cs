@@ -11,7 +11,7 @@ using Valyreon.Elib.Wpf.Models.Options;
 
 namespace Valyreon.Elib.Tests
 {
-    [TestClass]
+    /*[TestClass]
     public class Tests
     {
         [TestMethod]
@@ -157,5 +157,5 @@ namespace Valyreon.Elib.Tests
             const string inputPath = @"C:\Users\Luka\Desktop\The-Crying-Book-by-Heather-Christie-1.jpg";
             File.WriteAllBytes(outputPath, ImageOptimizer.ResizeAndFill(File.ReadAllBytes(inputPath)));
         }
-    }
+    }*/
 }

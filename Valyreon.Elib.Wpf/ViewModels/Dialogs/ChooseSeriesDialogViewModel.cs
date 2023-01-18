@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using Valyreon.Elib.Mvvm;using MahApps.Metro.Controls.Dialogs;
+using MahApps.Metro.Controls.Dialogs;
 using Valyreon.Elib.Domain;
+using Valyreon.Elib.Mvvm;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
 {
@@ -64,7 +64,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
 
             using (var uow = await App.UnitOfWorkFactory.CreateAsync())
             {
-                list = uow.SeriesRepository.All();
+                list = await uow.SeriesRepository.GetAllAsync();
             }
 
             foreach (var series in list)
@@ -81,11 +81,11 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
                     .DataContext));
         }
 
-        private async void Done()
+        private void Done()
         {
             if (SelectedItem != null)
             {
-                await Task.Run(() => onConfirm(SelectedItem));
+                onConfirm(SelectedItem);
             }
 
             Cancel();

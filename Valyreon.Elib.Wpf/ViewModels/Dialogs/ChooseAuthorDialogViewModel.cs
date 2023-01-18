@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using MahApps.Metro.Controls.Dialogs;
@@ -65,7 +64,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
             IEnumerable<Author> list = null;
             using (var uow = await App.UnitOfWorkFactory.CreateAsync())
             {
-                list = uow.AuthorRepository.All();
+                list = await uow.AuthorRepository.GetAllAsync();
             }
 
             foreach (var author in list.Where(a => !AddedAuthors.Contains(a.Id)))
@@ -82,9 +81,9 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
                     .DataContext));
         }
 
-        private async void Done()
+        private void Done()
         {
-            await Task.Run(() => onConfirm(SelectedItem));
+            onConfirm(SelectedItem);
             Cancel();
         }
     }

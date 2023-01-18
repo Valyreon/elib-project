@@ -220,19 +220,19 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
         private async void HandleAddNewAuthor()
         {
             var name = await DialogCoordinator.Instance.ShowInputAsync(this, "Adding New Author", "Author's name:");
-            if (!string.IsNullOrWhiteSpace(name))
+
+            if (string.IsNullOrWhiteSpace(name))
             {
-                name = name.Trim();
-
-                var newAuthor = new Author { Name = name };
-                AuthorsCollection.Add(newAuthor);
-
-                _ = Task.Run(() =>
-                {
-                    using var uow = App.UnitOfWorkFactory.Create();
-                    uow.AuthorRepository.Add(newAuthor);
-                });
+                return;
             }
+
+            name = name.Trim();
+
+            var newAuthor = new Author { Name = name };
+            AuthorsCollection.Add(newAuthor);
+
+            using var uow = await App.UnitOfWorkFactory.CreateAsync();
+            await uow.AuthorRepository.CreateAsync(newAuthor);
         }
 
         private void HandleRevert()
@@ -249,66 +249,69 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             Cover = new Cover() { Id = CurrentBook.Cover.Id, Image = CurrentBook.Cover.Image };
         }
 
-        private async void HandleSaveAndNext()
+        private void HandleSaveAndNext()
         {
             IsSaving = true;
             Validate();
-            if (!HasErrors)
+
+            if (HasErrors)
             {
-                var book = CurrentBook;
-                await Task.Run(() =>
-                {
-                    using var uow = App.UnitOfWorkFactory.Create();
-
-                    book.Series = Series;
-                    if (Series?.Id == 0)
-                    {
-                        uow.SeriesRepository.Add(book.Series);
-                        book.SeriesId = book.Series.Id;
-                    }
-                    else if (Series != null && Series.Id != 0)
-                    {
-                        uow.SeriesRepository.Update(book.Series);
-                        book.SeriesId = book.SeriesId;
-                    }
-
-                    if (IsSeriesSelected)
-                    {
-                        if (Regex.IsMatch(SeriesNumberFieldText, @"\d+(\.\d+)?"))
-                        {
-                            book.NumberInSeries = decimal.Parse(SeriesNumberFieldText);
-                        }
-                    }
-
-                    book.Title = TitleFieldText;
-                    book.IsFavorite = IsFavoriteCheck;
-                    book.IsRead = IsReadCheck;
-
-                    uow.RawFileRepository.Add(book.File.RawFile);
-                    book.File.RawFileId = book.File.RawFile.Id;
-                    uow.EFileRepository.Add(book.File);
-                    book.FileId = book.File.Id;
-
-                    if (Cover?.Id == 0 && Cover.Image != null)
-                    {
-                        book.Cover = Cover;
-                        uow.CoverRepository.Add(book.Cover);
-                        book.CoverId = book.Cover.Id;
-                    }
-
-                    uow.BookRepository.Add(book);
-
-                    foreach (var author in AuthorsCollection)
-                    {
-                        uow.AuthorRepository.AddAuthorForBook(author, book.Id);
-                    }
-
-                    uow.Commit();
-                });
-
-                NextBook();
+                IsSaving = false;
+                return;
             }
 
+            var book = CurrentBook;
+            _ = Task.Run(async () =>
+            {
+                using var uow = await App.UnitOfWorkFactory.CreateAsync();
+
+                book.Series = Series;
+                if (Series?.Id == 0)
+                {
+                    await uow.SeriesRepository.CreateAsync(book.Series);
+                    book.SeriesId = book.Series.Id;
+                }
+                else if (Series != null && Series.Id != 0)
+                {
+                    await uow.SeriesRepository.UpdateAsync(book.Series);
+                    book.SeriesId = book.SeriesId;
+                }
+
+                if (IsSeriesSelected)
+                {
+                    if (Regex.IsMatch(SeriesNumberFieldText, @"\d+(\.\d+)?"))
+                    {
+                        book.NumberInSeries = decimal.Parse(SeriesNumberFieldText);
+                    }
+                }
+
+                book.Title = TitleFieldText;
+                book.IsFavorite = IsFavoriteCheck;
+                book.IsRead = IsReadCheck;
+
+                await uow.RawFileRepository.CreateAsync(book.File.RawFile);
+                book.File.RawFileId = book.File.RawFile.Id;
+                await uow.EFileRepository.CreateAsync(book.File);
+                book.FileId = book.File.Id;
+
+                if (Cover?.Id == 0 && Cover.Image != null)
+                {
+                    book.Cover = Cover;
+                    await uow.CoverRepository.CreateAsync(book.Cover);
+                    book.CoverId = book.Cover.Id;
+                }
+
+                await uow.BookRepository.CreateAsync(book);
+
+                foreach (var author in AuthorsCollection)
+                {
+                    await uow.AuthorRepository.AddAuthorForBookAsync(author, book.Id);
+                }
+
+                uow.Commit();
+            });
+
+            NextBook();
             IsSaving = false;
         }
 
@@ -381,14 +384,10 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             {
                 name = name.Trim();
                 var newSeries = new BookSeries { Name = name };
-                var temp = Series;
                 Series = newSeries;
 
-                _ = Task.Run(() =>
-                {
-                    using var uow = App.UnitOfWorkFactory.Create();
-                    uow.SeriesRepository.Add(newSeries);
-                });
+                using var uow = await App.UnitOfWorkFactory.CreateAsync();
+                await uow.SeriesRepository.CreateAsync(newSeries);
             }
         }
 
@@ -406,7 +405,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
         private async void CheckDuplicate(Book book)
         {
             using var uow = await App.UnitOfWorkFactory.CreateAsync();
-            if (uow.EFileRepository.SignatureExists(book.File.Signature))
+            if (await uow.EFileRepository.SignatureExistsAsync(book.File.Signature))
             {
                 WarningText = "This book is a duplicate of a book already in the database.";
                 IsCurrentBookDuplicate = true;

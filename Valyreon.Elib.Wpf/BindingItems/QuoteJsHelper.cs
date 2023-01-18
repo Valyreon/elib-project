@@ -21,7 +21,7 @@ namespace Valyreon.Elib.Wpf.BindingItems
             };
 
             using var uow = await App.UnitOfWorkFactory.CreateAsync();
-            uow.QuoteRepository.Add(newQuote);
+            await uow.QuoteRepository.CreateAsync(newQuote);
             uow.Commit();
         }
     }

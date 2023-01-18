@@ -2,18 +2,22 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Valyreon.Elib.Domain;
 
-namespace Valyreon.Elib.DataLayer.Interfaces
+namespace Valyreon.Elib.DataLayer.Interfaces;
+
+public interface IRepository<T> where T: ObservableEntity
 {
-    public interface IRepository<T> where T: ObservableEntity
-    {
-        Task<T> Create(T entity);
-        Task Create(IEnumerable<T> entities);
-        Task<T> Get(int id);
-        Task<List<T>> Get(IEnumerable<int> ids, FilterParameters parameters = null);
-        Task<List<T>> GetAll(FilterParameters parameters = null);
-        Task<T> Update(T entity);
-        Task Update(IEnumerable<T> entities);
-        Task Delete(T entity);
-        Task Delete(IEnumerable<T> entities);
-    }
+    string Table { get; }
+    IEnumerable<string> ColumnNames { get; }
+
+    Task CreateAsync(T entity);
+    Task CreateAsync(IEnumerable<T> entities);
+    Task<T> FindAsync(int id);
+    Task<IEnumerable<T>> FindAsync(IEnumerable<int> ids, QueryParameters parameters = null);
+    Task<IEnumerable<T>> GetAllAsync(QueryParameters parameters = null);
+    Task UpdateAsync(T entity);
+    Task UpdateAsync(IEnumerable<T> entities);
+    Task DeleteAsync(T entity);
+    Task DeleteAsync(int id);
+    Task DeleteAsync(IEnumerable<T> entities);
+    Task DeleteAsync(IEnumerable<int> ids);
 }

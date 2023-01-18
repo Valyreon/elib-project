@@ -14,15 +14,19 @@ namespace Valyreon.Elib.Domain
         private bool isMarked;
         private decimal? numberInSeries;
         private Cover cover;
+        private ObservableCollection<Author> authors;
+        private BookSeries series;
 
         [Required]
         public EFile File { get; set; }
 
+        [Column]
+        [ForeignKey("File")]
         public int FileId { get; set; }
+        [Column]
         public int? CoverId { get; set; }
 
-        private BookSeries series;
-
+        [ForeignKey("SeriesId")]
         public BookSeries Series
         {
             get => series;
@@ -34,6 +38,7 @@ namespace Valyreon.Elib.Domain
             }
         }
 
+        [Column]
         public int? SeriesId { get; set; }
 
         public ObservableCollection<UserCollection> collections;
@@ -50,7 +55,6 @@ namespace Valyreon.Elib.Domain
 
         public ObservableCollection<Quote> Quotes { get; set; }
 
-        public ObservableCollection<Author> authors;
 
         public ObservableCollection<Author> Authors
         {
@@ -62,40 +66,46 @@ namespace Valyreon.Elib.Domain
                 RaisePropertyChanged(() => AuthorsInfo);
             }
         }
-
+        [Column]
         public int? WhenRead { get; set; }
 
         [Required]
+        [Column]
         public string Title
         {
             get => title;
             set => Set(() => Title, ref title, value);
         }
 
+        [Column]
         public bool IsFavorite
         {
             get => isFavorite;
             set => Set(() => IsFavorite, ref isFavorite, value);
         }
 
+        [Column]
         public bool IsRead
         {
             get => isRead;
             set => Set(() => IsRead, ref isRead, value);
         }
 
+        [NotMapped]
         public bool IsMarked
         {
             get => isMarked;
             set => Set(() => IsMarked, ref isMarked, value);
         }
 
+        [Column]
         public decimal? NumberInSeries
         {
             get => numberInSeries;
             set => Set(() => NumberInSeries, ref numberInSeries, value);
         }
 
+        [ForeignKey("CoverId")]
         public Cover Cover
         {
             get => cover;

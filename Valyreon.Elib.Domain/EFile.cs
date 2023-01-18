@@ -6,9 +6,14 @@ namespace Valyreon.Elib.Domain
     [Table("EBookFiles")]
     public class EFile : ObservableEntity
     {
-        [Required] [StringLength(10)] public string Format { get; set; }
+        [Column]
+        [Required]
+        [StringLength(10)]
+        public string Format { get; set; }
 
-        [Required] public RawFile RawFile { get; set; }
+        [Required]
+        [ForeignKey("RawFileId")]
+        public RawFile RawFile { get; set; }
 
         public int RawFileId { get; set; }
 
