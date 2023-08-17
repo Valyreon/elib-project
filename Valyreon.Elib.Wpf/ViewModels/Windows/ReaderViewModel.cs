@@ -57,7 +57,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
                     rawFile = uow.RawFileRepository.Find(Book.File.RawFileId);
                 }
 
-                var parser = EbookParserFactory.Create(Book.File.Format, rawFile.RawContent);
+                var parser = EbookParserFactory.Create(Book.Format, rawFile.RawContent);
                 var html = new StringBuilder("<html>" + parser.GenerateHtml());
                 if (Book.PercentageRead != 0)
                 {

@@ -370,6 +370,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                             var pBook = EbookParserFactory.Create(dlg.FileNames[i]).Parse();
                             using var uow = await App.UnitOfWorkFactory.CreateAsync();
                             var book = await pBook.ToBookAsync(uow);
+                            book.Path = dlg.FileNames[i];
                             booksToAdd.Add(book);
                         });
                     }
@@ -379,13 +380,10 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                         booksToAdd.Add(new Book
                         {
                             Collections = new ObservableCollection<UserCollection>(),
-                            File = new EFile
-                            {
-                                Format = Path.GetExtension(dlg.FileNames[i]),
-                                Signature = Signer.ComputeHash(content),
-                                RawFile = new RawFile { RawContent = content }
-                            },
-                            Authors = new ObservableCollection<Author>()
+                            Format = Path.GetExtension(dlg.FileNames[i]),
+                            Signature = Signer.ComputeHash(content),
+                            Authors = new ObservableCollection<Author>(),
+                            Path = dlg.FileNames[i]
                         });
                     }
                 }

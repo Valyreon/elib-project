@@ -142,7 +142,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
             using (var uow = await App.UnitOfWorkFactory.CreateAsync())
             {
                 var exporter = new Exporter(uow);
-                await exporter.ExportBooks(booksToExport,
+                exporter.ExportBooks(booksToExport,
                     new ExporterOptions
                     {
                         DestinationDirectory = DestinationPath,

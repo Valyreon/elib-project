@@ -12,6 +12,7 @@ using Valyreon.Elib.Wpf.Messages;
 using Valyreon.Elib.Wpf.Models;
 using Valyreon.Elib.Wpf.ViewModels.Windows;
 using Valyreon.Elib.Wpf.Views.Windows;
+using System.IO;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 {
@@ -177,16 +178,16 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
         public ICommand ExportButtonCommand => new RelayCommand(HandleExport);
 
-        private async void HandleExport()
+        private void HandleExport()
         {
             var dlg = new Microsoft.Win32.SaveFileDialog
             {
                 FileName = Exporter.GenerateName(Book), // Default file name
-                DefaultExt = Book.File.Format, // Default file extension
+                DefaultExt = Book.Format, // Default file extension
                 CheckPathExists = true,
                 Title = "Export book file",
                 OverwritePrompt = true,
-                Filter = $"Book file (*{Book.File.Format})|*{Book.File.Format}"
+                Filter = $"Book file (*{Book.Format})|*{Book.Format}"
             };
 
             var result = dlg.ShowDialog();
@@ -196,13 +197,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                 if (result == true)
                 {
                     var filePath = dlg.FileName;
-                    RawFile fileToExport = null;
-                    using (var uow = await App.UnitOfWorkFactory.CreateAsync())
-                    {
-                        fileToExport = await uow.RawFileRepository.FindAsync(Book.File.RawFileId);
-                    }
-
-                    Exporter.Export(fileToExport, filePath);
+                    File.Copy(Book.Path, dlg.FileName);
                 }
             }
             catch (Exception)
@@ -213,15 +208,9 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
         public ICommand ShowFileInfoCommand => new RelayCommand(HandleShowFileInfo);
 
-        private async void HandleShowFileInfo()
+        private void HandleShowFileInfo()
         {
-            RawFile rawFile = null;
-            using (var uow = await App.UnitOfWorkFactory.CreateAsync())
-            {
-                rawFile = await uow.RawFileRepository.FindAsync(Book.File.RawFileId);
-            }
-
-            var x = EbookParserFactory.Create(Book.File.Format, rawFile.RawContent).Parse();
+            var x = EbookParserFactory.Create(Book.Format, File.ReadAllBytes(Book.Path)).Parse();
 
             var builder = new StringBuilder("");
             builder.Append("ISBN: ").AppendLine(x.Isbn);

@@ -22,7 +22,7 @@ namespace Valyreon.Elib.Wpf.Models
             var cropRect = new Rectangle(2, 2, image.Width - 4, image.Height - 4);
             image.Mutate(x => x.Crop(cropRect).Resize(resizeOptions));
 
-            if (image.Size() == targetSize)
+            if (image.Size == targetSize)
             {
                 using var outStream = new MemoryStream();
                 image.Save(outStream, new PngEncoder());

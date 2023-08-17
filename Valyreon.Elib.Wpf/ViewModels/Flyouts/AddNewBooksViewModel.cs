@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
@@ -289,11 +290,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                 book.IsFavorite = IsFavoriteCheck;
                 book.IsRead = IsReadCheck;
 
-                await uow.RawFileRepository.CreateAsync(book.File.RawFile);
-                book.File.RawFileId = book.File.RawFile.Id;
-                await uow.EFileRepository.CreateAsync(book.File);
-                book.FileId = book.File.Id;
-
                 if (Cover?.Id == 0 && Cover.Image != null)
                 {
                     book.Cover = Cover;
@@ -405,7 +401,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
         private async void CheckDuplicate(Book book)
         {
             using var uow = await App.UnitOfWorkFactory.CreateAsync();
-            if (await uow.EFileRepository.SignatureExistsAsync(book.File.Signature))
+            if (await uow.BookRepository.SignatureExistsAsync(book.Signature))
             {
                 WarningText = "This book is a duplicate of a book already in the database.";
                 IsCurrentBookDuplicate = true;

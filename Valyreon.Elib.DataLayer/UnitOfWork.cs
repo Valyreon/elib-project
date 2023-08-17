@@ -16,8 +16,6 @@ namespace Valyreon.Elib.DataLayer
         private IAuthorRepository authorRepository;
         private ICollectionRepository collectionRepository;
         private ISeriesRepository seriesRepository;
-        private IEFileRepository eFileRepository;
-        private IRawFileRepository rawFileRepository;
         private ICoverRepository coverRepository;
         private IQuoteRepository quoteRepository;
 
@@ -41,10 +39,6 @@ namespace Valyreon.Elib.DataLayer
         public ICollectionRepository CollectionRepository => collectionRepository ??= new CollectionRepository(transaction);
 
         public IAuthorRepository AuthorRepository => authorRepository ??= new AuthorRepository(transaction);
-
-        public IEFileRepository EFileRepository => eFileRepository ??= new EFileRepository(transaction);
-
-        public IRawFileRepository RawFileRepository => rawFileRepository ??= new RawFileRepository(transaction);
 
         public ICoverRepository CoverRepository => coverRepository ??= new CoverRepository(transaction);
 
@@ -75,8 +69,6 @@ namespace Valyreon.Elib.DataLayer
             authorRepository = null;
             collectionRepository = null;
             seriesRepository = null;
-            eFileRepository = null;
-            rawFileRepository = null;
             coverRepository = null;
             quoteRepository = null;
         }

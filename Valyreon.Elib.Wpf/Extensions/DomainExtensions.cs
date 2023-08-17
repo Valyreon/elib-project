@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Threading.Tasks;
 using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Domain;
@@ -23,23 +24,21 @@ namespace Valyreon.Elib.Wpf.Extensions
                 },
                 Cover = parsedBook.Cover != null ? new Cover { Image = ImageOptimizer.ResizeAndFill(parsedBook.Cover) } : null,
                 Collections = new ObservableCollection<UserCollection>(),
-                File = new EFile
-                {
-                    Format = parsedBook.Format,
-                    Signature = Signer.ComputeHash(parsedBook.RawData),
-                    RawFile = new RawFile { RawContent = parsedBook.RawData }
-                }
+                Format = parsedBook.Format,
+                Signature = Signer.ComputeHash(parsedBook.RawData),
+                Path = string.Empty
             };
 
             return newBook;
         }
 
-        public static string GenerateHtml(this EFile book)
+        public static string GenerateHtml(this Book book)
         {
+            var rawContent = File.ReadAllBytes(book.Path);
             EbookParser parser = book.Format switch
             {
-                ".epub" => new EpubParser(book.RawFile.RawContent),
-                ".mobi" => new MobiParser(book.RawFile.RawContent),
+                ".epub" => new EpubParser(rawContent),
+                ".mobi" => new MobiParser(rawContent),
                 _ => throw new ArgumentException("The file has an unkown extension.")
             };
 

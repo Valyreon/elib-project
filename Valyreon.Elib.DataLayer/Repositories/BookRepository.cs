@@ -32,8 +32,7 @@ namespace Valyreon.Elib.DataLayer.Repositories
 
             var parameters = new DynamicParameters();
 
-            var queryBuilder = new StringBuilder(@$"SELECT MIN(Id) AS Id, Title, SeriesId, IsFavorite, IsRead, WhenRead, CoverId, NumberInSeries, 
-                                                            FileId, SeriesName, AuthorName, AuthorId, Tag, CollectionId FROM Full_Join {(conditionSet ? " WHERE (" : " ")}");
+            var queryBuilder = new StringBuilder(@$"SELECT MIN(Id) AS Id, * FROM Full_Join {(conditionSet ? " WHERE (" : " ")}");
 
             var conditionsAdded = false;
 
@@ -178,6 +177,12 @@ namespace Valyreon.Elib.DataLayer.Repositories
             var query = $"SELECT COUNT(*) FROM ({queryTuple.Item1});";
 
             return await Connection.QueryFirstAsync<int>(query, queryTuple.Item2, Transaction);
+        }
+
+        public async Task<bool> SignatureExistsAsync(string signature)
+        {
+            var count = await Connection.QueryFirstAsync<int>("SELECT COUNT(*) FROM Books WHERE Signature = @Signature", new { Signature = signature }, Transaction);
+            return count > 0;
         }
     }
 }
