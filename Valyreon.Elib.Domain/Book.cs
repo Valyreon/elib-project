@@ -35,7 +35,7 @@ namespace Valyreon.Elib.Domain
         [Column]
         public int? SeriesId { get; set; }
 
-        public ObservableCollection<UserCollection> collections;
+        public ObservableCollection<UserCollection> collections = new();
 
         public ObservableCollection<UserCollection> Collections
         {

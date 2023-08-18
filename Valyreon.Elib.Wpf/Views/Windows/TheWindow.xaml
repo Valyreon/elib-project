@@ -10,6 +10,7 @@
     xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     Title="ELib"
     MinWidth="1100"
     MinHeight="800"
@@ -32,7 +33,8 @@
     Top="0"
     WindowStartupLocation="CenterScreen"
     WindowTitleBrush="#222222"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    >
     <Window.InputBindings>
         <KeyBinding Key="Esc" Command="{Binding EscKeyCommand}" />
         <KeyBinding Key="Backspace" Command="{Binding EscKeyCommand}" />
@@ -61,6 +63,7 @@
         </MetroControls:FlyoutsControl>
     </MetroControls:MetroWindow.Flyouts>
 
+
     <Grid Background="#222222">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -68,6 +71,13 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
+        <Components:SymbolButton Icon="{x:Static iconPacks:PackIconFontAwesomeKind.CogSolid}"
+                                 IconSize="26" HorizontalAlignment="Right"
+                                 VerticalAlignment="Top"
+                                 Panel.ZIndex="10000"
+                                 Foreground="White"
+                                 Margin="12"
+                                 Command="{Binding OpenSettingsCommand}"></Components:SymbolButton>
         <Components:TabControlWithCache
             Grid.Row="0"
             Grid.Column="0"
@@ -81,12 +91,12 @@
                 <DataTemplate DataType="{x:Type ControlViewModels:BooksTabViewModel}">
                     <ControlViews:BooksTabControl />
                 </DataTemplate>
-                <!--<DataTemplate DataType="{x:Type ControlViewModels:QuotesTabViewModel}">
+                <DataTemplate DataType="{x:Type ControlViewModels:QuotesTabViewModel}">
                     <ControlViews:QuotesTabControl />
-                </DataTemplate>-->
-                <DataTemplate DataType="{x:Type ControlViewModels:SettingsTabViewModel}">
-                    <ControlViews:SettingsTabControl />
                 </DataTemplate>
+                <!--<DataTemplate DataType="{x:Type ControlViewModels:SettingsTabViewModel}">
+                    <ControlViews:SettingsTabControl />
+                </DataTemplate>-->
             </TabControl.Resources>
         </Components:TabControlWithCache>
     </Grid>

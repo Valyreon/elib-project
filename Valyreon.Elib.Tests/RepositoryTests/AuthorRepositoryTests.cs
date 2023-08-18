@@ -19,7 +19,7 @@ namespace Valyreon.Elib.Tests.RepositoryTests
         [TestInitialize]
         public async Task Initialize()
         {
-            var factory = new UnitOfWorkFactory(ApplicationSettings.GetInstance().DatabasePath);
+            var factory = new UnitOfWorkFactory(ApplicationData.DatabasePath);
             using var unitOfWork = factory.Create();
 
             var one = new Author { Name = "One Author" };
@@ -41,7 +41,7 @@ namespace Valyreon.Elib.Tests.RepositoryTests
         {
             foreach (var author in addedAuthors)
             {
-                var factory = new UnitOfWorkFactory(ApplicationSettings.GetInstance().DatabasePath);
+                var factory = new UnitOfWorkFactory(ApplicationData.DatabasePath);
                 using var unitOfWork = factory.Create();
                 await unitOfWork.AuthorRepository.DeleteAsync(author.Id);
                 unitOfWork.Commit();
@@ -51,7 +51,7 @@ namespace Valyreon.Elib.Tests.RepositoryTests
         [TestMethod]
         public async Task TestGetAll()
         {
-            var factory = new UnitOfWorkFactory(ApplicationSettings.GetInstance().DatabasePath);
+            var factory = new UnitOfWorkFactory(ApplicationData.DatabasePath);
             using var unitOfWork = factory.Create();
             var authors = await unitOfWork.AuthorRepository.GetAllAsync();
 
@@ -65,7 +65,7 @@ namespace Valyreon.Elib.Tests.RepositoryTests
         [TestMethod]
         public async Task TestRemoveAndFind()
         {
-            var factory = new UnitOfWorkFactory(ApplicationSettings.GetInstance().DatabasePath);
+            var factory = new UnitOfWorkFactory(ApplicationData.DatabasePath);
             using (var unitOfWork = factory.Create())
             {
                 var found = await unitOfWork.AuthorRepository.FindAsync(addedAuthors[0].Id);
@@ -88,7 +88,7 @@ namespace Valyreon.Elib.Tests.RepositoryTests
         [TestMethod]
         public async Task TestUpdate()
         {
-            var factory = new UnitOfWorkFactory(ApplicationSettings.GetInstance().DatabasePath);
+            var factory = new UnitOfWorkFactory(ApplicationData.DatabasePath);
             using (var unitOfWork = factory.Create())
             {
                 addedAuthors[0].Name = "Updated";
@@ -106,11 +106,10 @@ namespace Valyreon.Elib.Tests.RepositoryTests
         [TestMethod]
         public async Task TestAddAuthorForBook()
         {
-            var factory = new UnitOfWorkFactory(ApplicationSettings.GetInstance().DatabasePath);
+            var factory = new UnitOfWorkFactory(ApplicationData.DatabasePath);
             var toAdd = new Book
             {
                 Title = "Test Book Title",
-                FileId = 868
             };
 
             using (var unitOfWork = factory.Create())

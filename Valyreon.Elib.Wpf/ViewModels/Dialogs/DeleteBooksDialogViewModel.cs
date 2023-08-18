@@ -28,10 +28,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
         {
             this.booksToExport = booksToExport;
             this.dialog = dialog;
-            IsExportPartVisible = ApplicationSettings.GetInstance().IsExportForcedBeforeDelete;
         }
-
-        public bool IsExportPartVisible { get; set; }
 
         public ICommand CancelCommand => new RelayCommand(HandleCancel);
 

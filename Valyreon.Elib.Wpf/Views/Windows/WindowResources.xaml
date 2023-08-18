@@ -15,9 +15,7 @@
     <DataTemplate DataType="{x:Type ControlViewModels:QuotesTabViewModel}">
         <ControlViews:QuotesTabControl />
     </DataTemplate>
-    <DataTemplate DataType="{x:Type ControlViewModels:SettingsTabViewModel}">
-        <ControlViews:SettingsTabControl />
-    </DataTemplate>
+    
     <DataTemplate DataType="{x:Type ControlViewModels:BookViewerViewModel}">
         <ControlViews:BookViewerControl />
     </DataTemplate>
@@ -53,6 +51,9 @@
     </DataTemplate>
     <DataTemplate DataType="{x:Type DialogViewModels:DeleteBooksDialogViewModel}">
         <DialogViews:DeleteBooksDialog />
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type DialogViewModels:ApplicationSettingsDialogViewModel}">
+        <DialogViews:ApplicationSettingsDialog />
     </DataTemplate>
     <!--#endregion-->
 

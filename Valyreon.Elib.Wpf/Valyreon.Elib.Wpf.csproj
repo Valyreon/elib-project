@@ -49,4 +49,10 @@
     <Resource Include="icon.ico"></Resource>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Resources\empty_database.sqlite">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -11,7 +11,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using MahApps.Metro.Controls.Dialogs;
 using Valyreon.Elib.Domain;
+using Valyreon.Elib.EBookTools;
 using Valyreon.Elib.Mvvm;
+using Valyreon.Elib.Wpf.Extensions;
 using Valyreon.Elib.Wpf.Messages;
 using Valyreon.Elib.Wpf.Models;
 using Valyreon.Elib.Wpf.ValidationAttributes;
@@ -23,7 +25,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 {
     public class AddNewBooksViewModel : ViewModelWithValidation
     {
-        private readonly IList<Book> books;
+        private readonly IList<string> books;
 
         private string addAuthorFieldText;
 
@@ -55,7 +57,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
         private string warning;
 
-        public AddNewBooksViewModel(IEnumerable<Book> newBooks)
+        public AddNewBooksViewModel(IEnumerable<string> newBooks)
         {
             books = newBooks.ToList();
         }
@@ -210,9 +212,39 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             }
         }
 
-        private void HandleLoaded()
+        private async Task<Book> ParseBook(string path)
         {
-            CurrentBook = books[0];
+            Book result = null;
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    var pBook = EbookParserFactory.Create(path).Parse();
+                    using var uow = await App.UnitOfWorkFactory.CreateAsync();
+                    var book = await pBook.ToBookAsync(uow);
+                    book.Path = path;
+                    result = book;
+                });
+            }
+            catch (Exception)
+            {
+                var content = File.ReadAllBytes(path);
+                return new Book
+                {
+                    Collections = new ObservableCollection<UserCollection>(),
+                    Format = Path.GetExtension(path),
+                    Signature = Signer.ComputeHash(content),
+                    Authors = new ObservableCollection<Author>(),
+                    Path = path
+                };
+            }
+
+            return result;
+        }
+
+        private async void HandleLoaded()
+        {
+            CurrentBook = await ParseBook(books[0]);
             TitleText = $"Book 1 of {books.Count}";
             ProceedButtonText = books.Count == 1 ? "SAVE & FINISH" : "SAVE & NEXT";
             CheckDuplicate(CurrentBook);
@@ -333,11 +365,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             }
         }
 
-        private void NextBook()
+        private async void NextBook()
         {
             if (counter >= books.Count - 1)
             {
                 MessengerInstance.Send(new CloseFlyoutMessage());
+                MessengerInstance.Send(new RefreshCurrentViewMessage());
             }
             else
             {
@@ -348,7 +381,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                     ProceedButtonText = "SAVE & FINISH";
                 }
 
-                CurrentBook = books[++counter];
+                CurrentBook = await ParseBook(books[++counter]);
 
                 CheckDuplicate(CurrentBook);
             }

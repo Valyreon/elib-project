@@ -184,5 +184,11 @@ namespace Valyreon.Elib.DataLayer.Repositories
             var count = await Connection.QueryFirstAsync<int>("SELECT COUNT(*) FROM Books WHERE Signature = @Signature", new { Signature = signature }, Transaction);
             return count > 0;
         }
+
+        public async Task<bool> PathExistsAsync(string path)
+        {
+            var count = await Connection.QueryFirstAsync<int>("SELECT COUNT(*) FROM Books WHERE Path = @Path", new { Path = path }, Transaction);
+            return count > 0;
+        }
     }
 }

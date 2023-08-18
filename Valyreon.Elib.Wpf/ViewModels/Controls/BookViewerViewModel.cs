@@ -55,6 +55,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             this.selector = selector;
             ApplyFilterOptionsToFilter(filterOptions, filter);
             UpdateSubcaption();
+            MessengerInstance.Register<RefreshCurrentViewMessage>(this, _ => Refresh());
         }
 
         public ICommand BackCommand => new RelayCommand(Back);
@@ -79,26 +80,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         public ICommand ClearSelectedBooksCommand => new RelayCommand(HandleClearButton);
 
-        public ICommand DeleteSelectedBooksCommand => new RelayCommand(HandleDeleteButton);
-
         private async void HandleDeleteButton()
         {
-            if (ApplicationSettings.GetInstance().IsExportForcedBeforeDelete)
-            {
-                var choice = await DialogCoordinator.Instance.ShowMessageAsync(
-                                    System.Windows.Application.Current.MainWindow.DataContext,
-                                    "Confirm Export",
-                                    "Books will have to be exported before deleting for security. You can change this in the settings.\n" +
-                                    "Do you want to continue?",
-                                    MessageDialogStyle.AffirmativeAndNegative,
-                                    new MetroDialogSettings { AffirmativeButtonText = "Continue", DefaultButtonFocus = MessageDialogResult.Negative });
-
-                if (choice == MessageDialogResult.Negative)
-                {
-                    return;
-                }
-            }
-
             var dialog = new DeleteBooksDialog();
             IList<Book> selectedBooks = null;
             using (var uow = await App.UnitOfWorkFactory.CreateAsync())
@@ -350,46 +333,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             var result = dlg.ShowDialog();
             if (result == DialogResult.OK && dlg.FileNames.Length > 0)
             {
-                var booksToAdd = new List<Book>();
-                var controller =
-                    await DialogCoordinator.Instance.ShowProgressAsync(System.Windows.Application.Current.MainWindow.DataContext,
-                        "Please wait...", "");
-                controller.Maximum = dlg.FileNames.Length;
-                controller.Minimum = 1;
-                for (var i = 0; i < dlg.FileNames.Length; i++)
-                {
-                    await Task.Run(() =>
-                    {
-                        controller.SetMessage($"Parsing book: {i + 1}");
-                        controller.SetProgress(i + 1);
-                    });
-                    try
-                    {
-                        await Task.Run(async () =>
-                        {
-                            var pBook = EbookParserFactory.Create(dlg.FileNames[i]).Parse();
-                            using var uow = await App.UnitOfWorkFactory.CreateAsync();
-                            var book = await pBook.ToBookAsync(uow);
-                            book.Path = dlg.FileNames[i];
-                            booksToAdd.Add(book);
-                        });
-                    }
-                    catch (Exception)
-                    {
-                        var content = File.ReadAllBytes(dlg.FileNames[i]);
-                        booksToAdd.Add(new Book
-                        {
-                            Collections = new ObservableCollection<UserCollection>(),
-                            Format = Path.GetExtension(dlg.FileNames[i]),
-                            Signature = Signer.ComputeHash(content),
-                            Authors = new ObservableCollection<Author>(),
-                            Path = dlg.FileNames[i]
-                        });
-                    }
-                }
-
-                await controller.CloseAsync();
-                MessengerInstance.Send(new OpenAddBooksFormMessage(booksToAdd));
+                
+                MessengerInstance.Send(new OpenAddBooksFormMessage(dlg.FileNames));
             }
         }
 

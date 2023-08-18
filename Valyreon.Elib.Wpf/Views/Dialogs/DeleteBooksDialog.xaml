@@ -17,7 +17,7 @@
         </ResourceDictionary>
     </dialogs:BaseMetroDialog.Resources>
     <Grid>
-        <Grid Visibility="{Binding IsExportPartVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+        <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="50" />
@@ -88,54 +88,6 @@
                     Style="{StaticResource MahApps.Styles.Button.Dialogs.Accent}">
                     <TextBlock>
                         Export &amp; Delete
-                    </TextBlock>
-                </Button>
-                <Button
-                    Grid.Column="3"
-                    MinHeight="30"
-                    Command="{Binding CancelCommand}"
-                    Style="{StaticResource MahApps.Styles.Button.Dialogs}">
-                    Cancel
-                </Button>
-            </Grid>
-        </Grid>
-        <Grid Visibility="{Binding IsExportPartVisible, Converter={StaticResource BooleanToInverseVisibilityConverter}}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="60" />
-                <RowDefinition Height="30" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-
-            <TextBlock
-                Grid.Row="1"
-                Grid.Column="1"
-                FontSize="14"
-                FontWeight="Bold">
-                THIS ACTION IS PERMANENT AND THE BOOKS ARE NOT RECOVERABLE. DO YOU WANT TO CONTINUE?
-            </TextBlock>
-
-            <Grid Grid.Row="2" Grid.Column="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="150" />
-                    <ColumnDefinition Width="10" />
-                    <ColumnDefinition Width="150" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Button
-                    Grid.Column="1"
-                    MinHeight="30"
-                    Background="CornflowerBlue"
-                    Command="{Binding ContinueCommand}"
-                    Style="{StaticResource MahApps.Styles.Button.Dialogs.Accent}">
-                    <TextBlock>
-                        Continue
                     </TextBlock>
                 </Button>
                 <Button

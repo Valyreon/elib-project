@@ -7,7 +7,7 @@ using Valyreon.Elib.DataLayer.Repositories;
 
 namespace Valyreon.Elib.DataLayer
 {
-    public class UnitOfWork : IUnitOfWork
+    public class UnitOfWork : IUnitOfWork, IDisposable
     {
         private IDbConnection connection;
         private IDbTransaction transaction;

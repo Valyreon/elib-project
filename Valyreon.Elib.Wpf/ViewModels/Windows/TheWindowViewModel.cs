@@ -6,6 +6,17 @@ using Valyreon.Elib.Domain;
 using Valyreon.Elib.Wpf.Messages;
 using Valyreon.Elib.Wpf.ViewModels.Controls;
 using Valyreon.Elib.Wpf.ViewModels.Flyouts;
+using System;
+using Valyreon.Elib.Wpf.ViewModels.Dialogs;
+using Valyreon.Elib.Wpf.Views.Dialogs;
+using Valyreon.Elib.DataLayer;
+using Valyreon.Elib.Wpf.Services;
+using System.Threading.Tasks;
+using Valyreon.Elib.Wpf.Models;
+using System.Linq;
+using Valyreon.Elib.EBookTools;
+using System.IO;
+using Valyreon.Elib.Wpf.Extensions;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Windows
 {
@@ -27,12 +38,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
             });
             MessengerInstance.Register(this, (OpenAddBooksFormMessage m) => HandleAddBooksFlyout(m.BooksToAdd));
             MessengerInstance.Register(this, (EditBookMessage m) => HandleEditBookFlyout(m.Book));
+            MessengerInstance.Register(this, (ScanForNewBooksMessage m) => HandleScanForNewBooks());
 
             Tabs = new ObservableCollection<ITabViewModel>
             {
                 new BooksTabViewModel(),
-                //new QuotesTabViewModel(),
-                new SettingsTabViewModel()
+                new QuotesTabViewModel(),
             };
             SelectedTab = Tabs[0];
         }
@@ -44,6 +55,16 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
         });
 
         public ICommand EscKeyCommand => new RelayCommand(ProcessEscKey);
+        public ICommand OpenSettingsCommand => new RelayCommand(HandleOpenSettings);
+
+        private async void HandleOpenSettings()
+        {
+            var dialog = new ApplicationSettingsDialog
+            {
+                DataContext = new ApplicationSettingsDialogViewModel()
+            };
+            await DialogCoordinator.Instance.ShowMetroDialogAsync(this, dialog);
+        }
 
         public object FlyoutControl
         {
@@ -71,13 +92,27 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
             obj.CallOnResult(input);
         }
 
+        private async void HandleScanForNewBooks()
+        {
+            using var uow = await App.UnitOfWorkFactory.CreateAsync();
+            var importer = new ImportService(uow);
+            var newBookPaths = (await importer.ImportAsync()).ToList();
+
+            if(!newBookPaths.Any())
+            {
+                return;
+            }
+
+            MessengerInstance.Send(new OpenAddBooksFormMessage(newBookPaths));
+        }
+
         private void HandleEditBookFlyout(Book book)
         {
             FlyoutControl = new EditBookViewModel(book);
             IsBookDetailsFlyoutOpen = true;
         }
 
-        private void HandleAddBooksFlyout(IList<Book> booksToAdd)
+        private void HandleAddBooksFlyout(IList<string> booksToAdd)
         {
             FlyoutControl = new AddNewBooksViewModel(booksToAdd);
             IsBookDetailsFlyoutOpen = true;
