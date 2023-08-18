@@ -58,22 +58,22 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
             SourcePaths = new ObservableCollection<SourcePath>(properties.Sources);
             ScanAtStartup = properties.ScanAtStartup;
 
-            if(properties.Formats.Any(f => f.ToLowerInvariant() == "epub"))
+            if(properties.Formats.Any(f => f.ToLowerInvariant() == ".epub"))
             {
                 ScanEpub = true;
             }
 
-            if (properties.Formats.Any(f => f.ToLowerInvariant() == "mobi"))
+            if (properties.Formats.Any(f => f.ToLowerInvariant() == ".mobi"))
             {
                 ScanMobi = true;
             }
 
-            if (properties.Formats.Any(f => f.ToLowerInvariant() == "pdf"))
+            if (properties.Formats.Any(f => f.ToLowerInvariant() == ".pdf"))
             {
                 ScanPdf = true;
             }
 
-            if (properties.Formats.Any(f => f.ToLowerInvariant() == "azw"))
+            if (properties.Formats.Any(f => f.ToLowerInvariant() == ".azw"))
             {
                 ScanAzw = true;
             }
