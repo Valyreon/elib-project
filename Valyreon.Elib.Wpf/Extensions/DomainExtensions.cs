@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Threading.Tasks;
 using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Domain;
@@ -17,7 +18,7 @@ namespace Valyreon.Elib.Wpf.Extensions
                 Authors = new ObservableCollection<Author>(),
                 Cover = parsedBook.Cover != null ? new Cover { Image = ImageOptimizer.ResizeAndFill(parsedBook.Cover) } : null,
                 Collections = new ObservableCollection<UserCollection>(),
-                Format = parsedBook.Path,
+                Format = Path.GetExtension(parsedBook.Path),
                 Signature = Signer.ComputeHash(parsedBook.Path),
                 Path = parsedBook.Path
             };

@@ -11,6 +11,8 @@
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     Dialog:DialogParticipation.Register="{Binding}"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -35,7 +37,7 @@
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
-            <RowDefinition Height="1*" />
+            <RowDefinition Height="1*" MinHeight="80" />
             <RowDefinition Height="0" />
             <RowDefinition Height="7*" />
             <RowDefinition Height="0" />
@@ -44,35 +46,41 @@
         </Grid.RowDefinitions>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
                 <ColumnDefinition />
-                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition />
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
             </Grid.RowDefinitions>
             <TextBlock
                 Grid.Column="1"
                 HorizontalAlignment="Center"
                 FontSize="20"
                 Text="{Binding TitleText}" />
+            <StackPanel Grid.Row="1"
+                        Grid.Column="1"
+                        HorizontalAlignment="Center"
+                        Orientation="Horizontal">
+                <TextBlock Text="File path:" FontSize="16" Margin="0,0,5,0" FontWeight="Bold" Foreground="CornflowerBlue"></TextBlock>
+                <TextBlock Text="{Binding PathText}" FontSize="16" TextWrapping="Wrap"/>
+            </StackPanel>
             <TextBlock
-                Grid.Row="1"
+                Grid.Row="2"
                 Grid.Column="1"
                 HorizontalAlignment="Center"
                 FontSize="16"
                 Foreground="PaleVioletRed"
                 Text="{Binding WarningText}" />
         </Grid>
-        <Grid Grid.Row="3">
+        <Grid Grid.Row="3" Visibility="{Binding IsLoading, Converter={StaticResource BoolToInverseVisibilityConverter}}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="3*" />
                 <ColumnDefinition Width="210" />
                 <ColumnDefinition Width="40" />
                 <ColumnDefinition Width="4*" />
                 <ColumnDefinition Width="40" />
-                <ColumnDefinition Width="4*" />
+                <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="3*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
@@ -393,7 +401,7 @@
                 </Label>
             </Grid>
         </Grid>
-        <Grid Grid.Row="5">
+        <Grid Grid.Row="5" Visibility="{Binding IsLoading, Converter={StaticResource BoolToInverseVisibilityConverter}}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="150" />
@@ -439,5 +447,10 @@
                 CANCEL
             </Button>
         </Grid>
+        <MetroControls:ProgressRing
+            Grid.Row="3"
+            Foreground="CornflowerBlue"
+            IsActive="True"
+            Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"></MetroControls:ProgressRing>
     </Grid>
 </UserControl>

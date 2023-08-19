@@ -57,6 +57,10 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
         private string warning;
 
+        private string path;
+
+        private bool isLoading; 
+
         public AddNewBooksViewModel(IEnumerable<string> newBooks)
         {
             books = newBooks.ToList();
@@ -113,6 +117,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
         {
             get => isRead;
             set => Set(() => IsReadCheck, ref isRead, value);
+        }
+
+        public bool IsLoading
+        {
+            get => isLoading;
+            set => Set(() => IsLoading, ref isLoading, value);
         }
 
         public bool IsSaving
@@ -184,6 +194,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             set => Set(() => WarningText, ref warning, value);
         }
 
+        public string PathText
+        {
+            get => path;
+            set => Set(() => PathText, ref path, value);
+        }
+
         private Book CurrentBook
         {
             get => currentBook;
@@ -208,12 +224,15 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                     Cover = CurrentBook.Cover != null
                         ? new Cover() { Id = CurrentBook.Cover.Id, Image = CurrentBook.Cover.Image }
                         : null;
+
+                    PathText = currentBook.Path;
                 }
             }
         }
 
         private async Task<Book> ParseBook(string path)
         {
+            IsLoading = true;
             Book result = null;
             try
             {
@@ -238,6 +257,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                 };
             }
 
+            IsLoading = false;
             return result;
         }
 
@@ -380,7 +400,9 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                     ProceedButtonText = "SAVE & FINISH";
                 }
 
-                CurrentBook = await ParseBook(books[++counter]);
+                var nextBook = books[++counter];
+                PathText = nextBook;
+                CurrentBook = await ParseBook(nextBook);
 
                 CheckDuplicate(CurrentBook);
             }

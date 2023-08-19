@@ -213,6 +213,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             var x = EbookParserFactory.Create(Book.Path).Parse();
 
             var builder = new StringBuilder("");
+
+            builder.Append("File path: ").AppendLine(Book.Path);
             builder.Append("ISBN: ").AppendLine(x.Isbn);
             builder.Append("Publisher: ").AppendLine(x.Publisher);
 

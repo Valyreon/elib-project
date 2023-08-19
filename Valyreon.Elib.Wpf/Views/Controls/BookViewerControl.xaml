@@ -208,10 +208,11 @@
                 VirtualizingStackPanel.VirtualizationMode="Recycling">
                 <ItemsControl.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Menu item 1" />
-                        <MenuItem Header="Menu item 2" />
+                        <MenuItem Header="Export selected" />
+                        <MenuItem Header="Remove selected" />
                         <Separator />
-                        <MenuItem Header="Menu item 3" />
+                        <MenuItem Header="Select all" />
+                        <MenuItem Header="Unselect all" />
                     </ContextMenu>
                 </ItemsControl.ContextMenu>
                 <ItemsControl.ItemTemplate>

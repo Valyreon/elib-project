@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.Wpf.Models.Options;
@@ -24,8 +23,10 @@ namespace Valyreon.Elib.Wpf.Models
             var fileNameBuilder = new StringBuilder();
             // there can be more than one author
             var index = 1;
-            fileNameBuilder.Append(
-                book.Title).Append(book.SeriesId == null ? "" : $"({book.Series.Name} #{book.NumberInSeries})").Append(" by ").Append(book.Authors.ElementAt(0).Name);
+            fileNameBuilder.Append(book.Title)
+                           .Append(book.SeriesId == null ? string.Empty : $"({book.Series.Name} #{book.NumberInSeries})")
+                           .Append(" by ")
+                           .Append(book.Authors.ElementAt(0).Name);
             while (index < book.Authors.Count)
             {
                 fileNameBuilder.Append(index == book.Authors.Count - 1 ? " and" : ",");
