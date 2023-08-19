@@ -1,31 +1,21 @@
+using System.Collections.Generic;
+
 namespace Valyreon.Elib.EBookTools
 {
     public class ParsedBook
     {
-        public ParsedBook(string title, string author, string isbn, string publisher, byte[] cover, string format,
-            byte[] rawData)
-        {
-            Title = title;
-            Author = author;
-            Isbn = isbn;
-            Publisher = publisher;
-            Cover = cover;
-            Format = format;
-            RawData = rawData;
-        }
+        public List<string> Authors { get; set; }
 
-        public string Author { get; }
+        public byte[] Cover { get; set; }
 
-        public byte[] Cover { get; }
+        public string Path { get; set; }
 
-        public string Format { get; }
+        public string Isbn { get; set; }
 
-        public string Isbn { get; }
+        public string Publisher { get; set; }
 
-        public string Publisher { get; }
+        public string Title { get; set; }
 
-        public byte[] RawData { get; }
-
-        public string Title { get; }
+        public string Description { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
     x:Class="Valyreon.Elib.Wpf.Views.Flyouts.AddNewBooksControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -94,7 +94,7 @@
                     HorizontalAlignment="Left"
                     BorderBrush="LightGray"
                     BorderThickness="1">
-                    <Image Margin="1" Source="{Binding Cover.Image, Converter={StaticResource ImageConverter}, UpdateSourceTrigger=PropertyChanged}" />
+                    <Image Margin="1" Source="{Binding Cover, Converter={StaticResource ImageConverter}, UpdateSourceTrigger=PropertyChanged}" />
                 </Border>
                 <Grid Margin="0,6,0,0">
                     <Grid.ColumnDefinitions>

@@ -13,7 +13,14 @@ namespace Valyreon.Elib.Wpf.Models
 			return sha.ComputeHash(stream).ToHex();
 		}
 
-		private static string ToHex(this byte[] bytes)
+        public static string ComputeHash(string filePath)
+        {
+            using var stream = File.OpenRead(filePath);
+            var sha = SHA256.Create();
+            return sha.ComputeHash(stream).ToHex();
+        }
+
+        private static string ToHex(this byte[] bytes)
 		{
 			var result = new StringBuilder();
 

@@ -320,7 +320,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         public ICommand AddBookCommand => new RelayCommand(ProcessAddBook);
 
-        private async void ProcessAddBook()
+        private void ProcessAddBook()
         {
             using var dlg = new OpenFileDialog
             {
@@ -333,7 +333,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             var result = dlg.ShowDialog();
             if (result == DialogResult.OK && dlg.FileNames.Length > 0)
             {
-                
+
                 MessengerInstance.Send(new OpenAddBooksFormMessage(dlg.FileNames));
             }
         }

@@ -37,6 +37,7 @@
     >
     <Window.InputBindings>
         <KeyBinding Key="Esc" Command="{Binding EscKeyCommand}" />
+        <KeyBinding Key="F5" Command="{Binding RefreshViewCommand}" />
         <KeyBinding Key="Backspace" Command="{Binding EscKeyCommand}" />
         <KeyBinding Key="BrowserBack" Command="{Binding EscKeyCommand}" />
     </Window.InputBindings>
@@ -71,13 +72,32 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        <Components:SymbolButton Icon="{x:Static iconPacks:PackIconFontAwesomeKind.CogSolid}"
-                                 IconSize="26" HorizontalAlignment="Right"
-                                 VerticalAlignment="Top"
-                                 Panel.ZIndex="10000"
-                                 Foreground="White"
-                                 Margin="12"
-                                 Command="{Binding OpenSettingsCommand}"></Components:SymbolButton>
+        <Grid HorizontalAlignment="Right"
+              VerticalAlignment="Top"
+              Panel.ZIndex="10000"
+              Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="42" />
+            </Grid.ColumnDefinitions>
+            <Button
+                Grid.Column="0"
+                Height="30"
+                Command="{Binding ScanForNewContentCommand}"
+                Content="SCAN FOR NEW CONTENT"
+                Focusable="False"
+                FontSize="12"
+                Style="{StaticResource MahApps.Styles.Button}"
+                ToolTip="Scan for new books in folders specified in Settings."
+             />
+            <Components:SymbolButton Icon="{x:Static iconPacks:PackIconFontAwesomeKind.CogSolid}"
+                                     Grid.Column="2"
+                                     IconSize="26" 
+                                     Foreground="White"
+                         Command="{Binding OpenSettingsCommand}"></Components:SymbolButton>
+        </Grid>
+        
         <Components:TabControlWithCache
             Grid.Row="0"
             Grid.Column="0"

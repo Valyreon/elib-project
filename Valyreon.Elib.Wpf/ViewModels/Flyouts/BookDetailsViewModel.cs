@@ -210,7 +210,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
         private void HandleShowFileInfo()
         {
-            var x = EbookParserFactory.Create(Book.Format, File.ReadAllBytes(Book.Path)).Parse();
+            var x = EbookParserFactory.Create(Book.Path).Parse();
 
             var builder = new StringBuilder("");
             builder.Append("ISBN: ").AppendLine(x.Isbn);

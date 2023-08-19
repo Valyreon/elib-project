@@ -7,34 +7,18 @@ namespace Valyreon.Elib.EbookTools.Mobi
 {
     public class MobiParser : EbookParser
     {
-        private readonly byte[] rawFile;
+        private readonly string filePath;
 
-        public MobiParser(byte[] file, StyleSettings settings)
+        public MobiParser(string filePath, StyleSettings settings)
         {
             StyleSettings = settings;
-            rawFile = file;
+            this.filePath = filePath;
         }
 
-        public MobiParser(byte[] file)
+        public MobiParser(string filePath)
         {
             StyleSettings = StyleSettings.Default;
-            rawFile = file;
-        }
-
-        public MobiParser(Stream file, StyleSettings settings)
-        {
-            StyleSettings = settings;
-            using var ms = new MemoryStream();
-            file.CopyTo(ms);
-            rawFile = ms.GetBuffer();
-        }
-
-        public MobiParser(Stream file)
-        {
-            StyleSettings = StyleSettings.Default;
-            using var ms = new MemoryStream();
-            file.CopyTo(ms);
-            rawFile = ms.GetBuffer();
+            this.filePath = filePath;
         }
 
         /// <summary>
@@ -42,17 +26,20 @@ namespace Valyreon.Elib.EbookTools.Mobi
         /// </summary>
         public override ParsedBook Parse()
         {
-            var mf = MobiFile.LoadFile(rawFile);
-            var html = mf.BookText;
-            var doc = new HtmlDocument();
-            doc.LoadHtml(html);
-            return new ParsedBook(mf.Name, null, null, null, null, ".mobi", rawFile);
+            var mf = MobiFile.LoadFile(File.ReadAllBytes(filePath));
+
+            return new ParsedBook
+            {
+                Title = mf.Name,
+                Authors = new System.Collections.Generic.List<string> { mf.Creator },
+                Path = filePath
+            };
         }
 
         public override string GenerateHtml()
         {
             var build = new StringBuilder();
-            var mf = MobiFile.LoadFile(rawFile);
+            var mf = MobiFile.LoadFile(File.ReadAllBytes(filePath));
             build.Append(GenerateHeader());
             build.Append("<body>\n");
             var html = mf.BookText;

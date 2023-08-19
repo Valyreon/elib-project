@@ -7,7 +7,7 @@ namespace Valyreon.Elib.Wpf.Models
 {
     public static class ImageOptimizer
     {
-        public static byte[] ResizeAndFill(byte[] imgBytes, int width = 400, int height = 600)
+        public static byte[] ResizeAndFill(byte[] imgBytes, int width = 200, int height = 300)
         {
             using var image = Image.Load(imgBytes);
             using var image2 = Image.Load(imgBytes);

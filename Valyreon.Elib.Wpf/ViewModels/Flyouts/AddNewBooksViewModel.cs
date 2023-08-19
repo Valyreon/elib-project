@@ -228,12 +228,11 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             }
             catch (Exception)
             {
-                var content = File.ReadAllBytes(path);
                 return new Book
                 {
                     Collections = new ObservableCollection<UserCollection>(),
                     Format = Path.GetExtension(path),
-                    Signature = Signer.ComputeHash(content),
+                    Signature = Signer.ComputeHash(path),
                     Authors = new ObservableCollection<Author>(),
                     Path = path
                 };

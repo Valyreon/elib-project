@@ -47,6 +47,11 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             set => Set(() => IsResultEmpty, ref isResultEmpty, value);
         }
 
+        public SeriesViewerViewModel()
+        {
+            MessengerInstance.Register<RefreshCurrentViewMessage>(this, _ => Refresh());
+        }
+
         public void Clear()
         {
             Series.Clear();

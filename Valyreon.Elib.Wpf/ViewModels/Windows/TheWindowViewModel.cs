@@ -1,22 +1,16 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Windows.Input;
-using Valyreon.Elib.Mvvm;using MahApps.Metro.Controls.Dialogs;
-using Valyreon.Elib.Domain;
-using Valyreon.Elib.Wpf.Messages;
-using Valyreon.Elib.Wpf.ViewModels.Controls;
-using Valyreon.Elib.Wpf.ViewModels.Flyouts;
-using System;
-using Valyreon.Elib.Wpf.ViewModels.Dialogs;
-using Valyreon.Elib.Wpf.Views.Dialogs;
-using Valyreon.Elib.DataLayer;
-using Valyreon.Elib.Wpf.Services;
-using System.Threading.Tasks;
-using Valyreon.Elib.Wpf.Models;
 using System.Linq;
-using Valyreon.Elib.EBookTools;
-using System.IO;
-using Valyreon.Elib.Wpf.Extensions;
+using System.Windows.Input;
+using MahApps.Metro.Controls.Dialogs;
+using Valyreon.Elib.Domain;
+using Valyreon.Elib.Mvvm;
+using Valyreon.Elib.Wpf.Messages;
+using Valyreon.Elib.Wpf.Services;
+using Valyreon.Elib.Wpf.ViewModels.Controls;
+using Valyreon.Elib.Wpf.ViewModels.Dialogs;
+using Valyreon.Elib.Wpf.ViewModels.Flyouts;
+using Valyreon.Elib.Wpf.Views.Dialogs;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Windows
 {
@@ -56,6 +50,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
 
         public ICommand EscKeyCommand => new RelayCommand(ProcessEscKey);
         public ICommand OpenSettingsCommand => new RelayCommand(HandleOpenSettings);
+        public ICommand ScanForNewContentCommand => new RelayCommand(HandleScanForNewBooks);
+        public ICommand RefreshViewCommand => new RelayCommand(() => MessengerInstance.Send(new RefreshCurrentViewMessage()));
 
         private async void HandleOpenSettings()
         {
@@ -103,7 +99,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
                 return;
             }
 
-            MessengerInstance.Send(new OpenAddBooksFormMessage(newBookPaths));
+            HandleAddBooksFlyout(newBookPaths);
         }
 
         private void HandleEditBookFlyout(Book book)

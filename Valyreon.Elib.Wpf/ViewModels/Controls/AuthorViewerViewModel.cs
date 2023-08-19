@@ -18,7 +18,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         public ObservableCollection<Author> Authors { get; set; } = new ObservableCollection<Author>();
 
-        public ICommand LoadCommand => new RelayCommand(LoadMore);
+        public ICommand LoadCommand => new RelayCommand(LoadAllAuthors);
         public ICommand BackCommand => new RelayCommand(Back);
 
         public string Caption
@@ -47,15 +47,15 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             set => Set(() => IsResultEmpty, ref isResultEmpty, value);
         }
 
-        public void Clear()
+        public AuthorViewerViewModel()
         {
-            Authors.Clear();
+            MessengerInstance.Register<RefreshCurrentViewMessage>(this, _ => Refresh());
         }
 
         public void Refresh()
         {
             Authors.Clear();
-            LoadMore();
+            LoadAllAuthors();
         }
 
         public Task<IViewer> Search(SearchParameters searchOptions)
@@ -65,7 +65,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         public ICommand GoToAuthor => new RelayCommand<Author>(a => Messenger.Default.Send(new AuthorSelectedMessage(a)));
 
-        private async void LoadMore()
+        private async void LoadAllAuthors()
         {
             using var uow = await App.UnitOfWorkFactory.CreateAsync();
             var x = await uow.AuthorRepository.GetAllAsync();
@@ -82,6 +82,11 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 Authors.Add(item);
                 await Task.Delay(6);
             }
+        }
+
+        public void Clear()
+        {
+            throw new NotImplementedException();
         }
     }
 }
