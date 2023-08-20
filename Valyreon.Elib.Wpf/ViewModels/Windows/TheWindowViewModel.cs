@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 using MahApps.Metro.Controls.Dialogs;
 using Valyreon.Elib.Domain;
@@ -59,7 +60,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
             {
                 DataContext = new ApplicationSettingsDialogViewModel()
             };
-            await DialogCoordinator.Instance.ShowMetroDialogAsync(this, dialog);
+            await DialogCoordinator.Instance.ShowMetroDialogAsync(Application.Current.MainWindow.DataContext, dialog);
         }
 
         public object FlyoutControl
@@ -84,7 +85,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
 
         private async void HandleInputDialog(ShowInputDialogMessage obj)
         {
-            var input = await DialogCoordinator.Instance.ShowInputAsync(this, obj.Title, obj.Text);
+            var input = await DialogCoordinator.Instance.ShowInputAsync(Application.Current.MainWindow.DataContext, obj.Title, obj.Text);
             obj.CallOnResult(input);
         }
 
@@ -117,12 +118,13 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
         private async void ShowDialog(string title, string text)
         {
             //await ((MetroWindow)Application.Current.MainWindow).ShowMessageAsync(title, text);
-            await DialogCoordinator.Instance.ShowMessageAsync(this, title, text);
+            await DialogCoordinator.Instance.ShowMessageAsync(Application.Current.MainWindow.DataContext, title, text);
         }
 
-        private void ProcessEscKey()
+        private async void ProcessEscKey()
         {
-            if (IsBookDetailsFlyoutOpen)
+            var currentDialog = await DialogCoordinator.Instance.GetCurrentDialogAsync<BaseMetroDialog>(Application.Current.MainWindow.DataContext);
+            if (IsBookDetailsFlyoutOpen && currentDialog == null)
             {
                 IsBookDetailsFlyoutOpen = false;
                 FlyoutControl = null;

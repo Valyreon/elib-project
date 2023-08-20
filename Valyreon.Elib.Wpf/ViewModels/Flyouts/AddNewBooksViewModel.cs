@@ -284,7 +284,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
         private async void HandleAddNewAuthor()
         {
-            var name = await DialogCoordinator.Instance.ShowInputAsync(this, "Adding New Author", "Author's name:");
+            var name = await DialogCoordinator.Instance.ShowInputAsync(Application.Current.MainWindow.DataContext, "Adding New Author", "Author's name:");
 
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -429,7 +429,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                 DataContext = new ChooseAuthorDialogViewModel(AuthorsCollection.Select(oa => oa.Id),
                     x => Application.Current.Dispatcher.Invoke(() => AuthorsCollection.Add(x)))
             };
-            await DialogCoordinator.Instance.ShowMetroDialogAsync(this, dialog);
+            await DialogCoordinator.Instance.ShowMetroDialogAsync(Application.Current.MainWindow.DataContext, dialog);
         }
 
         private async void HandleChooseExistingSeries()
@@ -438,12 +438,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             {
                 DataContext = new ChooseSeriesDialogViewModel(x => Series = x)
             };
-            await DialogCoordinator.Instance.ShowMetroDialogAsync(this, dialog);
+            await DialogCoordinator.Instance.ShowMetroDialogAsync(Application.Current.MainWindow.DataContext, dialog);
         }
 
         private async void HandleCreateNewSeries()
         {
-            var name = await DialogCoordinator.Instance.ShowInputAsync(this, "Adding New Series", "Series name:");
+            var name = await DialogCoordinator.Instance.ShowInputAsync(Application.Current.MainWindow.DataContext, "Adding New Series", "Series name:");
             if (!string.IsNullOrWhiteSpace(name))
             {
                 name = name.Trim();
@@ -462,7 +462,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
         private async void HandleEditSeries()
         {
-            Series.Name = await DialogCoordinator.Instance.ShowInputAsync(this, "Edit Series", "Series name:",
+            Series.Name = await DialogCoordinator.Instance.ShowInputAsync(Application.Current.MainWindow.DataContext, "Edit Series", "Series name:",
                 new MetroDialogSettings { DefaultText = Series.Name });
         }
 
