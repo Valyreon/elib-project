@@ -59,12 +59,10 @@ namespace Valyreon.Elib.DataLayer.Repositories
 
         public async Task CreateAsync(T entity)
         {
-            entity.Id = await Connection.ExecuteScalarAsync<int>(
-                @$"INSERT INTO Books({string.Join(", ", ColumnNames)})
-                VALUES ({string.Join(", ", ColumnNames.Select(n => "@" + n))}); SELECT last_insert_rowid() ",
-                entity,
-                Transaction
-            );
+            var query = @$"INSERT INTO {Table}({string.Join(", ", ColumnNames)})
+                VALUES ({string.Join(", ", ColumnNames.Select(n => "@" + n))}); SELECT last_insert_rowid() ";
+
+            entity.Id = await Connection.ExecuteScalarAsync<int>(query, entity, Transaction);
 
             Cache.Add(entity.Id, entity);
         }

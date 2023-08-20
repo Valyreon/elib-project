@@ -8,8 +8,6 @@ namespace Valyreon.Elib.DataLayer.Interfaces
         ISeriesRepository SeriesRepository { get; }
         ICollectionRepository CollectionRepository { get; }
         IAuthorRepository AuthorRepository { get; }
-        IEFileRepository EFileRepository { get; }
-        IRawFileRepository RawFileRepository { get; }
         ICoverRepository CoverRepository { get; }
         IQuoteRepository QuoteRepository { get; }
 

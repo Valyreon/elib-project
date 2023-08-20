@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
@@ -10,7 +11,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using MahApps.Metro.Controls.Dialogs;
 using Valyreon.Elib.Domain;
+using Valyreon.Elib.EBookTools;
 using Valyreon.Elib.Mvvm;
+using Valyreon.Elib.Wpf.Extensions;
 using Valyreon.Elib.Wpf.Messages;
 using Valyreon.Elib.Wpf.Models;
 using Valyreon.Elib.Wpf.ValidationAttributes;
@@ -22,7 +25,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 {
     public class AddNewBooksViewModel : ViewModelWithValidation
     {
-        private readonly IList<Book> books;
+        private readonly IList<string> books;
 
         private string addAuthorFieldText;
 
@@ -54,7 +57,13 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
         private string warning;
 
-        public AddNewBooksViewModel(IEnumerable<Book> newBooks)
+        private string path;
+
+        private string descriptionFieldText;
+
+        private bool isLoading; 
+
+        public AddNewBooksViewModel(IEnumerable<string> newBooks)
         {
             books = newBooks.ToList();
         }
@@ -110,6 +119,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
         {
             get => isRead;
             set => Set(() => IsReadCheck, ref isRead, value);
+        }
+
+        public bool IsLoading
+        {
+            get => isLoading;
+            set => Set(() => IsLoading, ref isLoading, value);
         }
 
         public bool IsSaving
@@ -175,10 +190,22 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             set => Set(() => TitleText, ref titleText, value);
         }
 
+        public string DescriptionFieldText
+        {
+            get => descriptionFieldText;
+            set => Set(() => DescriptionFieldText, ref descriptionFieldText, value);
+        }
+
         public string WarningText
         {
             get => warning;
             set => Set(() => WarningText, ref warning, value);
+        }
+
+        public string PathText
+        {
+            get => path;
+            set => Set(() => PathText, ref path, value);
         }
 
         private Book CurrentBook
@@ -198,6 +225,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                         : null;
 
                     TitleFieldText = CurrentBook.Title;
+                    DescriptionFieldText = CurrentBook.Description;
                     SeriesNumberFieldText = CurrentBook.NumberInSeries.ToString();
                     IsFavoriteCheck = CurrentBook.IsFavorite;
                     IsReadCheck = CurrentBook.IsRead;
@@ -205,21 +233,58 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                     Cover = CurrentBook.Cover != null
                         ? new Cover() { Id = CurrentBook.Cover.Id, Image = CurrentBook.Cover.Image }
                         : null;
+
+                    PathText = currentBook.Path;
                 }
             }
         }
 
-        private void HandleLoaded()
+        private async Task<Book> ParseBook(string path)
         {
-            CurrentBook = books[0];
+            IsLoading = true;
+            Book result = null;
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    var pBook = EbookParserFactory.Create(path).Parse();
+                    using var uow = await App.UnitOfWorkFactory.CreateAsync();
+                    var book = await pBook.ToBookAsync(uow);
+                    result = book;
+                });
+            }
+            catch (Exception)
+            {
+                result = new Book
+                {
+                    Collections = new ObservableCollection<UserCollection>(),
+                    Format = Path.GetExtension(path),
+                    Signature = Signer.ComputeHash(path),
+                    Authors = new ObservableCollection<Author>(),
+                    Path = path
+                };
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+
+            return result;
+        }
+
+        private async void HandleLoaded()
+        {
             TitleText = $"Book 1 of {books.Count}";
+            PathText = books[0];
+            CurrentBook = await ParseBook(books[0]);
+            
             ProceedButtonText = books.Count == 1 ? "SAVE & FINISH" : "SAVE & NEXT";
             CheckDuplicate(CurrentBook);
         }
 
         private async void HandleAddNewAuthor()
         {
-            var name = await DialogCoordinator.Instance.ShowInputAsync(this, "Adding New Author", "Author's name:");
+            var name = await DialogCoordinator.Instance.ShowInputAsync(Application.Current.MainWindow.DataContext, "Adding New Author", "Author's name:");
 
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -243,6 +308,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                 ? null
                 : new BookSeries { Name = CurrentBook.Series.Name, Id = CurrentBook.Series.Id };
             TitleFieldText = CurrentBook.Title;
+            DescriptionFieldText = CurrentBook.Description;
             SeriesNumberFieldText = CurrentBook.NumberInSeries.ToString();
             IsFavoriteCheck = CurrentBook.IsFavorite;
             IsReadCheck = CurrentBook.IsRead;
@@ -289,11 +355,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                 book.IsFavorite = IsFavoriteCheck;
                 book.IsRead = IsReadCheck;
 
-                await uow.RawFileRepository.CreateAsync(book.File.RawFile);
-                book.File.RawFileId = book.File.RawFile.Id;
-                await uow.EFileRepository.CreateAsync(book.File);
-                book.FileId = book.File.Id;
-
                 if (Cover?.Id == 0 && Cover.Image != null)
                 {
                     book.Cover = Cover;
@@ -337,11 +398,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             }
         }
 
-        private void NextBook()
+        private async void NextBook()
         {
             if (counter >= books.Count - 1)
             {
                 MessengerInstance.Send(new CloseFlyoutMessage());
+                MessengerInstance.Send(new RefreshCurrentViewMessage());
             }
             else
             {
@@ -352,7 +414,9 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                     ProceedButtonText = "SAVE & FINISH";
                 }
 
-                CurrentBook = books[++counter];
+                var nextBook = books[++counter];
+                PathText = nextBook;
+                CurrentBook = await ParseBook(nextBook);
 
                 CheckDuplicate(CurrentBook);
             }
@@ -365,7 +429,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                 DataContext = new ChooseAuthorDialogViewModel(AuthorsCollection.Select(oa => oa.Id),
                     x => Application.Current.Dispatcher.Invoke(() => AuthorsCollection.Add(x)))
             };
-            await DialogCoordinator.Instance.ShowMetroDialogAsync(this, dialog);
+            await DialogCoordinator.Instance.ShowMetroDialogAsync(Application.Current.MainWindow.DataContext, dialog);
         }
 
         private async void HandleChooseExistingSeries()
@@ -374,12 +438,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             {
                 DataContext = new ChooseSeriesDialogViewModel(x => Series = x)
             };
-            await DialogCoordinator.Instance.ShowMetroDialogAsync(this, dialog);
+            await DialogCoordinator.Instance.ShowMetroDialogAsync(Application.Current.MainWindow.DataContext, dialog);
         }
 
         private async void HandleCreateNewSeries()
         {
-            var name = await DialogCoordinator.Instance.ShowInputAsync(this, "Adding New Series", "Series name:");
+            var name = await DialogCoordinator.Instance.ShowInputAsync(Application.Current.MainWindow.DataContext, "Adding New Series", "Series name:");
             if (!string.IsNullOrWhiteSpace(name))
             {
                 name = name.Trim();
@@ -398,14 +462,14 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
         private async void HandleEditSeries()
         {
-            Series.Name = await DialogCoordinator.Instance.ShowInputAsync(this, "Edit Series", "Series name:",
+            Series.Name = await DialogCoordinator.Instance.ShowInputAsync(Application.Current.MainWindow.DataContext, "Edit Series", "Series name:",
                 new MetroDialogSettings { DefaultText = Series.Name });
         }
 
         private async void CheckDuplicate(Book book)
         {
             using var uow = await App.UnitOfWorkFactory.CreateAsync();
-            if (await uow.EFileRepository.SignatureExistsAsync(book.File.Signature))
+            if (await uow.BookRepository.SignatureExistsAsync(book.Signature))
             {
                 WarningText = "This book is a duplicate of a book already in the database.";
                 IsCurrentBookDuplicate = true;

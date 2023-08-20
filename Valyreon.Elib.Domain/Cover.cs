@@ -7,6 +7,7 @@ namespace Valyreon.Elib.Domain
     public class Cover : ObservableEntity
     {
         [Required]
+        [Column]
         public byte[] Image { get; set; }
     }
 }

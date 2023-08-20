@@ -9,6 +9,7 @@ namespace Valyreon.Elib.Domain
     public class Book : ObservableEntity
     {
         private string title;
+        private string description;
         private bool isFavorite;
         private bool isRead;
         private bool isMarked;
@@ -17,12 +18,6 @@ namespace Valyreon.Elib.Domain
         private ObservableCollection<Author> authors;
         private BookSeries series;
 
-        [Required]
-        public EFile File { get; set; }
-
-        [Column]
-        [ForeignKey("File")]
-        public int FileId { get; set; }
         [Column]
         public int? CoverId { get; set; }
 
@@ -41,7 +36,7 @@ namespace Valyreon.Elib.Domain
         [Column]
         public int? SeriesId { get; set; }
 
-        public ObservableCollection<UserCollection> collections;
+        public ObservableCollection<UserCollection> collections = new();
 
         public ObservableCollection<UserCollection> Collections
         {
@@ -66,8 +61,6 @@ namespace Valyreon.Elib.Domain
                 RaisePropertyChanged(() => AuthorsInfo);
             }
         }
-        [Column]
-        public int? WhenRead { get; set; }
 
         [Required]
         [Column]
@@ -75,6 +68,13 @@ namespace Valyreon.Elib.Domain
         {
             get => title;
             set => Set(() => Title, ref title, value);
+        }
+
+        [Column]
+        public string Description
+        {
+            get => description;
+            set => Set(() => Description, ref description, value);
         }
 
         [Column]
@@ -111,6 +111,21 @@ namespace Valyreon.Elib.Domain
             get => cover;
             set => Set(() => Cover, ref cover, value);
         }
+
+        [Column]
+        [Required]
+        [StringLength(10)]
+        public string Format { get; set; }
+
+        [Column]
+        [Required]
+        [StringLength(64)]
+        public string Signature { get; set; }
+
+        [Column]
+        [Required]
+        [StringLength(32767)]
+        public string Path { get; set; }
 
         public string AuthorsInfo => Authors.Any() ? Authors.Select(a => a.Name).Aggregate((i, j) => i + ", " + j) : "";
 

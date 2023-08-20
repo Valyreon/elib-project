@@ -13,34 +13,18 @@ namespace Valyreon.Elib.EbookTools.Epub
 {
     public class EpubParser : EbookParser
     {
-        private readonly byte[] rawFile;
+        private readonly string filePath;
 
-        public EpubParser(byte[] file)
+        public EpubParser(string filePath)
         {
             StyleSettings = StyleSettings.Default;
-            rawFile = file;
+            this.filePath = filePath;
         }
 
-        public EpubParser(byte[] file, StyleSettings settings)
+        public EpubParser(string filePath, StyleSettings settings)
         {
             StyleSettings = settings;
-            rawFile = file;
-        }
-
-        public EpubParser(Stream file)
-        {
-            StyleSettings = StyleSettings.Default;
-            using var ms = new MemoryStream();
-            file.CopyTo(ms);
-            rawFile = ms.GetBuffer();
-        }
-
-        public EpubParser(Stream file, StyleSettings settings)
-        {
-            StyleSettings = settings;
-            using var ms = new MemoryStream();
-            file.CopyTo(ms);
-            rawFile = ms.GetBuffer();
+            this.filePath = filePath;
         }
 
         /// <summary>
@@ -48,7 +32,7 @@ namespace Valyreon.Elib.EbookTools.Epub
         /// </summary>
         public override ParsedBook Parse()
         {
-            using var ms = new MemoryStream(rawFile);
+            using var ms = new MemoryStream(File.ReadAllBytes(filePath));
             string title, author, publisher, isbn = null;
             byte[] cover;
             using (var zip = new ZipArchive(ms, ZipArchiveMode.Read))
@@ -74,12 +58,20 @@ namespace Valyreon.Elib.EbookTools.Epub
                 cover = GetCover(zip);
             }
 
-            return new ParsedBook(title, author, isbn, publisher, cover, ".epub", rawFile);
+            return new ParsedBook
+            {
+                Title = title,
+                Authors = new List<string> { author },
+                Publisher = publisher,
+                Isbn = isbn,
+                Cover = cover,
+                Path = filePath,
+            };
         }
 
         public override string GenerateHtml()
         {
-            using var ms = new MemoryStream(rawFile);
+            using var ms = new MemoryStream(File.ReadAllBytes(filePath));
             using var zip = new ZipArchive(ms, ZipArchiveMode.Read);
             var doc = GetRootfileDocument(zip);
             return FormHtml(doc, zip);

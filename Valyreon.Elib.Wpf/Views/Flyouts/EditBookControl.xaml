@@ -29,22 +29,23 @@
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
-            <RowDefinition Height="390" />
-            <RowDefinition Height="40" />
-            <RowDefinition Height="2*" />
+            <RowDefinition Height="7*" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="210" />
-                <ColumnDefinition Width="12" />
-                <ColumnDefinition Width="3*" />
                 <ColumnDefinition Width="40" />
                 <ColumnDefinition Width="4*" />
+                <ColumnDefinition Width="40" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
-                <RowDefinition Height="4*" />
+                <RowDefinition Height="6*" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
@@ -108,7 +109,8 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50" />
                     <RowDefinition Height="50" />
-                    <RowDefinition Height="*" />
+                    <RowDefinition Height="2*" />
+                    <RowDefinition Height="3*" />
                 </Grid.RowDefinitions>
                 <Components:BetterTextbox
                     Grid.Row="0"
@@ -237,7 +239,7 @@
                         </Components:BetterTextbox.ToolTip>
                     </Components:BetterTextbox>
                 </Grid>
-                <Grid Grid.Row="3" Margin="0,10,17,0">
+                <Grid Grid.Row="2" Margin="0,10,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
@@ -353,6 +355,30 @@
                             </ItemsControl>
                         </ScrollViewer>
                     </StackPanel>
+                </Grid>
+                <Grid Grid.Row="3">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <StackPanel Orientation="Horizontal" Grid.Row="0">
+                        <iconPacks:PackIconFontAwesome
+                            Grid.Column="0"
+                            Width="20"
+                            Height="15"
+                            Margin="0,4,5,0"
+                            Foreground="WhiteSmoke"
+                            Kind="AlignJustifySolid" />
+                        <TextBlock  FontSize="16" Grid.Column="1" Text="Description:"></TextBlock>
+                    </StackPanel>
+                    <TextBox
+                        Grid.Row="1"
+                        TextWrapping="Wrap"
+                        AcceptsReturn="True"
+                        HorizontalScrollBarVisibility="Disabled"
+                        VerticalScrollBarVisibility="Auto"
+                        Text="{Binding DescriptionFieldText}"
+                        FontFamily="Segoe UI" FontSize="12"/>
                 </Grid>
             </Grid>
             <Grid Grid.Row="1" Grid.Column="5">

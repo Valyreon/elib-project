@@ -15,7 +15,6 @@
     d:DesignWidth="800"
     mc:Ignorable="d">
 
-
     <UserControl.Resources>
         <ResourceDictionary>
             <Style x:Key="LargeTileStyle" TargetType="MetroControls:Tile">
@@ -145,28 +144,14 @@
                         </Grid.ColumnDefinitions>
 
                         <Button
-                            Grid.Column="1"
+                            Grid.Column="3"
                             Height="30"
                             Command="{Binding RefreshCommand}"
                             Content="REFRESH"
                             Style="{StaticResource ViewerHeaderButton}"
                             Visibility="{Binding IsSelectedBooksViewer, Converter={StaticResource BooleanToInverseVisibilityConverter}}" />
 
-                        <Button
-                            Grid.Column="5"
-                            Height="30"
-                            Command="{Binding AddBookCommand}"
-                            Content="IMPORT"
-                            Style="{StaticResource ViewerHeaderButton}"
-                            Visibility="{Binding IsSelectedBooksViewer, Converter={StaticResource BooleanToInverseVisibilityConverter}}">
-                            <Button.ToolTip>
-                                <ToolTip>
-                                    Import new books
-                                </ToolTip>
-                            </Button.ToolTip>
-                        </Button>
-
-                        <Grid Grid.Column="3">
+                        <Grid Grid.Column="1">
                             <Button
                                 Height="30"
                                 Command="{Binding FilterBooksCommand}"
@@ -180,20 +165,6 @@
                                 </Button.ToolTip>
                             </Button>
                         </Grid>
-
-                        <Button
-                            Grid.Column="5"
-                            Height="30"
-                            Command="{Binding DeleteSelectedBooksCommand}"
-                            Content="DELETE"
-                            Style="{StaticResource ViewerHeaderButton}"
-                            Visibility="{Binding IsSelectedBooksViewer, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <Button.ToolTip>
-                                <ToolTip>
-                                    Clear selected books
-                                </ToolTip>
-                            </Button.ToolTip>
-                        </Button>
 
                         <Button
                             Grid.Column="3"
@@ -237,10 +208,11 @@
                 VirtualizingStackPanel.VirtualizationMode="Recycling">
                 <ItemsControl.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Menu item 1" />
-                        <MenuItem Header="Menu item 2" />
+                        <MenuItem Header="Export selected" />
+                        <MenuItem Header="Remove selected" />
                         <Separator />
-                        <MenuItem Header="Menu item 3" />
+                        <MenuItem Header="Select all" />
+                        <MenuItem Header="Unselect all" />
                     </ContextMenu>
                 </ItemsControl.ContextMenu>
                 <ItemsControl.ItemTemplate>

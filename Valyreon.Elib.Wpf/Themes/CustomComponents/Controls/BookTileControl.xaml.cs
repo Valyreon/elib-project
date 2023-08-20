@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -210,6 +212,14 @@ namespace Valyreon.Elib.Wpf.Themes.CustomComponents.Controls
 
         private void SelectedCheckbox_Unchecked(object sender, RoutedEventArgs e)
         {
+        }
+
+        private void OpenFileLocation_Click(object sender, RoutedEventArgs e)
+        {
+            if (File.Exists(TileParameter.Path))
+            {
+                Process.Start("explorer.exe", "/select, " + $@"""{TileParameter.Path}""");
+            }
         }
     }
 }

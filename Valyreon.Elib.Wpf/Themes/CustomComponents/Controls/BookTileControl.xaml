@@ -167,4 +167,14 @@
             </ControlTemplate.Triggers>
         </ControlTemplate>
     </UserControl.Template>
+
+    <UserControl.ContextMenu>
+        <ContextMenu>
+            <MenuItem Icon="" Header="Export" />
+            <MenuItem Icon="" Header="Mark as read/unread" />
+            <MenuItem Icon="" Header="Mark as favorite" />
+            <Separator />
+            <MenuItem Icon="" Click="OpenFileLocation_Click" Header="Open file location" />
+        </ContextMenu>
+    </UserControl.ContextMenu>
 </UserControl>

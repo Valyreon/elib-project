@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Valyreon.Elib.EbookTools.Epub;
 using Valyreon.Elib.EbookTools.Mobi;
+using Valyreon.Elib.EBookTools.Epub;
 
 namespace Valyreon.Elib.EBookTools
 {
@@ -14,19 +14,9 @@ namespace Valyreon.Elib.EBookTools
         {
             return Path.GetExtension(path) switch
             {
-                ".epub" => new EpubParser(File.ReadAllBytes(path)),
-                ".mobi" => new MobiParser(File.ReadAllBytes(path)),
+                ".epub" => new VersOneEpubParser(path),
+                ".mobi" => new MobiParser(path),
                 _ => throw new ArgumentException($"{path} has an unkown extension.")
-            };
-        }
-
-        public static EbookParser Create(string extension, byte[] content)
-        {
-            return extension switch
-            {
-                ".epub" => new EpubParser(content),
-                ".mobi" => new MobiParser(content),
-                _ => throw new ArgumentException($"{extension} is an unkown extension.")
             };
         }
     }

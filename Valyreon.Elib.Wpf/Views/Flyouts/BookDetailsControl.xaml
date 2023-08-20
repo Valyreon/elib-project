@@ -26,12 +26,12 @@
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0" />
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="1000" />
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="0" />
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="1">
-            <Grid Width="1000">
+            <Grid MaxWidth="1200" VerticalAlignment="Center">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="232" />
@@ -124,16 +124,12 @@
                     </Grid>
                     <StackPanel
                         Grid.Column="1"
-                        Margin="0"
+                        Margin="0,0,10,0"
                         Orientation="Vertical">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock
-                                Margin="0,-7,0,0"
+                        <TextBlock
                                 FontSize="22"
                                 Text="{Binding Book.Title}" />
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <Components:TextLinkButton
+                        <Components:TextLinkButton
                                 Command="{Binding GoToSeries}"
                                 CommandParameter="{Binding Book.Series}"
                                 FontSize="18"
@@ -141,7 +137,6 @@
                                 Style="{DynamicResource BookDetailsSubLinkGrayStyle}"
                                 Text="{Binding Book.SeriesInfo}"
                                 Visibility="{Binding Book.SeriesInfo, Converter={StaticResource StringToVisibilityConverter}}" />
-                        </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock
                                 FontSize="16"
@@ -155,9 +150,10 @@
                                 Style="{DynamicResource BookDetailsSubLinkLightGrayStyle}"
                                 Text="{Binding Book.AuthorsInfo}" />
                         </StackPanel>
-                        <StackPanel Orientation="Vertical">
-                            <TextBlock Text="{Binding BookDescriptionText}" />
-                        </StackPanel>
+                        <TextBlock Text="{Binding Book.Description}"
+                                   TextWrapping="Wrap"
+                                   Margin="0,15,0,0"
+                                   FontSize="13"/>
                     </StackPanel>
                     <StackPanel Grid.Column="2" Orientation="Vertical">
                         <!--<Grid.RowDefinitions>

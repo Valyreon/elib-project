@@ -12,7 +12,7 @@ namespace Valyreon.Elib.Mvvm.Messaging
 
         private Dictionary<Type, List<WeakActionAndToken>> _recipientsStrictAction;
 
-        public static Messenger Default => _defaultInstance ?? (_defaultInstance = new Messenger());
+        public static Messenger Default => _defaultInstance ??= new Messenger();
 
         public static void OverrideDefault(Messenger newMessenger)
         {
@@ -51,19 +51,12 @@ namespace Valyreon.Elib.Mvvm.Messaging
 
             if (receiveDerivedMessagesToo)
             {
-                if (_recipientsOfSubclassesAction == null)
-                {
-                    _recipientsOfSubclassesAction = new Dictionary<Type, List<WeakActionAndToken>>();
-                }
-
+                _recipientsOfSubclassesAction ??= new Dictionary<Type, List<WeakActionAndToken>>();
                 recipients = _recipientsOfSubclassesAction;
             }
             else
             {
-                if (_recipientsStrictAction == null)
-                {
-                    _recipientsStrictAction = new Dictionary<Type, List<WeakActionAndToken>>();
-                }
+                _recipientsStrictAction ??= new Dictionary<Type, List<WeakActionAndToken>>();
 
                 recipients = _recipientsStrictAction;
             }

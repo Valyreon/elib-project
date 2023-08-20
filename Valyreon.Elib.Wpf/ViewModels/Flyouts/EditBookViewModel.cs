@@ -36,6 +36,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
         private string titleFieldText;
 
+        private string descriptionFieldText;
+
         public EditBookViewModel(Book book)
         {
             Book = book;
@@ -86,6 +88,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             set => Set(() => IsReadCheck, ref isRead, value);
         }
 
+        public string DescriptionFieldText
+        {
+            get => descriptionFieldText;
+            set => Set(() => DescriptionFieldText, ref descriptionFieldText, value);
+        }
+
         public bool IsSeriesSelected => Series != null;
 
         public ICommand RemoveAuthorCommand => new RelayCommand<int>(HandleRemoveAuthor);
@@ -132,7 +140,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
         private async void HandleAddNewAuthor()
         {
-            var name = await DialogCoordinator.Instance.ShowInputAsync(this, "Adding New Author", "Author's name:");
+            var name = await DialogCoordinator.Instance.ShowInputAsync(Application.Current.MainWindow.DataContext, "Adding New Author", "Author's name:");
             if (string.IsNullOrWhiteSpace(name))
             {
                 return;
@@ -162,6 +170,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                 ? null
                 : new BookSeries { Name = Book.Series.Name, Id = Book.Series.Id };
             TitleFieldText = Book.Title;
+            DescriptionFieldText = Book.Description;
             SeriesNumberFieldText = Book.NumberInSeries.ToString();
             IsFavoriteCheck = Book.IsFavorite;
             IsReadCheck = Book.IsRead;
@@ -215,6 +224,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                 book.Title = TitleFieldText;
                 book.IsFavorite = IsFavoriteCheck;
                 book.IsRead = IsReadCheck;
+                book.Description = DescriptionFieldText;
 
                 var removedAuthorIds = new List<int>();
                 var oldAndNewCommonIds = AuthorsCollection.Select(a => a.Id).Intersect(book.Authors.Select(a => a.Id));
@@ -294,7 +304,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                 DataContext = new ChooseAuthorDialogViewModel(AuthorsCollection.Select(oa => oa.Id),
                     x => Application.Current.Dispatcher.Invoke(() => AuthorsCollection.Add(x)))
             };
-            await DialogCoordinator.Instance.ShowMetroDialogAsync(this, dialog);
+            await DialogCoordinator.Instance.ShowMetroDialogAsync(Application.Current.MainWindow.DataContext, dialog);
         }
 
         private async void HandleChooseExistingSeries()
@@ -303,12 +313,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             {
                 DataContext = new ChooseSeriesDialogViewModel(x => Series = x)
             };
-            await DialogCoordinator.Instance.ShowMetroDialogAsync(this, dialog);
+            await DialogCoordinator.Instance.ShowMetroDialogAsync(Application.Current.MainWindow.DataContext, dialog);
         }
 
         private async void HandleCreateNewSeries()
         {
-            var name = await DialogCoordinator.Instance.ShowInputAsync(this, "Adding New Series", "Series name:");
+            var name = await DialogCoordinator.Instance.ShowInputAsync(Application.Current.MainWindow.DataContext, "Adding New Series", "Series name:");
             if (string.IsNullOrWhiteSpace(name))
             {
                 return;
@@ -333,7 +343,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
         private async void HandleEditSeries()
         {
-            Series.Name = await DialogCoordinator.Instance.ShowInputAsync(this, "Edit Series", "Series name:",
+            Series.Name = await DialogCoordinator.Instance.ShowInputAsync(Application.Current.MainWindow.DataContext, "Edit Series", "Series name:",
                 new MetroDialogSettings { DefaultText = Series.Name });
 
             _ = Task.Run(async () =>

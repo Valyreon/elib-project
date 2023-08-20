@@ -28,10 +28,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
         {
             this.booksToExport = booksToExport;
             this.dialog = dialog;
-            IsExportPartVisible = ApplicationSettings.GetInstance().IsExportForcedBeforeDelete;
         }
-
-        public bool IsExportPartVisible { get; set; }
 
         public ICommand CancelCommand => new RelayCommand(HandleCancel);
 
@@ -142,7 +139,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
             using (var uow = await App.UnitOfWorkFactory.CreateAsync())
             {
                 var exporter = new Exporter(uow);
-                await exporter.ExportBooks(booksToExport,
+                exporter.ExportBooks(booksToExport,
                     new ExporterOptions
                     {
                         DestinationDirectory = DestinationPath,

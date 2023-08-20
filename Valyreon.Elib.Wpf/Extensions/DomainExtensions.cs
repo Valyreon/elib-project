@@ -1,10 +1,8 @@
-using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Threading.Tasks;
 using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Domain;
-using Valyreon.Elib.EbookTools.Epub;
-using Valyreon.Elib.EbookTools.Mobi;
 using Valyreon.Elib.EBookTools;
 using Valyreon.Elib.Wpf.Models;
 
@@ -17,33 +15,26 @@ namespace Valyreon.Elib.Wpf.Extensions
             var newBook = new Book
             {
                 Title = parsedBook.Title,
-                Authors = new ObservableCollection<Author>
-                {
-                    await uow.AuthorRepository.GetAuthorWithNameAsync(parsedBook.Author) ?? new Author { Name = parsedBook.Author }
-                },
+                Authors = new ObservableCollection<Author>(),
                 Cover = parsedBook.Cover != null ? new Cover { Image = ImageOptimizer.ResizeAndFill(parsedBook.Cover) } : null,
                 Collections = new ObservableCollection<UserCollection>(),
-                File = new EFile
-                {
-                    Format = parsedBook.Format,
-                    Signature = Signer.ComputeHash(parsedBook.RawData),
-                    RawFile = new RawFile { RawContent = parsedBook.RawData }
-                }
+                Format = Path.GetExtension(parsedBook.Path),
+                Signature = Signer.ComputeHash(parsedBook.Path),
+                Path = parsedBook.Path,
+                Description = parsedBook.Description
             };
+
+            if (parsedBook.Authors == null)
+            {
+                return newBook;
+            }
+
+            foreach(var author in parsedBook.Authors)
+            {
+                newBook.Authors.Add(await uow.AuthorRepository.GetAuthorWithNameAsync(author) ?? new Author { Name = author });
+            }
 
             return newBook;
-        }
-
-        public static string GenerateHtml(this EFile book)
-        {
-            EbookParser parser = book.Format switch
-            {
-                ".epub" => new EpubParser(book.RawFile.RawContent),
-                ".mobi" => new MobiParser(book.RawFile.RawContent),
-                _ => throw new ArgumentException("The file has an unkown extension.")
-            };
-
-            return parser.GenerateHtml();
         }
     }
 }

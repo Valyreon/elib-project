@@ -26,7 +26,7 @@ namespace Valyreon.Elib.Mvvm
 
         private static string GetName<T>(Expression<Func<T>> exp)
         {
-            if (!(exp.Body is MemberExpression body))
+            if (exp.Body is not MemberExpression body)
             {
                 var ubody = (UnaryExpression)exp.Body;
                 body = ubody.Operand as MemberExpression;

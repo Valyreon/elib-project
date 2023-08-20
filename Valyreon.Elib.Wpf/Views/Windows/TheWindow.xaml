@@ -10,6 +10,7 @@
     xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     Title="ELib"
     MinWidth="1100"
     MinHeight="800"
@@ -32,9 +33,11 @@
     Top="0"
     WindowStartupLocation="CenterScreen"
     WindowTitleBrush="#222222"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    >
     <Window.InputBindings>
         <KeyBinding Key="Esc" Command="{Binding EscKeyCommand}" />
+        <KeyBinding Key="F5" Command="{Binding RefreshViewCommand}" />
         <KeyBinding Key="Backspace" Command="{Binding EscKeyCommand}" />
         <KeyBinding Key="BrowserBack" Command="{Binding EscKeyCommand}" />
     </Window.InputBindings>
@@ -61,6 +64,7 @@
         </MetroControls:FlyoutsControl>
     </MetroControls:MetroWindow.Flyouts>
 
+
     <Grid Background="#222222">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -68,6 +72,32 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
+        <Grid HorizontalAlignment="Right"
+              VerticalAlignment="Top"
+              Panel.ZIndex="10000"
+              Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="42" />
+            </Grid.ColumnDefinitions>
+            <Button
+                Grid.Column="0"
+                Height="30"
+                Command="{Binding ScanForNewContentCommand}"
+                Content="SCAN FOR NEW CONTENT"
+                Focusable="False"
+                FontSize="12"
+                Style="{StaticResource MahApps.Styles.Button}"
+                ToolTip="Scan for new books in folders specified in Settings."
+             />
+            <Components:SymbolButton Icon="{x:Static iconPacks:PackIconFontAwesomeKind.CogSolid}"
+                                     Grid.Column="2"
+                                     IconSize="26" 
+                                     Foreground="White"
+                         Command="{Binding OpenSettingsCommand}"></Components:SymbolButton>
+        </Grid>
+        
         <Components:TabControlWithCache
             Grid.Row="0"
             Grid.Column="0"
@@ -81,12 +111,12 @@
                 <DataTemplate DataType="{x:Type ControlViewModels:BooksTabViewModel}">
                     <ControlViews:BooksTabControl />
                 </DataTemplate>
-                <!--<DataTemplate DataType="{x:Type ControlViewModels:QuotesTabViewModel}">
+                <DataTemplate DataType="{x:Type ControlViewModels:QuotesTabViewModel}">
                     <ControlViews:QuotesTabControl />
-                </DataTemplate>-->
-                <DataTemplate DataType="{x:Type ControlViewModels:SettingsTabViewModel}">
-                    <ControlViews:SettingsTabControl />
                 </DataTemplate>
+                <!--<DataTemplate DataType="{x:Type ControlViewModels:SettingsTabViewModel}">
+                    <ControlViews:SettingsTabControl />
+                </DataTemplate>-->
             </TabControl.Resources>
         </Components:TabControlWithCache>
     </Grid>

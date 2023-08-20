@@ -1,16 +1,15 @@
-﻿using Valyreon.Elib.Domain;
-using Valyreon.Elib.Mvvm.Messaging;
 using System.Collections.Generic;
+using Valyreon.Elib.Mvvm.Messaging;
 
 namespace Valyreon.Elib.Wpf.Messages
 {
-	public class OpenAddBooksFormMessage : MessageBase
+    public class OpenAddBooksFormMessage : MessageBase
 	{
-		public OpenAddBooksFormMessage(IList<Book> booksToAdd)
+		public OpenAddBooksFormMessage(IList<string> booksToAdd)
 		{
 			BooksToAdd = booksToAdd;
 		}
 
-		public IList<Book> BooksToAdd { get; }
+		public IList<string> BooksToAdd { get; }
 	}
 }

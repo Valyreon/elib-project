@@ -1,5 +1,5 @@
 --
--- File generated with SQLiteStudio v3.2.1 on Sun Dec 6 22:52:13 2020
+-- File generated with SQLiteStudio v3.2.1 on Sun Aug 20 03:10:10 2023
 --
 -- Text encoding used: System
 --
@@ -26,17 +26,18 @@ CREATE TABLE Authors (
 
 -- Table: Books
 CREATE TABLE Books (
-    Id             INTEGER       PRIMARY KEY AUTOINCREMENT,
-    Title          VARCHAR (100) NOT NULL,
-    SeriesId       INTEGER       REFERENCES Series (Id),
-    IsRead         BOOL          DEFAULT (false),
-    WhenRead       INT,
+    Id             INTEGER         PRIMARY KEY AUTOINCREMENT,
+    Title          VARCHAR (100)   NOT NULL,
+    SeriesId       INTEGER         REFERENCES Series (Id),
+    IsRead         BOOL            DEFAULT (false),
     NumberInSeries REAL,
-    IsFavorite     BOOLEAN       NOT NULL
-                                 DEFAULT (false),
-    FileId         INT           REFERENCES EBookFiles (Id) 
-                                 NOT NULL,
-    CoverId        INTEGER       REFERENCES Covers (Id) 
+    IsFavorite     BOOLEAN         NOT NULL
+                                   DEFAULT (false),
+    CoverId        INTEGER         REFERENCES Covers (Id),
+    Format         VARCHAR (10)    NOT NULL,
+    Signature      VARCHAR (64)    NOT NULL,
+    Path           VARCHAR (32767) NOT NULL,
+    Description    VARCHAR (3000) 
 );
 
 
@@ -47,29 +48,12 @@ CREATE TABLE Covers (
 );
 
 
--- Table: EBookFiles
-CREATE TABLE EBookFiles (
-    Id        INTEGER      PRIMARY KEY AUTOINCREMENT,
-    Format    VARCHAR (10) NOT NULL,
-    Signature VARCHAR (64) NOT NULL,
-    RawFileId INT          REFERENCES RawFiles (Id) 
-                           NOT NULL
-);
-
-
 -- Table: Quotes
 CREATE TABLE Quotes (
     Id     INTEGER PRIMARY KEY AUTOINCREMENT,
     Text   VARCHAR,
     BookId INTEGER REFERENCES Books (Id),
     Note   VARCHAR
-);
-
-
--- Table: RawFiles
-CREATE TABLE RawFiles (
-    Id         INTEGER PRIMARY KEY AUTOINCREMENT,
-    RawContent BLOB    NOT NULL
 );
 
 
@@ -156,16 +140,6 @@ BEGIN
 END;
 
 
--- Trigger: CleanEFilesAfterBookDelete
-CREATE TRIGGER CleanEFilesAfterBookDelete
-         AFTER DELETE
-            ON Books
-BEGIN
-    DELETE FROM EBookFiles
-          WHERE Id = OLD.FileId;
-END;
-
-
 -- Trigger: CleanSeriesAfterBookDelete
 CREATE TRIGGER CleanSeriesAfterBookDelete
          AFTER DELETE
@@ -191,26 +165,6 @@ BEGIN
 END;
 
 
--- Trigger: DeleteEFileAfterBookDelete
-CREATE TRIGGER DeleteEFileAfterBookDelete
-         AFTER DELETE
-            ON Books
-BEGIN
-    DELETE FROM EBookFiles
-          WHERE Id = OLD.FileId;
-END;
-
-
--- Trigger: DeleteRawFileAfterEFileDelete
-CREATE TRIGGER DeleteRawFileAfterEFileDelete
-         AFTER DELETE
-            ON EBookFiles
-BEGIN
-    DELETE FROM RawFiles
-          WHERE Id = OLD.RawFileId;
-END;
-
-
 -- View: AuthorId_Book_View
 CREATE VIEW AuthorId_Book_View AS
     SELECT *
@@ -218,13 +172,14 @@ CREATE VIEW AuthorId_Book_View AS
                SELECT AuthorBooks.AuthorId,
                       Books.Id,
                       Books.Title,
+                      Books.Description,
                       Books.IsFavorite,
                       Books.IsRead,
-                      Books.FileId,
                       Books.NumberInSeries,
                       Books.SeriesId,
-                      Books.PercentageRead,
-                      Books.WhenRead
+                      Books.Signature,
+                      Books.Format,
+                      Books.Path
                  FROM Books
                       INNER JOIN
                       AuthorBooks ON Books.Id = AuthorBooks.BookId
@@ -235,13 +190,14 @@ CREATE VIEW AuthorId_Book_View AS
 CREATE VIEW Book_Author_Join AS
     SELECT AuthorId_Book_View.Id,
            AuthorId_Book_View.Title,
+           AuthorId_Book_View.Description,
            AuthorId_Book_View.SeriesId,
            AuthorId_Book_View.IsFavorite,
            AuthorId_Book_View.IsRead,
-           AuthorId_Book_View.WhenRead,
            AuthorId_Book_View.NumberInSeries,
-           AuthorId_Book_View.PercentageRead,
-           AuthorId_Book_View.FileId,
+           AuthorId_Book_View.Signature,
+           AuthorId_Book_View.Format,
+           AuthorId_Book_View.Path,
            Authors.Name AS AuthorName
       FROM AuthorId_Book_View
            INNER JOIN
@@ -252,14 +208,15 @@ CREATE VIEW Book_Author_Join AS
 CREATE VIEW Book_Series_Join AS
     SELECT Books.Id,
            Books.Title,
+           Books.Description,
            Books.SeriesId,
            Books.IsFavorite,
            Books.IsRead,
            Books.CoverId,
-           Books.WhenRead,
            Books.NumberInSeries,
-           Books.PercentageRead,
-           Books.FileId,
+           Books.Signature,
+           Books.Format,
+           Books.Path,
            Series.Name AS SeriesName
       FROM Books
            LEFT JOIN
@@ -299,12 +256,14 @@ CREATE VIEW CollectionId_Book_View AS
                SELECT UserCollectionBooks.UserCollectionId AS CollectionId,
                       Books.Id,
                       Books.Title,
+                      Books.Description,
                       Books.IsFavorite,
                       Books.IsRead,
-                      Books.FileId,
                       Books.NumberInSeries,
                       Books.SeriesId,
-                      Books.PercentageRead
+                      Books.Signature,
+                      Books.Format,
+                      Books.Path
                  FROM Books
                       INNER JOIN
                       UserCollectionBooks ON Books.Id = UserCollectionBooks.BookId
@@ -315,33 +274,35 @@ CREATE VIEW CollectionId_Book_View AS
 CREATE VIEW Full_Join AS
     SELECT X.Id,
            X.Title,
+           X.Description,
            X.SeriesId,
            X.IsFavorite,
            X.IsRead,
-           X.WhenRead,
            X.NumberInSeries,
-           X.PercentageRead,
-           X.FileId,
            X.SeriesName,
            X.AuthorName,
            X.AuthorId,
            X.CoverId,
+           X.Signature,
+           X.Format,
+           X.Path,
            Tag,
            BookId_Collection_View.Id AS CollectionId
       FROM (
                SELECT BookId AS Id,
                       BookId_Author_View.Id AS AuthorId,
                       Title,
+                      Description,
                       SeriesId,
                       CoverId,
                       IsFavorite,
                       IsRead,
-                      WhenRead,
                       NumberInSeries,
-                      PercentageRead,
-                      FileId,
                       SeriesName,
-                      Name AS AuthorName
+                      Name AS AuthorName,
+                      Signature,
+                      Format,
+                      Path
                  FROM Book_Series_Join
                       INNER JOIN
                       BookId_Author_View ON Book_Series_Join.Id = BookId_Author_View.BookId

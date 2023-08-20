@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.Wpf.Models.Options;
@@ -24,8 +23,10 @@ namespace Valyreon.Elib.Wpf.Models
             var fileNameBuilder = new StringBuilder();
             // there can be more than one author
             var index = 1;
-            fileNameBuilder.Append(
-                book.Title).Append(book.SeriesId == null ? "" : $"({book.Series.Name} #{book.NumberInSeries})").Append(" by ").Append(book.Authors.ElementAt(0).Name);
+            fileNameBuilder.Append(book.Title)
+                           .Append(book.SeriesId == null ? string.Empty : $"({book.Series.Name} #{book.NumberInSeries})")
+                           .Append(" by ")
+                           .Append(book.Authors.ElementAt(0).Name);
             while (index < book.Authors.Count)
             {
                 fileNameBuilder.Append(index == book.Authors.Count - 1 ? " and" : ",");
@@ -33,26 +34,19 @@ namespace Valyreon.Elib.Wpf.Models
                 ++index;
             }
 
-            fileNameBuilder.Append(book.File.Format);
+            fileNameBuilder.Append(book.Format);
             var fileName = fileNameBuilder.ToString();
 
             return Path.GetInvalidFileNameChars().Aggregate(fileName, (current, invalid) => current.Replace(char.ToString(invalid), ""));
         }
 
-        public static void Export(RawFile file, string filePath)
-        {
-            using var fs = File.Create(filePath);
-            fs.Write(file.RawContent, 0, file.RawContent.Length);
-        }
-
         private void ExportBookToFolder(Book book, string destinationFolder)
         {
             var fileName = GenerateName(book);
-            using var fs = File.Create(Path.Combine(destinationFolder, fileName));
-            fs.Write(book.File.RawFile.RawContent, 0, book.File.RawFile.RawContent.Length);
+            File.Copy(book.Path, Path.Combine(destinationFolder, fileName));
         }
 
-        public async Task ExportBooks(IEnumerable<Book> books, ExporterOptions options, Action<string> progressSet = null)
+        public void ExportBooks(IEnumerable<Book> books, ExporterOptions options, Action<string> progressSet = null)
         {
             void ExportAllInList(IEnumerable<Book> list, string outPath)
             {
@@ -94,13 +88,6 @@ namespace Valyreon.Elib.Wpf.Models
             if (enumerable.Count == 0)
             {
                 return;
-            }
-
-            // Load everything needed
-            foreach (var book in enumerable)
-            {
-                book.File ??= await _uow.EFileRepository.FindAsync(book.FileId);
-                book.File.RawFile ??= await _uow.RawFileRepository.FindAsync(book.File.RawFileId);
             }
 
             Directory.CreateDirectory(options.DestinationDirectory);
