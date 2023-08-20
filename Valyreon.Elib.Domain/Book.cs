@@ -9,6 +9,7 @@ namespace Valyreon.Elib.Domain
     public class Book : ObservableEntity
     {
         private string title;
+        private string description;
         private bool isFavorite;
         private bool isRead;
         private bool isMarked;
@@ -67,6 +68,13 @@ namespace Valyreon.Elib.Domain
         {
             get => title;
             set => Set(() => Title, ref title, value);
+        }
+
+        [Column]
+        public string Description
+        {
+            get => description;
+            set => Set(() => Description, ref description, value);
         }
 
         [Column]

@@ -59,6 +59,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
         private string path;
 
+        private string descriptionFieldText;
+
         private bool isLoading; 
 
         public AddNewBooksViewModel(IEnumerable<string> newBooks)
@@ -188,6 +190,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             set => Set(() => TitleText, ref titleText, value);
         }
 
+        public string DescriptionFieldText
+        {
+            get => descriptionFieldText;
+            set => Set(() => DescriptionFieldText, ref descriptionFieldText, value);
+        }
+
         public string WarningText
         {
             get => warning;
@@ -217,6 +225,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                         : null;
 
                     TitleFieldText = CurrentBook.Title;
+                    DescriptionFieldText = CurrentBook.Description;
                     SeriesNumberFieldText = CurrentBook.NumberInSeries.ToString();
                     IsFavoriteCheck = CurrentBook.IsFavorite;
                     IsReadCheck = CurrentBook.IsRead;
@@ -241,13 +250,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                     var pBook = EbookParserFactory.Create(path).Parse();
                     using var uow = await App.UnitOfWorkFactory.CreateAsync();
                     var book = await pBook.ToBookAsync(uow);
-                    book.Path = path;
                     result = book;
                 });
             }
             catch (Exception)
             {
-                return new Book
+                result = new Book
                 {
                     Collections = new ObservableCollection<UserCollection>(),
                     Format = Path.GetExtension(path),
@@ -256,15 +264,20 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                     Path = path
                 };
             }
+            finally
+            {
+                IsLoading = false;
+            }
 
-            IsLoading = false;
             return result;
         }
 
         private async void HandleLoaded()
         {
-            CurrentBook = await ParseBook(books[0]);
             TitleText = $"Book 1 of {books.Count}";
+            PathText = books[0];
+            CurrentBook = await ParseBook(books[0]);
+            
             ProceedButtonText = books.Count == 1 ? "SAVE & FINISH" : "SAVE & NEXT";
             CheckDuplicate(CurrentBook);
         }
@@ -295,6 +308,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                 ? null
                 : new BookSeries { Name = CurrentBook.Series.Name, Id = CurrentBook.Series.Id };
             TitleFieldText = CurrentBook.Title;
+            DescriptionFieldText = CurrentBook.Description;
             SeriesNumberFieldText = CurrentBook.NumberInSeries.ToString();
             IsFavoriteCheck = CurrentBook.IsFavorite;
             IsReadCheck = CurrentBook.IsRead;

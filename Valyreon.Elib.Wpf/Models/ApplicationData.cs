@@ -30,7 +30,7 @@ namespace Valyreon.Elib.Wpf.Models
 
             if (!Directory.Exists(LogFolderPath))
             {
-                File.Create(LogFolderPath);
+                Directory.CreateDirectory(LogFolderPath);
             }
 
             if (!File.Exists(PropertiesPath))

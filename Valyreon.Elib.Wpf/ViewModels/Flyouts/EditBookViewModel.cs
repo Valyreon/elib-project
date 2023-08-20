@@ -36,6 +36,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
         private string titleFieldText;
 
+        private string descriptionFieldText;
+
         public EditBookViewModel(Book book)
         {
             Book = book;
@@ -84,6 +86,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
         {
             get => isRead;
             set => Set(() => IsReadCheck, ref isRead, value);
+        }
+
+        public string DescriptionFieldText
+        {
+            get => descriptionFieldText;
+            set => Set(() => DescriptionFieldText, ref descriptionFieldText, value);
         }
 
         public bool IsSeriesSelected => Series != null;
@@ -162,6 +170,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                 ? null
                 : new BookSeries { Name = Book.Series.Name, Id = Book.Series.Id };
             TitleFieldText = Book.Title;
+            DescriptionFieldText = Book.Description;
             SeriesNumberFieldText = Book.NumberInSeries.ToString();
             IsFavoriteCheck = Book.IsFavorite;
             IsReadCheck = Book.IsRead;
@@ -215,6 +224,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                 book.Title = TitleFieldText;
                 book.IsFavorite = IsFavoriteCheck;
                 book.IsRead = IsReadCheck;
+                book.Description = DescriptionFieldText;
 
                 var removedAuthorIds = new List<int>();
                 var oldAndNewCommonIds = AuthorsCollection.Select(a => a.Id).Intersect(book.Authors.Select(a => a.Id));

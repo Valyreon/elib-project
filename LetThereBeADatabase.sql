@@ -1,5 +1,5 @@
 --
--- File generated with SQLiteStudio v3.2.1 on Sun Dec 6 22:52:13 2020
+-- File generated with SQLiteStudio v3.2.1 on Sun Aug 20 03:10:10 2023
 --
 -- Text encoding used: System
 --
@@ -26,17 +26,18 @@ CREATE TABLE Authors (
 
 -- Table: Books
 CREATE TABLE Books (
-    Id             INTEGER       PRIMARY KEY AUTOINCREMENT,
-    Title          VARCHAR (100) NOT NULL,
-    SeriesId       INTEGER       REFERENCES Series (Id),
-    IsRead         BOOL          DEFAULT (false),
+    Id             INTEGER         PRIMARY KEY AUTOINCREMENT,
+    Title          VARCHAR (100)   NOT NULL,
+    SeriesId       INTEGER         REFERENCES Series (Id),
+    IsRead         BOOL            DEFAULT (false),
     NumberInSeries REAL,
-    IsFavorite     BOOLEAN       NOT NULL
-                                 DEFAULT (false),
-    CoverId        INTEGER       REFERENCES Covers (Id),
-    Format         VARCHAR (10) NOT NULL,
-    Signature      VARCHAR (64) NOT NULL,
-    Path           VARCHAR(32767) NOT NULL
+    IsFavorite     BOOLEAN         NOT NULL
+                                   DEFAULT (false),
+    CoverId        INTEGER         REFERENCES Covers (Id),
+    Format         VARCHAR (10)    NOT NULL,
+    Signature      VARCHAR (64)    NOT NULL,
+    Path           VARCHAR (32767) NOT NULL,
+    Description    VARCHAR (3000) 
 );
 
 
@@ -171,6 +172,7 @@ CREATE VIEW AuthorId_Book_View AS
                SELECT AuthorBooks.AuthorId,
                       Books.Id,
                       Books.Title,
+                      Books.Description,
                       Books.IsFavorite,
                       Books.IsRead,
                       Books.NumberInSeries,
@@ -188,6 +190,7 @@ CREATE VIEW AuthorId_Book_View AS
 CREATE VIEW Book_Author_Join AS
     SELECT AuthorId_Book_View.Id,
            AuthorId_Book_View.Title,
+           AuthorId_Book_View.Description,
            AuthorId_Book_View.SeriesId,
            AuthorId_Book_View.IsFavorite,
            AuthorId_Book_View.IsRead,
@@ -205,6 +208,7 @@ CREATE VIEW Book_Author_Join AS
 CREATE VIEW Book_Series_Join AS
     SELECT Books.Id,
            Books.Title,
+           Books.Description,
            Books.SeriesId,
            Books.IsFavorite,
            Books.IsRead,
@@ -252,13 +256,14 @@ CREATE VIEW CollectionId_Book_View AS
                SELECT UserCollectionBooks.UserCollectionId AS CollectionId,
                       Books.Id,
                       Books.Title,
+                      Books.Description,
                       Books.IsFavorite,
                       Books.IsRead,
                       Books.NumberInSeries,
                       Books.SeriesId,
                       Books.Signature,
                       Books.Format,
-                      Books.Path,
+                      Books.Path
                  FROM Books
                       INNER JOIN
                       UserCollectionBooks ON Books.Id = UserCollectionBooks.BookId
@@ -269,6 +274,7 @@ CREATE VIEW CollectionId_Book_View AS
 CREATE VIEW Full_Join AS
     SELECT X.Id,
            X.Title,
+           X.Description,
            X.SeriesId,
            X.IsFavorite,
            X.IsRead,
@@ -286,6 +292,7 @@ CREATE VIEW Full_Join AS
                SELECT BookId AS Id,
                       BookId_Author_View.Id AS AuthorId,
                       Title,
+                      Description,
                       SeriesId,
                       CoverId,
                       IsFavorite,

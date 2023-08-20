@@ -29,12 +29,12 @@ namespace Valyreon.Elib.EBookTools.Epub
 
             return new ParsedBook
             {
-                Title = epubBook.Title,
-                Authors = epubBook.AuthorList,
-                Description = epubBook.Description,
+                Title = epubBook.Title.Clean(),
+                Authors = epubBook.AuthorList.Select(a => a.Clean()).ToList(),
+                Description = epubBook.Description.Clean(false, false).Prettify(3000),
                 Cover = epubBook.CoverImage,
-                Isbn = epubBook.Schema.Package?.Metadata?.Identifiers?.FirstOrDefault(i => i.Id?.ToLowerInvariant().Contains("isbn") == true || i.Scheme?.ToLowerInvariant()?.Contains("isbn") == true)?.Identifier,
-                Publisher = epubBook.Schema.Package?.Metadata?.Publishers?.FirstOrDefault()?.Publisher,
+                Isbn = epubBook.Schema.Package?.Metadata?.Identifiers?.FirstOrDefault(i => i.Id?.ToLowerInvariant().Contains("isbn") == true || i.Scheme?.ToLowerInvariant()?.Contains("isbn") == true)?.Identifier?.Clean(),
+                Publisher = epubBook.Schema.Package?.Metadata?.Publishers?.FirstOrDefault()?.Publisher?.Clean(),
                 Path = filePath
             };
         }

@@ -20,8 +20,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
     {
         private string addCollectionFieldText = "";
 
-        private string bookDescription;
-
         public BookDetailsViewModel(Book book)
         {
             Book = book;
@@ -47,12 +45,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
         }
 
         public Book Book { get; }
-
-        public string BookDescriptionText
-        {
-            get => bookDescription;
-            set => Set(() => BookDescriptionText, ref bookDescription, value);
-        }
 
         public ICommand EditButtonCommand => new RelayCommand(HandleEditButton);
 

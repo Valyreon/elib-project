@@ -30,8 +30,8 @@ namespace Valyreon.Elib.EbookTools.Mobi
 
             return new ParsedBook
             {
-                Title = mf.Name,
-                Authors = new System.Collections.Generic.List<string> { mf.Creator },
+                Title = mf.Name.Clean(),
+                Authors = new System.Collections.Generic.List<string> { mf.Creator.Clean() },
                 Path = filePath
             };
         }

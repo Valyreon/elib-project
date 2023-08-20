@@ -20,7 +20,8 @@ namespace Valyreon.Elib.Wpf.Extensions
                 Collections = new ObservableCollection<UserCollection>(),
                 Format = Path.GetExtension(parsedBook.Path),
                 Signature = Signer.ComputeHash(parsedBook.Path),
-                Path = parsedBook.Path
+                Path = parsedBook.Path,
+                Description = parsedBook.Description
             };
 
             if (parsedBook.Authors == null)
