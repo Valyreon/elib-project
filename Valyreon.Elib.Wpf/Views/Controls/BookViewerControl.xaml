@@ -8,6 +8,7 @@
     xmlns:Converters="clr-namespace:Valyreon.Elib.Wpf.Converters"
     xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:TileComponents="clr-namespace:Valyreon.Elib.Wpf.Themes.CustomComponents.Controls"
+    xmlns:controlzEx="urn:controlzex"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -39,8 +40,8 @@
                 VerticalAlignment="Center"
                 FontSize="16"
                 Foreground="Gray"
-                Text="No books matching current conditions."
-                Visibility="{Binding IsResultEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                Text="No books found."
+                Visibility="{Binding IsResultEmpty, Converter={StaticResource BooleanToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}" />
         </Grid>
         <Grid>
             <Grid.RowDefinitions>
@@ -65,9 +66,9 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="10" />
                         <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="15" />
                         <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" MaxWidth="350" />
+                        <ColumnDefinition Width="5" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <Border
@@ -126,13 +127,10 @@
                         Foreground="#484b4e"
                         Text="{Binding SubCaption}" />
 
-                    <TextBox
+                    <Components:ElibTextBox
                         Grid.Column="6"
                         Height="30"
-                        VerticalContentAlignment="Center"
-                        FontFamily="Segoe UI"
-                        FontSize="14"
-                        Foreground="Black"
+                        Placeholder="Search"
                         Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Delay=300}" />
 
                     <Grid Grid.Column="8" HorizontalAlignment="Right">
@@ -143,7 +141,7 @@
                                 SnapsToDevicePixels="False" />
                         </Grid.CacheMode>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="20" />
+                            <ColumnDefinition Width="0" />
                             <ColumnDefinition Width="auto" />
                             <ColumnDefinition Width="5" />
                             <ColumnDefinition Width="auto" />

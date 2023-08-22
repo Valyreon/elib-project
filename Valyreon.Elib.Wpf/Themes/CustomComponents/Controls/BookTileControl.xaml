@@ -5,7 +5,6 @@
     xmlns:BookTileConverters="clr-namespace:Valyreon.Elib.Wpf.Converters.BookTileConverters"
     xmlns:Components="clr-namespace:Valyreon.Elib.Wpf.CustomComponents"
     xmlns:Converters="clr-namespace:Valyreon.Elib.Wpf.Converters"
-    xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="450"
@@ -39,41 +38,41 @@
                     Background="GhostWhite"
                     BorderBrush="LightGray"
                     BorderThickness="1">
-                    <MetroControls:Tile
+                    <Grid
                         x:Name="TheTile"
                         Width="164"
                         Height="246"
                         Margin="1"
                         Background="GhostWhite"
-                        Command="{Binding TileCommand, RelativeSource={RelativeSource TemplatedParent}}"
-                        CommandParameter="{Binding TileParameter, RelativeSource={RelativeSource TemplatedParent}}"
-                        TitleFontSize="14">
-                        <Grid>
-                            <Image
-                                x:Name="BackgroundImage"
-                                Width="164"
-                                Height="246"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Panel.ZIndex="100"
-                                Source="{Binding Cover, Converter={StaticResource ImageConverter}}"
-                                Stretch="Fill" />
-                            <Components:SelectedBannerCheck
-                                x:Name="SelectedCheckbox"
-                                Margin="0,0,0,2"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Bottom"
-                                Panel.ZIndex="150"
-                                Checked="SelectedCheckbox_Checked"
-                                Command="{Binding SelectCommand, RelativeSource={RelativeSource TemplatedParent}}"
-                                CommandParameter="{Binding TileParameter, RelativeSource={RelativeSource TemplatedParent}}"
-                                Focusable="False"
-                                IsChecked="{Binding IsSelected, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}"
-                                Opacity="0"
-                                Text="SELECT"
-                                Unchecked="SelectedCheckbox_Unchecked" />
-                        </Grid>
-                    </MetroControls:Tile>
+                        MouseUp="TheTile_MouseUp">
+                        <!--
+                            Command="{Binding TileCommand, RelativeSource={RelativeSource TemplatedParent}}"
+                            CommandParameter="{Binding TileParameter, RelativeSource={RelativeSource TemplatedParent}}"
+                        -->
+                        <Image
+                            x:Name="BackgroundImage"
+                            Width="164"
+                            Height="246"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Panel.ZIndex="100"
+                            Source="{Binding Cover, Converter={StaticResource ImageConverter}}"
+                            Stretch="Fill" />
+                        <Components:SelectedBannerCheck
+                            x:Name="SelectedCheckbox"
+                            Margin="0,0,0,2"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Bottom"
+                            Panel.ZIndex="150"
+                            Checked="SelectedCheckbox_Checked"
+                            Command="{Binding SelectCommand, RelativeSource={RelativeSource TemplatedParent}}"
+                            CommandParameter="{Binding TileParameter, RelativeSource={RelativeSource TemplatedParent}}"
+                            Focusable="False"
+                            IsChecked="{Binding IsSelected, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}"
+                            Opacity="0"
+                            Text="SELECT"
+                            Unchecked="SelectedCheckbox_Unchecked" />
+                    </Grid>
                 </Border>
                 <Components:TextLinkButton
                     x:Name="TheBookTitle"
@@ -84,7 +83,6 @@
                     FontSize="14"
                     Foreground="Black"
                     Text="{Binding Title, RelativeSource={RelativeSource TemplatedParent}}"
-                    
                     ToolTip="{Binding Title, RelativeSource={RelativeSource TemplatedParent}}"
                     ToolTipService.IsEnabled="{Binding Title, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource StringToBoolConverter}, ConverterParameter=21}" />
                 <Components:TextLinkButton
@@ -96,7 +94,6 @@
                     Foreground="Gray"
                     Style="{DynamicResource BookViewerSubLinkStyle}"
                     Text="{Binding Authors, RelativeSource={RelativeSource TemplatedParent}}"
-                    
                     ToolTip="{Binding Authors, RelativeSource={RelativeSource TemplatedParent}}"
                     ToolTipService.IsEnabled="{Binding Authors, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource StringToBoolConverter}, ConverterParameter=29}" />
                 <Components:TextLinkButton
@@ -108,7 +105,6 @@
                     Foreground="Gray"
                     Style="{DynamicResource BookViewerSubLinkStyle}"
                     Text="{Binding SeriesInfo, RelativeSource={RelativeSource TemplatedParent}}"
-                    
                     ToolTip="{Binding SeriesInfo, RelativeSource={RelativeSource TemplatedParent}}"
                     ToolTipService.IsEnabled="{Binding SeriesInfo, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource StringToBoolConverter}, ConverterParameter=29}" />
             </StackPanel>
@@ -170,11 +166,14 @@
 
     <UserControl.ContextMenu>
         <ContextMenu>
-            <MenuItem Icon="" Header="Export" />
-            <MenuItem Icon="" Header="Mark as read/unread" />
-            <MenuItem Icon="" Header="Mark as favorite" />
+            <MenuItem Header="Export" Icon="" />
+            <MenuItem Header="Mark as read/unread" Icon="" />
+            <MenuItem Header="Mark as favorite" Icon="" />
             <Separator />
-            <MenuItem Icon="" Click="OpenFileLocation_Click" Header="Open file location" />
+            <MenuItem
+                Click="OpenFileLocation_Click"
+                Header="Open file location"
+                Icon="" />
         </ContextMenu>
     </UserControl.ContextMenu>
 </UserControl>

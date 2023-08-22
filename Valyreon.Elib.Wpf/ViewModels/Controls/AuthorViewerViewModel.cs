@@ -8,17 +8,17 @@ using Valyreon.Elib.Domain;
 using Valyreon.Elib.Mvvm;
 using Valyreon.Elib.Mvvm.Messaging;
 using Valyreon.Elib.Wpf.Messages;
+using Valyreon.Elib.Wpf.Models;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Controls
 {
-    public class AuthorViewerViewModel : ViewModelBase, IViewer
+    public class AuthorViewerViewModel : ViewModelBase, IViewer, IDisposable
     {
         private bool isResultEmpty;
-        private string caption;
+        private string caption = "Authors";
 
         public ObservableCollection<Author> Authors { get; set; } = new ObservableCollection<Author>();
 
-        public ICommand LoadCommand => new RelayCommand(LoadAuthors);
         public ICommand BackCommand => new RelayCommand(Back);
 
         public string Caption
@@ -60,18 +60,26 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         public AuthorViewerViewModel()
         {
-            MessengerInstance.Register<RefreshCurrentViewMessage>(this, _ => Refresh());
+            MessengerInstance.Register<RefreshCurrentViewMessage>(this, _ =>
+            {
+                if (!isLoading)
+                {
+                    Refresh();
+                }
+            });
         }
 
-        public void Refresh()
+        public async void Refresh()
         {
+            isLoading = true;
             Authors.Clear();
-            LoadAuthors();
+            await LoadAuthors();
         }
 
+        private volatile bool isLoading;
         public ICommand GoToAuthor => new RelayCommand<Author>(a => Messenger.Default.Send(new AuthorSelectedMessage(a)));
 
-        private async void LoadAuthors()
+        private async Task LoadAuthors()
         {
             using var uow = await App.UnitOfWorkFactory.CreateAsync();
             var result = string.IsNullOrWhiteSpace(SearchText)
@@ -87,17 +95,30 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             foreach (var item in result)
             {
                 Authors.Add(item);
+                await Task.Delay(7);
             }
 
             foreach (var item in result)
             {
                 item.NumberOfBooks = await uow.AuthorRepository.CountBooksByAuthorAsync(item.Id);
             }
+
+            isLoading = false;
         }
 
         public void Clear()
         {
             Authors.Clear();
+        }
+
+        public Func<IViewer> GetCloneFunction(Selector selector)
+        {
+            return () => new AuthorViewerViewModel();
+        }
+
+        public void Dispose()
+        {
+            MessengerInstance.Unregister(this);
         }
     }
 }

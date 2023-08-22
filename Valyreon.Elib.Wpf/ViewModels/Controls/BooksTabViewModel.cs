@@ -2,7 +2,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using MahApps.Metro.IconPacks;
 using Valyreon.Elib.DataLayer;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.Mvvm;
@@ -17,7 +16,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
     {
         private readonly PaneMainItem selectedMainItem;
         private readonly Selector selector;
-        private readonly ViewerHistory history = new ViewerHistory();
+        private readonly ViewerHistory history = new();
         private string caption = "Books";
         private IViewer currentViewer;
         private bool isSelectedMainAdded;
@@ -28,7 +27,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         public BooksTabViewModel()
         {
             selector = new Selector();
-            selectedMainItem = new PaneMainItem("Selected", PackIconFontAwesomeKind.CheckDoubleSolid, "Selected Books", new FilterParameters { Selected = true });
+            selectedMainItem = new PaneMainItem("Selected", "Selected Books", new FilterParameters { Selected = true });
 
             MessengerInstance.Register<AuthorSelectedMessage>(this, HandleAuthorSelection);
             MessengerInstance.Register<BookSelectedMessage>(this, HandleBookChecked);
@@ -44,10 +43,10 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             MainPaneItems = new ObservableCollection<PaneMainItem>
             {
-                new PaneMainItem("All", PackIconBoxIconsKind.SolidBook, "All Books", null),
-                new PaneMainItem("Favorite", PackIconFontAwesomeKind.StarSolid, "Favorite Books", new FilterParameters { Favorite = true }),
-                new PaneMainItem("Authors", PackIconFontAwesomeKind.PersonBoothSolid, "Authors", null),
-                new PaneMainItem("Series", PackIconFontAwesomeKind.LinkSolid, "Series", null)
+                new PaneMainItem("All", "All Books", null),
+                new PaneMainItem("Favorite", "Favorite Books", new FilterParameters { Favorite = true }),
+                new PaneMainItem("Authors", "Authors", null),
+                new PaneMainItem("Series", "Series", null)
             };
             SelectedMainPaneItem = MainPaneItems[0];
             PaneSelectionChanged();
@@ -59,7 +58,14 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         public async void CollectionsRefreshHandler(RefreshSidePaneCollectionsMessage msg)
         {
             using var uow = await App.UnitOfWorkFactory.CreateAsync();
-            Collections = new ObservableCollection<UserCollection>(await uow.CollectionRepository.GetAllAsync());
+            var collections = await uow.CollectionRepository.GetAllAsync(new QueryParameters
+            {
+                SortBy = new()
+                {
+                    PropertyName = "Tag"
+                }
+            });
+            Collections = new ObservableCollection<UserCollection>(collections);
             RaisePropertyChanged(() => Collections);
         }
 
@@ -67,8 +73,10 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         private async void SetCurrentViewer(IViewer value)
         {
+            CurrentViewer?.Dispose();
+            value.Back = history.Count > 0 ? GoToPreviousViewer : null;
             Set(() => CurrentViewer, ref currentViewer, value);
-            await Task.Delay(20);
+            await Task.Delay(10);
             CurrentViewer.Refresh();
         }
 
@@ -146,7 +154,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 return;
             }
 
-            SetCurrentViewer(history.Pop());
+            SetCurrentViewer(history.Pop()());
         }
 
         private void HandleAuthorSelection(AuthorSelectedMessage obj)
@@ -157,7 +165,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 return;
             }
 
-            var temp = CurrentViewer;
+            history.Push(CurrentViewer.GetCloneFunction(selector));
 
             var filter = new FilterParameters
             {
@@ -169,9 +177,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 Caption = viewerCaption,
                 Back = GoToPreviousViewer
             };
-            SetCurrentViewer(newViewer);
 
-            history.Push(temp);
+            SetCurrentViewer(newViewer);
         }
 
         private void HandleSeriesSelection(SeriesSelectedMessage obj)
@@ -191,12 +198,9 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             {
                 SeriesId = obj.Series.Id
             };
-
-            var temp = CurrentViewer;
+            history.Push(CurrentViewer.GetCloneFunction(selector));
 
             SetCurrentViewer(new BookViewerViewModel(filter, selector) { Caption = viewerCaption, Back = GoToPreviousViewer });
-
-            history.Push(temp);
         }
 
         private void PaneSelectionChanged()

@@ -125,6 +125,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             }
         }
 
+        [RegularExpression(@"^\d*(\.\d)?$")]
         public string SeriesNumberFieldText
         {
             get => seriesNumberFieldText;

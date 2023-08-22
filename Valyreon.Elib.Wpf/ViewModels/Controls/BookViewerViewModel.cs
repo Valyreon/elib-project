@@ -47,7 +47,13 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             this.selector = selector;
             ApplyFilterOptionsToFilter(filterOptions, filter);
             UpdateSubcaption();
-            MessengerInstance.Register<RefreshCurrentViewMessage>(this, _ => Refresh());
+            MessengerInstance.Register<RefreshCurrentViewMessage>(this, _ =>
+            {
+                if (!isLoading)
+                {
+                    Refresh();
+                }
+            });
         }
 
         public ICommand BackCommand => new RelayCommand(Back);
@@ -210,6 +216,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 Messenger.Default.Send(new ShowBookDetailsMessage(arg));
             }
         }
+
         private async void LoadMore()
         {
             if (dontLoad)
@@ -252,10 +259,15 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 Books.Add(book);
                 await Task.Delay(10);
             }
+
+            IsResultEmpty = Books.Count == 0;
+            isLoading = false;
         }
+        private volatile bool isLoading;
 
         public void Refresh()
         {
+            isLoading = true;
             ScrollVertical = 0;
             Books.Clear();
             UpdateSubcaption();
@@ -271,7 +283,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                     filterOptions = f;
                     ApplyFilterOptionsToFilter(f, filter);
                     Refresh();
-                    LoadMore();
                 })
             };
             await DialogCoordinator.Instance.ShowMetroDialogAsync(System.Windows.Application.Current.MainWindow.DataContext, dialog);
@@ -363,6 +374,18 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             {
                 SubCaption += ", filter is applied";
             }
+        }
+
+        public Func<IViewer> GetCloneFunction(Selector selector)
+        {
+            var filterClone = Filter with { };
+            var caption = this.caption;
+            return () => new BookViewerViewModel(filterClone, selector) { Caption = caption };
+        }
+
+        public void Dispose()
+        {
+            MessengerInstance.Unregister(this);
         }
     }
 }

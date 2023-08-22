@@ -221,5 +221,10 @@ namespace Valyreon.Elib.Wpf.Themes.CustomComponents.Controls
                 Process.Start("explorer.exe", "/select, " + $@"""{TileParameter.Path}""");
             }
         }
+
+        private void TheTile_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            TileCommand.Execute(TileParameter);
+        }
     }
 }

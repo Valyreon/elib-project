@@ -18,7 +18,7 @@
 
     <UserControl.Resources>
         <Converters:ImageConverter x:Key="ImageConverter" />
-        <Converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+        <Converters:StringToInverseVisibilityConverter x:Key="StringToVisibilityConverter" />
         <Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <Converters:BoolToInverseVisibilityConverter x:Key="BoolToInverseVisibilityConverter" />
     </UserControl.Resources>
@@ -29,7 +29,8 @@
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
-            <RowDefinition Height="7*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="30" />
             <RowDefinition Height="30" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
@@ -37,24 +38,26 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="210" />
-                <ColumnDefinition Width="40" />
+                <ColumnDefinition Width="20" />
                 <ColumnDefinition Width="4*" />
                 <ColumnDefinition Width="40" />
-                <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
-                <RowDefinition Height="6*" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="1" Grid.Column="1">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
+                    <ColumnDefinition Width="200" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition MinHeight="260" MaxHeight="308" />
+                    <RowDefinition Height="300" />
+                    <RowDefinition Height="5" />
+                    <RowDefinition Height="25" />
+                    <RowDefinition Height="15" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <Border
@@ -62,143 +65,114 @@
                     HorizontalAlignment="Left"
                     BorderBrush="LightGray"
                     BorderThickness="1">
-                    <Image Margin="1" Source="{Binding Cover, Converter={StaticResource ImageConverter}, UpdateSourceTrigger=PropertyChanged}" />
+                    <Image Margin="0" Source="{Binding Cover, Converter={StaticResource ImageConverter}, UpdateSourceTrigger=PropertyChanged}" />
                 </Border>
-                <Grid Margin="0,6,0,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="60*" />
-                        <ColumnDefinition Width="28" />
-                        <ColumnDefinition Width="4" />
-                        <ColumnDefinition Width="28" />
-                        <ColumnDefinition Width="23*" />
-                    </Grid.ColumnDefinitions>
+                <Grid Grid.Row="4" Grid.Column="0">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="28" />
+                        <RowDefinition Height="30px" />
+                        <RowDefinition Height="30px" />
+                        <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <Components:DarkFlatSymbolButton
-                        Grid.Row="0"
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="30" />
+                        <ColumnDefinition Width="*" MaxWidth="210px" />
+                    </Grid.ColumnDefinitions>
+
+                    <CheckBox
+                        Focusable="False"
+                        IsChecked="{Binding IsReadCheck, UpdateSourceTrigger=PropertyChanged}"
+                        Style="{StaticResource CustomDarkCheckbox}" />
+                    <Label
                         Grid.Column="1"
-                        Width="26"
-                        Height="26"
+                        VerticalAlignment="Center"
+                        FontSize="15">
+                        Read
+                    </Label>
+
+                    <CheckBox
+                        Grid.Row="1"
+                        Focusable="False"
+                        IsChecked="{Binding IsFavoriteCheck, UpdateSourceTrigger=PropertyChanged}"
+                        Style="{StaticResource CustomDarkCheckbox}" />
+                    <Label
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        FontSize="15">
+                        Favorite
+                    </Label>
+                </Grid>
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="5" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Button
+                        Grid.Column="0"
+                        Height="25"
                         Command="{Binding ChangeCoverButtonCommand}"
-                        Icon="{x:Static iconPacks:PackIconMaterialKind.FileImage}"
-                        IconSize="14">
-                        <Components:DarkFlatSymbolButton.ToolTip>
-                            <ToolTip>
-                                Change cover
-                            </ToolTip>
-                        </Components:DarkFlatSymbolButton.ToolTip>
-                    </Components:DarkFlatSymbolButton>
-                    <Components:DarkFlatSymbolButton
-                        Grid.Row="0"
-                        Grid.Column="3"
-                        Width="26"
-                        Height="26"
+                        FontSize="12">
+                        CHANGE
+                    </Button>
+                    <Button
+                        Grid.Column="2"
+                        Height="25"
                         Command="{Binding RemoveCoverButtonCommand}"
-                        Icon="{x:Static iconPacks:PackIconJamIconsKind.CloseCircle}"
-                        IconSize="14">
-                        <Components:DarkFlatSymbolButton.ToolTip>
-                            <ToolTip>
-                                Remove cover
-                            </ToolTip>
-                        </Components:DarkFlatSymbolButton.ToolTip>
-                    </Components:DarkFlatSymbolButton>
+                        FontSize="12">
+                        CLEAR
+                    </Button>
                 </Grid>
             </Grid>
+
             <Grid Grid.Row="1" Grid.Column="3">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50" />
                     <RowDefinition Height="50" />
-                    <RowDefinition Height="2*" />
-                    <RowDefinition Height="3*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="15" />
+                    <RowDefinition Height="230" />
                 </Grid.RowDefinitions>
-                <Components:BetterTextbox
+                <Components:ElibTextBox
                     Grid.Row="0"
                     Height="35"
+                    VerticalContentAlignment="Center"
                     Background="Transparent"
+                    FontFamily="Segoe UI Semibold"
                     FontSize="13"
-                    Icon="{x:Static iconPacks:PackIconUniconsKind.BookAlt}"
-                    IconMargin="8,11,0,0"
-                    IconSize="14"
-                    Text="{Binding TitleFieldText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                    TextboxPadding="28,0,0,0"
-                    WatermarkText="Title">
-                    <Components:BetterTextbox.ToolTip>
-                        <ToolTip>
-                            Title of the book
-                        </ToolTip>
-                    </Components:BetterTextbox.ToolTip>
-                </Components:BetterTextbox>
+                    Placeholder="Title"
+                    Text="{Binding TitleFieldText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                 <Grid Grid.Row="1">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="7" />
-                        <ColumnDefinition Width="26" />
-                        <ColumnDefinition Width="7" />
+                        <ColumnDefinition Width="*" MaxWidth="350" />
+                        <ColumnDefinition Width="10" />
+                        <ColumnDefinition Width="60" />
+                        <ColumnDefinition Width="10" />
+                        <ColumnDefinition Width="60" />
+                        <ColumnDefinition Width="10" />
                         <ColumnDefinition Width="40" />
                     </Grid.ColumnDefinitions>
-                    <Grid Grid.Column="0">
-                        <Grid>
-                            <!--<iconPacks:PackIconControl
-                                Width="14"
-                                Height="14"
-                                VerticalAlignment="Center"
-                                Kind="{x:Static iconPacks:PackIconUniconsKind.Link}" />
-                            <TextBlock
-                                Margin="10,0,0,0"
-                                VerticalAlignment="Center"
-                                FontSize="15"
-                                Foreground="{Binding SeriesColor}"
-                                Text="{Binding Series.Name, FallbackValue='No series selected.'}">
-                                <TextBlock.ToolTip>
-                                    <ToolTip>
-                                        Book series
-                                    </ToolTip>
-                                </TextBlock.ToolTip>
-                            </TextBlock>-->
-                            <Components:BetterTextbox
-                                Grid.Row="0"
-                                Height="35"
-                                Background="Transparent"
-                                Cursor="Arrow"
-                                Focusable="False"
-                                FontSize="13"
-                                Icon="{x:Static iconPacks:PackIconUniconsKind.Link}"
-                                IconMargin="8,11,0,0"
-                                IconSize="14"
-                                IsReadOnly="True"
-                                Text="{Binding Series.Name}"
-                                TextboxPadding="28,0,0,0"
-                                WatermarkText="No series selected.">
-                                <Components:BetterTextbox.ToolTip>
-                                    <ToolTip>
-                                        Book series
-                                    </ToolTip>
-                                </Components:BetterTextbox.ToolTip>
-                            </Components:BetterTextbox>
-                        </Grid>
-                    </Grid>
-                    <Components:DarkFlatSymbolButton
+                    <Components:ElibTextBox
+                        Grid.Row="0"
+                        Height="35"
+                        Background="Transparent"
+                        Cursor="Arrow"
+                        Focusable="False"
+                        FontFamily="Segoe UI Semibold"
+                        IsReadOnly="True"
+                        Placeholder="No series selected."
+                        Text="{Binding Series.Name}" />
+                    <Button
                         x:Name="SeriesOptionsButton"
                         Grid.Column="2"
-                        Width="26"
-                        Height="26"
-                        HorizontalAlignment="Right"
+                        Height="25"
                         Focusable="False"
-                        Icon="{x:Static iconPacks:PackIconMicronsKind.OptionsVertical}"
-                        IconSize="16">
-                        <Components:DarkFlatSymbolButton.ToolTip>
-                            Edit series options
-                        </Components:DarkFlatSymbolButton.ToolTip>
+                        FontSize="12">
+                        ADD
                         <Button.ContextMenu>
-                            <ContextMenu x:Name="MainContextMenu">
-                                <MenuItem
-                                    Command="{Binding Source={StaticResource Proxy}, Path=Data.EditSeriesCommand}"
-                                    Header="Edit"
-                                    IsEnabled="{Binding Source={StaticResource Proxy}, Path=Data.IsSeriesSelected}" />
-                                <MenuItem Command="{Binding Source={StaticResource Proxy}, Path=Data.CreateNewSeriesCommand}" Header="Create new" />
-                                <MenuItem Command="{Binding Source={StaticResource Proxy}, Path=Data.ChooseExistingSeriesCommand}" Header="Choose existing" />
-                                <MenuItem Command="{Binding Source={StaticResource Proxy}, Path=Data.ClearSeriesCommand}" Header="Clear" />
+                            <ContextMenu x:Name="SeriesContextMenu">
+                                <MenuItem Command="{Binding Source={StaticResource Proxy}, Path=Data.CreateNewSeriesCommand}" Header="New" />
+                                <MenuItem Command="{Binding Source={StaticResource Proxy}, Path=Data.ChooseExistingSeriesCommand}" Header="Existing" />
                             </ContextMenu>
                         </Button.ContextMenu>
                         <Button.Triggers>
@@ -206,7 +180,7 @@
                                 <EventTrigger.Actions>
                                     <BeginStoryboard>
                                         <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="MainContextMenu" Storyboard.TargetProperty="(ContextMenu.IsOpen)">
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="SeriesContextMenu" Storyboard.TargetProperty="(ContextMenu.IsOpen)">
                                                 <DiscreteObjectKeyFrame KeyTime="0:0:0">
                                                     <DiscreteObjectKeyFrame.Value>
                                                         <sys:Boolean>True</sys:Boolean>
@@ -218,76 +192,73 @@
                                 </EventTrigger.Actions>
                             </EventTrigger>
                         </Button.Triggers>
-                    </Components:DarkFlatSymbolButton>
-                    <Components:BetterTextbox
+                    </Button>
+                    <Button
                         Grid.Column="4"
+                        Height="25"
+                        Command="{Binding ClearSeriesCommand}"
+                        Focusable="False"
+                        FontSize="12">
+                        CLEAR
+                    </Button>
+                    <Components:ElibTextBox
+                        Grid.Column="6"
                         Height="35"
                         Background="Transparent"
                         Focusable="{Binding IsSeriesSelected}"
-                        FontSize="14"
-                        IconVisible="False"
+                        FontFamily="Segoe UI Semibold"
+                        FontSize="13"
                         IsEnabled="{Binding IsSeriesSelected}"
+                        Placeholder="##"
+                        PreviewTextInput="SeriesNumberField_PreviewTextInput"
                         Text="{Binding SeriesNumberFieldText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                        Visibility="{Binding IsSeriesSelected, Converter={StaticResource BooleanToVisibilityConverter}}"
-                        WatermarkText="#">
-                        <Components:BetterTextbox.ToolTip>
-                            <ToolTip>
-                                Number in the series
-                            </ToolTip>
-                        </Components:BetterTextbox.ToolTip>
-                    </Components:BetterTextbox>
+                        Visibility="{Binding IsSeriesSelected, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 </Grid>
                 <Grid Grid.Row="2" Margin="0,10,0,0">
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" MaxWidth="300" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <StackPanel x:Name="AuthorsPart">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="30" />
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="26" />
-                                <ColumnDefinition Width="4" />
-                                <ColumnDefinition Width="26" />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <iconPacks:PackIconFontAwesome
-                                Width="20"
-                                Height="15"
-                                Margin="0,0,10,3"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Foreground="WhiteSmoke"
-                                Kind="UsersSolid" />
                             <TextBlock
-                                Grid.Column="1"
+                                Grid.Column="0"
                                 FontSize="16"
                                 Text="Authors:" />
-                            <Components:DarkFlatSymbolButton
+                            <Button
+                                x:Name="AuthorsOptionsButton"
                                 Grid.Column="2"
-                                Width="26"
-                                Height="26"
-                                Command="{Binding AddNewAuthorButtonCommand}"
-                                Icon="{x:Static iconPacks:PackIconEvaIconsKind.Plus}"
-                                IconSize="16">
-                                <Components:DarkFlatSymbolButton.ToolTip>
-                                    <ToolTip>
-                                        Add new author
-                                    </ToolTip>
-                                </Components:DarkFlatSymbolButton.ToolTip>
-                            </Components:DarkFlatSymbolButton>
-                            <Components:DarkFlatSymbolButton
-                                Grid.Column="4"
-                                Width="26"
-                                Height="26"
-                                Command="{Binding AddExistingAuthorButtonCommand}"
-                                Icon="{x:Static iconPacks:PackIconEvaIconsKind.PersonAdd}"
-                                IconSize="16">
-                                <Components:DarkFlatSymbolButton.ToolTip>
-                                    <ToolTip>
-                                        Add existing author
-                                    </ToolTip>
-                                </Components:DarkFlatSymbolButton.ToolTip>
-                            </Components:DarkFlatSymbolButton>
+                                Height="25"
+                                FontSize="12">
+                                ADD
+                                <Button.ContextMenu>
+                                    <ContextMenu x:Name="AuthorsContextMenu">
+                                        <MenuItem Command="{Binding Source={StaticResource Proxy}, Path=Data.AddNewAuthorButtonCommand}" Header="New" />
+                                        <MenuItem Command="{Binding Source={StaticResource Proxy}, Path=Data.AddExistingAuthorButtonCommand}" Header="Existing" />
+                                    </ContextMenu>
+                                </Button.ContextMenu>
+                                <Button.Triggers>
+                                    <EventTrigger RoutedEvent="Button.Click" SourceName="AuthorsOptionsButton">
+                                        <EventTrigger.Actions>
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="AuthorsContextMenu" Storyboard.TargetProperty="(ContextMenu.IsOpen)">
+                                                        <DiscreteObjectKeyFrame KeyTime="0:0:0">
+                                                            <DiscreteObjectKeyFrame.Value>
+                                                                <sys:Boolean>True</sys:Boolean>
+                                                            </DiscreteObjectKeyFrame.Value>
+                                                        </DiscreteObjectKeyFrame>
+                                                    </ObjectAnimationUsingKeyFrames>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger.Actions>
+                                    </EventTrigger>
+                                </Button.Triggers>
+                            </Button>
                         </Grid>
                         <ScrollViewer MaxHeight="122px" VerticalScrollBarVisibility="Auto">
                             <ItemsControl Margin="0,0,0,3" ItemsSource="{Binding AuthorsCollection}">
@@ -354,27 +325,20 @@
                         </ScrollViewer>
                     </StackPanel>
                 </Grid>
-                <Grid Grid.Row="3">
+                <Grid Grid.Row="4">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="30" />
-                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" MaxHeight="200" />
                     </Grid.RowDefinitions>
-                    <StackPanel Grid.Row="0" Orientation="Horizontal">
-                        <iconPacks:PackIconFontAwesome
-                            Grid.Column="0"
-                            Width="20"
-                            Height="15"
-                            Margin="0,4,5,0"
-                            Foreground="WhiteSmoke"
-                            Kind="AlignJustifySolid" />
-                        <TextBlock
-                            Grid.Column="1"
-                            FontSize="16"
-                            Text="Description:" />
-                    </StackPanel>
-                    <TextBox
+                    <TextBlock
+                        Grid.Column="1"
+                        FontSize="16"
+                        Text="Description:" />
+                    <Components:ElibTextBox
                         Grid.Row="1"
+                        VerticalContentAlignment="Top"
                         AcceptsReturn="True"
+                        Background="Transparent"
                         FontFamily="Segoe UI Semibold"
                         FontSize="13"
                         HorizontalScrollBarVisibility="Disabled"
@@ -383,43 +347,9 @@
                         VerticalScrollBarVisibility="Auto" />
                 </Grid>
             </Grid>
-            <Grid Grid.Row="1" Grid.Column="5">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="30px" />
-                    <RowDefinition Height="30px" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="30" />
-                    <ColumnDefinition Width="*" MaxWidth="210px" />
-                </Grid.ColumnDefinitions>
 
-                <CheckBox
-                    Focusable="False"
-                    IsChecked="{Binding IsReadCheck, UpdateSourceTrigger=PropertyChanged}"
-                    Style="{StaticResource CustomDarkCheckbox}" />
-                <Label
-                    Grid.Column="1"
-                    VerticalAlignment="Center"
-                    FontSize="15">
-                    Read
-                </Label>
-
-                <CheckBox
-                    Grid.Row="1"
-                    Focusable="False"
-                    IsChecked="{Binding IsFavoriteCheck, UpdateSourceTrigger=PropertyChanged}"
-                    Style="{StaticResource CustomDarkCheckbox}" />
-                <Label
-                    Grid.Row="1"
-                    Grid.Column="1"
-                    VerticalAlignment="Center"
-                    FontSize="15">
-                    Favorite
-                </Label>
-            </Grid>
         </Grid>
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="150" />

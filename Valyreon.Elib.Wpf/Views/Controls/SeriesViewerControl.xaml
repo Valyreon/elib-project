@@ -51,7 +51,8 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="15" />
                         <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="*" MaxWidth="250" />
+                        <ColumnDefinition Width="15" />
                     </Grid.ColumnDefinitions>
                     <Border
                         Grid.Column="0"
@@ -101,13 +102,10 @@
                         Foreground="#484b4e"
                         Text="{Binding Caption}" />
 
-                    <TextBox
-                        Grid.Column="4"
+                    <Components:ElibTextBox
+                        Grid.Column="5"
                         Height="30"
-                        VerticalContentAlignment="Center"
-                        FontFamily="Segoe UI"
-                        FontSize="14"
-                        Foreground="Black"
+                        Placeholder="Search"
                         Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Delay=300}" />
                 </Grid>
             </Border>

@@ -25,7 +25,11 @@ namespace Valyreon.Elib.Domain
         public int NumberOfBooks
         {
             get => numberOfBooks;
-            set => Set(() => NumberOfBooks, ref numberOfBooks, value);
+            set
+            {
+                Set(() => NumberOfBooks, ref numberOfBooks, value);
+                RaisePropertyChanged(() => NumberOfBooksString);
+            }
         }
 
         public string NumberOfBooksString => NumberOfBooks == 1 ? "1 book" : NumberOfBooks + " books";

@@ -26,7 +26,7 @@
 
     <UserControl.Resources>
         <Converters:ImageConverter x:Key="ImageConverter" />
-        <Converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+        <Converters:StringToInverseVisibilityConverter x:Key="StringToVisibilityConverter" />
         <Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <Converters:BoolToInverseVisibilityConverter x:Key="BoolToInverseVisibilityConverter" />
         <Converters:BoolToInverseBoolConverter x:Key="BoolToInverseBoolConverter" />

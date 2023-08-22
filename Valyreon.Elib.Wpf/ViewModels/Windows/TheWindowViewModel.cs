@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -52,7 +53,19 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
         public ICommand EscKeyCommand => new RelayCommand(ProcessEscKey);
         public ICommand OpenSettingsCommand => new RelayCommand(HandleOpenSettings);
         public ICommand ScanForNewContentCommand => new RelayCommand(HandleScanForNewBooks);
-        public ICommand RefreshViewCommand => new RelayCommand(() => MessengerInstance.Send(new RefreshCurrentViewMessage()));
+        public ICommand RefreshViewCommand => new RelayCommand(HandleRefreshView);
+
+        private static DateTime lastRefresh = DateTime.MinValue;
+        private static readonly TimeSpan refreshPause = new TimeSpan(0, 0, 0, 0, 500);
+        public void HandleRefreshView()
+        {
+            if (DateTime.Now - lastRefresh > refreshPause)
+            {
+                MessengerInstance.Send(new RefreshCurrentViewMessage());
+                lastRefresh = DateTime.Now;
+            } 
+        }
+
 
         private async void HandleOpenSettings()
         {

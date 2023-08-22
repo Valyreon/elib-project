@@ -91,10 +91,8 @@
                             Command="{Binding EditButtonCommand}"
                             Content="Edit"
                             Focusable="False"
-                            
                             FontSize="12"
-                            Style="{StaticResource MahApps.Styles.Button}"
-                             />
+                            Style="{StaticResource MahApps.Styles.Button}" />
 
                         <Button
                             Grid.Row="4"
@@ -104,10 +102,8 @@
                             Command="{Binding ShowFileInfoCommand}"
                             Content="File Info"
                             Focusable="False"
-                            
                             FontSize="12"
-                            Style="{StaticResource MahApps.Styles.Button}"
-                             />
+                            Style="{StaticResource MahApps.Styles.Button}" />
 
                         <Button
                             Grid.Row="5"
@@ -117,26 +113,22 @@
                             Command="{Binding ExportButtonCommand}"
                             Content="Export"
                             Focusable="False"
-                            
                             FontSize="12"
-                            Style="{StaticResource MahApps.Styles.Button}"
-                             />
+                            Style="{StaticResource MahApps.Styles.Button}" />
                     </Grid>
                     <StackPanel
                         Grid.Column="1"
                         Margin="0,0,10,0"
                         Orientation="Vertical">
-                        <TextBlock
-                                FontSize="22"
-                                Text="{Binding Book.Title}" />
+                        <TextBlock FontSize="22" Text="{Binding Book.Title}" />
                         <Components:TextLinkButton
-                                Command="{Binding GoToSeries}"
-                                CommandParameter="{Binding Book.Series}"
-                                FontSize="18"
-                                Foreground="Gray"
-                                Style="{DynamicResource BookDetailsSubLinkGrayStyle}"
-                                Text="{Binding Book.SeriesInfo}"
-                                Visibility="{Binding Book.SeriesInfo, Converter={StaticResource StringToVisibilityConverter}}" />
+                            Command="{Binding GoToSeries}"
+                            CommandParameter="{Binding Book.Series}"
+                            FontSize="18"
+                            Foreground="Gray"
+                            Style="{DynamicResource BookDetailsSubLinkGrayStyle}"
+                            Text="{Binding Book.SeriesInfo}"
+                            Visibility="{Binding Book.SeriesInfo, Converter={StaticResource StringToVisibilityConverter}}" />
                         <StackPanel Orientation="Horizontal">
                             <TextBlock
                                 FontSize="16"
@@ -150,10 +142,11 @@
                                 Style="{DynamicResource BookDetailsSubLinkLightGrayStyle}"
                                 Text="{Binding Book.AuthorsInfo}" />
                         </StackPanel>
-                        <TextBlock Text="{Binding Book.Description}"
-                                   TextWrapping="Wrap"
-                                   Margin="0,15,0,0"
-                                   FontSize="13"/>
+                        <TextBlock
+                            Margin="0,15,0,0"
+                            FontSize="13"
+                            Text="{Binding Book.Description}"
+                            TextWrapping="Wrap" />
                     </StackPanel>
                     <StackPanel Grid.Column="2" Orientation="Vertical">
                         <!--<Grid.RowDefinitions>
@@ -228,16 +221,16 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                        <TextBox
+                        <Components:ElibTextBox
                             x:Name="addCollectionTextBox"
                             Grid.Row="2"
                             Width="200"
-                            Margin="0,5,0,0"
-                            Controls:TextBoxHelper.Watermark="Add collection..."
-                            Controls:TextBoxHelper.WatermarkAlignment="Center"
-                            
-                            FontSize="14"
+                            Height="30"
+                            VerticalContentAlignment="Center"
+                            Background="Transparent"
+                            FontSize="13"
                             Foreground="#888"
+                            Placeholder="Add collection"
                             Text="{Binding AddCollectionFieldText}">
                             <TextBox.InputBindings>
                                 <KeyBinding
@@ -245,7 +238,7 @@
                                     Command="{Binding AddCollectionCommand}"
                                     CommandParameter="{Binding Text, ElementName=addCollectionTextBox}" />
                             </TextBox.InputBindings>
-                        </TextBox>
+                        </Components:ElibTextBox>
                     </StackPanel>
                 </Grid>
             </Grid>

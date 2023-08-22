@@ -8,17 +8,17 @@ using Valyreon.Elib.Domain;
 using Valyreon.Elib.Mvvm;
 using Valyreon.Elib.Mvvm.Messaging;
 using Valyreon.Elib.Wpf.Messages;
+using Valyreon.Elib.Wpf.Models;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Controls
 {
     public class SeriesViewerViewModel : ViewModelBase, IViewer
     {
         private bool isResultEmpty;
-        private string caption;
+        private string caption = "Series";
 
         public ObservableCollection<BookSeries> Series { get; set; } = new ObservableCollection<BookSeries>();
 
-        public ICommand LoadCommand => new RelayCommand(LoadSeries);
         public ICommand BackCommand => new RelayCommand(Back);
 
         public string Caption
@@ -60,7 +60,13 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         public SeriesViewerViewModel()
         {
-            MessengerInstance.Register<RefreshCurrentViewMessage>(this, _ => Refresh());
+            MessengerInstance.Register<RefreshCurrentViewMessage>(this, _ =>
+            {
+                if (!isLoading)
+                {
+                    Refresh();
+                }
+            });
         }
 
         public void Clear()
@@ -68,8 +74,11 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             Series.Clear();
         }
 
+        private volatile bool isLoading;
+
         public void Refresh()
         {
+            isLoading = true;
             Series.Clear();
             LoadSeries();
         }
@@ -92,12 +101,25 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             foreach (var item in x)
             {
                 Series.Add(item);
+                await Task.Delay(7);
             }
 
             foreach (var item in x)
             {
                 item.NumberOfBooks = await uow.SeriesRepository.CountBooksInSeriesAsync(item.Id);
             }
+
+            isLoading = false;
+        }
+
+        public Func<IViewer> GetCloneFunction(Selector selector)
+        {
+            return () => new SeriesViewerViewModel();
+        }
+
+        public void Dispose()
+        {
+            MessengerInstance.Unregister(this);
         }
     }
 }

@@ -5,6 +5,7 @@
     xmlns:Components="clr-namespace:Valyreon.Elib.Wpf.CustomComponents"
     xmlns:Converters="clr-namespace:Valyreon.Elib.Wpf.Converters"
     xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:animations="clr-namespace:Valyreon.Elib.Wpf.Animations"
     xmlns:attachedProperties="clr-namespace:Valyreon.Elib.Wpf.AttachedProperties"
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks">
 
@@ -13,6 +14,7 @@
             <Converters:ImageConverter x:Key="ImageConverter" />
             <Converters:BoolToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
             <BookTileConverters:StringToBoolConverter x:Key="StringToBoolConverter" />
+            <Converters:StringToInverseVisibilityConverter x:Key="StringToInverseVisibilityConverter" />
         </ResourceDictionary>
     </ResourceDictionary.MergedDictionaries>
 
@@ -524,4 +526,74 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style x:Name="DefaultElibTextBoxStyle" TargetType="{x:Type Components:ElibTextBox}">
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="MinWidth" Value="30" />
+        <Setter Property="MinHeight" Value="20" />
+        <Setter Property="AllowDrop" Value="true" />
+        <Setter Property="BorderBrush" Value="#ccc" />
+        <Setter Property="CaretBrush" Value="{DynamicResource AccentColorBrush}" />
+        <Setter Property="Background" Value="White" />
+        <Setter Property="TextWrapping" Value="NoWrap" />
+        <Setter Property="FontFamily" Value="Segoe UI" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Validation.ErrorTemplate">
+            <Setter.Value>
+                <ControlTemplate />
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TextBoxBase}">
+                    <Border
+                        Name="Border"
+                        Padding="3,0"
+                        Background="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}"
+                        BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource TemplatedParent}}"
+                        BorderThickness="1"
+                        CornerRadius="2">
+                        <Grid>
+                            <TextBlock
+                                x:Name="placeholderText"
+                                Padding="3,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                FontSize="{Binding FontSize, RelativeSource={RelativeSource TemplatedParent}}"
+                                Foreground="DimGray"
+                                Text="{Binding Placeholder, RelativeSource={RelativeSource TemplatedParent}}"
+                                TextWrapping="{Binding TextWrapping, RelativeSource={RelativeSource TemplatedParent}}"
+                                Visibility="{Binding Text, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource StringToInverseVisibilityConverter}}" />
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="0" />
+                        </Grid>
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="Disabled" />
+                                <VisualState x:Name="ReadOnly">
+                                    <Storyboard />
+                                </VisualState>
+                                <VisualState x:Name="Selected">
+                                    <Storyboard />
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsFocused" Value="True">
+                            <Setter TargetName="placeholderText" Property="Foreground" Value="LightGray" />
+                            <Setter TargetName="Border" Property="BorderBrush" Value="CornflowerBlue" />
+                        </Trigger>
+                        <Trigger Property="Validation.HasError" Value="True">
+                            <Setter TargetName="Border" Property="BorderBrush" Value="Red" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 </ResourceDictionary>
