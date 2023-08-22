@@ -71,27 +71,11 @@ namespace Valyreon.Elib.DataLayer.Repositories
                 queryBuilder.Append(')');
             }
 
-            if (filter.SearchParameters != null && !string.IsNullOrWhiteSpace(filter.SearchParameters.Token))
+            if (!string.IsNullOrWhiteSpace(filter.SearchText))
             {
                 queryBuilder.Append(' ').Append(conditionSet ? " AND " : " WHERE ").Append(" (");
-                var searchAdded = false;
-                parameters.Add("@Token", $"%{filter.SearchParameters.Token}%");
-                if (filter.SearchParameters.SearchByTitle)
-                {
-                    queryBuilder.Append("Title LIKE @Token");
-                    searchAdded = true;
-                }
-
-                if (filter.SearchParameters.SearchByAuthor)
-                {
-                    queryBuilder.Append(searchAdded ? " OR " : "").Append("AuthorName LIKE @Token");
-                    searchAdded = true;
-                }
-
-                if (filter.SearchParameters.SearchBySeries)
-                {
-                    queryBuilder.Append(searchAdded ? " OR " : "").Append("SeriesName LIKE @Token");
-                }
+                parameters.Add("@Token", $"%{filter.SearchText}%");
+                queryBuilder.Append("Title LIKE @Token OR AuthorName LIKE @Token OR SeriesName LIKE @Token");
                 queryBuilder.Append(')');
             }
 

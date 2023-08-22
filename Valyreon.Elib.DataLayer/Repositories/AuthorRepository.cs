@@ -43,6 +43,12 @@ namespace Valyreon.Elib.DataLayer.Repositories
             return result ?? await Connection.QueryFirstOrDefaultAsync<Author>("SELECT * FROM Authors WHERE Name = @AuthorName LIMIT 1", new { AuthorName = name }, Transaction);
         }
 
+        public async Task<IEnumerable<Author>> SearchAsync(string token)
+        {
+            var result = await Connection.QueryAsync<Author>("SELECT * FROM Authors WHERE Name LIKE @Token", new { Token = $"%{token}%" }, Transaction);
+            return Cache.FilterAndUpdateCache(result);
+        }
+
         public async Task RemoveAuthorForBookAsync(Author author, int bookId)
         {
             await Connection.ExecuteAsync("DELETE FROM AuthorBooks WHERE AuthorId = @AuthorId AND BookId = @BookId", new { AuthorId = author.Id, BookId = bookId }, Transaction);

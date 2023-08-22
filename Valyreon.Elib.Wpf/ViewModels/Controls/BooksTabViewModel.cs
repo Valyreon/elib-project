@@ -20,10 +20,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         private readonly ViewerHistory history = new ViewerHistory();
         private string caption = "Books";
         private IViewer currentViewer;
-        private bool isInSearchResults;
         private bool isSelectedMainAdded;
 
-        private SearchParameters searchOptions;
         private UserCollection selectedCollection;
         private PaneMainItem selectedMainPaneItem;
 
@@ -53,7 +51,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             };
             SelectedMainPaneItem = MainPaneItems[0];
             PaneSelectionChanged();
-            SearchOptions = new SearchParameters();
             MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
         }
 
@@ -80,16 +77,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         public ObservableCollection<PaneMainItem> MainPaneItems { get; set; }
 
         public ICommand PaneSelectionChangedCommand => new RelayCommand(PaneSelectionChanged);
-
-        public ICommand SearchCheckboxChangedCommand => new RelayCommand(ProcessSearchCheckboxChanged);
-
-        public ICommand SearchCommand => new RelayCommand<string>(ProcessSearchInput);
-
-        public SearchParameters SearchOptions
-        {
-            get => searchOptions;
-            set => Set(() => SearchOptions, ref searchOptions, value);
-        }
 
         public UserCollection SelectedCollection
         {
@@ -151,43 +138,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             SelectedCollection = Collections.FirstOrDefault(c => c.Id == message.CollectionId);
         }
 
-        private async void ProcessSearchInput(string token)
-        {
-            if (string.IsNullOrWhiteSpace(token))
-            {
-                return;
-            }
-
-            token = token.ToLower();
-            SearchOptions.Token = token;
-
-            var resultViewModel = await CurrentViewer.Search(SearchOptions);
-
-            if (resultViewModel == null)
-            {
-                MessengerInstance.Send(new ShowDialogMessage("No matches", "No books found matching the search conditions."));
-            }
-            else
-            {
-                resultViewModel.Back = GoToPreviousViewer;
-                var temp = currentViewer;
-                SetCurrentViewer(resultViewModel);
-                if (!isInSearchResults)
-                {
-                    history.Push(temp);
-                }
-
-                isInSearchResults = true;
-            }
-        }
-
-        private void ProcessSearchCheckboxChanged()
-        {
-            if (!SearchOptions.SearchByTitle && !SearchOptions.SearchByAuthor && !SearchOptions.SearchBySeries)
-            {
-                SearchOptions = new SearchParameters();
-            }
-        }
 
         private void GoToPreviousViewer()
         {
@@ -196,8 +146,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 return;
             }
 
-            isInSearchResults = false;
-            SearchOptions.Token = "";
             SetCurrentViewer(history.Pop());
         }
 
@@ -260,7 +208,9 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             history.Clear();
 
-            var filter = SelectedMainPaneItem.Filter?.Clone() ?? new FilterParameters();
+            var filter = SelectedMainPaneItem.Filter != null
+                ? SelectedMainPaneItem.Filter with { }
+                : new FilterParameters();
 
 
             if (SelectedMainPaneItem.PaneCaption == "Authors")

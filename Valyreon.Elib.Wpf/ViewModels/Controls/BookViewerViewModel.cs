@@ -1,24 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics.Metrics;
-using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Threading;
 using MahApps.Metro.Controls.Dialogs;
 using Valyreon.Elib.DataLayer;
-using Valyreon.Elib.DataLayer.Extensions;
 using Valyreon.Elib.Domain;
-using Valyreon.Elib.EBookTools;
 using Valyreon.Elib.Mvvm;
 using Valyreon.Elib.Mvvm.Messaging;
 using Valyreon.Elib.Wpf.BindingItems;
-using Valyreon.Elib.Wpf.Extensions;
 using Valyreon.Elib.Wpf.Messages;
 using Valyreon.Elib.Wpf.Models;
 using Valyreon.Elib.Wpf.ViewModels.Dialogs;
@@ -155,6 +147,17 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             set => Set(() => SubCaption, ref subCaption, value);
         }
 
+        private string searchText;
+        public string SearchText
+        {
+            get => searchText;
+            set
+            {
+                Set(() => SearchText, ref searchText, value);
+                Filter = filter with { SearchText = value };
+            }
+        }
+
         public int CurrentCount => Books.Count;
 
         private void HandleSelectBook(Book obj)
@@ -257,38 +260,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             Books.Clear();
             UpdateSubcaption();
             LoadMore();
-        }
-
-        public async Task<IViewer> Search(SearchParameters searchOptions)
-        {
-            var filterWithSearch = filter.Clone();
-
-            if (!string.IsNullOrEmpty(searchOptions.Token))
-            {
-                filterWithSearch.SearchParameters = searchOptions.Clone();
-            }
-            else
-            {
-                return null;
-            }
-
-            var resultCount = 0;
-            using (var uow = await App.UnitOfWorkFactory.CreateAsync())
-            {
-                resultCount = await uow.BookRepository.CountAsync(filterWithSearch);
-            }
-
-            if (resultCount == 0)
-            {
-                return null;
-            }
-
-            var res = new BookViewerViewModel(filterWithSearch, selector)
-            {
-                Caption = $"Search results for '{searchOptions.Token}' in {Caption}"
-            };
-
-            return res;
         }
 
         private async void HandleFilter()

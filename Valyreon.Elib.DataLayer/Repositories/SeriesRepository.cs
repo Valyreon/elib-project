@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using Valyreon.Elib.DataLayer.Extensions;
 using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Domain;
 
@@ -25,6 +27,12 @@ namespace Valyreon.Elib.DataLayer.Repositories
             return cacheResult ?? await Connection.QueryFirstOrDefaultAsync<BookSeries>("SELECT * FROM Series WHERE Name = @Name LIMIT 1",
                 new { Name = name },
                 Transaction);
+        }
+
+        public async Task<IEnumerable<BookSeries>> SearchAsync(string token)
+        {
+            var result = await Connection.QueryAsync<BookSeries>("SELECT * FROM Series WHERE Name LIKE @Token", new { Token = $"%{token}%" }, Transaction);
+            return Cache.FilterAndUpdateCache(result);
         }
     }
 }

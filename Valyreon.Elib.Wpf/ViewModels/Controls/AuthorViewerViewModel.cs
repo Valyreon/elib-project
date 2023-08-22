@@ -18,13 +18,24 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         public ObservableCollection<Author> Authors { get; set; } = new ObservableCollection<Author>();
 
-        public ICommand LoadCommand => new RelayCommand(LoadAllAuthors);
+        public ICommand LoadCommand => new RelayCommand(LoadAuthors);
         public ICommand BackCommand => new RelayCommand(Back);
 
         public string Caption
         {
             get => caption;
             set => Set(() => Caption, ref caption, value);
+        }
+
+        private string searchText;
+        public string SearchText
+        {
+            get => searchText;
+            set
+            {
+                Set(() => SearchText, ref searchText, value);
+                Refresh();
+            }
         }
 
         public FilterParameters Filter => null;
@@ -55,38 +66,38 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         public void Refresh()
         {
             Authors.Clear();
-            LoadAllAuthors();
-        }
-
-        public Task<IViewer> Search(SearchParameters searchOptions)
-        {
-            throw new NotImplementedException();
+            LoadAuthors();
         }
 
         public ICommand GoToAuthor => new RelayCommand<Author>(a => Messenger.Default.Send(new AuthorSelectedMessage(a)));
 
-        private async void LoadAllAuthors()
+        private async void LoadAuthors()
         {
             using var uow = await App.UnitOfWorkFactory.CreateAsync();
-            var x = await uow.AuthorRepository.GetAllAsync();
+            var result = string.IsNullOrWhiteSpace(SearchText)
+                ? await uow.AuthorRepository.GetAllAsync()
+                : await uow.AuthorRepository.SearchAsync(SearchText);
 
-            if (!x.Any())
+            if (!result.Any())
             {
                 IsResultEmpty = true;
                 return;
             }
 
-            foreach (var item in x)
+            foreach (var item in result)
+            {
+                Authors.Add(item);
+            }
+
+            foreach (var item in result)
             {
                 item.NumberOfBooks = await uow.AuthorRepository.CountBooksByAuthorAsync(item.Id);
-                Authors.Add(item);
-                await Task.Delay(6);
             }
         }
 
         public void Clear()
         {
-            throw new NotImplementedException();
+            Authors.Clear();
         }
     }
 }

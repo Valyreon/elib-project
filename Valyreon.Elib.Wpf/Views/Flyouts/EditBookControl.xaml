@@ -116,7 +116,6 @@
                     Grid.Row="0"
                     Height="35"
                     Background="Transparent"
-                    
                     FontSize="13"
                     Icon="{x:Static iconPacks:PackIconUniconsKind.BookAlt}"
                     IconMargin="8,11,0,0"
@@ -163,7 +162,6 @@
                                 Background="Transparent"
                                 Cursor="Arrow"
                                 Focusable="False"
-                                
                                 FontSize="13"
                                 Icon="{x:Static iconPacks:PackIconUniconsKind.Link}"
                                 IconMargin="8,11,0,0"
@@ -361,7 +359,7 @@
                         <RowDefinition Height="30" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <StackPanel Orientation="Horizontal" Grid.Row="0">
+                    <StackPanel Grid.Row="0" Orientation="Horizontal">
                         <iconPacks:PackIconFontAwesome
                             Grid.Column="0"
                             Width="20"
@@ -369,16 +367,20 @@
                             Margin="0,4,5,0"
                             Foreground="WhiteSmoke"
                             Kind="AlignJustifySolid" />
-                        <TextBlock  FontSize="16" Grid.Column="1" Text="Description:"></TextBlock>
+                        <TextBlock
+                            Grid.Column="1"
+                            FontSize="16"
+                            Text="Description:" />
                     </StackPanel>
                     <TextBox
                         Grid.Row="1"
-                        TextWrapping="Wrap"
                         AcceptsReturn="True"
+                        FontFamily="Segoe UI Semibold"
+                        FontSize="13"
                         HorizontalScrollBarVisibility="Disabled"
-                        VerticalScrollBarVisibility="Auto"
                         Text="{Binding DescriptionFieldText}"
-                        FontFamily="Segoe UI" FontSize="12"/>
+                        TextWrapping="Wrap"
+                        VerticalScrollBarVisibility="Auto" />
                 </Grid>
             </Grid>
             <Grid Grid.Row="1" Grid.Column="5">

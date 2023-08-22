@@ -3,12 +3,34 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using VersOne.Epub;
+using VersOne.Epub.Options;
 
 namespace Valyreon.Elib.EBookTools.Epub
 {
     public class VersOneEpubParser : EbookParser
     {
         private readonly string filePath;
+
+        private static readonly EpubReaderOptions epubReaderOptions = new()
+        {
+            ContentDownloaderOptions = new()
+            {
+                DownloadContent = false
+            },
+            Epub2NcxReaderOptions = new()
+            {
+                IgnoreMissingContentForNavigationPoints = true
+            },
+            PackageReaderOptions = new()
+            {
+                IgnoreMissingToc = true,
+                SkipInvalidManifestItems = true
+            },
+            XmlReaderOptions = new()
+            {
+                SkipXmlHeaders = true
+            }
+        };
 
         public VersOneEpubParser(string filePath)
         {
@@ -22,7 +44,7 @@ namespace Valyreon.Elib.EBookTools.Epub
 
         public override ParsedBook Parse()
         {
-            var epubBook = EpubReader.ReadBook(filePath);
+            var epubBook = EpubReader.ReadBook(filePath, epubReaderOptions);
 
             var str = JsonSerializer.Serialize(epubBook.Schema, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(@"C:\Users\Luka\Desktop\log.txt", str);

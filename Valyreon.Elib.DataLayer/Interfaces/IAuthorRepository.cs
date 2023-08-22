@@ -11,6 +11,6 @@ namespace Valyreon.Elib.DataLayer.Interfaces
         Task<IEnumerable<Author>> GetAuthorsOfBookAsync(int bookId);
         Task<Author> GetAuthorWithNameAsync(string name);
         Task<int> CountBooksByAuthorAsync(int authorId);
-
+        Task<IEnumerable<Author>> SearchAsync(string token);
     }
 }

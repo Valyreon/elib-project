@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Valyreon.Elib.Domain;
 
@@ -7,5 +8,6 @@ namespace Valyreon.Elib.DataLayer.Interfaces
     {
         Task<BookSeries> GetByNameAsync(string name);
         Task<int> CountBooksInSeriesAsync(int seriesId);
+        Task<IEnumerable<BookSeries>> SearchAsync(string token);
     }
 }

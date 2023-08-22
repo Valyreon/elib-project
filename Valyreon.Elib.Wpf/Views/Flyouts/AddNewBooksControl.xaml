@@ -7,12 +7,12 @@
     xmlns:Components="clr-namespace:Valyreon.Elib.Wpf.CustomComponents"
     xmlns:Converters="clr-namespace:Valyreon.Elib.Wpf.Converters"
     xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
+    xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
-    xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
-    xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     Dialog:DialogParticipation.Register="{Binding}"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -47,21 +47,30 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="30"/>
-                <RowDefinition Height="25"/>
-                <RowDefinition Height="25"/>
+                <RowDefinition Height="30" />
+                <RowDefinition Height="25" />
+                <RowDefinition Height="25" />
             </Grid.RowDefinitions>
             <TextBlock
                 Grid.Column="1"
                 HorizontalAlignment="Center"
                 FontSize="20"
                 Text="{Binding TitleText}" />
-            <StackPanel Grid.Row="1"
-                        Grid.Column="1"
-                        HorizontalAlignment="Center"
-                        Orientation="Horizontal">
-                <TextBlock Text="File path:" FontSize="16" Margin="0,0,5,0" FontWeight="Bold" Foreground="CornflowerBlue"></TextBlock>
-                <TextBlock Text="{Binding PathText}" FontSize="16" TextWrapping="Wrap"/>
+            <StackPanel
+                Grid.Row="1"
+                Grid.Column="1"
+                HorizontalAlignment="Center"
+                Orientation="Horizontal">
+                <TextBlock
+                    Margin="0,0,5,0"
+                    FontSize="16"
+                    FontWeight="Bold"
+                    Foreground="CornflowerBlue"
+                    Text="File path:" />
+                <TextBlock
+                    FontSize="16"
+                    Text="{Binding PathText}"
+                    TextWrapping="Wrap" />
             </StackPanel>
             <TextBlock
                 Grid.Row="2"
@@ -368,7 +377,7 @@
                         <RowDefinition Height="30" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <StackPanel Orientation="Horizontal" Grid.Row="0">
+                    <StackPanel Grid.Row="0" Orientation="Horizontal">
                         <iconPacks:PackIconFontAwesome
                             Grid.Column="0"
                             Width="20"
@@ -376,16 +385,20 @@
                             Margin="0,4,5,0"
                             Foreground="WhiteSmoke"
                             Kind="AlignJustifySolid" />
-                        <TextBlock  FontSize="16" Grid.Column="1" Text="Description:"></TextBlock>
+                        <TextBlock
+                            Grid.Column="1"
+                            FontSize="16"
+                            Text="Description:" />
                     </StackPanel>
                     <TextBox
                         Grid.Row="1"
-                        TextWrapping="Wrap"
                         AcceptsReturn="True"
+                        FontFamily="Segoe UI Semibold"
+                        FontSize="13"
                         HorizontalScrollBarVisibility="Disabled"
-                        VerticalScrollBarVisibility="Auto"
                         Text="{Binding DescriptionFieldText}"
-                        FontFamily="Segoe UI" FontSize="12"/>
+                        TextWrapping="Wrap"
+                        VerticalScrollBarVisibility="Auto" />
                 </Grid>
             </Grid>
             <Grid Grid.Row="1" Grid.Column="5">
@@ -439,45 +452,45 @@
 
             <Button
                 Grid.Column="1"
-                FontSize="14"
                 Width="150"
                 Height="30"
                 Command="{Binding RevertButtonCommand}"
+                FontSize="14"
                 IsEnabled="{Binding IsSaving, Converter={StaticResource BoolToInverseBoolConverter}}">
                 REVERT
             </Button>
             <Button
                 Grid.Column="3"
-                FontSize="14"
                 Width="150"
                 Height="30"
                 Command="{Binding NextButtonCommand}"
+                FontSize="14"
                 IsEnabled="{Binding IsCurrentBookDuplicate, Converter={StaticResource BoolToInverseBoolConverter}}">
                 <TextBlock Text="{Binding ProceedButtonText}" />
             </Button>
             <Button
                 Grid.Column="5"
-                FontSize="14"
                 Width="150"
                 Height="30"
                 Command="{Binding SkipButtonCommand}"
+                FontSize="14"
                 IsEnabled="{Binding IsSaving, Converter={StaticResource BoolToInverseBoolConverter}}">
                 SKIP
             </Button>
             <Button
                 Grid.Column="7"
-                FontSize="14"
                 Width="150"
                 Height="30"
                 Command="{Binding CancelButtonCommand}"
+                FontSize="14"
                 IsEnabled="{Binding IsSaving, Converter={StaticResource BoolToInverseBoolConverter}}">
                 CANCEL
             </Button>
         </Grid>
         <MetroControls:ProgressRing
-            Grid.Row="3"
+            Grid.Row="2"
             Foreground="CornflowerBlue"
             IsActive="True"
-            Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"></MetroControls:ProgressRing>
+            Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}" />
     </Grid>
 </UserControl>

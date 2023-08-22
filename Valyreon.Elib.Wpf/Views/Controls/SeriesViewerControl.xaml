@@ -25,7 +25,7 @@
                 VerticalAlignment="Center"
                 FontSize="16"
                 Foreground="Gray"
-                Text="There are no Seriess."
+                Text="No series found."
                 Visibility="{Binding IsResultEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" />
         </Grid>
         <Grid>
@@ -49,12 +49,9 @@
                         <ColumnDefinition Width="60" />
                         <ColumnDefinition Width="15" />
                         <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="10" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="10" />
-                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="15" />
                         <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="2*" />
                     </Grid.ColumnDefinitions>
                     <Border
                         Grid.Column="0"
@@ -104,23 +101,14 @@
                         Foreground="#484b4e"
                         Text="{Binding Caption}" />
 
-                    <Grid Grid.Column="8" HorizontalAlignment="Right">
-                        <Grid.CacheMode>
-                            <BitmapCache
-                                EnableClearType="True"
-                                RenderAtScale="1"
-                                SnapsToDevicePixels="False" />
-                        </Grid.CacheMode>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="20" />
-                            <ColumnDefinition Width="80" />
-                            <ColumnDefinition Width="5" />
-                            <ColumnDefinition Width="80" />
-                            <ColumnDefinition Width="5" />
-                            <ColumnDefinition Width="80" />
-                            <ColumnDefinition Width="15" />
-                        </Grid.ColumnDefinitions>
-                    </Grid>
+                    <TextBox
+                        Grid.Column="4"
+                        Height="30"
+                        VerticalContentAlignment="Center"
+                        FontFamily="Segoe UI"
+                        FontSize="14"
+                        Foreground="Black"
+                        Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Delay=300}" />
                 </Grid>
             </Border>
             <ItemsControl
@@ -145,10 +133,10 @@
                     <DataTemplate>
                         <TileComponents:SeriesTileControl
                             x:Name="SeriesTile"
-                            SeriesBookCount="{Binding NumberOfBooksString}"
-                            SeriesName="{Binding Name}"
                             Command="{Binding DataContext.GoToSeries, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                            Parameter="{Binding .}" />
+                            Parameter="{Binding .}"
+                            SeriesBookCount="{Binding NumberOfBooksString}"
+                            SeriesName="{Binding Name}" />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
                 <ItemsControl.Template>

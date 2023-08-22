@@ -18,13 +18,24 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         public ObservableCollection<BookSeries> Series { get; set; } = new ObservableCollection<BookSeries>();
 
-        public ICommand LoadCommand => new RelayCommand(LoadMore);
+        public ICommand LoadCommand => new RelayCommand(LoadSeries);
         public ICommand BackCommand => new RelayCommand(Back);
 
         public string Caption
         {
             get => caption;
             set => Set(() => Caption, ref caption, value);
+        }
+
+        private string searchText;
+        public string SearchText
+        {
+            get => searchText;
+            set
+            {
+                Set(() => SearchText, ref searchText, value);
+                Refresh();
+            }
         }
 
         public FilterParameters Filter => null;
@@ -60,20 +71,17 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         public void Refresh()
         {
             Series.Clear();
-            LoadMore();
-        }
-
-        public Task<IViewer> Search(SearchParameters searchOptions)
-        {
-            throw new NotImplementedException();
+            LoadSeries();
         }
 
         public ICommand GoToSeries => new RelayCommand<BookSeries>(a => Messenger.Default.Send(new SeriesSelectedMessage(a)));
 
-        private async void LoadMore()
+        private async void LoadSeries()
         {
             using var uow = await App.UnitOfWorkFactory.CreateAsync();
-            var x = await uow.SeriesRepository.GetAllAsync();
+            var x = string.IsNullOrWhiteSpace(SearchText)
+                ? await uow.SeriesRepository.GetAllAsync()
+                : await uow.SeriesRepository.SearchAsync(SearchText);
 
             if (!x.Any())
             {
@@ -83,9 +91,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             foreach (var item in x)
             {
-                item.NumberOfBooks = await uow.SeriesRepository.CountBooksInSeriesAsync(item.Id);
                 Series.Add(item);
-                await Task.Delay(6);
+            }
+
+            foreach (var item in x)
+            {
+                item.NumberOfBooks = await uow.SeriesRepository.CountBooksInSeriesAsync(item.Id);
             }
         }
     }

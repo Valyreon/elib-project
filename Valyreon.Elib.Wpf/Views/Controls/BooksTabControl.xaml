@@ -37,219 +37,99 @@
             OpenPaneLength="220">
 
             <MetroControls:SplitView.Pane>
-                <Border Panel.ZIndex="10" BorderThickness="0">
-                    <Grid Background="{StaticResource LighterBackgroundColorBrush}">
-                        <Grid.Triggers>
-                            <EventTrigger RoutedEvent="Button.Click" SourceName="SearchOptionsButton">
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <animations:GridLengthAnimation
-                                            x:Name="SearchOptionsHeightAnimation"
-                                            Storyboard.TargetName="SearchContentRow"
-                                            Storyboard.TargetProperty="Height"
-                                            From="60"
-                                            To="60"
-                                            Duration="0:0:0.3" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </EventTrigger>
-                        </Grid.Triggers>
+                <Border
+                    Panel.ZIndex="10"
+                    Background="{StaticResource LighterBackgroundColorBrush}"
+                    BorderThickness="0">
+                    <Grid Grid.Row="1" Margin="0,5,0,0">
                         <Grid.RowDefinitions>
-                            <RowDefinition x:Name="SearchContentRow" Height="60" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="30" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <Grid Grid.Row="0" Background="{StaticResource AccentColorBrush}">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="60" />
-                                <RowDefinition Height="90" />
-                            </Grid.RowDefinitions>
-                            <Grid Grid.Row="0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="30" />
-                                    <ColumnDefinition Width="10" />
-                                </Grid.ColumnDefinitions>
-                                <Components:TextBoxWithSymbol
-                                    Grid.Column="0"
-                                    Height="30"
-                                    Margin="10,0,0,0"
-                                    HorizontalAlignment="Stretch"
-                                    Background="Transparent"
-                                    EnterCommand="{Binding SearchCommand}"
-                                    FontSize="14"
-                                    FontWeight="Medium"
-                                    Foreground="GhostWhite"
-                                    IconMargin="5,10,0,0"
-                                    IconName="{x:Static iconPacks:PackIconFontAwesomeKind.SearchSolid}"
-                                    IconSize="12"
-                                    TextboxPadding="17,0,0,0"
-                                    WatermarkText="Search..." />
-                                <Components:SymbolButton
-                                    x:Name="SearchOptionsButton"
-                                    Grid.Column="1"
-                                    Width="30"
-                                    Height="30"
-                                    Background="Transparent"
-                                    Click="SearchOptionsButton_Click"
-                                    Foreground="GhostWhite"
-                                    Icon="{x:Static iconPacks:PackIconFontAwesomeKind.ChevronDownSolid}"
-                                    IconSize="11"
-                                    RenderTransformOrigin="0.5, 0.5">
-                                    <Components:SymbolButton.RenderTransform>
-                                        <RotateTransform x:Name="SearchOptionsButtonTransform" Angle="0" />
-                                    </Components:SymbolButton.RenderTransform>
-                                    <Button.ToolTip>
-                                        <ToolTip>
-                                            Show search options
-                                        </ToolTip>
-                                    </Button.ToolTip>
-                                    <Components:SymbolButton.Triggers>
-                                        <EventTrigger RoutedEvent="Button.Click">
-                                            <BeginStoryboard>
-                                                <Storyboard>
-                                                    <DoubleAnimation
-                                                        x:Name="AngleDoubleAnimation"
-                                                        Storyboard.TargetName="SearchOptionsButtonTransform"
-                                                        Storyboard.TargetProperty="(RotateTransform.Angle)"
-                                                        To="-180"
-                                                        Duration="0:0:0.3" />
-                                                </Storyboard>
-                                            </BeginStoryboard>
-                                        </EventTrigger>
-                                    </Components:SymbolButton.Triggers>
-                                </Components:SymbolButton>
+                        <ListBox
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            VerticalAlignment="Top"
+                            VerticalContentAlignment="Top"
+                            Background="{StaticResource LighterBackgroundColorBrush}"
+                            ItemContainerStyle="{StaticResource MainPaneListBoxItemStyle}"
+                            ItemsSource="{Binding MainPaneItems}"
+                            SelectedItem="{Binding SelectedMainPaneItem, UpdateSourceTrigger=PropertyChanged}">
+                            <Behaviors:Interaction.Triggers>
+                                <Behaviors:EventTrigger EventName="SelectionChanged">
+                                    <Behaviors:InvokeCommandAction Command="{Binding PaneSelectionChangedCommand}" />
+                                </Behaviors:EventTrigger>
+                            </Behaviors:Interaction.Triggers>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <RadioButton
+                                        Background="Aqua"
+                                        GroupName="PaneSelect"
+                                        IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Path=IsSelected}"
+                                        Style="{StaticResource FlatButton}">
+                                        <StackPanel Margin="10,0,0,0" Orientation="Horizontal">
+                                            <iconPacks:PackIconControl
+                                                Width="15"
+                                                Height="15"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                Foreground="White"
+                                                Kind="{Binding Icon}" />
+                                            <TextBlock
+                                                Margin="10,0,0,2"
+                                                VerticalAlignment="Center"
+                                                FontSize="16"
+                                                Text="{Binding PaneCaption}" />
+                                        </StackPanel>
+                                    </RadioButton>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+
+                        <TextBlock
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Margin="10,0,0,0"
+                            VerticalAlignment="Center"
+                            FontSize="16"
+                            Foreground="CornflowerBlue"
+                            Text="Collections" />
+                        <ScrollViewer
+                            Grid.Row="2"
+                            Grid.Column="0"
+                            Background="Transparent"
+                            VerticalScrollBarVisibility="Auto">
+                            <Grid ScrollViewer.CanContentScroll="True">
+                                <ListBox
+                                    Background="{StaticResource LighterBackgroundColorBrush}"
+                                    ItemContainerStyle="{StaticResource MainPaneListBoxItemStyle}"
+                                    ItemsSource="{Binding Collections, Mode=OneWay}"
+                                    SelectedItem="{Binding SelectedCollection}">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <RadioButton
+                                                Height="30"
+                                                GroupName="PaneSelect"
+                                                IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Path=IsSelected}"
+                                                Style="{StaticResource FlatButton}">
+                                                <Grid>
+                                                    <TextBlock
+                                                        Margin="10,0,0,0"
+                                                        VerticalAlignment="Center"
+                                                        FontSize="14"
+                                                        Text="{Binding Tag}" />
+                                                </Grid>
+                                            </RadioButton>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
                             </Grid>
-                            <StackPanel
-                                x:Name="SearchOptions"
-                                Grid.Row="1"
-                                Orientation="Vertical">
-                                <CheckBox
-                                    Margin="20,0,0,0"
-                                    Command="{Binding SearchCheckboxChangedCommand}"
-                                    Focusable="False"
-                                    FontWeight="Medium"
-                                    Foreground="GhostWhite"
-                                    IsChecked="{Binding SearchOptions.SearchByTitle, UpdateSourceTrigger=PropertyChanged}"
-                                    Style="{StaticResource CustomLightCheckBox}">
-                                    Search by title
-                                </CheckBox>
-                                <CheckBox
-                                    Margin="20,10,0,0"
-                                    Command="{Binding SearchCheckboxChangedCommand}"
-                                    Focusable="False"
-                                    FontWeight="Medium"
-                                    Foreground="GhostWhite"
-                                    IsChecked="{Binding SearchOptions.SearchByAuthor, UpdateSourceTrigger=PropertyChanged}"
-                                    Style="{StaticResource CustomLightCheckBox}">
-                                    Search by author
-                                </CheckBox>
-                                <CheckBox
-                                    Margin="20,10,0,0"
-                                    Command="{Binding SearchCheckboxChangedCommand}"
-                                    Focusable="False"
-                                    FontWeight="Medium"
-                                    Foreground="GhostWhite"
-                                    IsChecked="{Binding SearchOptions.SearchBySeries, UpdateSourceTrigger=PropertyChanged}"
-                                    Style="{StaticResource CustomLightCheckBox}">
-                                    Search by series
-                                </CheckBox>
-                            </StackPanel>
-                        </Grid>
-
-                        <Grid Grid.Row="1" Margin="10,15,10,10">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="30" />
-                                <RowDefinition Height="*" />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-
-                            <ListBox
-                                Grid.Row="0"
-                                Grid.Column="0"
-                                VerticalAlignment="Top"
-                                VerticalContentAlignment="Top"
-                                Background="{StaticResource LighterBackgroundColorBrush}"
-                                ItemContainerStyle="{StaticResource MainPaneListBoxItemStyle}"
-                                ItemsSource="{Binding MainPaneItems}"
-                                SelectedItem="{Binding SelectedMainPaneItem, UpdateSourceTrigger=PropertyChanged}">
-                                <Behaviors:Interaction.Triggers>
-                                    <Behaviors:EventTrigger EventName="SelectionChanged">
-                                        <Behaviors:InvokeCommandAction Command="{Binding PaneSelectionChangedCommand}" />
-                                    </Behaviors:EventTrigger>
-                                </Behaviors:Interaction.Triggers>
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <RadioButton
-                                            Background="Aqua"
-                                            GroupName="PaneSelect"
-                                            IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Path=IsSelected}"
-                                            Style="{StaticResource FlatButton}">
-                                            <StackPanel Margin="10,0,0,0" Orientation="Horizontal">
-                                                <iconPacks:PackIconControl
-                                                    Width="15"
-                                                    Height="15"
-                                                    HorizontalAlignment="Center"
-                                                    VerticalAlignment="Center"
-                                                    Foreground="White"
-                                                    Kind="{Binding Icon}" />
-                                                <TextBlock
-                                                    Margin="10,0,0,2"
-                                                    VerticalAlignment="Center"
-                                                    FontSize="16"
-                                                    Text="{Binding PaneCaption}" />
-                                            </StackPanel>
-                                        </RadioButton>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-
-                            <TextBlock
-                                Grid.Row="1"
-                                Grid.Column="0"
-                                Margin="10,0,0,0"
-                                VerticalAlignment="Center"
-                                FontSize="16"
-                                Foreground="{StaticResource AccentColorBrush}"
-                                Text="Collections" />
-                            <ScrollViewer
-                                Grid.Row="2"
-                                Grid.Column="0"
-                                Background="Transparent"
-                                VerticalScrollBarVisibility="Auto">
-                                <Grid ScrollViewer.CanContentScroll="True">
-                                    <ListBox
-                                        Background="{StaticResource LighterBackgroundColorBrush}"
-                                        ItemContainerStyle="{StaticResource MainPaneListBoxItemStyle}"
-                                        ItemsSource="{Binding Collections, Mode=OneWay}"
-                                        SelectedItem="{Binding SelectedCollection}">
-                                        <ListBox.ItemTemplate>
-                                            <DataTemplate>
-                                                <RadioButton
-                                                    Height="30"
-                                                    GroupName="PaneSelect"
-                                                    IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Path=IsSelected}"
-                                                    Style="{StaticResource FlatButton}">
-                                                    <Grid>
-                                                        <TextBlock
-                                                            Margin="10,0,0,0"
-                                                            VerticalAlignment="Center"
-                                                            FontSize="14"
-                                                            Text="{Binding Tag}" />
-                                                    </Grid>
-                                                </RadioButton>
-                                            </DataTemplate>
-                                        </ListBox.ItemTemplate>
-                                    </ListBox>
-                                </Grid>
-                            </ScrollViewer>
-                        </Grid>
+                        </ScrollViewer>
                     </Grid>
                 </Border>
             </MetroControls:SplitView.Pane>

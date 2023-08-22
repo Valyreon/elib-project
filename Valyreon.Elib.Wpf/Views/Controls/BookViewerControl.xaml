@@ -65,8 +65,8 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="10" />
                         <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="10" />
-                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="15" />
+                        <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
@@ -125,6 +125,15 @@
                         FontStyle="Italic"
                         Foreground="#484b4e"
                         Text="{Binding SubCaption}" />
+
+                    <TextBox
+                        Grid.Column="6"
+                        Height="30"
+                        VerticalContentAlignment="Center"
+                        FontFamily="Segoe UI"
+                        FontSize="14"
+                        Foreground="Black"
+                        Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Delay=300}" />
 
                     <Grid Grid.Column="8" HorizontalAlignment="Right">
                         <Grid.CacheMode>
