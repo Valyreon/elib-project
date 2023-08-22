@@ -1,28 +1,20 @@
 # elib-project
+![](https://img.shields.io/badge/WORK_IN_PROGRESS-red.svg)
+![](https://img.shields.io/badge/Price-Free-brightgreen.svg)
+![](https://img.shields.io/badge/License-GPL3.0-blue.svg)
 
-**NOTE: Database included in the repository needs to stay EMPTY. Copy the database to another place, setup the properties file like below and use that database while developing.**
+**ELib** is a project I started at university as part of a course but I decided to finish it for personal use. It's created using .NET 6 and WPF. The idea is to have a basic ebook manager, sort of like a dumbed down version of Calibre.
 
----
+It will allow users to specify source folder that will be scanned for files of specific extensions and imported into the SQLite database. User can then customize Authors and book Series, organize books into Collections etc. There will be a possibility of exporting books to a specified location and with some specific settings such as grouping by author/series. The app will also use an ebook parser to extract information from imported books such as their cover, title, authors, description, also there will be an option to use OpenLibrary API to try to fetch book details.
 
-### Making *properties.json* file for database path
+![Project Board](https://github.com/users/Valyreon/projects/4/views/2)
 
-To avoid having to change the path to database every time someone changes a path in the code, the database path is going to be
-read from **properties.json** file which everyone needs to create for themselves.
+The app development is still in progress but here are some current screenshots:
 
-Right click on the project that will be executing, go `Add Item` and add `properties.json` file.
+![image](https://github.com/Valyreon/elib-project/assets/18052197/01dd5ea0-ec99-4344-8140-4854e1c0bafb)
 
-Current format of the *properties.json*:
-~~~
-{
-  "DatabasePath": "F:\\\\Path\\\\To\\\\Database\\\\elib_database.sqlite"
-}
-~~~
+![image](https://github.com/Valyreon/elib-project/assets/18052197/33cd7fc5-0e42-4148-84e2-c2d078edae24)
 
-Then right click on `properties.json` from Solution Explorer and choose "Properties".
-From there, set the `Build Action` to `content` and `Copy to Output Directory` to  `Copy if newer`.
-
-For now you will probably need to do this for *ElibWpf* project and *DatabaseTests* project separately.
-
-To get the Database path in code you use `ApplicationSettings.GetInstance().DatabasePath`. This class will automatically look for *properties.json* file in the current execution folder (where .exe file which is currently executing is) and deserialize it.
+![image](https://github.com/Valyreon/elib-project/assets/18052197/e62bb880-9843-4be0-8b1c-f26257743e87)
 
 ---
