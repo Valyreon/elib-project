@@ -15,7 +15,7 @@
     <DataTemplate DataType="{x:Type ControlViewModels:QuotesTabViewModel}">
         <ControlViews:QuotesTabControl />
     </DataTemplate>
-    
+
     <DataTemplate DataType="{x:Type ControlViewModels:BookViewerViewModel}">
         <ControlViews:BookViewerControl />
     </DataTemplate>
@@ -24,6 +24,9 @@
     </DataTemplate>
     <DataTemplate DataType="{x:Type ControlViewModels:SeriesViewerViewModel}">
         <ControlViews:SeriesViewerControl />
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type ControlViewModels:EditBookFormViewModel}">
+        <ControlViews:EditBookFormControl />
     </DataTemplate>
     <!--#endregion-->
 

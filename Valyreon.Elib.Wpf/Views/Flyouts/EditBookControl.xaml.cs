@@ -12,13 +12,5 @@ namespace Valyreon.Elib.Wpf.Views.Flyouts
 		{
 			InitializeComponent();
 		}
-
-
-        private static readonly Regex digitsOnly = new(@"^\d*\.?\d?$");
-        private void SeriesNumberField_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
-        {
-            var isMatch = digitsOnly.IsMatch(e.Text);
-            e.Handled = !isMatch;
-        }
     }
 }

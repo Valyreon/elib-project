@@ -17,6 +17,7 @@ using Valyreon.Elib.Wpf.Extensions;
 using Valyreon.Elib.Wpf.Messages;
 using Valyreon.Elib.Wpf.Models;
 using Valyreon.Elib.Wpf.ValidationAttributes;
+using Valyreon.Elib.Wpf.ViewModels.Controls;
 using Valyreon.Elib.Wpf.ViewModels.Dialogs;
 using Valyreon.Elib.Wpf.Views.Dialogs;
 using Application = System.Windows.Application;
@@ -27,98 +28,35 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
     {
         private readonly IList<string> books;
 
-        private string addAuthorFieldText;
-
-        private ObservableCollection<Author> authorCollection;
-
         private int counter;
-
-        private Cover coverImage;
 
         private Book currentBook;
 
         private bool isCurrentDuplicate = true;
 
-        private bool isFavorite;
-
-        private bool isRead;
-
         private bool isSaving;
 
         private string proceedButtonText;
-
-        private BookSeries series;
-
-        private string seriesNumberFieldText;
-
-        private string titleFieldText;
-
-        private string titleText;
 
         private string warning;
 
         private string path;
 
-        private string descriptionFieldText;
-
-        private bool isLoading; 
+        private bool isLoading;
+        private string titleText;
+        private EditBookFormViewModel editBookForm;
 
         public AddNewBooksViewModel(IEnumerable<string> newBooks)
         {
             books = newBooks.ToList();
         }
 
-        public string AddAuthorFieldText
-        {
-            get => addAuthorFieldText;
-            set => Set(() => AddAuthorFieldText, ref addAuthorFieldText, value);
-        }
-
-        public ICommand AddExistingAuthorButtonCommand => new RelayCommand(HandleAddExistingAuthor);
-
-        public ICommand AddNewAuthorButtonCommand => new RelayCommand(HandleAddNewAuthor);
-
-        [NotEmpty(ErrorMessage = "Book has to have at least one author.")]
-        public ObservableCollection<Author> AuthorsCollection
-        {
-            get => authorCollection;
-            private set => Set(() => AuthorsCollection, ref authorCollection, value);
-        }
-
         public ICommand CancelButtonCommand => new RelayCommand(HandleCancel);
-
-        public ICommand ChangeCoverButtonCommand => new RelayCommand(HandleChangeCoverButton);
-
-        public ICommand ChooseExistingSeriesCommand => new RelayCommand(HandleChooseExistingSeries);
-
-        public ICommand ClearSeriesCommand => new RelayCommand(HandleClearSeries);
-
-        public Cover Cover
-        {
-            get => coverImage;
-            set => Set(() => Cover, ref coverImage, value);
-        }
-
-        public ICommand CreateNewSeriesCommand => new RelayCommand(HandleCreateNewSeries);
-
-        public ICommand EditSeriesCommand => new RelayCommand(HandleEditSeries);
 
         public bool IsCurrentBookDuplicate
         {
             get => isSaving || isCurrentDuplicate;
             set => Set(() => IsCurrentBookDuplicate, ref isCurrentDuplicate, value);
-        }
-
-        public bool IsFavoriteCheck
-        {
-            get => isFavorite;
-            set => Set(() => IsFavoriteCheck, ref isFavorite, value);
-        }
-
-        public bool IsReadCheck
-        {
-            get => isRead;
-            set => Set(() => IsReadCheck, ref isRead, value);
         }
 
         public bool IsLoading
@@ -137,8 +75,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             }
         }
 
-        public bool IsSeriesSelected => Series != null;
-
         public ICommand LoadedCommand => new RelayCommand(HandleLoaded);
 
         public ICommand NextButtonCommand => new RelayCommand(HandleSaveAndNext);
@@ -149,51 +85,14 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             set => Set(() => ProceedButtonText, ref proceedButtonText, value);
         }
 
-        public ICommand RemoveAuthorCommand =>
-            new RelayCommand<int>(x => AuthorsCollection.Remove(AuthorsCollection.FirstOrDefault(c => c.Id == x)));
-
-        public ICommand RemoveCoverButtonCommand => new RelayCommand(() => Cover = null);
-
         public ICommand RevertButtonCommand => new RelayCommand(HandleRevert);
 
-        public BookSeries Series
-        {
-            get => series;
-            set
-            {
-                Set(() => Series, ref series, value);
-                RaisePropertyChanged(() => IsSeriesSelected);
-                RaisePropertyChanged(() => SeriesColor);
-            }
-        }
-
-        public Brush SeriesColor => !IsSeriesSelected ? Brushes.Gray : (Brush)new BrushConverter().ConvertFrom("#bbb");
-
-        public string SeriesNumberFieldText
-        {
-            get => seriesNumberFieldText;
-            set => Set(() => SeriesNumberFieldText, ref seriesNumberFieldText, value);
-        }
-
         public ICommand SkipButtonCommand => new RelayCommand(NextBook);
-
-        [Required(ErrorMessage = "Book title can't be empty.")]
-        public string TitleFieldText
-        {
-            get => titleFieldText;
-            set => Set(() => TitleFieldText, ref titleFieldText, value);
-        }
 
         public string TitleText
         {
             get => titleText;
             set => Set(() => TitleText, ref titleText, value);
-        }
-
-        public string DescriptionFieldText
-        {
-            get => descriptionFieldText;
-            set => Set(() => DescriptionFieldText, ref descriptionFieldText, value);
         }
 
         public string WarningText
@@ -208,6 +107,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             set => Set(() => PathText, ref path, value);
         }
 
+        public EditBookFormViewModel EditBookForm
+        {
+            get => editBookForm;
+            set => Set(() => EditBookForm, ref editBookForm, value);
+        }
+
         private Book CurrentBook
         {
             get => currentBook;
@@ -218,21 +123,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                 Set(() => CurrentBook, ref currentBook, value);
                 if (currentBook != null)
                 {
-                    AuthorsCollection = new ObservableCollection<Author>(CurrentBook.Authors);
-
-                    Series = CurrentBook.Series != null
-                        ? new BookSeries() { Id = CurrentBook.Series.Id, Name = CurrentBook.Series.Name }
-                        : null;
-
-                    TitleFieldText = CurrentBook.Title;
-                    DescriptionFieldText = CurrentBook.Description;
-                    SeriesNumberFieldText = CurrentBook.NumberInSeries.ToString();
-                    IsFavoriteCheck = CurrentBook.IsFavorite;
-                    IsReadCheck = CurrentBook.IsRead;
-
-                    Cover = CurrentBook.Cover != null
-                        ? new Cover() { Id = CurrentBook.Cover.Id, Image = CurrentBook.Cover.Image }
-                        : null;
+                    EditBookForm = new EditBookFormViewModel(currentBook);
 
                     PathText = currentBook.Path;
                 }
@@ -282,120 +173,27 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             CheckDuplicate(CurrentBook);
         }
 
-        private async void HandleAddNewAuthor()
-        {
-            var name = await DialogCoordinator.Instance.ShowInputAsync(Application.Current.MainWindow.DataContext, "Adding New Author", "Author's name:");
-
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                return;
-            }
-
-            name = name.Trim();
-
-            var newAuthor = new Author { Name = name };
-            AuthorsCollection.Add(newAuthor);
-
-            using var uow = await App.UnitOfWorkFactory.CreateAsync();
-            await uow.AuthorRepository.CreateAsync(newAuthor);
-        }
-
         private void HandleRevert()
         {
             ClearErrors();
-            AuthorsCollection = new ObservableCollection<Author>(CurrentBook.Authors);
-            Series = CurrentBook.Series == null
-                ? null
-                : new BookSeries { Name = CurrentBook.Series.Name, Id = CurrentBook.Series.Id };
-            TitleFieldText = CurrentBook.Title;
-            DescriptionFieldText = CurrentBook.Description;
-            SeriesNumberFieldText = CurrentBook.NumberInSeries.ToString();
-            IsFavoriteCheck = CurrentBook.IsFavorite;
-            IsReadCheck = CurrentBook.IsRead;
-            Cover = new Cover() { Id = CurrentBook.Cover.Id, Image = CurrentBook.Cover.Image };
+            EditBookForm = new EditBookFormViewModel(currentBook);
         }
 
         private void HandleSaveAndNext()
         {
             IsSaving = true;
-            Validate();
 
-            if (HasErrors)
+            if (EditBookForm.CreateBook())
             {
-                IsSaving = false;
-                return;
-            }
-
-            var book = CurrentBook;
-            _ = Task.Run(async () =>
-            {
-                using var uow = await App.UnitOfWorkFactory.CreateAsync();
-
-                book.Series = Series;
-                if (Series?.Id == 0)
-                {
-                    await uow.SeriesRepository.CreateAsync(book.Series);
-                    book.SeriesId = book.Series.Id;
-                }
-                else if (Series != null && Series.Id != 0)
-                {
-                    await uow.SeriesRepository.UpdateAsync(book.Series);
-                    book.SeriesId = book.SeriesId;
-                }
-
-                if (IsSeriesSelected)
-                {
-                    if (Regex.IsMatch(SeriesNumberFieldText, @"\d+(\.\d+)?"))
-                    {
-                        book.NumberInSeries = decimal.Parse(SeriesNumberFieldText);
-                    }
-                }
-
-                book.Title = TitleFieldText;
-                book.IsFavorite = IsFavoriteCheck;
-                book.IsRead = IsReadCheck;
-
-                if (Cover?.Id == 0 && Cover.Image != null)
-                {
-                    book.Cover = Cover;
-                    await uow.CoverRepository.CreateAsync(book.Cover);
-                    book.CoverId = book.Cover.Id;
-                }
-
-                await uow.BookRepository.CreateAsync(book);
-
-                foreach (var author in AuthorsCollection)
-                {
-                    await uow.AuthorRepository.AddAuthorForBookAsync(author, book.Id);
-                }
-
-                uow.Commit();
-            });
-
-            NextBook();
+                NextBook();
+            };
+            
             IsSaving = false;
         }
 
         private void HandleCancel()
         {
             MessengerInstance.Send(new CloseFlyoutMessage());
-        }
-
-        private void HandleChangeCoverButton()
-        {
-            using var dlg = new OpenFileDialog
-            {
-                Filter = "All files|*.*|jpg|*.jpg|png|*.png",
-                CheckFileExists = true,
-                CheckPathExists = true,
-                FilterIndex = 0,
-                Multiselect = false
-            };
-            var result = dlg.ShowDialog();
-            if (result == DialogResult.OK && dlg.FileName != null)
-            {
-                Cover.Image = ImageOptimizer.ResizeAndFill(File.ReadAllBytes(dlg.FileName));
-            }
         }
 
         private async void NextBook()
@@ -420,50 +218,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
                 CheckDuplicate(CurrentBook);
             }
-        }
-
-        private async void HandleAddExistingAuthor()
-        {
-            var dialog = new ChooseAuthorDialog
-            {
-                DataContext = new ChooseAuthorDialogViewModel(AuthorsCollection.Select(oa => oa.Id),
-                    x => Application.Current.Dispatcher.Invoke(() => AuthorsCollection.Add(x)))
-            };
-            await DialogCoordinator.Instance.ShowMetroDialogAsync(Application.Current.MainWindow.DataContext, dialog);
-        }
-
-        private async void HandleChooseExistingSeries()
-        {
-            var dialog = new ChooseSeriesDialog
-            {
-                DataContext = new ChooseSeriesDialogViewModel(x => Series = x)
-            };
-            await DialogCoordinator.Instance.ShowMetroDialogAsync(Application.Current.MainWindow.DataContext, dialog);
-        }
-
-        private async void HandleCreateNewSeries()
-        {
-            var name = await DialogCoordinator.Instance.ShowInputAsync(Application.Current.MainWindow.DataContext, "Adding New Series", "Series name:");
-            if (!string.IsNullOrWhiteSpace(name))
-            {
-                name = name.Trim();
-                var newSeries = new BookSeries { Name = name };
-                Series = newSeries;
-
-                using var uow = await App.UnitOfWorkFactory.CreateAsync();
-                await uow.SeriesRepository.CreateAsync(newSeries);
-            }
-        }
-
-        private void HandleClearSeries()
-        {
-            Series = null;
-        }
-
-        private async void HandleEditSeries()
-        {
-            Series.Name = await DialogCoordinator.Instance.ShowInputAsync(Application.Current.MainWindow.DataContext, "Edit Series", "Series name:",
-                new MetroDialogSettings { DefaultText = Series.Name });
         }
 
         private async void CheckDuplicate(Book book)
