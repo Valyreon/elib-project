@@ -48,6 +48,8 @@ namespace Valyreon.Elib.Wpf.Models
 
         public void ExportBooks(IEnumerable<Book> books, ExporterOptions options, Action<string> progressSet = null)
         {
+            books = books.Where(b => File.Exists(b.Path));
+
             void ExportAllInList(IEnumerable<Book> list, string outPath)
             {
                 foreach (var book in list)

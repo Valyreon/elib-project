@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Valyreon.Elib.Domain;
 
@@ -7,5 +8,6 @@ namespace Valyreon.Elib.DataLayer.Interfaces
     {
         void ClearCache();
         public IEnumerable<T> GetCachedObjects();
+        bool IsCached(Func<T, bool> entity);
     }
 }

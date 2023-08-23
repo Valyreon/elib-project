@@ -157,5 +157,10 @@ namespace Valyreon.Elib.DataLayer.Repositories
         {
             return Cache.Values;
         }
+
+        public bool IsCached(Func<T, bool> entity)
+        {
+            return Cache.Values.Any(entity);
+        }
     }
 }

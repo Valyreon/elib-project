@@ -5,6 +5,7 @@ using Valyreon.Elib.DataLayer;
 using Valyreon.Elib.Wpf.Models;
 using System.Text;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace Valyreon.Elib.Wpf
 {
@@ -13,6 +14,14 @@ namespace Valyreon.Elib.Wpf
     /// </summary>
     public partial class App : Application
     {
+#if DEBUG
+        [DllImport("Kernel32")]
+        public static extern void AllocConsole();
+
+        [DllImport("Kernel32", SetLastError = true)]
+        public static extern void FreeConsole();
+#endif
+
         public static UnitOfWorkFactory UnitOfWorkFactory { get; } = new UnitOfWorkFactory(ApplicationData.DatabasePath);
 
         private void OnStartup(object sender, StartupEventArgs e)
@@ -20,11 +29,17 @@ namespace Valyreon.Elib.Wpf
             ApplicationData.InitializeAppData();
 
             SetupExceptionHandling();
+
+#if DEBUG
+            AllocConsole();
+#endif
         }
 
         private void OnExit(object sender, ExitEventArgs e)
         {
-
+#if DEBUG
+            FreeConsole();
+#endif
         }
 
         private void SetupExceptionHandling()
@@ -74,6 +89,11 @@ namespace Valyreon.Elib.Wpf
 
             var logPath = Path.Combine(ApplicationData.LogFolderPath, $"{timestamp:yyyyMMddTHHmmss}_{exception.GetType().Name}.txt");
             File.WriteAllText(logPath, stringBuilder.ToString());
+
+#if DEBUG
+            Console.WriteLine(exception.ToString());
+            Console.WriteLine("++++++++++++++++++++++++");
+#endif
         }
     }
 }

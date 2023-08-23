@@ -69,6 +69,11 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             });
         }
 
+        public SeriesViewerViewModel(string searchText) : this()
+        {
+            this.searchText = searchText;
+        }
+
         public void Clear()
         {
             Series.Clear();
@@ -114,7 +119,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         public Func<IViewer> GetCloneFunction(Selector selector)
         {
-            return () => new SeriesViewerViewModel();
+            var searchToken = searchText;
+            return () => new SeriesViewerViewModel(searchToken);
         }
 
         public void Dispose()

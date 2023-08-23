@@ -43,10 +43,10 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         public BookViewerViewModel(FilterParameters filter, Selector selector)
         {
             Filter = filter;
+            SearchText = filter.SearchText;
             Books = new ObservableCollection<Book>();
             this.selector = selector;
             ApplyFilterOptionsToFilter(filterOptions, filter);
-            UpdateSubcaption();
             MessengerInstance.Register<RefreshCurrentViewMessage>(this, _ =>
             {
                 if (!isLoading)
@@ -265,11 +265,21 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         }
         private volatile bool isLoading;
 
-        public void Refresh()
+        public async void Refresh()
         {
+            if(isLoading)
+            {
+                return;
+            }
             isLoading = true;
             ScrollVertical = 0;
             Books.Clear();
+
+            using(var uow = await App.UnitOfWorkFactory.CreateAsync())
+            {
+                uow.ClearCache();
+            }
+
             UpdateSubcaption();
             LoadMore();
         }

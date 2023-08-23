@@ -89,13 +89,14 @@ namespace Valyreon.Elib.DataLayer
             UnitOfWorkFactory.ReleaseSemaphore();
         }
 
-        private static void ClearCache()
+        public void ClearCache()
         {
             new BookRepository(null).ClearCache();
             new SeriesRepository(null).ClearCache();
             new AuthorRepository(null).ClearCache();
             new CollectionRepository(null).ClearCache();
             new QuoteRepository(null).ClearCache();
+            new CoverRepository(null).ClearCache();
         }
 
         public void Truncate()

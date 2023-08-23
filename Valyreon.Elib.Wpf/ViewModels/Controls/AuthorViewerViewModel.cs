@@ -69,6 +69,11 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             });
         }
 
+        public AuthorViewerViewModel(string searchText) : this()
+        {
+            this.searchText = searchText;
+        }
+
         public async void Refresh()
         {
             isLoading = true;
@@ -113,7 +118,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         public Func<IViewer> GetCloneFunction(Selector selector)
         {
-            return () => new AuthorViewerViewModel();
+            var searchToken = searchText;
+            return () => new AuthorViewerViewModel(searchToken);
         }
 
         public void Dispose()

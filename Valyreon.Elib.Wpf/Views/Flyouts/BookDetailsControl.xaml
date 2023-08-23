@@ -22,13 +22,14 @@
         <Converters:ImageConverter x:Key="ImageConverter" />
         <Converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
         <Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <Converters:BoolToInverseBoolConverter x:Key="BoolToInverseConverter" />
         <Converters:BoolToInverseVisibilityConverter x:Key="BoolToInverseVisibilityConverter" />
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0" />
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="0" />
+            <ColumnDefinition Width="10*" MaxWidth="1100" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="1">
             <Grid MaxWidth="1200" VerticalAlignment="Center">
@@ -60,10 +61,22 @@
                             Margin="0"
                             BorderBrush="LightGray"
                             BorderThickness="1">
-                            <Image
-                                Width="200"
-                                Height="300"
-                                Source="{Binding Book.Cover, Converter={StaticResource ImageConverter}}" />
+                            <Grid>
+                                <Image
+                                    Width="200"
+                                    Height="300"
+                                    Source="{Binding Book.Cover, Converter={StaticResource ImageConverter}}" />
+                                <TextBlock
+                                    Padding="8,4"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Top"
+                                    Background="#FF1744"
+                                    FontSize="12"
+                                    Foreground="Black"
+                                    Text="FILE MISSING"
+                                    Visibility="{Binding Book.IsFileMissing, Converter={StaticResource BoolToVisibilityConverter}}" />
+                            </Grid>
+
                         </Border>
 
                         <Components:CheckboxButton
@@ -103,6 +116,7 @@
                             Content="File Info"
                             Focusable="False"
                             FontSize="12"
+                            IsEnabled="{Binding Book.IsFileMissing, Converter={StaticResource BoolToInverseConverter}}"
                             Style="{StaticResource MahApps.Styles.Button}" />
 
                         <Button
@@ -114,13 +128,21 @@
                             Content="Export"
                             Focusable="False"
                             FontSize="12"
+                            IsEnabled="{Binding Book.IsFileMissing, Converter={StaticResource BoolToInverseConverter}}"
                             Style="{StaticResource MahApps.Styles.Button}" />
                     </Grid>
                     <StackPanel
                         Grid.Column="1"
                         Margin="0,0,10,0"
                         Orientation="Vertical">
-                        <TextBlock FontSize="22" Text="{Binding Book.Title}" />
+                        <ItemsControl>
+                            <TextBlock
+                                FontSize="22"
+                                Text="{Binding Book.Title}"
+                                TextWrapping="Wrap" />
+
+                        </ItemsControl>
+
                         <Components:TextLinkButton
                             Command="{Binding GoToSeries}"
                             CommandParameter="{Binding Book.Series}"

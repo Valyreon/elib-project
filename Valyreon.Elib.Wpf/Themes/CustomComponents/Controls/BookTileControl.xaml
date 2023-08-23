@@ -49,6 +49,18 @@
                             Command="{Binding TileCommand, RelativeSource={RelativeSource TemplatedParent}}"
                             CommandParameter="{Binding TileParameter, RelativeSource={RelativeSource TemplatedParent}}"
                         -->
+                        <Grid
+                            x:Name="fileMissingIndicator"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Top"
+                            Panel.ZIndex="10000"
+                            Visibility="{Binding Path=TileParameter.IsFileMissing, Converter={StaticResource BooleanToVisibilityConverter}, RelativeSource={RelativeSource TemplatedParent}}">
+                            <TextBlock
+                                Padding="8,4"
+                                Background="#FF1744"
+                                FontSize="12"
+                                Text="FILE MISSING" />
+                        </Grid>
                         <Image
                             x:Name="BackgroundImage"
                             Width="164"

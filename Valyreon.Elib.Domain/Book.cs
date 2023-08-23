@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.IO;
 using System.Linq;
 
 namespace Valyreon.Elib.Domain
@@ -37,6 +38,8 @@ namespace Valyreon.Elib.Domain
         public int? SeriesId { get; set; }
 
         public ObservableCollection<UserCollection> collections = new();
+        private string path;
+        private bool isFileMissing;
 
         public ObservableCollection<UserCollection> Collections
         {
@@ -125,13 +128,30 @@ namespace Valyreon.Elib.Domain
         [Column]
         [Required]
         [StringLength(32767)]
-        public string Path { get; set; }
+        public string Path
+        {
+            get => path;
+            set
+            {
+                Set(() => Path, ref path, value);
+                IsFileMissing = !File.Exists(path);
+            }
+        }
 
+        [NotMapped]
         public string AuthorsInfo => Authors.Any() ? Authors.Select(a => a.Name).Aggregate((i, j) => i + ", " + j) : "";
 
+        [NotMapped]
         public string SeriesInfo =>
             Series != null
                 ? $"{Series.Name} {(NumberInSeries != null ? $"#{NumberInSeries}" : "")}"
                 : "";
+
+        [NotMapped]
+        public bool IsFileMissing
+        {
+            get => isFileMissing;
+            set => Set(() => IsFileMissing, ref isFileMissing, value);
+        }
     }
 }

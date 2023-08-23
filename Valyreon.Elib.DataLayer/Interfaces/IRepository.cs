@@ -4,7 +4,7 @@ using Valyreon.Elib.Domain;
 
 namespace Valyreon.Elib.DataLayer.Interfaces;
 
-public interface IRepository<T> where T: ObservableEntity
+public interface IRepository<T> : ICache<T> where T: ObservableEntity
 {
     string Table { get; }
     IEnumerable<string> ColumnNames { get; }
