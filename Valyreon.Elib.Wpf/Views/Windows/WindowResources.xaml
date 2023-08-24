@@ -3,6 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ControlViewModels="clr-namespace:Valyreon.Elib.Wpf.ViewModels.Controls"
     xmlns:ControlViews="clr-namespace:Valyreon.Elib.Wpf.Views.Controls"
+    xmlns:Converters="clr-namespace:Valyreon.Elib.Wpf.Converters"
     xmlns:DialogViewModels="clr-namespace:Valyreon.Elib.Wpf.ViewModels.Dialogs"
     xmlns:DialogViews="clr-namespace:Valyreon.Elib.Wpf.Views.Dialogs"
     xmlns:FlyoutViewModels="clr-namespace:Valyreon.Elib.Wpf.ViewModels.Flyouts"
@@ -64,4 +65,7 @@
         <Setter Property="Margin" Value="0" />
         <Setter Property="Foreground" Value="Black" />
     </Style>
+
+    <Converters:ObjectToVisibilityConverter x:Key="ObjectToVisibilityConverter" />
+    <Converters:NotificationTypeToBrushConverter x:Key="NotificationTypeToBrushConverter" />
 </ResourceDictionary>

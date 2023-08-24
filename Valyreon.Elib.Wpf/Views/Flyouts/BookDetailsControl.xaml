@@ -116,7 +116,6 @@
                             Content="File Info"
                             Focusable="False"
                             FontSize="12"
-                            IsEnabled="{Binding Book.IsFileMissing, Converter={StaticResource BoolToInverseConverter}}"
                             Style="{StaticResource MahApps.Styles.Button}" />
 
                         <Button

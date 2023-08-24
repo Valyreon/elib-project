@@ -13,5 +13,7 @@ namespace Valyreon.Elib.DataLayer.Interfaces
         Task<int> CountAsync(FilterParameters filter);
         Task<bool> SignatureExistsAsync(string signature);
         Task<bool> PathExistsAsync(string path);
+        Task<Book> GetByPathAsync(string path);
+        Task<Book> GetBySignatureAsync(string signature);
     }
 }

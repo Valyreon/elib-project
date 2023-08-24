@@ -157,6 +157,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
                     .DataContext));
 
             MessengerInstance.Send(new ScanForNewBooksMessage());
+            MessengerInstance.Send(new AppSettingsChangedMessage());
         }
     }
 }

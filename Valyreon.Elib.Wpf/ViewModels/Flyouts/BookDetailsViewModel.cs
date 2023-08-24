@@ -202,13 +202,16 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
         private void HandleShowFileInfo()
         {
-            var x = EbookParserFactory.Create(Book.Path).Parse();
-
             var builder = new StringBuilder("");
 
             builder.Append("File path: ").AppendLine(Book.Path);
-            builder.Append("ISBN: ").AppendLine(x.Isbn);
-            builder.Append("Publisher: ").AppendLine(x.Publisher);
+
+            if (File.Exists(Book.Path))
+            {
+                var x = EbookParserFactory.Create(Book.Path).Parse();
+                builder.Append("ISBN: ").AppendLine(x.Isbn);
+                builder.Append("Publisher: ").AppendLine(x.Publisher);
+            }
 
             MessengerInstance.Send(new ShowDialogMessage("File Information", builder.ToString()));
         }

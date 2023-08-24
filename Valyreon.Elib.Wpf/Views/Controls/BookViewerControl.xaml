@@ -227,6 +227,7 @@
                         <TileComponents:BookTileControl
                             x:Name="bookTile"
                             Title="{Binding Title}"
+                            Margin="5"
                             AuthorCommand="{Binding DataContext.GoToAuthor, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                             AuthorParameter="{Binding Authors}"
                             Authors="{Binding AuthorsInfo}"

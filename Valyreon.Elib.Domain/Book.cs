@@ -153,5 +153,8 @@ namespace Valyreon.Elib.Domain
             get => isFileMissing;
             set => Set(() => IsFileMissing, ref isFileMissing, value);
         }
+
+        [NotMapped]
+        public bool IsLoaded { get; set; }
     }
 }

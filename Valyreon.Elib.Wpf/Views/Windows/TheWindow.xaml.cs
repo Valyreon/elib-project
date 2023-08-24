@@ -11,8 +11,6 @@ namespace Valyreon.Elib.Wpf.Views.Windows
         public TheWindow()
         {
             InitializeComponent();
-            //var resource = Assembly.GetExecutingAssembly().GetManifestResourceStream("Valyreon.Elib.Wpf.fonts.SofiaProRegular.ttf");
-            //this.FontFamily = new System.Windows.Media.FontFamily()
             DataContext = new TheWindowViewModel();
         }
     }

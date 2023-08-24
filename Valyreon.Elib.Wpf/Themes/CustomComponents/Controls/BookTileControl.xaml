@@ -22,7 +22,7 @@
         <ControlTemplate>
             <StackPanel
                 x:Name="BookContainer"
-                Margin="15,15,15,15"
+                Margin="10,10"
                 HorizontalAlignment="Left"
                 MouseEnter="BookContainer_MouseEnter"
                 MouseLeave="BookContainer_MouseLeave"
@@ -44,7 +44,7 @@
                         Height="246"
                         Margin="1"
                         Background="GhostWhite"
-                        MouseUp="TheTile_MouseUp">
+                        MouseLeftButtonUp="TheTile_MouseUp">
                         <!--
                             Command="{Binding TileCommand, RelativeSource={RelativeSource TemplatedParent}}"
                             CommandParameter="{Binding TileParameter, RelativeSource={RelativeSource TemplatedParent}}"

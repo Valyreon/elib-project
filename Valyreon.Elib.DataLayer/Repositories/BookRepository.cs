@@ -174,5 +174,17 @@ namespace Valyreon.Elib.DataLayer.Repositories
             var count = await Connection.QueryFirstAsync<int>("SELECT COUNT(*) FROM Books WHERE Path = @Path", new { Path = path }, Transaction);
             return count > 0;
         }
+
+        public async Task<Book> GetByPathAsync(string path)
+        {
+            var result = await Connection.QuerySingleOrDefaultAsync<Book>("SELECT * FROM Books WHERE Path = @Path", new { Path = path }, Transaction);
+            return Cache.FilterAndUpdateCache(result);
+        }
+
+        public async Task<Book> GetBySignatureAsync(string signature)
+        {
+            var result = await Connection.QuerySingleOrDefaultAsync<Book>("SELECT * FROM Books WHERE Signature = @Signature", new { Signature = signature }, Transaction);
+            return Cache.FilterAndUpdateCache(result);
+        }
     }
 }

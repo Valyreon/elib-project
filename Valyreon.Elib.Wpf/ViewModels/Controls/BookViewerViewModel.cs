@@ -11,6 +11,7 @@ using Valyreon.Elib.Domain;
 using Valyreon.Elib.Mvvm;
 using Valyreon.Elib.Mvvm.Messaging;
 using Valyreon.Elib.Wpf.BindingItems;
+using Valyreon.Elib.Wpf.Extensions;
 using Valyreon.Elib.Wpf.Messages;
 using Valyreon.Elib.Wpf.Models;
 using Valyreon.Elib.Wpf.ViewModels.Dialogs;
@@ -54,6 +55,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                     Refresh();
                 }
             });
+
         }
 
         public ICommand BackCommand => new RelayCommand(Back);
@@ -239,22 +241,13 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             if (!results.Any())
             {
                 IsResultEmpty = Books.Count == 0;
+                isLoading = false;
                 return;
             }
 
             foreach (var book in results)
             {
-                book.Authors = new ObservableCollection<Author>(await uow.AuthorRepository.GetAuthorsOfBookAsync(book.Id));
-                if (book.SeriesId.HasValue)
-                {
-                    book.Series = await uow.SeriesRepository.FindAsync(book.SeriesId.Value);
-                }
-
-                if (book.CoverId.HasValue)
-                {
-                    book.Cover = await uow.CoverRepository.FindAsync(book.CoverId.Value);
-                }
-
+                await book.LoadBookAsync(uow);
                 selector.SetMarked(book);
                 Books.Add(book);
                 await Task.Delay(10);

@@ -36,5 +36,28 @@ namespace Valyreon.Elib.Wpf.Extensions
 
             return newBook;
         }
+
+        public static async Task LoadBookAsync(this Book book, IUnitOfWork uow)
+        {
+            if (book.IsLoaded)
+            {
+                return;
+            }
+
+            book.Authors = new ObservableCollection<Author>(await uow.AuthorRepository.GetAuthorsOfBookAsync(book.Id));
+            book.Collections = new ObservableCollection<UserCollection>(await uow.CollectionRepository.GetUserCollectionsOfBookAsync(book.Id));
+
+            if (book.SeriesId.HasValue)
+            {
+                book.Series = await uow.SeriesRepository.FindAsync(book.SeriesId.Value);
+            }
+
+            if (book.CoverId.HasValue)
+            {
+                book.Cover = await uow.CoverRepository.FindAsync(book.CoverId.Value);
+            }
+
+            book.IsLoaded = true;
+        }
     }
 }
