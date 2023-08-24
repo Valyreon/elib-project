@@ -215,11 +215,26 @@
                 VirtualizingStackPanel.VirtualizationMode="Recycling">
                 <ItemsControl.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Export selected" />
-                        <MenuItem Header="Remove selected" />
-                        <Separator />
-                        <MenuItem Header="Select all" />
-                        <MenuItem Header="Unselect all" />
+                        <MenuItem>
+                            <MenuItem.Header>
+                                <TextBlock Style="{StaticResource MenuHeader}" Text="EXPORT SELECTED" />
+                            </MenuItem.Header>
+                        </MenuItem>
+                        <MenuItem>
+                            <MenuItem.Header>
+                                <TextBlock Style="{StaticResource MenuHeader}" Text="REMOVE SELECTED" />
+                            </MenuItem.Header>
+                        </MenuItem>
+                        <MenuItem>
+                            <MenuItem.Header>
+                                <TextBlock Style="{StaticResource MenuHeader}" Text="SELECT ALL" />
+                            </MenuItem.Header>
+                        </MenuItem>
+                        <MenuItem>
+                            <MenuItem.Header>
+                                <TextBlock Style="{StaticResource MenuHeader}" Text="UNSELECT ALL" />
+                            </MenuItem.Header>
+                        </MenuItem>
                     </ContextMenu>
                 </ItemsControl.ContextMenu>
                 <ItemsControl.ItemTemplate>

@@ -4,7 +4,7 @@ namespace Valyreon.Elib.Wpf.Messages
 {
     public class ShowNotificationMessage : MessageBase
     {
-        public ShowNotificationMessage(string text, NotificationType type)
+        public ShowNotificationMessage(string text, NotificationType type = NotificationType.Info)
         {
             Text = text;
             Type = type;

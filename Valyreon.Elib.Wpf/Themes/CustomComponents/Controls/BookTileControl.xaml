@@ -178,14 +178,26 @@
 
     <UserControl.ContextMenu>
         <ContextMenu>
-            <MenuItem Header="Export" Icon="" />
-            <MenuItem Header="Mark as read/unread" Icon="" />
-            <MenuItem Header="Mark as favorite" Icon="" />
-            <Separator />
-            <MenuItem
-                Click="OpenFileLocation_Click"
-                Header="Open file location"
-                Icon="" />
+            <MenuItem>
+                <MenuItem.Header>
+                    <TextBlock Style="{StaticResource MenuHeader}" Text="EXPORT" />
+                </MenuItem.Header>
+            </MenuItem>
+            <MenuItem>
+                <MenuItem.Header>
+                    <TextBlock Style="{StaticResource MenuHeader}" Text="MARK AS READ" />
+                </MenuItem.Header>
+            </MenuItem>
+            <MenuItem>
+                <MenuItem.Header>
+                    <TextBlock Style="{StaticResource MenuHeader}" Text="MARK FAVORITE" />
+                </MenuItem.Header>
+            </MenuItem>
+            <MenuItem Click="OpenFileLocation_Click">
+                <MenuItem.Header>
+                    <TextBlock Style="{StaticResource MenuHeader}" Text="OPEN FILE LOCATION" />
+                </MenuItem.Header>
+            </MenuItem>
         </ContextMenu>
     </UserControl.ContextMenu>
 </UserControl>

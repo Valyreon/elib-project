@@ -124,21 +124,24 @@
             </TabControl.Resources>
         </Components:TabControlWithCache>
 
-
         <Grid
             x:Name="NotificationGrid"
             Height="35"
+            Margin="0,0,0,-35"
             VerticalAlignment="Bottom"
-            attachedProperties:UI.Elevation="10"
-            Background="{Binding CurrentNotificationMessage.Type, Converter={StaticResource NotificationTypeToBrushConverter}}"
-            Visibility="{Binding CurrentNotificationMessage, Converter={StaticResource ObjectToVisibilityConverter}}">
+            Background="{Binding Type, Converter={StaticResource NotificationTypeToBrushConverter}}"
+            DataContext="{Binding CurrentNotificationMessage, UpdateSourceTrigger=PropertyChanged}"
+            DataContextChanged="NotificationGrid_DataContextChanged">
             <TextBlock
                 x:Name="NotificationText"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 FontSize="14"
                 Foreground="White"
-                Text="{Binding CurrentNotificationMessage.Text}" />
+                Text="{Binding Text}" />
+            <Grid.RenderTransform>
+                <TranslateTransform X="0" Y="0" />
+            </Grid.RenderTransform>
         </Grid>
     </Grid>
 </MetroControls:MetroWindow>

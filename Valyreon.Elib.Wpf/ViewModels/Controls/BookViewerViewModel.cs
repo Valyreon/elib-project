@@ -260,7 +260,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         public async void Refresh()
         {
-            if(isLoading)
+            if (isLoading)
             {
                 return;
             }

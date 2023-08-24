@@ -67,5 +67,31 @@
     </Style>
 
     <Converters:ObjectToVisibilityConverter x:Key="ObjectToVisibilityConverter" />
+    <Converters:ObjectToBoolConverter x:Key="ObjectToBoolConverter" />
     <Converters:NotificationTypeToBrushConverter x:Key="NotificationTypeToBrushConverter" />
+
+    <Storyboard x:Key="ShowNotificationStoryboard" x:Name="ShowNotificationStoryboard">
+        <DoubleAnimation
+            BeginTime="00:00:00"
+            FillBehavior="HoldEnd"
+            Storyboard.TargetProperty="(Grid.RenderTransform).(TranslateTransform.Y)"
+            From="0"
+            To="-35"
+            Duration="0:0:0.4" />
+        <DoubleAnimation
+            BeginTime="00:00:00.4"
+            FillBehavior="HoldEnd"
+            Storyboard.TargetProperty="(Grid.RenderTransform).(TranslateTransform.Y)"
+            From="-35"
+            To="-35"
+            Duration="0:0:2" />
+        <DoubleAnimation
+            BeginTime="00:00:02.4"
+            FillBehavior="HoldEnd"
+            Storyboard.TargetProperty="(Grid.RenderTransform).(TranslateTransform.Y)"
+            From="-35"
+            To="0"
+            Duration="0:0:0.4" />
+    </Storyboard>
+
 </ResourceDictionary>
