@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,39 +9,68 @@ namespace Valyreon.Elib.Wpf.Models
 {
     public class Selector
     {
+        private static readonly object key = new object();
+        private static Selector instance;
+
         private readonly HashSet<int> selectedBookIds;
 
-        public Selector()
+        private Selector()
         {
             selectedBookIds = new HashSet<int>();
+        }
+
+        public static Selector Instance
+        {
+            get
+            {
+                // double checked locking
+                if (instance == null)
+                {
+                    lock (key)
+                    {
+                        instance ??= new Selector();
+                    }
+                }
+
+                return instance;
+            }
         }
 
         public int Count => selectedBookIds.Count;
 
         public IEnumerable<int> SelectedIds => selectedBookIds.AsEnumerable();
 
+        public int LastSelectedId { get; set; }
+
         public async Task<IList<Book>> GetSelectedBooks(IUnitOfWork uow)
         {
-            // TODO: replace this with filter later
-            var result = new List<Book>();
-            foreach (var id in selectedBookIds)
-            {
-                var book = await uow.BookRepository.FindAsync(id);
-                result.Add(book);
-            }
-            return result;
+            var result = await uow.BookRepository.FindAsync(Instance.SelectedIds);
+            return result.ToList();
         }
 
-        public bool Select(Book book)
+        public bool Select(Book book, bool updateLastSelectedId = true)
         {
-            if (book.IsMarked)
+            if (book.Id == 0)
             {
-                selectedBookIds.Add(book.Id);
-                return true;
+                throw new ArgumentException("Can't select book which are not added to DB.");
             }
 
-            selectedBookIds.Remove(book.Id);
-            return false;
+            if (selectedBookIds.Contains(book.Id))
+            {
+                book.IsMarked = false;
+                selectedBookIds.Remove(book.Id);
+                return false;
+            }
+
+            book.IsMarked = true;
+            selectedBookIds.Add(book.Id);
+
+            if(updateLastSelectedId)
+            {
+                LastSelectedId = book.Id;
+            }
+
+            return true;
         }
 
         public Book SetMarked(Book book)
@@ -54,4 +84,6 @@ namespace Valyreon.Elib.Wpf.Models
             selectedBookIds.Clear();
         }
     }
+
+
 }

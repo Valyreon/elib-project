@@ -146,7 +146,7 @@ namespace Valyreon.Elib.DataLayer.Repositories
             return Cache.FilterAndUpdateCache(result);
         }
 
-        public async Task<IEnumerable<Book>> FindPageByFilterAsync(FilterParameters filter, int offset, int pageSize)
+        public async Task<IEnumerable<Book>> FindPageByFilterAsync(FilterParameters filter, int? offset, int? pageSize)
         {
             var queryTuple = CreateQueryFromFilter(filter, offset, pageSize);
             var result = await Connection.QueryAsync<Book>(queryTuple.Item1, queryTuple.Item2, Transaction);

@@ -1,6 +1,5 @@
 using System;
 using Valyreon.Elib.DataLayer;
-using Valyreon.Elib.Wpf.Models;
 
 namespace Valyreon.Elib.Wpf.ViewModels
 {
@@ -16,6 +15,6 @@ namespace Valyreon.Elib.Wpf.ViewModels
 
         public abstract void Clear();
 
-        public abstract Func<IViewer> GetCloneFunction(Selector selector);
+        public abstract Func<IViewer> GetCloneFunction();
     }
 }

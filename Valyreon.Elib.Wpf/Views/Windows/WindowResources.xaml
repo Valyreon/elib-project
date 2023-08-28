@@ -29,6 +29,10 @@
     <DataTemplate DataType="{x:Type ControlViewModels:EditBookFormViewModel}">
         <ControlViews:EditBookFormControl />
     </DataTemplate>
+
+    <DataTemplate DataType="{x:Type ControlViewModels:BookTileViewModel}">
+        <ControlViews:BookTileControl />
+    </DataTemplate>
     <!--#endregion-->
 
     <!--#region FLYOUTS-->
@@ -52,9 +56,6 @@
     </DataTemplate>
     <DataTemplate DataType="{x:Type DialogViewModels:ChooseSeriesDialogViewModel}">
         <DialogViews:ChooseSeriesDialog />
-    </DataTemplate>
-    <DataTemplate DataType="{x:Type DialogViewModels:DeleteBooksDialogViewModel}">
-        <DialogViews:DeleteBooksDialog />
     </DataTemplate>
     <DataTemplate DataType="{x:Type DialogViewModels:ApplicationSettingsDialogViewModel}">
         <DialogViews:ApplicationSettingsDialog />

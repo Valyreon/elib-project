@@ -21,7 +21,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 {
     public class BookViewerViewModel : ViewModelBase, IViewer
     {
-        private readonly Selector selector;
         private string caption;
         private Book lastSelectedBook;
         private double scrollVerticalOffset;
@@ -41,12 +40,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             }
         }
 
-        public BookViewerViewModel(FilterParameters filter, Selector selector)
+        public BookViewerViewModel(FilterParameters filter)
         {
+            Selector.Instance.LastSelectedId = 0;
             Filter = filter;
             SearchText = filter.SearchText;
             Books = new ObservableCollection<Book>();
-            this.selector = selector;
             ApplyFilterOptionsToFilter(filterOptions, filter);
             MessengerInstance.Register<RefreshCurrentViewMessage>(this, _ =>
             {
@@ -56,21 +55,15 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 }
             });
 
+            MessengerInstance.Register<BookSelectedMessage>(this, HandleBookSelection);
+            MessengerInstance.Register<BookRemovedMessage>(this, m => Books.Remove(m.Book));
         }
 
         public ICommand BackCommand => new RelayCommand(Back);
 
         public ObservableCollection<Book> Books { get; set; }
 
-        public ICommand GoToAuthor =>
-            new RelayCommand<ICollection<Author>>(a => Messenger.Default.Send(new AuthorSelectedMessage(a.First())));
-
-        public ICommand GoToSeries =>
-            new RelayCommand<BookSeries>(s => Messenger.Default.Send(new SeriesSelectedMessage(s)));
-
         public ICommand LoadMoreCommand => new RelayCommand(LoadMore);
-
-        public ICommand OpenBookDetails => new RelayCommand<Book>(HandleBookClick);
 
         public bool IsBackEnabled => Back != null;
 
@@ -79,25 +72,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         public ICommand FilterBooksCommand => new RelayCommand(HandleFilter);
 
         public ICommand ClearSelectedBooksCommand => new RelayCommand(HandleClearButton);
-
-        private async void HandleDeleteButton()
-        {
-            var dialog = new DeleteBooksDialog();
-            IList<Book> selectedBooks = null;
-            using (var uow = await App.UnitOfWorkFactory.CreateAsync())
-            {
-                selectedBooks = await selector.GetSelectedBooks(uow);
-            }
-
-            var deleteDialogViewModel = new DeleteBooksDialogViewModel(selectedBooks, dialog);
-            deleteDialogViewModel.SetActionOnClose(() =>
-            {
-                HandleClearButton();
-                Messenger.Default.Send(new RefreshSidePaneCollectionsMessage());
-            });
-            dialog.DataContext = deleteDialogViewModel;
-            await DialogCoordinator.Instance.ShowMetroDialogAsync(System.Windows.Application.Current.MainWindow.DataContext, dialog);
-        }
 
         public bool IsSelectedBooksViewer => Filter.Selected == true;
 
@@ -109,9 +83,9 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         private void HandleClearButton()
         {
-            selector.Clear();
+            Selector.Instance.Clear();
             Messenger.Default.Send(new ResetPaneSelectionMessage());
-            Messenger.Default.Send(new BookSelectedMessage());
+            Messenger.Default.Send(new BookSelectedMessage(null));
         }
 
         public double ScrollVertical
@@ -119,12 +93,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             get => scrollVerticalOffset;
             set => Set(() => ScrollVertical, ref scrollVerticalOffset, value);
         }
-
-        public ICommand SelectBookCommand => new RelayCommand<Book>(b =>
-        {
-            b.IsMarked = !b.IsMarked;
-            HandleSelectBook(b);
-        });
 
         private FilterParameters filter = null;
 
@@ -168,55 +136,28 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         public int CurrentCount => Books.Count;
 
-        private void HandleSelectBook(Book obj)
+        private void HandleBookSelection(BookSelectedMessage message)
         {
-            var isSelected = selector.Select(obj);
-            var isThisSelectedView = Filter.Selected == true;
-            if (isThisSelectedView && !isSelected && Books.Count == 1)
+            if (!message.IsShiftDown)
             {
-                MessengerInstance.Send(new ResetPaneSelectionMessage());
-            }
-            else if (isThisSelectedView && !isSelected && Books.Count > 1)
-            {
-                Books.Remove(obj);
-                UpdateSubcaption();
-            }
-            else
-            {
-                lastSelectedBook = obj;
+                return;
             }
 
-            MessengerInstance.Send(new BookSelectedMessage());
-        }
+            var lastSelectedId = Selector.Instance.LastSelectedId;
+            var lastSelectedIndex = Selector.Instance.LastSelectedId == 0 ? 0 : Books.IndexOf(Books.Single(b => b.Id == lastSelectedId));
+            var currentIndex = Books.IndexOf(message.Book);
 
-        private void HandleBookClick(Book arg)
-        {
-            if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
-            {
-                arg.IsMarked = !arg.IsMarked;
-                HandleSelectBook(arg);
-                RaisePropertyChanged(() => arg.IsMarked);
-            }
-            else if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
-            {
-                var lastSelectedIndex = lastSelectedBook == null ? 0 : Books.IndexOf(lastSelectedBook);
-                var currentIndex = Books.IndexOf(arg);
-                var ascIndexArray = new int[2];
-                ascIndexArray[0] = currentIndex > lastSelectedIndex ? lastSelectedIndex : currentIndex;
-                ascIndexArray[1] = currentIndex > lastSelectedIndex ? currentIndex : lastSelectedIndex;
+            var ascIndexArray = new int[2];
+            ascIndexArray[0] = currentIndex > lastSelectedIndex ? lastSelectedIndex : currentIndex;
+            ascIndexArray[1] = currentIndex > lastSelectedIndex ? currentIndex : lastSelectedIndex;
 
-                for (var i = ascIndexArray[0]; i <= ascIndexArray[1]; i++)
-                {
-                    var book = Books.ElementAt(i);
-                    book.IsMarked = true;
-                    HandleSelectBook(book);
-                    RaisePropertyChanged(() => book.IsMarked);
-                }
-            }
-            else
-            {
-                Messenger.Default.Send(new ShowBookDetailsMessage(arg));
-            }
+            Enumerable.Range(ascIndexArray[0], ascIndexArray[1])
+                .Select(i => Books.ElementAt(i))
+                .Where(b => !b.IsMarked)
+                .ToList()
+                .ForEach(b => Selector.Instance.Select(b));
+
+            Selector.Instance.LastSelectedId = lastSelectedId;
         }
 
         private async void LoadMore()
@@ -231,7 +172,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             if (filter.Selected.HasValue && filter.Selected == true)
             {
                 dontLoad = true;
-                results = await uow.BookRepository.FindAsync(selector.SelectedIds);
+                results = await uow.BookRepository.FindAsync(Selector.Instance.SelectedIds);
             }
             else
             {
@@ -248,7 +189,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             foreach (var book in results)
             {
                 await book.LoadBookAsync(uow);
-                selector.SetMarked(book);
+                Selector.Instance.SetMarked(book);
                 Books.Add(book);
                 await Task.Delay(10);
             }
@@ -256,6 +197,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             IsResultEmpty = Books.Count == 0;
             isLoading = false;
         }
+
         private volatile bool isLoading;
 
         public async void Refresh()
@@ -268,7 +210,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             ScrollVertical = 0;
             Books.Clear();
 
-            using(var uow = await App.UnitOfWorkFactory.CreateAsync())
+            using (var uow = await App.UnitOfWorkFactory.CreateAsync())
             {
                 uow.ClearCache();
             }
@@ -298,7 +240,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             var dialog = new ExportOptionsDialog();
             using (var uow = await App.UnitOfWorkFactory.CreateAsync())
             {
-                dialog.DataContext = new ExportOptionsDialogViewModel(await selector.GetSelectedBooks(uow), dialog);
+                dialog.DataContext = new ExportOptionsDialogViewModel(await Selector.Instance.GetSelectedBooks(uow), dialog);
             }
             await DialogCoordinator.Instance.ShowMetroDialogAsync(System.Windows.Application.Current.MainWindow.DataContext, dialog);
         }
@@ -364,7 +306,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             }
             else
             {
-                count = selector.Count;
+                count = Selector.Instance.Count;
             }
 
             SubCaption = $"{count} book";
@@ -379,11 +321,11 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             }
         }
 
-        public Func<IViewer> GetCloneFunction(Selector selector)
+        public Func<IViewer> GetCloneFunction()
         {
             var filterClone = Filter with { };
             var caption = this.caption;
-            return () => new BookViewerViewModel(filterClone, selector) { Caption = caption };
+            return () => new BookViewerViewModel(filterClone) { Caption = caption };
         }
 
         public void Dispose()

@@ -116,7 +116,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             Authors.Clear();
         }
 
-        public Func<IViewer> GetCloneFunction(Selector selector)
+        public Func<IViewer> GetCloneFunction()
         {
             var searchToken = searchText;
             return () => new AuthorViewerViewModel(searchToken);
