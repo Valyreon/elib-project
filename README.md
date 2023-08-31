@@ -11,10 +11,8 @@ It will allow users to specify source folder that will be scanned for files of s
 
 The app development is still in progress but here are some current screenshots:
 
-![image](https://github.com/Valyreon/elib-project/assets/18052197/01dd5ea0-ec99-4344-8140-4854e1c0bafb)
+![image](https://github.com/Valyreon/elib-project/assets/18052197/f78e91b8-762e-48ab-bb2d-962edd3aab2e)
 
-![image](https://github.com/Valyreon/elib-project/assets/18052197/33cd7fc5-0e42-4148-84e2-c2d078edae24)
-
-![image](https://github.com/Valyreon/elib-project/assets/18052197/e62bb880-9843-4be0-8b1c-f26257743e87)
+![image](https://github.com/Valyreon/elib-project/assets/18052197/5f51d51b-8a24-4542-b51f-ec8364aeee6b)
 
 ---
