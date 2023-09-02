@@ -1,41 +1,48 @@
-﻿using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace Valyreon.Elib.Wpf.CustomComponents
 {
-	public class CheckboxButton : CheckBox
-	{
-		public static DependencyProperty TextProperty;
-		public static DependencyProperty CheckedIconProperty;
-		public static DependencyProperty CheckedColorProperty;
+    public class CheckboxButton : CheckBox
+    {
+        public static DependencyProperty TextProperty;
+        public static DependencyProperty IconSizeProperty;
+        public static DependencyProperty ImageCheckedProperty;
+        public static DependencyProperty ImageUncheckedProperty;
 
-		static CheckboxButton()
-		{
-			DefaultStyleKeyProperty.OverrideMetadata(typeof(CheckboxButton),
-				new FrameworkPropertyMetadata(typeof(CheckboxButton)));
-			TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(CheckboxButton));
-			CheckedIconProperty = DependencyProperty.Register("CheckedIcon", typeof(Enum), typeof(CheckboxButton));
-			CheckedColorProperty = DependencyProperty.Register("CheckedColor", typeof(Brush), typeof(CheckboxButton));
-		}
+        static CheckboxButton()
+        {
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(CheckboxButton),
+                new FrameworkPropertyMetadata(typeof(CheckboxButton)));
+            TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(CheckboxButton));
+            ImageCheckedProperty = DependencyProperty.Register("ImageChecked", typeof(ImageSource), typeof(CheckboxButton));
+            ImageUncheckedProperty = DependencyProperty.Register("ImageUnchecked", typeof(ImageSource), typeof(CheckboxButton));
+            IconSizeProperty = DependencyProperty.Register("IconSize", typeof(double), typeof(CheckboxButton));
+        }
 
-		public Brush CheckedColor
-		{
-			get => (Brush)GetValue(CheckedColorProperty);
-			set => SetValue(CheckedColorProperty, value);
-		}
+        public string Text
+        {
+            get => (string)GetValue(TextProperty);
+            set => SetValue(TextProperty, value);
+        }
 
-		public Enum CheckedIcon
-		{
-			get => (Enum)GetValue(CheckedIconProperty);
-			set => SetValue(CheckedIconProperty, value);
-		}
+        public ImageSource ImageChecked
+        {
+            get => (ImageSource)GetValue(ImageCheckedProperty);
+            set => SetValue(ImageCheckedProperty, value);
+        }
 
-		public string Text
-		{
-			get => (string)GetValue(TextProperty);
-			set => SetValue(TextProperty, value);
-		}
-	}
+        public ImageSource ImageUnchecked
+        {
+            get => (ImageSource)GetValue(ImageUncheckedProperty);
+            set => SetValue(ImageUncheckedProperty, value);
+        }
+
+        public double IconSize
+        {
+            get => (double)GetValue(IconSizeProperty);
+            set => SetValue(IconSizeProperty, value);
+        }
+    }
 }

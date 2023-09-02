@@ -1,38 +1,19 @@
-﻿<MetroControls:MetroWindow
+<Window
     x:Class="Valyreon.Elib.Wpf.Views.Windows.ReaderWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:AttachedProperties="clr-namespace:Valyreon.Elib.Wpf.AttachedProperties"
-    xmlns:Behaviors="http://schemas.microsoft.com/xaml/behaviors"
-    xmlns:Components="clr-namespace:Valyreon.Elib.Wpf.CustomComponents"
-    xmlns:ControlViewModels="clr-namespace:Valyreon.Elib.Wpf.ViewModels.Controls"
-    xmlns:ControlViews="clr-namespace:Valyreon.Elib.Wpf.Views.Controls"
-    xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
-    xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
-    xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:Valyreon.Elib.Wpf.Views.Windows"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="Book Reader"
     Width="800"
     Height="450"
-    Dialog:DialogParticipation.Register="{Binding}"
     BorderBrush="{StaticResource AccentColorBrush}"
     Closing="MetroWindow_Closing"
-    IconBitmapScalingMode="HighQuality"
-    IconEdgeMode="Aliased"
-    KeepBorderOnMaximize="True"
     Left="0"
-    NonActiveBorderBrush="{StaticResource AccentColorBrush}"
-    NonActiveGlowBrush="{StaticResource AccentColorBrush}"
     ResizeMode="CanResize"
-    ShowIconOnTitleBar="True"
-    ShowTitleBar="True"
-    TitleAlignment="Center"
     Top="0"
     WindowStartupLocation="CenterOwner"
     WindowState="Maximized"
-    WindowTitleBrush="#222222"
     mc:Ignorable="d">
     <!--<Behaviors:Interaction.Triggers>
         <Behaviors:EventTrigger EventName="Loaded">
@@ -45,4 +26,4 @@
     <Grid>
         <!--<WebBrowser AttachedProperties:BrowserBehavior.Html="{Binding BookHtml}" TextOptions.TextRenderingMode="ClearType" />-->
     </Grid>
-</MetroControls:MetroWindow>
+</Window>

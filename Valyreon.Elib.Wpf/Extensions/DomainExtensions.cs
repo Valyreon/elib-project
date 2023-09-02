@@ -29,7 +29,7 @@ namespace Valyreon.Elib.Wpf.Extensions
                 return newBook;
             }
 
-            foreach(var author in parsedBook.Authors)
+            foreach (var author in parsedBook.Authors)
             {
                 newBook.Authors.Add(await uow.AuthorRepository.GetAuthorWithNameAsync(author) ?? new Author { Name = author });
             }

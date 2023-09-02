@@ -65,7 +65,7 @@ namespace Valyreon.Elib.Wpf.Models
             book.IsMarked = true;
             selectedBookIds.Add(book.Id);
 
-            if(updateLastSelectedId)
+            if (updateLastSelectedId)
             {
                 LastSelectedId = book.Id;
             }
@@ -84,6 +84,4 @@ namespace Valyreon.Elib.Wpf.Models
             selectedBookIds.Clear();
         }
     }
-
-
 }

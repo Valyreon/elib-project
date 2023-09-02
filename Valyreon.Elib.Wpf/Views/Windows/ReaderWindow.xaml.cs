@@ -1,11 +1,11 @@
-using MahApps.Metro.Controls;
+using System.Windows;
 
 namespace Valyreon.Elib.Wpf.Views.Windows
 {
     /// <summary>
     /// Interaction logic for ReaderWindow.xaml
     /// </summary>
-    public partial class ReaderWindow : MetroWindow
+    public partial class ReaderWindow : Window
     {
         public ReaderWindow()
         {

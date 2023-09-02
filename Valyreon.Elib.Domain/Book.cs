@@ -53,7 +53,6 @@ namespace Valyreon.Elib.Domain
 
         public ObservableCollection<Quote> Quotes { get; set; }
 
-
         public ObservableCollection<Author> Authors
         {
             get => authors;

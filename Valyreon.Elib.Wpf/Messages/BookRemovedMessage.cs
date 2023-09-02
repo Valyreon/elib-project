@@ -1,15 +1,16 @@
+using System.Collections.Generic;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.Mvvm.Messaging;
 
 namespace Valyreon.Elib.Wpf.Messages
 {
-    public class BookRemovedMessage : MessageBase
+    public class BooksRemovedMessage : MessageBase
     {
-        public BookRemovedMessage(Book book)
+        public BooksRemovedMessage(IEnumerable<Book> books)
         {
-            Book = book;
+            Books = books;
         }
 
-        public Book Book { get; }
+        public IEnumerable<Book> Books { get; }
     }
 }

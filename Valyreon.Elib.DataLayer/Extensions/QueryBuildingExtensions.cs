@@ -33,7 +33,7 @@ namespace Valyreon.Elib.DataLayer.Extensions
 
         public static string Where(this string query, string condition)
         {
-            return query + " WHERE "+ condition;
+            return query + " WHERE " + condition;
         }
 
         public static string And(this string query, string condition)

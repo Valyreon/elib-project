@@ -2,30 +2,25 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Timers;
-using System.Windows;
 using System.Windows.Input;
-using MahApps.Metro.Controls.Dialogs;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.Mvvm;
-using Valyreon.Elib.Wpf.Extensions;
+using Valyreon.Elib.Wpf.Interfaces;
 using Valyreon.Elib.Wpf.Messages;
 using Valyreon.Elib.Wpf.Models;
 using Valyreon.Elib.Wpf.Services;
+using Valyreon.Elib.Wpf.Themes.CustomComponents.Controls;
 using Valyreon.Elib.Wpf.ViewModels.Controls;
 using Valyreon.Elib.Wpf.ViewModels.Dialogs;
 using Valyreon.Elib.Wpf.ViewModels.Flyouts;
-using Valyreon.Elib.Wpf.Views.Dialogs;
 using Timer = System.Timers.Timer;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Windows
 {
     public class TheWindowViewModel : ViewModelBase, IDisposable
     {
-        private object flyoutControl;
-        private bool isBookDetailsFlyoutOpen;
+        private IFlyoutPanel flyoutControl;
         private ITabViewModel selectedTab;
 
         private readonly Queue<ShowNotificationMessage> messages = new();
@@ -50,15 +45,18 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
                 fileSystemWatcher.Dispose();
                 fileSystemWatcher = new ElibFileSystemWatcher();
             });
-            MessengerInstance.Register<ShowBookDetailsMessage>(this, HandleBookFlyout);
+            MessengerInstance.Register<OpenFlyoutMessage>(this, m => HandleOpenFlyout(m.ViewModel));
             MessengerInstance.Register<ShowNotificationMessage>(this, HandleShowNotification);
-            MessengerInstance.Register(this, (ShowDialogMessage m) => ShowDialog(m.Title, m.Text));
-            MessengerInstance.Register<ShowInputDialogMessage>(this, HandleInputDialog);
-            MessengerInstance.Register(this, (CloseFlyoutMessage _) =>
+            MessengerInstance.Register(this, (ShowDialogMessage m) =>
             {
-                IsBookDetailsFlyoutOpen = false;
-                FlyoutControl = null;
+                if (!IsDialogOpen)
+                {
+                    DialogControl = m.ViewModel;
+                    IsDialogOpen = true;
+                }
             });
+            MessengerInstance.Register(this, (CloseDialogMessage m) => IsDialogOpen = false);
+            MessengerInstance.Register(this, (CloseFlyoutMessage _) => CloseFlyoutPanel());
             MessengerInstance.Register(this, (OpenAddBooksFormMessage m) => HandleAddBooksFlyout(m.BooksToAdd));
             MessengerInstance.Register(this, (EditBookMessage m) => HandleEditBookFlyout(m.Book));
             MessengerInstance.Register(this, (ScanForNewBooksMessage m) => HandleScanForNewBooks());
@@ -69,6 +67,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
                 new QuotesTabViewModel(),
             };
             SelectedTab = Tabs[0];
+
+            FlyoutControl = new FlyoutPanel();
         }
 
         private void HandleNextNotification(object sender = null, ElapsedEventArgs e = null)
@@ -95,20 +95,30 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
             notificationTimer.Start();
         }
 
-        public ICommand CloseDetailsCommand => new RelayCommand(() =>
+        public void OpenFlyoutPanel(object content)
         {
-            IsBookDetailsFlyoutOpen = false;
-            FlyoutControl = null;
-        });
+            flyoutControl.ContentControl = content;
+            flyoutControl.IsOpen = true;
+        }
+
+        public void CloseFlyoutPanel()
+        {
+            flyoutControl.IsOpen = false;
+            flyoutControl.ContentControl = null;
+        }
 
         public ICommand EscKeyCommand => new RelayCommand(ProcessEscKey);
-        public ICommand OpenSettingsCommand => new RelayCommand(HandleOpenSettings);
+        public ICommand CloseFlyoutCommand => new RelayCommand(() => FlyoutControl = null);
+        public ICommand OpenSettingsCommand => new RelayCommand(() => MessengerInstance.Send(new ShowDialogMessage(new ApplicationSettingsDialogViewModel())));
         public ICommand ScanForNewContentCommand => new RelayCommand(HandleScanForNewBooks);
         public ICommand RefreshViewCommand => new RelayCommand(HandleRefreshView);
 
         private static DateTime lastRefresh = DateTime.MinValue;
         private ShowNotificationMessage currentNotificationMessage;
+        private DialogViewModel dialogControl;
+        private bool isDialogOpen;
         private static readonly TimeSpan refreshPause = new TimeSpan(0, 0, 0, 0, 500);
+
         public void HandleRefreshView()
         {
             if (DateTime.Now - lastRefresh > refreshPause)
@@ -118,25 +128,22 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
             }
         }
 
-        private async void HandleOpenSettings()
-        {
-            var dialog = new ApplicationSettingsDialog
-            {
-                DataContext = new ApplicationSettingsDialogViewModel()
-            };
-            await DialogCoordinator.Instance.ShowMetroDialogAsync(Application.Current.MainWindow.DataContext, dialog);
-        }
-
-        public object FlyoutControl
+        public IFlyoutPanel FlyoutControl
         {
             get => flyoutControl;
             set => Set(() => FlyoutControl, ref flyoutControl, value);
         }
 
-        public bool IsBookDetailsFlyoutOpen
+        public DialogViewModel DialogControl
         {
-            get => isBookDetailsFlyoutOpen;
-            set => Set(() => IsBookDetailsFlyoutOpen, ref isBookDetailsFlyoutOpen, value);
+            get => dialogControl;
+            set => Set(() => DialogControl, ref dialogControl, value);
+        }
+
+        public bool IsDialogOpen
+        {
+            get => isDialogOpen;
+            set => Set(() => IsDialogOpen, ref isDialogOpen, value);
         }
 
         public ITabViewModel SelectedTab
@@ -146,12 +153,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
         }
 
         public ObservableCollection<ITabViewModel> Tabs { get; set; }
-
-        private async void HandleInputDialog(ShowInputDialogMessage obj)
-        {
-            var input = await DialogCoordinator.Instance.ShowInputAsync(Application.Current.MainWindow.DataContext, obj.Title, obj.Text);
-            obj.CallOnResult(input);
-        }
 
         private async void HandleScanForNewBooks()
         {
@@ -169,36 +170,34 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
 
         private void HandleEditBookFlyout(Book book)
         {
-            FlyoutControl = new EditBookViewModel(book);
-            IsBookDetailsFlyoutOpen = true;
+            OpenFlyoutPanel(new EditBookViewModel(book));
         }
 
         private void HandleAddBooksFlyout(IList<string> booksToAdd)
         {
-            FlyoutControl = new AddNewBooksViewModel(booksToAdd);
-            IsBookDetailsFlyoutOpen = true;
+            OpenFlyoutPanel(new AddNewBooksViewModel(booksToAdd));
         }
 
-        private async void ShowDialog(string title, string text)
+        private void ProcessEscKey()
         {
-            //await ((MetroWindow)Application.Current.MainWindow).ShowMessageAsync(title, text);
-            await DialogCoordinator.Instance.ShowMessageAsync(Application.Current.MainWindow.DataContext, title, text);
-        }
-
-        private async void ProcessEscKey()
-        {
-            var currentDialog = await DialogCoordinator.Instance.GetCurrentDialogAsync<BaseMetroDialog>(Application.Current.MainWindow.DataContext);
-            if (IsBookDetailsFlyoutOpen && currentDialog == null)
+            if (IsDialogOpen)
             {
-                IsBookDetailsFlyoutOpen = false;
-                FlyoutControl = null;
+                MessengerInstance.Send(new CloseDialogMessage());
+                return;
             }
+
+            if (flyoutControl.IsOpen)
+            {
+                MessengerInstance.Send(new CloseFlyoutMessage());
+                return;
+            }
+
+            MessengerInstance.Send(new GoBackMessage());
         }
 
-        private void HandleBookFlyout(ShowBookDetailsMessage obj)
+        private void HandleOpenFlyout(ViewModelBase obj)
         {
-            FlyoutControl = new BookDetailsViewModel(obj.Book);
-            IsBookDetailsFlyoutOpen = true;
+            OpenFlyoutPanel(obj);
         }
 
         public void Dispose()

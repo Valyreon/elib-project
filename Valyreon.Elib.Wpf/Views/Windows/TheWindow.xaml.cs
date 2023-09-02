@@ -1,5 +1,5 @@
+using System.Windows;
 using System.Windows.Media.Animation;
-using MahApps.Metro.Controls;
 using Valyreon.Elib.Wpf.ViewModels.Windows;
 
 namespace Valyreon.Elib.Wpf.Views.Windows
@@ -7,7 +7,7 @@ namespace Valyreon.Elib.Wpf.Views.Windows
     /// <summary>
     ///     Interaction logic for TheWindow.xaml
     /// </summary>
-    public partial class TheWindow : MetroWindow
+    public partial class TheWindow : Window
     {
         public TheWindow()
         {
@@ -19,6 +19,23 @@ namespace Valyreon.Elib.Wpf.Views.Windows
         {
             var sb = FindResource("ShowNotificationStoryboard") as Storyboard;
             sb?.Begin(NotificationGrid, false);
+        }
+
+        private void DialogGrid_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            var newValue = (bool)e.NewValue;
+            if (newValue)
+            {
+                DialogGrid.Visibility = Visibility.Visible;
+                var sb = FindResource("DialogGridFadeInStoryboard") as Storyboard;
+                sb?.Begin(DialogGrid, false);
+            }
+            else
+            {
+                var sb = FindResource("DialogGridFadeOutStoryboard") as Storyboard;
+                sb?.Begin(DialogGrid, false);
+                sb.Completed += (s, e) => DialogGrid.Visibility = Visibility.Collapsed;
+            }
         }
     }
 }

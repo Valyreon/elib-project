@@ -11,7 +11,6 @@ namespace Valyreon.Elib.DataLayer.Repositories
 {
     public class SeriesRepository : RepositoryBase<BookSeries>, ISeriesRepository
     {
-
         public SeriesRepository(IDbTransaction transaction) : base(transaction)
         {
         }

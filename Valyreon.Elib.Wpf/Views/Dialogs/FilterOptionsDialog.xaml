@@ -1,32 +1,27 @@
-﻿<dialogs:BaseMetroDialog
+<UserControl
     x:Class="Valyreon.Elib.Wpf.Views.Dialogs.FilterOptionsDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:dialogs="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
 
-    <Grid Margin="0,0,0,20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="35" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="20" />
-            <RowDefinition Height="30" />
-        </Grid.RowDefinitions>
-        <StackPanel Width="400" Orientation="Vertical">
+    <StackPanel>
+        <StackPanel
+            Width="400"
+            Margin="0,0,0,15"
+            Orientation="Vertical">
             <TextBlock
                 HorizontalAlignment="Center"
-                
                 FontSize="20"
                 FontWeight="Bold">
                 Filter options
             </TextBlock>
         </StackPanel>
 
-        <Grid Grid.Row="1">
+        <Grid Margin="0,0,0,20">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="280" />
@@ -37,48 +32,40 @@
                 Grid.Column="1"
                 Width="Auto"
                 HorizontalAlignment="Center">
-                <Label
-                    Margin="-5,0,0,0"
-                    
-                    FontSize="16">
+                <Label Margin="-5,0,0,0" FontSize="16">
                     Sort by
                 </Label>
                 <RadioButton
                     Margin="0,3,0,0"
-                    
                     FontSize="14"
                     IsChecked="{Binding Options.SortByImportTime}">
                     Import Time
                 </RadioButton>
                 <RadioButton
                     Margin="0,8,0,0"
-                    
                     FontSize="14"
                     IsChecked="{Binding Options.SortByTitle}">
                     Title
                 </RadioButton>
                 <RadioButton
                     Margin="0,8,0,0"
-                    
                     FontSize="14"
                     IsChecked="{Binding Options.SortBySeries}">
                     Series
                 </RadioButton>
                 <StackPanel
-                    Margin="0,10,0,0"
+                    Margin="0,15,0,0"
                     VerticalAlignment="Center"
                     Orientation="Horizontal">
                     <TextBlock
                         Margin="0,0,10,0"
                         VerticalAlignment="Center"
-                        
                         FontSize="14">
                         Order:
                     </TextBlock>
                     <ComboBox
                         Width="120"
                         VerticalAlignment="Center"
-                        
                         FontSize="12"
                         SelectedIndex="{Binding OrderSelectedIndex}">
                         <ComboBoxItem>Descending</ComboBoxItem>
@@ -90,29 +77,23 @@
                 Grid.Column="2"
                 Width="Auto"
                 HorizontalAlignment="Center">
-                <Label
-                    Margin="-5,0,0,0"
-                    
-                    FontSize="16">
+                <Label Margin="-5,0,0,0" FontSize="16">
                     Read Filter
                 </Label>
                 <RadioButton
                     Margin="0,3,0,0"
-                    
                     FontSize="14"
                     IsChecked="{Binding Options.ShowAll}">
                     All
                 </RadioButton>
                 <RadioButton
                     Margin="0,8,0,0"
-                    
                     FontSize="14"
                     IsChecked="{Binding Options.ShowRead}">
                     Read
                 </RadioButton>
                 <RadioButton
                     Margin="0,8,0,0"
-                    
                     FontSize="14"
                     IsChecked="{Binding Options.ShowUnread}">
                     Unread
@@ -131,20 +112,18 @@
             <Button
                 Grid.Column="1"
                 MinHeight="30"
-                Background="CornflowerBlue"
                 Command="{Binding ApplyCommand}"
-                Style="{StaticResource MahApps.Styles.Button.Dialogs.Accent}">
+                IsDefault="True">
                 <TextBlock>
-                    Apply
+                    APPLY
                 </TextBlock>
             </Button>
             <Button
                 Grid.Column="3"
                 MinHeight="30"
-                Command="{Binding CancelCommand}"
-                Style="{StaticResource MahApps.Styles.Button.Dialogs}">
-                Cancel
+                Command="{Binding CancelCommand}">
+                CANCEL
             </Button>
         </Grid>
-    </Grid>
-</dialogs:BaseMetroDialog>
+    </StackPanel>
+</UserControl>

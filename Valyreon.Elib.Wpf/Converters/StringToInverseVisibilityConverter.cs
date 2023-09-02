@@ -11,9 +11,9 @@ namespace Valyreon.Elib.Wpf.Converters
         {
             if (value is string str)
             {
-                return !string.IsNullOrWhiteSpace(str)
-                    ? Visibility.Collapsed
-                    : Visibility.Visible;
+                return string.IsNullOrWhiteSpace(str)
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
             }
 
             return Visibility.Visible;

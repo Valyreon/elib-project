@@ -7,8 +7,8 @@ using System.Text;
 namespace Valyreon.Elib.Wpf.Models
 {
     public static class Signer
-	{
-		public static string ComputeHash(string filePath)
+    {
+        public static string ComputeHash(string filePath)
         {
             using var stream = File.OpenRead(filePath);
             var hashes = new StringBuilder();
@@ -24,9 +24,9 @@ namespace Valyreon.Elib.Wpf.Models
         }
 
         private static string ToHex(this byte[] bytes)
-		{
+        {
             return string.Join(string.Empty, bytes.Select(b => b.ToString("X2")));
-		}
+        }
 
         private static IEnumerable<byte[]> ReadChunks(string fileName)
         {

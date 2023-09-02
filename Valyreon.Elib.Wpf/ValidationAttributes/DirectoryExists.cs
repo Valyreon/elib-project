@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 
 namespace Valyreon.Elib.Wpf.ValidationAttributes

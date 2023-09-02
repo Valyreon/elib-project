@@ -10,9 +10,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\Images\chevron_left_large.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="ControlzEx" Version="5.0.2" />
-    <PackageReference Include="MahApps.Metro" Version="2.4.10" />
-    <PackageReference Include="MahApps.Metro.IconPacks" Version="4.11.0" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.10" />
     <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="7.0.10" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />

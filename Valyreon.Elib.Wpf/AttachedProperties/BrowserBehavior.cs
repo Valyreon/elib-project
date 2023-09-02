@@ -1,5 +1,3 @@
-using System.Windows;
-
 namespace Valyreon.Elib.Wpf.AttachedProperties
 {
     public static class BrowserBehavior

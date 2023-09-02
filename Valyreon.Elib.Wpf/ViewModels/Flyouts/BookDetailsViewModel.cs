@@ -1,18 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Valyreon.Elib.Mvvm;
-using Valyreon.Elib.Mvvm.Messaging;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.EBookTools;
+using Valyreon.Elib.Mvvm;
+using Valyreon.Elib.Mvvm.Messaging;
 using Valyreon.Elib.Wpf.Messages;
 using Valyreon.Elib.Wpf.Models;
-using Valyreon.Elib.Wpf.ViewModels.Windows;
-using Valyreon.Elib.Wpf.Views.Windows;
-using System.IO;
+using Valyreon.Elib.Wpf.ViewModels.Dialogs;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 {
@@ -29,11 +28,11 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
         private void HandleRead()
         {
-            var win2 = new ReaderWindow
+            /*var win2 = new ReaderWindow
             {
                 DataContext = new ReaderViewModel(Book)
             };
-            win2.Show();
+            win2.Show();*/
         }
 
         public ICommand AddCollectionCommand => new RelayCommand<string>(AddCollection);
@@ -96,7 +95,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             }
         }
 
-        public ICommand RemoveCollectionCommand => new RelayCommand<string>(RemoveCollection);
+        public ICommand RemoveCollectionCommand => new RelayCommand<UserCollection>(RemoveCollection);
 
         private void GoToCollection(UserCollection obj)
         {
@@ -104,15 +103,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             MessengerInstance.Send(new CloseFlyoutMessage());
         }
 
-        private void RemoveCollection(string tag)
+        private void RemoveCollection(UserCollection collection)
         {
-            var collection = Book.Collections.FirstOrDefault(c => c.Tag == tag);
-
-            if (collection == null)
-            {
-                return;
-            }
-
             Book.Collections.Remove(collection);
 
             Task.Run(async () =>
@@ -194,7 +186,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             }
             catch (Exception)
             {
-                MessengerInstance.Send(new ShowDialogMessage("Error Notification", "Something went wrong while exporting the file."));
+                MessengerInstance.Send(new ShowNotificationMessage("Something went wrong while exporting the file.", NotificationType.Error));
             }
         }
 
@@ -206,14 +198,17 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
             builder.Append("File path: ").AppendLine(Book.Path);
 
+            var strCheck = (string str) => string.IsNullOrWhiteSpace(str) ? "N/A" : str;
+
             if (File.Exists(Book.Path))
             {
                 var x = EbookParserFactory.Create(Book.Path).Parse();
-                builder.Append("ISBN: ").AppendLine(x.Isbn);
-                builder.Append("Publisher: ").AppendLine(x.Publisher);
+                builder.Append("ISBN: ").AppendLine(strCheck(x.Isbn));
+                builder.Append("Publisher: ").AppendLine(strCheck(x.Publisher));
             }
 
-            MessengerInstance.Send(new ShowDialogMessage("File Information", builder.ToString()));
+            var viewModel = new TextMessageDialogViewModel("File Information", builder.ToString());
+            MessengerInstance.Send(new ShowDialogMessage(viewModel));
         }
     }
 }

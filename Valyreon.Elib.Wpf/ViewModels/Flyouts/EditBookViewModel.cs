@@ -38,15 +38,15 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
         private void HandleSave()
         {
-            if(EditBookForm.UpdateBook())
+            if (EditBookForm.UpdateBook())
             {
-                MessengerInstance.Send(new ShowBookDetailsMessage(Book));
+                MessengerInstance.Send(new OpenFlyoutMessage(new BookDetailsViewModel(Book)));
             }
         }
 
         private void HandleCancel()
         {
-            MessengerInstance.Send(new ShowBookDetailsMessage(Book));
+            MessengerInstance.Send(new OpenFlyoutMessage(new BookDetailsViewModel(Book)));
         }
     }
 }

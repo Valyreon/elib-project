@@ -1,11 +1,10 @@
-using System.Threading.Tasks;
 using System;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using Valyreon.Elib.DataLayer;
 using Valyreon.Elib.Wpf.Models;
-using System.Text;
-using System.IO;
-using System.Runtime.InteropServices;
 
 namespace Valyreon.Elib.Wpf
 {
@@ -14,7 +13,7 @@ namespace Valyreon.Elib.Wpf
     /// </summary>
     public partial class App : Application
     {
-#if DEBUG
+#if TEST
         [DllImport("Kernel32")]
         public static extern void AllocConsole();
 
@@ -30,14 +29,14 @@ namespace Valyreon.Elib.Wpf
 
             SetupExceptionHandling();
 
-#if DEBUG
+#if TEST
             AllocConsole();
 #endif
         }
 
         private void OnExit(object sender, ExitEventArgs e)
         {
-#if DEBUG
+#if TEST
             FreeConsole();
 #endif
         }
@@ -90,7 +89,7 @@ namespace Valyreon.Elib.Wpf
             var logPath = Path.Combine(ApplicationData.LogFolderPath, $"{timestamp:yyyyMMddTHHmmss}_{exception.GetType().Name}.txt");
             File.WriteAllText(logPath, stringBuilder.ToString());
 
-#if DEBUG
+#if TEST
             Console.WriteLine(exception.ToString());
             Console.WriteLine("++++++++++++++++++++++++");
 #endif

@@ -3,18 +3,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Windows.Documents;
 using System.Windows.Input;
-using MahApps.Metro.Controls.Dialogs;
-using MahApps.Metro.IconPacks;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.Mvvm;
 using Valyreon.Elib.Mvvm.Messaging;
 using Valyreon.Elib.Wpf.Messages;
 using Valyreon.Elib.Wpf.Models;
 using Valyreon.Elib.Wpf.ViewModels.Dialogs;
-using Valyreon.Elib.Wpf.Views.Dialogs;
+using Valyreon.Elib.Wpf.ViewModels.Flyouts;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Controls
 {
@@ -117,7 +113,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             }
             else
             {
-                Messenger.Default.Send(new ShowBookDetailsMessage(Book));
+                Messenger.Default.Send(new OpenFlyoutMessage(new BookDetailsViewModel(Book)));
             }
         }
 
@@ -137,12 +133,9 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 return;
             }
 
-            var dialog = new ExportOptionsDialog();
-            using (var uow = await App.UnitOfWorkFactory.CreateAsync())
-            {
-                dialog.DataContext = new ExportOptionsDialogViewModel(await Selector.Instance.GetSelectedBooks(uow), dialog);
-            }
-            await DialogCoordinator.Instance.ShowMetroDialogAsync(System.Windows.Application.Current.MainWindow.DataContext, dialog);
+            using var uow = await App.UnitOfWorkFactory.CreateAsync();
+            var dialogViewModel = new ExportOptionsDialogViewModel(await Selector.Instance.GetSelectedBooks(uow));
+            MessengerInstance.Send(new ShowDialogMessage(dialogViewModel));
         }
 
         private void HandleSingleFileExport()
@@ -169,7 +162,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             }
             catch (Exception)
             {
-                MessengerInstance.Send(new ShowDialogMessage("Error Notification", "Something went wrong while exporting the file."));
+                MessengerInstance.Send(new ShowNotificationMessage("Something went wrong while exporting the file.", NotificationType.Error));
             }
         }
 
@@ -208,16 +201,29 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         private async void HandleRemove()
         {
-            using var uow = await App.UnitOfWorkFactory.CreateAsync();
-            await uow.BookRepository.DeleteAsync(Book);
-
-            if (Book.IsMarked)
+            IEnumerable<Book> books;
+            using (var uow = await App.UnitOfWorkFactory.CreateAsync())
             {
-                Selector.Instance.Select(Book);
+                books = IsOnlyThisBookSelected() ? new List<Book> { Book } : await Selector.Instance.GetSelectedBooks(uow);
             }
+            var prompt = books.Count() == 1
+                ? "Are you sure you want to remove this book from the library?\nFile will not be deleted."
+                : "Are you sure you want to remove these books from the library?\nFiles will not be deleted.";
+            var confirmViewModel = new ConfirmationDialogViewModel("Confirm Delete", prompt, async () =>
+            {
+                if (Book.IsMarked)
+                {
+                    Selector.Instance.Select(Book);
+                }
 
-            uow.Commit();
-            MessengerInstance.Send(new BookRemovedMessage(Book));
+                using var uow = await App.UnitOfWorkFactory.CreateAsync();
+                await uow.BookRepository.DeleteAsync(books);
+                uow.Commit();
+                MessengerInstance.Send(new BooksRemovedMessage(books));
+                MessengerInstance.Send(new ShowNotificationMessage($"{books.Count()} book(s) removed from the library.", NotificationType.Success));
+            });
+
+            MessengerInstance.Send(new ShowDialogMessage(confirmViewModel));
         }
     }
 }

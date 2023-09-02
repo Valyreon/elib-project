@@ -95,7 +95,7 @@ public partial class BookTileControl : UserControl
 
     private void SelectedCheckbox_Checked(object sender, RoutedEventArgs e)
     {
-        if(selectedCheckbox != null)
+        if (selectedCheckbox != null)
         {
             selectedCheckbox.Opacity = 1;
         }
@@ -103,6 +103,5 @@ public partial class BookTileControl : UserControl
 
     private void SelectedCheckbox_Unchecked(object sender, RoutedEventArgs e)
     {
-        
     }
 }

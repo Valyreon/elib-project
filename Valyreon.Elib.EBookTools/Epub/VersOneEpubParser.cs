@@ -1,7 +1,6 @@
 using System;
-using System.IO;
+using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using VersOne.Epub;
 using VersOne.Epub.Options;
 
@@ -46,8 +45,20 @@ namespace Valyreon.Elib.EBookTools.Epub
         {
             var epubBook = EpubReader.ReadBook(filePath, epubReaderOptions);
 
-            var str = JsonSerializer.Serialize(epubBook.Schema, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText(@"C:\Users\Luka\Desktop\log.txt", str);
+            var authorList = new List<string>();
+
+            foreach (var parsedAuthor in epubBook.AuthorList)
+            {
+                if (parsedAuthor.Contains(" and "))
+                {
+                    var resultAuthors = parsedAuthor.Split(" and ");
+                    authorList.AddRange(resultAuthors);
+                }
+                else
+                {
+                    authorList.Add(parsedAuthor);
+                }
+            }
 
             return new ParsedBook
             {

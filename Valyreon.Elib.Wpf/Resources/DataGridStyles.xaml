@@ -1,0 +1,60 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="CornflowerBlue" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="CornflowerBlue" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
+
+    <Style TargetType="{x:Type DataGridColumnHeader}">
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="BorderThickness" Value="0,0,1,2" />
+        <Setter Property="Padding" Value="5,0" />
+        <Setter Property="BorderBrush" Value="LightGray" />
+        <Setter Property="SeparatorBrush" Value="Gray" />
+        <Setter Property="Background" Value="White" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="SeparatorVisibility" Value="Visible" />
+    </Style>
+
+    <Style TargetType="DataGrid">
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="AutoGenerateColumns" Value="False" />
+        <Setter Property="AlternationCount" Value="2" />
+        <Setter Property="Foreground" Value="#222" />
+        <Setter Property="Background" Value="White" />
+        <Setter Property="HorizontalGridLinesBrush" Value="LightGray" />
+        <Setter Property="VerticalGridLinesBrush" Value="LightGray" />
+        <Setter Property="CanUserResizeColumns" Value="False" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="RowBackground" Value="WhiteSmoke" />
+        <Setter Property="CanUserReorderColumns" Value="false" />
+        <Setter Property="HeadersVisibility" Value="Column" />
+        <Setter Property="AlternatingRowBackground" Value="#e6edfa" />
+    </Style>
+
+    <Style TargetType="DataGridRow">
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Height" Value="25" />
+    </Style>
+
+    <Style TargetType="{x:Type DataGridCell}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type DataGridCell}">
+                    <Grid Background="{TemplateBinding Background}">
+                        <ContentPresenter VerticalAlignment="Center" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style
+        x:Key="DataGridCheckboxStyle"
+        BasedOn="{StaticResource {x:Type CheckBox}}"
+        TargetType="{x:Type CheckBox}">
+        <Setter Property="Background" Value="White" />
+        <Setter Property="Height" Value="10" />
+    </Style>
+</ResourceDictionary>

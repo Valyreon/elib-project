@@ -1,14 +1,12 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using Valyreon.Elib.DataLayer;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.Mvvm;
 using Valyreon.Elib.Mvvm.Messaging;
 using Valyreon.Elib.Wpf.Messages;
-using Valyreon.Elib.Wpf.Models;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Controls
 {
@@ -17,8 +15,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         private bool isResultEmpty;
         private string caption = "Series";
 
-        public ObservableCollection<BookSeries> Series { get; set; } = new ObservableCollection<BookSeries>();
-
+        public ObservableCollection<BookSeries> Series { get => series; set => Set(() => Series, ref series, value); }
         public ICommand BackCommand => new RelayCommand(Back);
 
         public string Caption
@@ -28,6 +25,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         }
 
         private string searchText;
+
         public string SearchText
         {
             get => searchText;
@@ -40,6 +38,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         public FilterParameters Filter => null;
         private Action backAction;
+
         public Action Back
         {
             get => backAction;
@@ -80,11 +79,11 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         }
 
         private volatile bool isLoading;
+        private ObservableCollection<BookSeries> series;
 
         public void Refresh()
         {
             isLoading = true;
-            Series.Clear();
             LoadSeries();
         }
 
@@ -93,26 +92,22 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         private async void LoadSeries()
         {
             using var uow = await App.UnitOfWorkFactory.CreateAsync();
-            var x = string.IsNullOrWhiteSpace(SearchText)
+            var results = string.IsNullOrWhiteSpace(SearchText)
                 ? await uow.SeriesRepository.GetAllAsync()
                 : await uow.SeriesRepository.SearchAsync(SearchText);
 
-            if (!x.Any())
+            if (!results.Any())
             {
                 IsResultEmpty = true;
                 return;
             }
 
-            foreach (var item in x)
-            {
-                Series.Add(item);
-                await Task.Delay(7);
-            }
-
-            foreach (var item in x)
+            foreach (var item in results)
             {
                 item.NumberOfBooks = await uow.SeriesRepository.CountBooksInSeriesAsync(item.Id);
             }
+
+            Series = new ObservableCollection<BookSeries>(results);
 
             isLoading = false;
         }

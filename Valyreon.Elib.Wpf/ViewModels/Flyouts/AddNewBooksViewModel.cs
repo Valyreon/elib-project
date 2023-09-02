@@ -1,26 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Media;
-using MahApps.Metro.Controls.Dialogs;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.EBookTools;
 using Valyreon.Elib.Mvvm;
 using Valyreon.Elib.Wpf.Extensions;
 using Valyreon.Elib.Wpf.Messages;
 using Valyreon.Elib.Wpf.Models;
-using Valyreon.Elib.Wpf.ValidationAttributes;
 using Valyreon.Elib.Wpf.ViewModels.Controls;
-using Valyreon.Elib.Wpf.ViewModels.Dialogs;
-using Valyreon.Elib.Wpf.Views.Dialogs;
-using Application = System.Windows.Application;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 {
@@ -168,7 +159,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             TitleText = $"Book 1 of {books.Count}";
             PathText = books[0];
             CurrentBook = await ParseBook(books[0]);
-            
+
             ProceedButtonText = books.Count == 1 ? "SAVE & FINISH" : "SAVE & NEXT";
             CheckDuplicate(CurrentBook);
         }
@@ -187,7 +178,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             {
                 NextBook();
             };
-            
+
             IsSaving = false;
         }
 

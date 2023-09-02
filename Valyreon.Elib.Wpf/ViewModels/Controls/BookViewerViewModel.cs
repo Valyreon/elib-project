@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
-using MahApps.Metro.Controls.Dialogs;
 using Valyreon.Elib.DataLayer;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.Mvvm;
@@ -15,7 +14,6 @@ using Valyreon.Elib.Wpf.Extensions;
 using Valyreon.Elib.Wpf.Messages;
 using Valyreon.Elib.Wpf.Models;
 using Valyreon.Elib.Wpf.ViewModels.Dialogs;
-using Valyreon.Elib.Wpf.Views.Dialogs;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Controls
 {
@@ -56,7 +54,20 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             });
 
             MessengerInstance.Register<BookSelectedMessage>(this, HandleBookSelection);
-            MessengerInstance.Register<BookRemovedMessage>(this, m => Books.Remove(m.Book));
+            MessengerInstance.Register<BooksRemovedMessage>(this, HandleRemovedMessage);
+        }
+
+        private void HandleRemovedMessage(BooksRemovedMessage message)
+        {
+            if (message.Books == null || !message.Books.Any())
+            {
+                return;
+            }
+
+            foreach (var book in message.Books)
+            {
+                Books.Remove(book);
+            }
         }
 
         public ICommand BackCommand => new RelayCommand(Back);
@@ -124,6 +135,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         }
 
         private string searchText;
+
         public string SearchText
         {
             get => searchText;
@@ -219,30 +231,24 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             LoadMore();
         }
 
-        private async void HandleFilter()
+        private void HandleFilter()
         {
-            var dialog = new FilterOptionsDialog
+            var viewModel = new FilterOptionsDialogViewModel(filterOptions, f =>
             {
-                DataContext = new FilterOptionsDialogViewModel(filterOptions, f =>
-                {
-                    filterOptions = f;
-                    ApplyFilterOptionsToFilter(f, filter);
-                    Refresh();
-                })
-            };
-            await DialogCoordinator.Instance.ShowMetroDialogAsync(System.Windows.Application.Current.MainWindow.DataContext, dialog);
+                filterOptions = f;
+                ApplyFilterOptionsToFilter(f, filter);
+                Refresh();
+            });
+            MessengerInstance.Send(new ShowDialogMessage(viewModel));
         }
 
         public ICommand ExportSelectedBooksCommand => new RelayCommand(HandleExport);
 
         private async void HandleExport()
         {
-            var dialog = new ExportOptionsDialog();
-            using (var uow = await App.UnitOfWorkFactory.CreateAsync())
-            {
-                dialog.DataContext = new ExportOptionsDialogViewModel(await Selector.Instance.GetSelectedBooks(uow), dialog);
-            }
-            await DialogCoordinator.Instance.ShowMetroDialogAsync(System.Windows.Application.Current.MainWindow.DataContext, dialog);
+            using var uow = await App.UnitOfWorkFactory.CreateAsync();
+            var viewModel = new ExportOptionsDialogViewModel(await Selector.Instance.GetSelectedBooks(uow));
+            MessengerInstance.Send(new ShowDialogMessage(viewModel));
         }
 
         public ICommand AddBookCommand => new RelayCommand(ProcessAddBook);
@@ -260,7 +266,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             var result = dlg.ShowDialog();
             if (result == DialogResult.OK && dlg.FileNames.Length > 0)
             {
-
                 MessengerInstance.Send(new OpenAddBooksFormMessage(dlg.FileNames));
             }
         }

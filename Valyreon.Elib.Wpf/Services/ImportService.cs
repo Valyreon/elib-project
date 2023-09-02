@@ -7,6 +7,7 @@ using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Wpf.Models;
 
 namespace Valyreon.Elib.Wpf.Services;
+
 public class ImportService : IImportService
 {
     private readonly IUnitOfWork _uow;
@@ -21,7 +22,7 @@ public class ImportService : IImportService
         var appSettings = ApplicationData.GetProperties();
         var newBooks = new List<string>();
 
-        foreach(var sourcePath in appSettings.Sources)
+        foreach (var sourcePath in appSettings.Sources)
         {
             newBooks.AddRange(await ImportAsync(sourcePath));
         }

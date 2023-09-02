@@ -1,0 +1,94 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DrawingImage x:Key="DarkChevronLeft">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Transform>
+                    <TranslateTransform X="0" Y="960" />
+                </DrawingGroup.Transform>
+                <GeometryDrawing Brush="#484b4e" Geometry="M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z" />
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+    <DrawingImage x:Key="WhiteCog">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Transform>
+                    <TranslateTransform X="0" Y="960" />
+                </DrawingGroup.Transform>
+                <GeometryDrawing Brush="White" Geometry="m370-80-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-103 78q1 7 1 13.5v27q0 6.5-2 13.5l103 78-110 190-118-50q-11 8-23 15t-24 12L590-80H370Zm112-260q58 0 99-41t41-99q0-58-41-99t-99-41q-59 0-99.5 41T342-480q0 58 40.5 99t99.5 41Z" />
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+    <DrawingImage x:Key="RedHeart">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Transform>
+                    <TranslateTransform X="0" Y="960" />
+                </DrawingGroup.Transform>
+                <GeometryDrawing Brush="#E91E63" Geometry="m480-120-58-52q-101-91-167-157T150-447.5Q111-500 95.5-544T80-634q0-94 63-157t157-63q52 0 99 22t81 62q34-40 81-62t99-22q94 0 157 63t63 157q0 46-15.5 90T810-447.5Q771-395 705-329T538-172l-58 52Z" />
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+    <DrawingImage x:Key="GrayHeart">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Transform>
+                    <TranslateTransform X="0" Y="960" />
+                </DrawingGroup.Transform>
+                <GeometryDrawing Brush="Gray" Geometry="m480-120-58-52q-101-91-167-157T150-447.5Q111-500 95.5-544T80-634q0-94 63-157t157-63q52 0 99 22t81 62q34-40 81-62t99-22q94 0 157 63t63 157q0 46-15.5 90T810-447.5Q771-395 705-329T538-172l-58 52Z" />
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+    <DrawingImage x:Key="GrayCheckCircle">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Transform>
+                    <TranslateTransform X="0" Y="960" />
+                </DrawingGroup.Transform>
+                <GeometryDrawing Brush="Gray" Geometry="m424-296 282-282-56-56-226 226-114-114-56 56 170 170Zm56 216q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z" />
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+    <DrawingImage x:Key="GreenCheckCircle">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Transform>
+                    <TranslateTransform X="0" Y="960" />
+                </DrawingGroup.Transform>
+                <GeometryDrawing Brush="CornflowerBlue" Geometry="m424-296 282-282-56-56-226 226-114-114-56 56 170 170Zm56 216q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z" />
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+    <DrawingImage x:Key="FlyoutBackArrow">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Transform>
+                    <TranslateTransform X="0" Y="960" />
+                </DrawingGroup.Transform>
+                <GeometryDrawing Brush="WhiteSmoke" Geometry="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z" />
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+    <DrawingImage x:Key="CheckboxCheck">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Transform>
+                    <TranslateTransform X="0" Y="960" />
+                </DrawingGroup.Transform>
+                <GeometryDrawing Brush="CornflowerBlue" Geometry="M395-252.826 192.391-456.435l80.435-80.435L395-415.131 688.609-707.74l80.435 80.87L395-252.826Z" />
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+    <DrawingImage x:Key="ChipClose">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Transform>
+                    <TranslateTransform X="0" Y="960" />
+                </DrawingGroup.Transform>
+                <GeometryDrawing Brush="White" Geometry="m480-429 116 116q11 11 25.5 10.5T647-314q11-11 11-25.5t-11-25.457L531-480.5l116-115.543Q658-607 658-621.5T647-647q-11-11-25.5-11T596-647L480-531 364-647q-11-11-25-11t-25 11q-11 11-11 25.5t10.913 25.5L429-480 313-364q-11 11-10.5 25t11.5 25q11 11 25.5 11t25.413-10.913L480-429Zm.276 333Q401-96 331-126q-70-30-122.5-82.5T126-330.958q-30-69.959-30-149.5Q96-560 126-629.5t82.5-122Q261-804 330.958-834q69.959-30 149.5-30Q560-864 629.5-834t122 82.5Q804-699 834-629.276q30 69.725 30 149Q864-401 834-331q-30 70-82.5 122.5T629.276-126q-69.725 30-149 30Z" />
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+</ResourceDictionary>

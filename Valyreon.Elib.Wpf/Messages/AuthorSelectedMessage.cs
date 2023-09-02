@@ -1,5 +1,5 @@
-using Valyreon.Elib.Mvvm.Messaging;
 using Valyreon.Elib.Domain;
+using Valyreon.Elib.Mvvm.Messaging;
 
 namespace Valyreon.Elib.Wpf.Messages
 {

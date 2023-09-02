@@ -14,6 +14,7 @@ namespace Valyreon.Elib.Wpf.Views.Controls
         }
 
         private static readonly Regex digitsOnly = new(@"^\d*\.?\d?$");
+
         private void SeriesNumberField_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
         {
             var isMatch = digitsOnly.IsMatch(e.Text);

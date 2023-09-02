@@ -2,18 +2,18 @@ using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Windows;
 using System.Windows.Input;
-using MahApps.Metro.Controls.Dialogs;
 using Valyreon.Elib.Mvvm;
+using Valyreon.Elib.Wpf.Interfaces;
 using Valyreon.Elib.Wpf.Messages;
 using Valyreon.Elib.Wpf.Models;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
 {
-    public class ApplicationSettingsDialogViewModel : ViewModelBase
+    public class ApplicationSettingsDialogViewModel : DialogViewModel
     {
         private bool scanAtStartup;
+
         public bool ScanAtStartup
         {
             get => scanAtStartup;
@@ -21,6 +21,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
         }
 
         private bool scanEpub;
+
         public bool ScanEpub
         {
             get => scanEpub;
@@ -28,6 +29,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
         }
 
         private bool scanMobi;
+
         public bool ScanMobi
         {
             get => scanMobi;
@@ -35,6 +37,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
         }
 
         private bool scanPdf;
+
         public bool ScanPdf
         {
             get => scanPdf;
@@ -42,6 +45,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
         }
 
         private bool scanAzw;
+
         public bool ScanAzw
         {
             get => scanAzw;
@@ -58,7 +62,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
             SourcePaths = new ObservableCollection<SourcePath>(properties.Sources);
             ScanAtStartup = properties.ScanAtStartup;
 
-            if(properties.Formats.Any(f => f.ToLowerInvariant() == ".epub"))
+            if (properties.Formats.Any(f => f.ToLowerInvariant() == ".epub"))
             {
                 ScanEpub = true;
             }
@@ -82,7 +86,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
         public ICommand AddSourceCommand => new RelayCommand(HandleAddSource);
         public ICommand RemoveSourceCommand => new RelayCommand(HandleRemoveSource);
         public ICommand SaveCommand => new RelayCommand(Save);
-        public ICommand CancelCommand => new RelayCommand(Cancel);
+        public ICommand CancelCommand => new RelayCommand(Close);
 
         private void HandleScan()
         {
@@ -115,14 +119,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
             }
         }
 
-        private async void Cancel()
-        {
-            await DialogCoordinator.Instance.HideMetroDialogAsync(Application.Current.MainWindow.DataContext,
-                await DialogCoordinator.Instance.GetCurrentDialogAsync<BaseMetroDialog>(Application.Current.MainWindow
-                    .DataContext));
-        }
-
-        private async void Save()
+        private void Save()
         {
             var newProperties = new ApplicationProperties
             {
@@ -152,9 +149,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
             }
 
             ApplicationData.SaveProperties(newProperties);
-            await DialogCoordinator.Instance.HideMetroDialogAsync(Application.Current.MainWindow.DataContext,
-                await DialogCoordinator.Instance.GetCurrentDialogAsync<BaseMetroDialog>(Application.Current.MainWindow
-                    .DataContext));
+            Close();
 
             MessengerInstance.Send(new ScanForNewBooksMessage());
             MessengerInstance.Send(new AppSettingsChangedMessage());

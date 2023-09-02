@@ -9,7 +9,8 @@ namespace Valyreon.Elib.DataLayer
         public string PropertyName { get; set; }
         public bool IsAscending { get; set; } = true;
 
-        public Sort() { }
+        public Sort()
+        { }
 
         public Sort(string propertyName, bool isAscending)
         {

@@ -1,14 +1,14 @@
-﻿using Valyreon.Elib.Domain;
+using Valyreon.Elib.Domain;
 
 namespace Valyreon.Elib.Wpf.Messages
 {
-	public class EditBookMessage
-	{
-		public EditBookMessage(Book clickedBook)
-		{
-			Book = clickedBook;
-		}
+    public class EditBookMessage
+    {
+        public EditBookMessage(Book clickedBook)
+        {
+            Book = clickedBook;
+        }
 
-		public Book Book { get; }
-	}
+        public Book Book { get; }
+    }
 }

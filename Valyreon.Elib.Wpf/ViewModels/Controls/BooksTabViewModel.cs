@@ -8,7 +8,6 @@ using Valyreon.Elib.Mvvm;
 using Valyreon.Elib.Wpf.BindingItems;
 using Valyreon.Elib.Wpf.CustomDataStructures;
 using Valyreon.Elib.Wpf.Messages;
-using Valyreon.Elib.Wpf.Models;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Controls
 {
@@ -27,7 +26,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             selectedMainItem = new PaneMainItem("Selected", "Selected Books", new FilterParameters { Selected = true });
 
             MessengerInstance.Register<AuthorSelectedMessage>(this, HandleAuthorSelection);
-            MessengerInstance.Register<BookSelectedMessage>(this, HandleBookChecked);
             MessengerInstance.Register<SeriesSelectedMessage>(this, HandleSeriesSelection);
             MessengerInstance.Register<CollectionSelectedMessage>(this, HandleCollectionSelection);
             MessengerInstance.Register<GoBackMessage>(this, _ => GoToPreviousViewer());
@@ -35,7 +33,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             {
                 SelectedMainPaneItem = MainPaneItems[0];
                 PaneSelectionChanged();
-                HandleBookChecked(null);
             });
             MessengerInstance.Register<RefreshSidePaneCollectionsMessage>(this, CollectionsRefreshHandler);
 
@@ -125,23 +122,10 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             set => Set(() => Caption, ref caption, value);
         }
 
-        private void HandleBookChecked(BookSelectedMessage obj)
-        {
-            if (Selector.Instance.Count > 0 && !MainPaneItems.Contains(selectedMainItem))
-            {
-                MainPaneItems.Add(selectedMainItem);
-            }
-            else if (Selector.Instance.Count == 0)
-            {
-                _ = MainPaneItems.Remove(selectedMainItem);
-            }
-        }
-
         private void HandleCollectionSelection(CollectionSelectedMessage message)
         {
             SelectedCollection = Collections.FirstOrDefault(c => c.Id == message.CollectionId);
         }
-
 
         private void GoToPreviousViewer()
         {
@@ -212,12 +196,11 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 ? SelectedMainPaneItem.Filter with { }
                 : new FilterParameters();
 
-
             if (SelectedMainPaneItem.PaneCaption == "Authors")
             {
                 SetCurrentViewer(new AuthorViewerViewModel() { Caption = SelectedMainPaneItem.PaneCaption });
             }
-            else if ( SelectedMainPaneItem.PaneCaption == "Series")
+            else if (SelectedMainPaneItem.PaneCaption == "Series")
             {
                 SetCurrentViewer(new SeriesViewerViewModel() { Caption = SelectedMainPaneItem.PaneCaption });
             }

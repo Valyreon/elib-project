@@ -60,6 +60,18 @@
     <DataTemplate DataType="{x:Type DialogViewModels:ApplicationSettingsDialogViewModel}">
         <DialogViews:ApplicationSettingsDialog />
     </DataTemplate>
+    <DataTemplate DataType="{x:Type DialogViewModels:FilterOptionsDialogViewModel}">
+        <DialogViews:FilterOptionsDialog />
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type DialogViewModels:TextMessageDialogViewModel}">
+        <DialogViews:TextMessageDialog />
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type DialogViewModels:SimpleTextInputDialogViewModel}">
+        <DialogViews:SimpleTextInputDialog />
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type DialogViewModels:ConfirmationDialogViewModel}">
+        <DialogViews:ConfirmationDialog />
+    </DataTemplate>
     <!--#endregion-->
 
     <Style TargetType="ScrollBar">
@@ -95,4 +107,23 @@
             Duration="0:0:0.4" />
     </Storyboard>
 
+    <Storyboard x:Key="DialogGridFadeInStoryboard">
+        <DoubleAnimation
+            FillBehavior="HoldEnd"
+            Storyboard.TargetName="DialogGrid"
+            Storyboard.TargetProperty="Opacity"
+            From="0"
+            To="1"
+            Duration="0:0:0.25" />
+    </Storyboard>
+
+    <Storyboard x:Key="DialogGridFadeOutStoryboard">
+        <DoubleAnimation
+            FillBehavior="HoldEnd"
+            Storyboard.TargetName="DialogGrid"
+            Storyboard.TargetProperty="Opacity"
+            From="1"
+            To="0"
+            Duration="0:0:0.25" />
+    </Storyboard>
 </ResourceDictionary>

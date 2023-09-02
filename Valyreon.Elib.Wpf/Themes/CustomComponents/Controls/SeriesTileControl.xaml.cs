@@ -48,5 +48,10 @@ namespace Valyreon.Elib.Wpf.Themes.CustomComponents.Controls
             get => (BookSeries)GetValue(ParameterProperty);
             set => SetValue(ParameterProperty, value);
         }
+
+        private void TileBorder_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            Command?.Execute(Parameter);
+        }
     }
 }

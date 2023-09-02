@@ -8,14 +8,12 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
-using MahApps.Metro.Controls.Dialogs;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.Mvvm;
 using Valyreon.Elib.Wpf.Messages;
 using Valyreon.Elib.Wpf.Models;
 using Valyreon.Elib.Wpf.ValidationAttributes;
 using Valyreon.Elib.Wpf.ViewModels.Dialogs;
-using Valyreon.Elib.Wpf.Views.Dialogs;
 using Application = System.Windows.Application;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Controls
@@ -102,7 +100,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         public bool IsSeriesSelected => Series != null;
 
-        public ICommand RemoveAuthorCommand => new RelayCommand<int>(HandleRemoveAuthor);
+        public ICommand RemoveAuthorCommand => new RelayCommand<Author>(HandleRemoveAuthor);
 
         public ICommand RemoveCoverButtonCommand => new RelayCommand(() => Cover = null);
 
@@ -141,28 +139,26 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             set => Set(() => TitleFieldText, ref titleFieldText, value);
         }
 
-        private async void HandleAddNewAuthor()
+        private void HandleAddNewAuthor()
         {
-            var name = await DialogCoordinator.Instance.ShowInputAsync(Application.Current.MainWindow.DataContext, "Adding New Author", "Author's name:");
-            if (string.IsNullOrWhiteSpace(name))
+            var viewModel = new SimpleTextInputDialogViewModel("Add New Author", "Author's name:", name =>
             {
-                return;
-            }
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    return;
+                }
 
-            name = name.Trim();
-            var newAuthor = new Author { Name = name };
-            AuthorsCollection.Add(newAuthor);
+                name = name.Trim();
+                var newAuthor = new Author { Name = name };
+                AuthorsCollection.Add(newAuthor);
+            });
+
+            MessengerInstance.Send(new ShowDialogMessage(viewModel));
         }
 
-        private void HandleRemoveAuthor(int id)
+        private void HandleRemoveAuthor(Author author)
         {
-            var obsAuthor = AuthorsCollection.FirstOrDefault(c => c.Id == id);
-            if (obsAuthor == null)
-            {
-                return;
-            }
-
-            AuthorsCollection.Remove(obsAuthor);
+            var obsAuthor = AuthorsCollection.Remove(author);
         }
 
         public bool CreateBook()
@@ -342,41 +338,39 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         private async void HandleAddExistingAuthor()
         {
-            var dialog = new ChooseAuthorDialog
-            {
-                DataContext = new ChooseAuthorDialogViewModel(AuthorsCollection.Select(oa => oa.Id),
-                    x => Application.Current.Dispatcher.Invoke(() => AuthorsCollection.Add(x)))
-            };
-            await DialogCoordinator.Instance.ShowMetroDialogAsync(Application.Current.MainWindow.DataContext, dialog);
+            using var uow = await App.UnitOfWorkFactory.CreateAsync();
+            var allAuthors = await uow.AuthorRepository.GetAllAsync();
+            var ignoreIds = Book.Authors.Select(a => a.Id).ToList();
+
+            var viewModel = new ChooseAuthorDialogViewModel(allAuthors.Where(a => !ignoreIds.Contains(a.Id)),
+                    x => Application.Current.Dispatcher.Invoke(() => AuthorsCollection.Add(x)));
+            MessengerInstance.Send(new ShowDialogMessage(viewModel));
         }
 
         private async void HandleChooseExistingSeries()
         {
-            var dialog = new ChooseSeriesDialog
-            {
-                DataContext = new ChooseSeriesDialogViewModel(x => Series = x)
-            };
-            await DialogCoordinator.Instance.ShowMetroDialogAsync(Application.Current.MainWindow.DataContext, dialog);
+            using var uow = await App.UnitOfWorkFactory.CreateAsync();
+            var allSeries = await uow.SeriesRepository.GetAllAsync();
+
+            var viewModel = new ChooseSeriesDialogViewModel(allSeries, x => Series = x);
+            MessengerInstance.Send(new ShowDialogMessage(viewModel));
         }
 
-        private async void HandleCreateNewSeries()
+        private void HandleCreateNewSeries()
         {
-            var name = await DialogCoordinator.Instance.ShowInputAsync(Application.Current.MainWindow.DataContext, "Adding New Series", "Series name:");
-            if (string.IsNullOrWhiteSpace(name))
+            var dialogViewModel = new SimpleTextInputDialogViewModel("Add New Series", "Series name:", name =>
             {
-                return;
-            }
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    return;
+                }
 
-            name = name.Trim();
-            var newSeries = new BookSeries { Name = name };
-            Series = newSeries;
-
-            _ = Task.Run(async () =>
-            {
-                using var uow = await App.UnitOfWorkFactory.CreateAsync();
-                await uow.SeriesRepository.CreateAsync(newSeries);
-                uow.Commit();
+                name = name.Trim();
+                var newSeries = new BookSeries { Name = name };
+                Series = newSeries;
             });
+
+            MessengerInstance.Send(new ShowDialogMessage(dialogViewModel));
         }
 
         private void HandleClearSeries()
@@ -384,16 +378,23 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             Series = null;
         }
 
-        private async void HandleEditSeries()
+        private void HandleEditSeries()
         {
-            Series.Name = await DialogCoordinator.Instance.ShowInputAsync(Application.Current.MainWindow.DataContext, "Edit Series", "Series name:",
-                new MetroDialogSettings { DefaultText = Series.Name });
-
-            _ = Task.Run(async () =>
+            var dialogViewModel = new SimpleTextInputDialogViewModel("Adding New Series", "Series name:", name =>
             {
-                using var uow = await App.UnitOfWorkFactory.CreateAsync();
-                await uow.SeriesRepository.UpdateAsync(Series);
-                uow.Commit();
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    return;
+                }
+
+                Series.Name = name.Trim();
+
+                _ = Task.Run(async () =>
+                {
+                    using var uow = await App.UnitOfWorkFactory.CreateAsync();
+                    await uow.SeriesRepository.UpdateAsync(Series);
+                    uow.Commit();
+                });
             });
         }
     }

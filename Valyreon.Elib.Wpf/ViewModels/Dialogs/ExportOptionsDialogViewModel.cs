@@ -3,20 +3,18 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
-using MahApps.Metro.Controls.Dialogs;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.Mvvm;
+using Valyreon.Elib.Wpf.Interfaces;
 using Valyreon.Elib.Wpf.Models;
 using Valyreon.Elib.Wpf.Models.Options;
 using Valyreon.Elib.Wpf.ValidationAttributes;
-using Application = System.Windows.Application;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
 {
-    public class ExportOptionsDialogViewModel : ViewModelWithValidation
+    public class ExportOptionsDialogViewModel : DialogViewModel
     {
         private readonly IList<Book> booksToExport;
-        private readonly BaseMetroDialog dialog;
 
         private string destinationPath;
 
@@ -24,15 +22,14 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
 
         private bool groupBySeries;
 
-        public ExportOptionsDialogViewModel(IList<Book> booksToExport, BaseMetroDialog dialog)
+        public ExportOptionsDialogViewModel(IList<Book> booksToExport)
         {
             this.booksToExport = booksToExport;
-            this.dialog = dialog;
         }
 
         public bool IsExportComplete { get; }
 
-        public ICommand CancelCommand => new RelayCommand(Cancel);
+        public ICommand CancelCommand => new RelayCommand(Close);
 
         public ICommand ChooseDestinationCommand => new RelayCommand(ChooseDestination);
 
@@ -77,24 +74,24 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
                 return;
             }
 
-            var controlProgress =
+            /*var controlProgress =
                 await DialogCoordinator.Instance.ShowProgressAsync(Application.Current.MainWindow.DataContext,
                     "Exporting books", "");
             controlProgress.Minimum = 1;
-            controlProgress.Maximum = booksToExport.Count * 2;
+            controlProgress.Maximum = booksToExport.Count * 2;*/
 
             var counter = 0;
 
             void SetProgress(string message)
             {
-                controlProgress.SetMessage("Exporting book: " + message);
-                controlProgress.SetProgress(++counter);
+                //controlProgress.SetMessage("Exporting book: " + message);
+                //controlProgress.SetProgress(++counter);
             }
 
             foreach (var b in booksToExport)
             {
-                controlProgress.SetMessage("Loading book files...");
-                controlProgress.SetProgress(++counter);
+                //controlProgress.SetMessage("Loading book files...");
+                //controlProgress.SetProgress(++counter);
             }
 
             using (var uow = await App.UnitOfWorkFactory.CreateAsync())
@@ -109,13 +106,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
                     }, SetProgress));
             }
 
-            await controlProgress.CloseAsync();
-            await DialogCoordinator.Instance.HideMetroDialogAsync(Application.Current.MainWindow.DataContext, dialog);
-        }
-
-        private async void Cancel()
-        {
-            await DialogCoordinator.Instance.HideMetroDialogAsync(Application.Current.MainWindow.DataContext, dialog);
+            //await controlProgress.CloseAsync();
+            Close();
         }
     }
 }

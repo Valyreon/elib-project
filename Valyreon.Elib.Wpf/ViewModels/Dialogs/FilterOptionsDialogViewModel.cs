@@ -1,13 +1,12 @@
 using System;
-using System.Windows;
 using System.Windows.Input;
-using MahApps.Metro.Controls.Dialogs;
 using Valyreon.Elib.Mvvm;
 using Valyreon.Elib.Wpf.BindingItems;
+using Valyreon.Elib.Wpf.Interfaces;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
 {
-    public class FilterOptionsDialogViewModel : ViewModelBase
+    public class FilterOptionsDialogViewModel : DialogViewModel
     {
         public FilterOptions Options { get; }
 
@@ -31,23 +30,14 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
             OrderSelectedIndex = Options.Ascending ? 1 : 0;
         }
 
-        public ICommand CancelCommand => new RelayCommand(Cancel);
+        public ICommand CancelCommand => new RelayCommand(Close);
 
         public ICommand ApplyCommand => new RelayCommand(Apply);
 
-        private async void Apply()
+        private void Apply()
         {
-            await DialogCoordinator.Instance.HideMetroDialogAsync(Application.Current.MainWindow.DataContext,
-                await DialogCoordinator.Instance.GetCurrentDialogAsync<BaseMetroDialog>(Application.Current.MainWindow
-                    .DataContext));
+            Close();
             onConfirm(Options);
-        }
-
-        private async void Cancel()
-        {
-            await DialogCoordinator.Instance.HideMetroDialogAsync(Application.Current.MainWindow.DataContext,
-                await DialogCoordinator.Instance.GetCurrentDialogAsync<BaseMetroDialog>(Application.Current.MainWindow
-                    .DataContext));
         }
     }
 }

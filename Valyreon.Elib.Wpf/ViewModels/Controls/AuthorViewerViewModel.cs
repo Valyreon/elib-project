@@ -8,7 +8,6 @@ using Valyreon.Elib.Domain;
 using Valyreon.Elib.Mvvm;
 using Valyreon.Elib.Mvvm.Messaging;
 using Valyreon.Elib.Wpf.Messages;
-using Valyreon.Elib.Wpf.Models;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Controls
 {
@@ -17,7 +16,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         private bool isResultEmpty;
         private string caption = "Authors";
 
-        public ObservableCollection<Author> Authors { get; set; } = new ObservableCollection<Author>();
+        public ObservableCollection<Author> Authors { get => authors; set => Set(() => Authors, ref authors, value); }
 
         public ICommand BackCommand => new RelayCommand(Back);
 
@@ -28,6 +27,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         }
 
         private string searchText;
+
         public string SearchText
         {
             get => searchText;
@@ -40,6 +40,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         public FilterParameters Filter => null;
         private Action backAction;
+
         public Action Back
         {
             get => backAction;
@@ -77,11 +78,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         public async void Refresh()
         {
             isLoading = true;
-            Authors.Clear();
             await LoadAuthors();
         }
 
         private volatile bool isLoading;
+        private ObservableCollection<Author> authors;
+
         public ICommand GoToAuthor => new RelayCommand<Author>(a => Messenger.Default.Send(new AuthorSelectedMessage(a)));
 
         private async Task LoadAuthors()
@@ -99,14 +101,10 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             foreach (var item in result)
             {
-                Authors.Add(item);
-                await Task.Delay(7);
-            }
-
-            foreach (var item in result)
-            {
                 item.NumberOfBooks = await uow.AuthorRepository.CountBooksByAuthorAsync(item.Id);
             }
+
+            Authors = new ObservableCollection<Author>(result);
 
             isLoading = false;
         }

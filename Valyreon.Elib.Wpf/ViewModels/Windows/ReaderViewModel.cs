@@ -1,9 +1,5 @@
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using Valyreon.Elib.Mvvm;using Valyreon.Elib.Domain;
-using Valyreon.Elib.EBookTools;
-using Valyreon.Elib.Wpf.BindingItems;
+using Valyreon.Elib.Domain;
+using Valyreon.Elib.Mvvm;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Windows
 {

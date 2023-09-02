@@ -12,7 +12,7 @@ using static Dapper.SqlMapper;
 
 namespace Valyreon.Elib.DataLayer.Repositories
 {
-    public abstract class RepositoryBase<T>: IRepository<T>, ICache<T> where T : ObservableEntity, new()
+    public abstract class RepositoryBase<T> : IRepository<T>, ICache<T> where T : ObservableEntity, new()
     {
         protected static IDictionary<int, T> Cache { get; } = new Dictionary<int, T>();
         protected IDbTransaction Transaction { get; }
@@ -69,10 +69,10 @@ namespace Valyreon.Elib.DataLayer.Repositories
 
         public async Task CreateAsync(IEnumerable<T> entities)
         {
-            foreach(var entity in entities)
+            foreach (var entity in entities)
             {
                 await CreateAsync(entity);
-            } 
+            }
         }
 
         public async Task<T> FindAsync(int id)
@@ -80,13 +80,13 @@ namespace Valyreon.Elib.DataLayer.Repositories
             if (Cache.ContainsKey(id))
             {
                 return Cache[id];
-            } 
+            }
 
             var result = await Connection.QueryFirstAsync<T>(BaseQuery.Where("Id = @Id"),
                 new { Id = id },
                 Transaction);
 
-            if(result != null)
+            if (result != null)
             {
                 Cache.Add(result.Id, result);
             }

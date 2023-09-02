@@ -40,7 +40,7 @@ namespace Valyreon.Elib.Wpf.Models
 
         private async void HandleFileDelete(string filePath)
         {
-            if(!applicationProperties.Formats.Contains(filePath.GetExtension()))
+            if (!applicationProperties.Formats.Contains(filePath.GetExtension()))
             {
                 return;
             }
@@ -134,8 +134,6 @@ namespace Valyreon.Elib.Wpf.Models
         public void CheckFiles()
         {
             IEnumerable<Book> allBooks = null;
-
-
         }
 
         public void Dispose()
