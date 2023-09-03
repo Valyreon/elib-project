@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
+using ControlzEx.Standard;
 using Valyreon.Elib.DataLayer;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.Mvvm;
@@ -20,7 +21,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
     public class BookViewerViewModel : ViewModelBase, IViewer
     {
         private string caption;
-        private Book lastSelectedBook;
         private double scrollVerticalOffset;
         private bool dontLoad = false;
         private static FilterOptions filterOptions = new FilterOptions();
@@ -71,6 +71,34 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         }
 
         public ICommand BackCommand => new RelayCommand(Back);
+
+        public ICommand SelectAllCommand => new RelayCommand(HandleSelectAllBooksInView);
+
+        private async void HandleSelectAllBooksInView()
+        {
+            using var uow = await App.UnitOfWorkFactory.CreateAsync();
+            var results = await uow.BookRepository.GetIdsByFilterAsync(filter);
+
+            Selector.Instance.SelectIds(results);
+            foreach (var item in Books)
+            {
+                Selector.Instance.SetMarked(item);
+            }
+        }
+
+        public ICommand ClearSelectionCommand => new RelayCommand(HandleClearSelectedBooksInView);
+
+        private async void HandleClearSelectedBooksInView()
+        {
+            using var uow = await App.UnitOfWorkFactory.CreateAsync();
+            var results = await uow.BookRepository.GetIdsByFilterAsync(filter);
+
+            Selector.Instance.DeselectIds(results);
+            foreach (var item in Books)
+            {
+                Selector.Instance.SetMarked(item);
+            }
+        }
 
         public ObservableCollection<Book> Books { get; set; }
 
@@ -188,7 +216,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             }
             else
             {
-                results = await uow.BookRepository.FindPageByFilterAsync(filter, Books.Count, 25);
+                results = await uow.BookRepository.GetByFilterAsync(filter, Books.Count, 25);
             }
 
             if (!results.Any())

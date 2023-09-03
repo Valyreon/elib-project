@@ -8,6 +8,8 @@ namespace Valyreon.Elib.Wpf.CustomComponents
     public class ElibTextBox : TextBox
     {
         public static DependencyProperty PlaceholderProperty;
+        public static DependencyProperty PlaceholderForegroundProperty;
+        public static DependencyProperty PlaceholderForegroundFocusedProperty;
 
         public ElibTextBox()
         {
@@ -24,12 +26,26 @@ namespace Valyreon.Elib.Wpf.CustomComponents
             DefaultStyleKeyProperty.OverrideMetadata(typeof(ElibTextBox),
                 new FrameworkPropertyMetadata(typeof(ElibTextBox)));
             PlaceholderProperty = DependencyProperty.Register("Placeholder", typeof(string), typeof(ElibTextBox));
+            PlaceholderForegroundProperty = DependencyProperty.Register("PlaceholderForeground", typeof(SolidColorBrush), typeof(ElibTextBox));
+            PlaceholderForegroundFocusedProperty = DependencyProperty.Register("PlaceholderForegroundFocused", typeof(SolidColorBrush), typeof(ElibTextBox));
         }
 
         public string Placeholder
         {
             get => (string)GetValue(PlaceholderProperty);
             set => SetValue(PlaceholderProperty, value);
+        }
+
+        public SolidColorBrush PlaceholderForeground
+        {
+            get => (SolidColorBrush)GetValue(PlaceholderForegroundProperty);
+            set => SetValue(PlaceholderForegroundProperty, value);
+        }
+
+        public SolidColorBrush PlaceholderForegroundFocused
+        {
+            get => (SolidColorBrush)GetValue(PlaceholderForegroundFocusedProperty);
+            set => SetValue(PlaceholderForegroundFocusedProperty, value);
         }
 
         private static void SelectivelyIgnoreMouseButton(object sender,

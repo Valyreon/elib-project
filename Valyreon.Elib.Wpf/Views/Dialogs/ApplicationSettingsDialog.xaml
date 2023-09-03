@@ -28,7 +28,7 @@
                 AutoGenerateColumns="False"
                 CanUserAddRows="False"
                 CanUserResizeRows="False"
-                Focusable="False"
+                Focusable="True"
                 ItemsSource="{Binding SourcePaths, Mode=OneWay}"
                 SelectedItem="{Binding SelectedItem, UpdateSourceTrigger=PropertyChanged}"
                 SelectionMode="Single">

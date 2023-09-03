@@ -1,6 +1,7 @@
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Components="clr-namespace:Valyreon.Elib.Wpf.CustomComponents">
 
     <Style TargetType="{x:Type Button}">
         <Setter Property="Height" Value="30" />
@@ -286,7 +287,7 @@
                         x:Name="Border"
                         Background="White"
                         BorderThickness="1"
-                        CornerRadius="1">
+                        CornerRadius="0">
                         <Border.BorderBrush>
                             <SolidColorBrush Color="CornflowerBlue" />
                         </Border.BorderBrush>
@@ -304,8 +305,78 @@
     </Style>
 
     <Style x:Key="MenuHeader" TargetType="{x:Type TextBlock}">
-        <Setter Property="Margin" Value="-22,0,0,0" />
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="FlyoutElibTextBox" TargetType="{x:Type Components:ElibTextBox}">
+        <Setter Property="Background" Value="#222" />
+        <Setter Property="PlaceholderForeground" Value="#777" />
+        <Setter Property="PlaceholderForegroundFocused" Value="#444" />
+        <Setter Property="BorderBrush" Value="WhiteSmoke" />
+    </Style>
+
+    <Style TargetType="{x:Type ListBoxItem}">
+        <Style.Resources>
+            <!--  Use your own colors here if you want, or do it per class  -->
+            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="CornflowerBlue" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="CornflowerBlue" />
+        </Style.Resources>
+
+        <Setter Property="Template">
+            <!--  Revert the Template in Windows 10 to match the Windows 7 template that used "SystemColors.HighlightBrushKey" and such  -->
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                    <Border
+                        x:Name="Bd"
+                        Padding="{TemplateBinding Padding}"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        SnapsToDevicePixels="true">
+                        <ContentPresenter
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="true">
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
+                            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" />
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsSelected" Value="true" />
+                                <Condition Property="Selector.IsSelectionActive" Value="false" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightBrushKey}}" />
+                            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}}" />
+                        </MultiTrigger>
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type MenuItem}">
+        <Setter Property="FontFamily" Value="Segoe UI" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type MenuItem}">
+                    <Border Background="{TemplateBinding Background}">
+                        <ContentPresenter Margin="10,5" Content="{TemplateBinding Header}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsHighlighted" Value="True">
+                            <Setter Property="Background" Value="CornflowerBlue" />
+                            <Setter Property="Foreground" Value="White" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 </ResourceDictionary>

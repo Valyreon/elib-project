@@ -42,7 +42,7 @@
                 AlternationCount="2"
                 AutoGenerateColumns="False"
                 CanUserResizeRows="False"
-                Focusable="False"
+                Focusable="True"
                 IsReadOnly="True"
                 ItemsSource="{Binding ShownAuthors}"
                 SelectedItem="{Binding SelectedItem, UpdateSourceTrigger=PropertyChanged}"

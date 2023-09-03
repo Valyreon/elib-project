@@ -19,6 +19,8 @@ namespace Valyreon.Elib.Wpf.Models
             selectedBookIds = new HashSet<int>();
         }
 
+        public event Action SelectionChanged;
+
         public static Selector Instance
         {
             get
@@ -59,6 +61,7 @@ namespace Valyreon.Elib.Wpf.Models
             {
                 book.IsMarked = false;
                 selectedBookIds.Remove(book.Id);
+                SelectionChanged.Invoke();
                 return false;
             }
 
@@ -70,7 +73,43 @@ namespace Valyreon.Elib.Wpf.Models
                 LastSelectedId = book.Id;
             }
 
+            SelectionChanged.Invoke();
+
             return true;
+        }
+
+        public void SelectIds(IEnumerable<int> ids)
+        {
+            var changed = false;
+            foreach (var id in ids)
+            {
+                if (selectedBookIds.Add(id))
+                {
+                    changed = true;
+                }
+            }
+
+            if (changed)
+            {
+                SelectionChanged.Invoke();
+            }
+        }
+
+        public void DeselectIds(IEnumerable<int> ids)
+        {
+            var changed = false;
+            foreach (var id in ids)
+            {
+                if (selectedBookIds.Remove(id))
+                {
+                    changed = true;
+                }
+            }
+
+            if (changed)
+            {
+                SelectionChanged.Invoke();
+            }
         }
 
         public Book SetMarked(Book book)
@@ -82,6 +121,7 @@ namespace Valyreon.Elib.Wpf.Models
         public void Clear()
         {
             selectedBookIds.Clear();
+            SelectionChanged.Invoke();
         }
     }
 }

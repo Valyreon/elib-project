@@ -172,7 +172,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         private void HandleAddToCollection()
         {
-            MessengerInstance.Send(new ShowInputDialogMessage("Add To Collection", null, async tag =>
+            var viewModel = new SimpleTextInputDialogViewModel("Add To Collection", "Enter collection name.", async tag =>
             {
                 using var uow = await App.UnitOfWorkFactory.CreateAsync();
                 var books = IsOnlyThisBookSelected() ? new List<Book> { Book } : await Selector.Instance.GetSelectedBooks(uow);
@@ -196,7 +196,9 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 }
 
                 uow.Commit();
-            }));
+            });
+
+            MessengerInstance.Send(new ShowDialogMessage(viewModel));
         }
 
         private async void HandleRemove()

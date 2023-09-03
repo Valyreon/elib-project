@@ -148,7 +148,7 @@
                             <ScrollViewer
                                 Padding="{TemplateBinding Control.Padding}"
                                 FocusVisualStyle="{x:Null}"
-                                Focusable="False"
+                                Focusable="True"
                                 VerticalScrollBarVisibility="Auto">
                                 <ItemsPresenter SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
                             </ScrollViewer>

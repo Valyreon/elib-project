@@ -14,7 +14,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
     {
         private readonly Action<BookSeries> onConfirm;
         private string filterText;
-        private IEnumerable<BookSeries> series;
+        private readonly IEnumerable<BookSeries> series;
 
         private BookSeries selectedItem;
 

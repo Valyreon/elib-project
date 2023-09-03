@@ -1,9 +1,9 @@
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:Converters="clr-namespace:Valyreon.Elib.Wpf.Converters"
     xmlns:BookTileConverters="clr-namespace:Valyreon.Elib.Wpf.Converters.BookTileConverters"
-    xmlns:Components="clr-namespace:Valyreon.Elib.Wpf.CustomComponents">
+    xmlns:Components="clr-namespace:Valyreon.Elib.Wpf.CustomComponents"
+    xmlns:Converters="clr-namespace:Valyreon.Elib.Wpf.Converters">
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary>
@@ -13,36 +13,6 @@
             <Converters:StringToInverseVisibilityConverter x:Key="StringToInverseVisibilityConverter" />
         </ResourceDictionary>
     </ResourceDictionary.MergedDictionaries>
-
-    <Style TargetType="{x:Type Components:DarkFlatTextButton}">
-        <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="Background" Value="#4a4a4a" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type Components:DarkFlatTextButton}">
-                    <Border
-                        x:Name="Enveloper"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="#515151"
-                        BorderThickness="1"
-                        CornerRadius="1">
-                        <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
-                            <TextBlock
-                                Margin="5,5,5,5"
-                                FontSize="14"
-                                Text="{TemplateBinding Text}" />
-                        </Grid>
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="Enveloper" Property="Background" Value="#424242" />
-                            <Setter TargetName="Enveloper" Property="BorderBrush" Value="#4a4a4a" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
 
     <Style TargetType="{x:Type Components:TextLinkButton}">
         <Setter Property="Template">
@@ -155,65 +125,6 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type Components:HeaderButton}">
-        <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="Background" Value="#4a4a4a" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type Components:HeaderButton}">
-                    <Border
-                        x:Name="Enveloper"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="#515151"
-                        BorderThickness="1"
-                        CornerRadius="1">
-                        <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
-                            <TextBlock
-                                Margin="0,0,0,3"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                FontSize="14"
-                                Text="{TemplateBinding Text}" />
-                        </Grid>
-                        <Border.RenderTransform>
-                            <ScaleTransform CenterX="40" CenterY="15" ScaleX="1" ScaleY="1" />
-                        </Border.RenderTransform>
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <EventTrigger RoutedEvent="MouseDown" SourceName="Enveloper">
-                            <BeginStoryboard>
-                                <Storyboard>
-                                    <DoubleAnimation
-                                        Storyboard.TargetName="Enveloper"
-                                        Storyboard.TargetProperty="(RenderTransform).(ScaleTransform.ScaleX)"
-                                        To="0.9"
-                                        Duration="0:0:0.1" />
-                                    <DoubleAnimation
-                                        Storyboard.TargetName="Enveloper"
-                                        Storyboard.TargetProperty="(RenderTransform).(ScaleTransform.ScaleY)"
-                                        To="0.9"
-                                        Duration="0:0:0.1" />
-                                    <DoubleAnimation
-                                        BeginTime="0:0:0.1"
-                                        Storyboard.TargetName="Enveloper"
-                                        Storyboard.TargetProperty="(RenderTransform).(ScaleTransform.ScaleX)"
-                                        To="1"
-                                        Duration="0:0:0.1" />
-                                    <DoubleAnimation
-                                        BeginTime="0:0:0.1"
-                                        Storyboard.TargetName="Enveloper"
-                                        Storyboard.TargetProperty="(RenderTransform).(ScaleTransform.ScaleY)"
-                                        To="1"
-                                        Duration="0:0:0.1" />
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
     <Style TargetType="{x:Type Components:ElibTextBox}">
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
@@ -221,18 +132,16 @@
         <Setter Property="MinWidth" Value="30" />
         <Setter Property="MinHeight" Value="30" />
         <Setter Property="AllowDrop" Value="true" />
-        <Setter Property="BorderBrush" Value="Gray" />
+        <Setter Property="BorderBrush" Value="#aaa" />
         <Setter Property="CaretBrush" Value="{DynamicResource AccentColorBrush}" />
+        <Setter Property="Background" Value="White" />
+        <Setter Property="PlaceholderForeground" Value="DimGray" />
+        <Setter Property="PlaceholderForegroundFocused" Value="LightGray" />
         <Setter Property="Background" Value="White" />
         <Setter Property="TextWrapping" Value="NoWrap" />
         <Setter Property="FontFamily" Value="Segoe UI" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="Validation.ErrorTemplate">
-            <Setter.Value>
-                <ControlTemplate />
-            </Setter.Value>
-        </Setter>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TextBoxBase}">
@@ -250,7 +159,7 @@
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Center"
                                 FontSize="{Binding FontSize, RelativeSource={RelativeSource TemplatedParent}}"
-                                Foreground="DimGray"
+                                Foreground="{Binding PlaceholderForeground, RelativeSource={RelativeSource TemplatedParent}}"
                                 Text="{Binding Placeholder, RelativeSource={RelativeSource TemplatedParent}}"
                                 TextWrapping="{Binding TextWrapping, RelativeSource={RelativeSource TemplatedParent}}"
                                 Visibility="{Binding Text, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource StringToInverseVisibilityConverter}}" />
@@ -271,7 +180,7 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsFocused" Value="True">
-                            <Setter TargetName="placeholderText" Property="Foreground" Value="LightGray" />
+                            <Setter TargetName="placeholderText" Property="Foreground" Value="{Binding PlaceholderForegroundFocused, RelativeSource={RelativeSource TemplatedParent}}" />
                             <Setter TargetName="Border" Property="BorderBrush" Value="CornflowerBlue" />
                         </Trigger>
                         <Trigger Property="Validation.HasError" Value="True">

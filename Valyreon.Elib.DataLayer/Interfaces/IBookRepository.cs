@@ -12,7 +12,9 @@ namespace Valyreon.Elib.DataLayer.Interfaces
 
         Task<IEnumerable<Book>> FindByAuthorIdAsync(int authorId);
 
-        Task<IEnumerable<Book>> FindPageByFilterAsync(FilterParameters filter, int? offset, int? pageSize);
+        Task<IEnumerable<Book>> GetByFilterAsync(FilterParameters filter, int? offset = null, int? pageSize = null);
+
+        Task<IEnumerable<int>> GetIdsByFilterAsync(FilterParameters filter);
 
         Task<int> CountAsync(FilterParameters filter);
 

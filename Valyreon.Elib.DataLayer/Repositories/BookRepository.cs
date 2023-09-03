@@ -16,7 +16,7 @@ namespace Valyreon.Elib.DataLayer.Repositories
         {
         }
 
-        private static Tuple<string, DynamicParameters> CreateQueryFromFilter(FilterParameters filter, int? offset, int? pageSize)
+        private static Tuple<string, DynamicParameters> CreateQueryFromFilter(FilterParameters filter, int? offset = null, int? pageSize = null, bool onlyIds = false)
         {
             if (filter == null)
             {
@@ -32,7 +32,7 @@ namespace Valyreon.Elib.DataLayer.Repositories
 
             var parameters = new DynamicParameters();
 
-            var queryBuilder = new StringBuilder(@$"SELECT MIN(Id) AS Id, * FROM Full_Join {(conditionSet ? " WHERE (" : " ")}");
+            var queryBuilder = new StringBuilder(@$"SELECT MIN(Id) AS Id{(onlyIds ? string.Empty : ", *")} FROM Full_Join {(conditionSet ? " WHERE (" : " ")}");
 
             var conditionsAdded = false;
 
@@ -146,12 +146,18 @@ namespace Valyreon.Elib.DataLayer.Repositories
             return Cache.FilterAndUpdateCache(result);
         }
 
-        public async Task<IEnumerable<Book>> FindPageByFilterAsync(FilterParameters filter, int? offset, int? pageSize)
+        public async Task<IEnumerable<Book>> GetByFilterAsync(FilterParameters filter, int? offset = null, int? pageSize = null)
         {
             var queryTuple = CreateQueryFromFilter(filter, offset, pageSize);
             var result = await Connection.QueryAsync<Book>(queryTuple.Item1, queryTuple.Item2, Transaction);
 
             return Cache.FilterAndUpdateCache(result);
+        }
+
+        public Task<IEnumerable<int>> GetIdsByFilterAsync(FilterParameters filter)
+        {
+            var queryTuple = CreateQueryFromFilter(filter, null, null);
+            return Connection.QueryAsync<int>(queryTuple.Item1, queryTuple.Item2, Transaction);
         }
 
         public async Task<int> CountAsync(FilterParameters filter)

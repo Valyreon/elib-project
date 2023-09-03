@@ -1,14 +1,14 @@
 <UserControl
     x:Class="Valyreon.Elib.Wpf.Views.Controls.BookViewerControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:AttachedProperties="clr-namespace:Valyreon.Elib.Wpf.AttachedProperties"
-    xmlns:Converters="clr-namespace:Valyreon.Elib.Wpf.Converters"
     xmlns:BTConverters="clr-namespace:Valyreon.Elib.Wpf.Converters.BookTileConverters"
     xmlns:Components="clr-namespace:Valyreon.Elib.Wpf.CustomComponents"
+    xmlns:Converters="clr-namespace:Valyreon.Elib.Wpf.Converters"
     xmlns:TileComponents1="clr-namespace:Valyreon.Elib.Wpf.Views.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -158,6 +158,7 @@
                         <Button
                             Grid.Column="3"
                             Width="100"
+                            Margin="0,0,5,0"
                             Command="{Binding ClearSelectedBooksCommand}"
                             Content="CLEAR"
                             Visibility="{Binding IsSelectedBooksViewer, Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -171,6 +172,7 @@
                         <Button
                             Grid.Column="1"
                             Width="100"
+                            Margin="0,0,10,0"
                             Command="{Binding ExportSelectedBooksCommand}"
                             Content="EXPORT"
                             Visibility="{Binding IsSelectedBooksViewer, Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -195,11 +197,6 @@
                 VirtualizingStackPanel.VirtualizationMode="Recycling">
                 <ItemsControl.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Command="{Binding ExportSelectedCommand}">
-                            <MenuItem.Header>
-                                <TextBlock Style="{StaticResource MenuHeader}" Text="EXPORT SELECTED" />
-                            </MenuItem.Header>
-                        </MenuItem>
                         <MenuItem Command="{Binding SelectAllCommand}">
                             <MenuItem.Header>
                                 <TextBlock Style="{StaticResource MenuHeader}" Text="SELECT ALL" />
@@ -208,11 +205,6 @@
                         <MenuItem Command="{Binding ClearSelectionCommand}">
                             <MenuItem.Header>
                                 <TextBlock Style="{StaticResource MenuHeader}" Text="CLEAR SELECTION" />
-                            </MenuItem.Header>
-                        </MenuItem>
-                        <MenuItem Command="{Binding RemoveSelectedCommand}">
-                            <MenuItem.Header>
-                                <TextBlock Style="{StaticResource MenuHeader}" Text="REMOVE SELECTED" />
                             </MenuItem.Header>
                         </MenuItem>
                     </ContextMenu>
@@ -236,7 +228,7 @@
                                 AttachedProperties:ScrollViewerExtensions.ScrollToBottom="{Binding LoadMoreCommand}"
                                 AttachedProperties:ScrollViewerExtensions.VerticalOffset="{Binding ScrollVertical}"
                                 FocusVisualStyle="{x:Null}"
-                                Focusable="False"
+                                Focusable="True"
                                 VerticalScrollBarVisibility="Auto">
                                 <ItemsPresenter SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
                             </ScrollViewer>

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using Valyreon.Elib.Mvvm;
 using Valyreon.Elib.Wpf.BindingItems;
 using Valyreon.Elib.Wpf.CustomDataStructures;
 using Valyreon.Elib.Wpf.Messages;
+using Valyreon.Elib.Wpf.Models;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Controls
 {
@@ -46,6 +48,21 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             SelectedMainPaneItem = MainPaneItems[0];
             PaneSelectionChanged();
             MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
+
+            Selector.Instance.SelectionChanged += HandleSelectionChanged;
+        }
+
+        private void HandleSelectionChanged()
+        {
+            var selector = Selector.Instance;
+            if (selector.Count > 0 && !MainPaneItems.Contains(selectedMainItem))
+            {
+                MainPaneItems.Add(selectedMainItem);
+            }
+            else if (selector.Count == 0)
+            {
+                _ = MainPaneItems.Remove(selectedMainItem);
+            }
         }
 
         public ObservableCollection<UserCollection> Collections { get; set; }
@@ -68,6 +85,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         private async void SetCurrentViewer(IViewer value)
         {
+            using var uow = await App.UnitOfWorkFactory.CreateAsync();
+            uow.ClearCache();
             CurrentViewer?.Dispose();
             value.Back = history.Count > 0 ? GoToPreviousViewer : null;
             Set(() => CurrentViewer, ref currentViewer, value);

@@ -20,7 +20,7 @@
             Grid.Row="1"
             Grid.Column="1"
             Margin="0,0,0,10"
-            Focusable="False"
+            Focusable="True"
             IsChecked="{Binding IsGroupByAuthorChecked}">
             Group by author
         </CheckBox>
@@ -28,7 +28,7 @@
             Grid.Row="2"
             Grid.Column="1"
             Margin="0,0,0,15"
-            Focusable="False"
+            Focusable="True"
             IsChecked="{Binding IsGroupBySeriesChecked}">
             Group by series
         </CheckBox>

@@ -103,5 +103,9 @@ public partial class BookTileControl : UserControl
 
     private void SelectedCheckbox_Unchecked(object sender, RoutedEventArgs e)
     {
+        if (selectedCheckbox != null && !IsMouseOver)
+        {
+            selectedCheckbox.Opacity = 0;
+        }
     }
 }

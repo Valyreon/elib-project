@@ -40,6 +40,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         {
             Book = book;
             AuthorsCollection = new ObservableCollection<Author>(Book.Authors);
+            UserCollections = new ObservableCollection<UserCollection>(Book.Collections);
             Series = Book.Series == null
                 ? null
                 : new BookSeries { Name = Book.Series.Name, Id = Book.Series.Id };
@@ -64,6 +65,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             private set => Set(() => AuthorsCollection, ref authorCollection, value);
         }
 
+        public ObservableCollection<UserCollection> UserCollections
+        {
+            get => usersCollections;
+            private set => Set(() => UserCollections, ref usersCollections, value);
+        }
+
         public ICommand ChangeCoverButtonCommand => new RelayCommand(HandleChangeCoverButton);
 
         public ICommand ChooseExistingSeriesCommand => new RelayCommand(HandleChooseExistingSeries);
@@ -79,6 +86,55 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         public ICommand CreateNewSeriesCommand => new RelayCommand(HandleCreateNewSeries);
 
         public ICommand EditSeriesCommand => new RelayCommand(HandleEditSeries);
+
+        private ObservableCollection<ObservableEntity> collectionSuggestions;
+        private ObservableCollection<UserCollection> usersCollections;
+
+        public ObservableCollection<ObservableEntity> CollectionSuggestions
+        {
+            get => collectionSuggestions;
+            set => Set(() => CollectionSuggestions, ref collectionSuggestions, value);
+        }
+
+        public ICommand AddCollectionCommand => new RelayCommand<string>(AddCollection);
+
+        private async void AddCollection(string tag)
+        {
+            if (string.IsNullOrWhiteSpace(tag))
+            {
+                return;
+            }
+
+            tag = tag.Trim();
+            if (UserCollections.Any(c => c.Tag == tag)) // check if book is already in that collection
+            {
+                return;
+            }
+
+            using var uow = await App.UnitOfWorkFactory.CreateAsync();
+            var existingCollection = await uow.CollectionRepository.GetByTagAsync(tag);
+
+            if (existingCollection == null)
+            {
+                UserCollections.Add(new UserCollection { Tag = tag });
+            }
+            else
+            {
+                UserCollections.Add(existingCollection);
+            }
+        }
+
+        public ICommand RefreshSuggestedCollectionsCommand => new RelayCommand<string>(HandleRefreshSuggestedCollections);
+
+        private async void HandleRefreshSuggestedCollections(string token)
+        {
+            using var uow = await App.UnitOfWorkFactory.CreateAsync();
+            var allUserCollections = await uow.CollectionRepository.GetAllAsync();
+
+            var suggestions = allUserCollections.Where(c => !UserCollections.Contains(c) && c.Tag.ToLowerInvariant().Contains(token))
+                .Take(4);
+            CollectionSuggestions = new ObservableCollection<ObservableEntity>(suggestions.Cast<ObservableEntity>());
+        }
 
         public bool IsFavoriteCheck
         {
@@ -103,6 +159,13 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         public ICommand RemoveAuthorCommand => new RelayCommand<Author>(HandleRemoveAuthor);
 
         public ICommand RemoveCoverButtonCommand => new RelayCommand(() => Cover = null);
+
+        public ICommand RemoveCollectionCommand => new RelayCommand<UserCollection>(RemoveCollection);
+
+        private void RemoveCollection(UserCollection collection)
+        {
+            UserCollections.Remove(collection);
+        }
 
         public BookSeries Series
         {
@@ -158,7 +221,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         private void HandleRemoveAuthor(Author author)
         {
-            var obsAuthor = AuthorsCollection.Remove(author);
+            _ = AuthorsCollection.Remove(author);
         }
 
         public bool CreateBook()
@@ -216,7 +279,13 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                     await uow.AuthorRepository.AddAuthorForBookAsync(author, book.Id);
                 }
 
+                foreach (var collection in UserCollections)
+                {
+                    await uow.CollectionRepository.AddCollectionForBookAsync(collection, book.Id);
+                }
+
                 uow.Commit();
+                MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
             });
 
             return true;
@@ -272,20 +341,36 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 book.Description = DescriptionFieldText;
 
                 var removedAuthorIds = new List<int>();
-                var oldAndNewCommonIds = AuthorsCollection.Select(a => a.Id).Intersect(book.Authors.Select(a => a.Id));
+                var oldAndNewCommonAuthorIds = AuthorsCollection.Select(a => a.Id).Intersect(book.Authors.Select(a => a.Id));
 
-                foreach (var author in AuthorsCollection.Where(a => !oldAndNewCommonIds.Contains(a.Id)))
+                foreach (var author in AuthorsCollection.Where(a => !oldAndNewCommonAuthorIds.Contains(a.Id)))
                 {
                     await uow.AuthorRepository.AddAuthorForBookAsync(author, book.Id);
                 }
 
-                foreach (var author in book.Authors.Where(a => !oldAndNewCommonIds.Contains(a.Id)))
+                foreach (var author in book.Authors.Where(a => !oldAndNewCommonAuthorIds.Contains(a.Id)))
                 {
                     await uow.AuthorRepository.RemoveAuthorForBookAsync(author, book.Id);
                     removedAuthorIds.Add(author.Id);
                 }
 
                 book.Authors = AuthorsCollection;
+
+                var removedCollectionIds = new List<int>();
+                var oldAndNewCommonCollectionIds = UserCollections.Select(a => a.Id).Intersect(book.Collections.Select(a => a.Id));
+
+                foreach (var collection in UserCollections.Where(a => !oldAndNewCommonCollectionIds.Contains(a.Id)))
+                {
+                    await uow.CollectionRepository.AddCollectionForBookAsync(collection, book.Id);
+                }
+
+                foreach (var collection in book.Collections.Where(a => !oldAndNewCommonCollectionIds.Contains(a.Id)))
+                {
+                    await uow.CollectionRepository.RemoveCollectionForBookAsync(collection, book.Id);
+                    removedCollectionIds.Add(collection.Id);
+                }
+
+                Book.Collections = UserCollections;
 
                 if (Cover != null)
                 {
@@ -313,7 +398,16 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                     }
                 }
 
+                foreach (var id in removedCollectionIds)
+                {
+                    if (await uow.CollectionRepository.CountBooksInUserCollectionAsync(id) == 0)
+                    {
+                        await uow.CollectionRepository.DeleteAsync(id);
+                    }
+                }
+
                 uow.Commit();
+                MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
             });
             return true;
         }
@@ -340,7 +434,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         {
             using var uow = await App.UnitOfWorkFactory.CreateAsync();
             var allAuthors = await uow.AuthorRepository.GetAllAsync();
-            var ignoreIds = Book.Authors.Select(a => a.Id).ToList();
+            var ignoreIds = AuthorsCollection.Select(a => a.Id).ToList();
 
             var viewModel = new ChooseAuthorDialogViewModel(allAuthors.Where(a => !ignoreIds.Contains(a.Id)),
                     x => Application.Current.Dispatcher.Invoke(() => AuthorsCollection.Add(x)));

@@ -32,7 +32,7 @@ namespace Valyreon.Elib.Wpf.Extensions
 
         public static string GetExtension(this string filePath)
         {
-            return filePath.GetExtension();
+            return Path.GetExtension(filePath);
         }
     }
 }

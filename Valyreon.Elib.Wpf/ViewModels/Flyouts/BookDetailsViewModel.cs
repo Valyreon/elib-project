@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -17,30 +18,35 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 {
     public class BookDetailsViewModel : ViewModelBase
     {
-        private string addCollectionFieldText = "";
+        private ObservableCollection<ObservableEntity> collectionSuggestions;
+        private IEnumerable<UserCollection> allUserCollections;
 
         public BookDetailsViewModel(Book book)
         {
             Book = book;
         }
 
-        public ICommand ReadBookCommand => new RelayCommand(HandleRead);
-
-        private void HandleRead()
+        public ObservableCollection<ObservableEntity> CollectionSuggestions
         {
-            /*var win2 = new ReaderWindow
-            {
-                DataContext = new ReaderViewModel(Book)
-            };
-            win2.Show();*/
+            get => collectionSuggestions;
+            set => Set(() => CollectionSuggestions, ref collectionSuggestions, value);
         }
 
         public ICommand AddCollectionCommand => new RelayCommand<string>(AddCollection);
 
-        public string AddCollectionFieldText
+        public ICommand RefreshSuggestedCollectionsCommand => new RelayCommand<string>(HandleRefreshSuggestedCollections);
+
+        private async void HandleRefreshSuggestedCollections(string token)
         {
-            get => addCollectionFieldText;
-            set => Set(() => AddCollectionFieldText, ref addCollectionFieldText, value);
+            if (allUserCollections == null)
+            {
+                using var uow = await App.UnitOfWorkFactory.CreateAsync();
+                allUserCollections = await uow.CollectionRepository.GetAllAsync();
+            }
+
+            var suggestions = allUserCollections.Where(c => !Book.Collections.Contains(c) && c.Tag.ToLowerInvariant().Contains(token))
+                .Take(4);
+            CollectionSuggestions = new ObservableCollection<ObservableEntity>(suggestions.Cast<ObservableEntity>());
         }
 
         public Book Book { get; }
@@ -128,7 +134,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             }
 
             tag = tag.Trim();
-            AddCollectionFieldText = "";
             if (Book.Collections.Any(c => c.Tag == tag)) // check if book is already in that collection
             {
                 return;

@@ -7,7 +7,14 @@
     <UseWindowsForms>True</UseWindowsForms>
     <Platforms>AnyCPU;x64</Platforms>
     <StartupObject></StartupObject>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="icon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
   <ItemGroup>
     <Resource Include="Resources\Images\chevron_left_large.png" />
