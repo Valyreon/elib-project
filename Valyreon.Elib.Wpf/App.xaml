@@ -18,6 +18,7 @@
                 <ResourceDictionary Source="Resources/Miscellaneous.xaml" />
                 <ResourceDictionary Source="Resources/DataGridStyles.xaml" />
                 <ResourceDictionary Source="Resources/ComboBoxStyles.xaml" />
+                <ResourceDictionary Source="Resources/WindowStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

@@ -29,7 +29,7 @@ public partial class FlyoutPanel : UserControl, IFlyoutPanel
         Loaded += new RoutedEventHandler((a, i) =>
         {
             window = Window.GetWindow(this);
-            theGrid.Margin = new Thickness { Left = window.Width, Right = 0, Bottom = 0, Top = 0 };
+            theGrid.Margin = new Thickness { Left = 100, Right = 0, Bottom = 0, Top = 0 };
             theGrid.Visibility = Visibility.Collapsed;
             opacity = theGrid.Opacity;
         });

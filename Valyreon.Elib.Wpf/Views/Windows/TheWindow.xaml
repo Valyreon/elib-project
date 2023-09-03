@@ -7,7 +7,6 @@
     xmlns:ControlViews="clr-namespace:Valyreon.Elib.Wpf.Views.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Title="ELib"
     MinWidth="1100"
     MinHeight="650"
     BorderBrush="{StaticResource AccentColorBrush}"
@@ -15,6 +14,7 @@
     Left="0"
     ResizeMode="CanResize"
     SnapsToDevicePixels="True"
+    Style="{StaticResource ElibWindowStyle}"
     TextOptions.TextFormattingMode="Ideal"
     TextOptions.TextHintingMode="Auto"
     TextOptions.TextRenderingMode="ClearType"
@@ -94,7 +94,8 @@
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             Panel.ZIndex="80000"
-            Content="{Binding FlyoutControl}" />
+            Content="{Binding FlyoutControl}"
+            Visibility="Collapsed" />
 
         <Grid
             x:Name="DialogGrid"
