@@ -38,6 +38,7 @@
             Margin="20,20,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
+            Panel.ZIndex="99999999"
             Click="Button_Click"
             IconSize="28"
             Image="{StaticResource FlyoutBackArrow}" />

@@ -138,7 +138,7 @@ namespace Valyreon.Elib.Domain
         }
 
         [NotMapped]
-        public string AuthorsInfo => Authors.Any() ? Authors.Select(a => a.Name).Aggregate((i, j) => i + ", " + j) : "";
+        public string AuthorsInfo => Authors != null && Authors.Any() ? Authors.Select(a => a.Name).Aggregate((i, j) => i + ", " + j) : "";
 
         [NotMapped]
         public string SeriesInfo =>

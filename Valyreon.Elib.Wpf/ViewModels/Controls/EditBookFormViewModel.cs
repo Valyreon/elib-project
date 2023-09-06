@@ -305,17 +305,16 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             {
                 using var uow = await App.UnitOfWorkFactory.CreateAsync();
 
-                if ((book.Series == null && Series != null) || (Series != null && book.Series.Id != Series.Id))
+                if (Series != null && Series.Id == 0)
+                {
+                    await uow.SeriesRepository.CreateAsync(Series);
+                    book.SeriesId = Series.Id;
+                    book.Series = Series;
+                }
+                else if ((book.Series == null && Series != null) || (Series != null && book.Series.Id != Series.Id))
                 {
                     book.Series = await uow.SeriesRepository.FindAsync(Series.Id);
                     book.SeriesId = book.Series.Id;
-                }
-                else if (book.Series != null && Series != null && book.Series.Id == Series.Id)
-                {
-                    var series = book.Series;
-                    series.Name = Series.Name;
-                    book.Series = series; // to trgger SeriesInfo update in UI
-                    await uow.SeriesRepository.UpdateAsync(book.Series);
                 }
                 else if (book.Series != null && Series == null)
                 {

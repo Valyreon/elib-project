@@ -1,20 +1,20 @@
 using System;
-using Valyreon.Elib.DataLayer;
+using Valyreon.Elib.DataLayer.Filters;
 
 namespace Valyreon.Elib.Wpf.ViewModels
 {
     public interface IViewer : IDisposable
     {
-        public abstract string Caption { get; set; }
+        string Caption { get; set; }
 
-        public abstract FilterParameters Filter { get; }
+        void Refresh();
 
-        public abstract void Refresh();
+        Action Back { get; set; }
 
-        public abstract Action Back { get; set; }
+        void Clear();
 
-        public abstract void Clear();
+        Func<IViewer> GetCloneFunction();
 
-        public abstract Func<IViewer> GetCloneFunction();
+        IFilterParameters GetFilter();
     }
 }

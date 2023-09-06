@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using Valyreon.Elib.DataLayer.Extensions;
+using Valyreon.Elib.DataLayer.Filters;
 using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Domain;
 
@@ -16,7 +17,7 @@ namespace Valyreon.Elib.DataLayer.Repositories
         {
         }
 
-        private static Tuple<string, DynamicParameters> CreateQueryFromFilter(FilterParameters filter, int? offset = null, int? pageSize = null, bool onlyIds = false)
+        private static Tuple<string, DynamicParameters> CreateQueryFromFilter(BookFilter filter, int? offset = null, int? pageSize = null, bool onlyIds = false)
         {
             if (filter == null)
             {
@@ -114,7 +115,7 @@ namespace Valyreon.Elib.DataLayer.Repositories
             return new Tuple<string, DynamicParameters>(queryBuilder.ToString(), parameters);
         }
 
-        public int Count(FilterParameters filter)
+        public int Count(BookFilter filter)
         {
             var queryTuple = CreateQueryFromFilter(filter, null, null);
 
@@ -146,7 +147,7 @@ namespace Valyreon.Elib.DataLayer.Repositories
             return Cache.FilterAndUpdateCache(result);
         }
 
-        public async Task<IEnumerable<Book>> GetByFilterAsync(FilterParameters filter, int? offset = null, int? pageSize = null)
+        public async Task<IEnumerable<Book>> GetByFilterAsync(BookFilter filter, int? offset = null, int? pageSize = null)
         {
             var queryTuple = CreateQueryFromFilter(filter, offset, pageSize);
             var result = await Connection.QueryAsync<Book>(queryTuple.Item1, queryTuple.Item2, Transaction);
@@ -154,13 +155,13 @@ namespace Valyreon.Elib.DataLayer.Repositories
             return Cache.FilterAndUpdateCache(result);
         }
 
-        public Task<IEnumerable<int>> GetIdsByFilterAsync(FilterParameters filter)
+        public Task<IEnumerable<int>> GetIdsByFilterAsync(BookFilter filter)
         {
             var queryTuple = CreateQueryFromFilter(filter, null, null);
             return Connection.QueryAsync<int>(queryTuple.Item1, queryTuple.Item2, Transaction);
         }
 
-        public async Task<int> CountAsync(FilterParameters filter)
+        public async Task<int> CountAsync(BookFilter filter)
         {
             var queryTuple = CreateQueryFromFilter(filter, null, null);
 

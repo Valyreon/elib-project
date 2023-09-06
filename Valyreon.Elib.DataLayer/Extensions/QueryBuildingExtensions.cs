@@ -31,6 +31,24 @@ namespace Valyreon.Elib.DataLayer.Extensions
             return query;
         }
 
+        public static string Apply(this string query, Sort parameters)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                throw new ArgumentException("Parameter 'query' can't be null or empty.");
+            }
+
+            if (parameters == null)
+            {
+                return query;
+            }
+
+            query += $" ORDER BY {parameters.PropertyName}";
+            query += $" {(parameters.IsAscending ? "ASC" : "DESC")}";
+
+            return query;
+        }
+
         public static string Where(this string query, string condition)
         {
             return query + " WHERE " + condition;

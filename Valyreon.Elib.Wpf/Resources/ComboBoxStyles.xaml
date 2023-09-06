@@ -15,13 +15,11 @@
                 BorderBrush="#aaa"
                 BorderThickness="1"
                 CornerRadius="4" />
-            <Path
-                x:Name="Arrow"
+            <Image
                 Grid.Column="1"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Data="M0,0 L0,2 L4,6 L8,2 L8,0 L4,4 z"
-                Fill="Black" />
+                Width="10"
+                Height="10"
+                Source="{StaticResource ExpandMore}" />
         </Grid>
         <!--<ControlTemplate.Triggers>
             <Trigger Property="ToggleButton.IsMouseOver" Value="true">
@@ -45,15 +43,13 @@
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
         <Setter Property="ScrollViewer.CanContentScroll" Value="true" />
-        <Setter Property="MinWidth" Value="120" />
-        <Setter Property="MinHeight" Value="20" />
         <Setter Property="Height" Value="30" />
         <Setter Property="Foreground" Value="Black" />
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontSize" Value="13" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ComboBox}">
-                    <Grid>
+                    <Grid Background="White">
                         <ToggleButton
                             Name="ToggleButton"
                             Grid.Column="2"
@@ -69,7 +65,8 @@
                             Content="{TemplateBinding SelectionBoxItem}"
                             ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
                             ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
-                            IsHitTestVisible="False" />
+                            IsHitTestVisible="False"
+                            TextBlock.FontSize="13" />
                         <customcomponents:ElibTextBox
                             x:Name="PART_EditableTextBox"
                             Margin="3,3,23,3"
@@ -89,21 +86,22 @@
                             IsOpen="{TemplateBinding IsDropDownOpen}"
                             Placement="Bottom"
                             PopupAnimation="Slide">
-
                             <Grid
                                 Name="DropDown"
                                 MinWidth="{TemplateBinding ActualWidth}"
                                 MaxHeight="{TemplateBinding MaxDropDownHeight}"
+                                Background="White"
                                 SnapsToDevicePixels="True">
                                 <Border
                                     x:Name="DropDownBorder"
                                     Background="White"
                                     BorderBrush="#aaa"
                                     BorderThickness="1"
-                                    CornerRadius="4" />
-                                <ScrollViewer Margin="4,6,4,6" SnapsToDevicePixels="True">
-                                    <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
-                                </ScrollViewer>
+                                    CornerRadius="4">
+                                    <ScrollViewer Margin="2" SnapsToDevicePixels="True">
+                                        <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
+                                    </ScrollViewer>
+                                </Border>
                             </Grid>
                         </Popup>
                     </Grid>

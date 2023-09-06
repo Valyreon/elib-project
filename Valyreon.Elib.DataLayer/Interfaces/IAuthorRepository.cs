@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Valyreon.Elib.DataLayer.Filters;
 using Valyreon.Elib.Domain;
 
 namespace Valyreon.Elib.DataLayer.Interfaces
@@ -17,5 +18,7 @@ namespace Valyreon.Elib.DataLayer.Interfaces
         Task<int> CountBooksByAuthorAsync(int authorId);
 
         Task<IEnumerable<Author>> SearchAsync(string token);
+
+        Task<IEnumerable<Author>> GetAuthorsWithNumberOfBooks(Filter filter);
     }
 }

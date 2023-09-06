@@ -1,14 +1,19 @@
 <UserControl
     x:Class="Valyreon.Elib.Wpf.Views.Controls.BooksTabControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:Behaviors="http://schemas.microsoft.com/xaml/behaviors"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:Converters="clr-namespace:Valyreon.Elib.Wpf.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
+    <Behaviors:Interaction.Triggers>
+        <Behaviors:EventTrigger EventName="Loaded">
+            <Behaviors:InvokeCommandAction Command="{Binding PaneSelectionChangedCommand}" />
+        </Behaviors:EventTrigger>
+    </Behaviors:Interaction.Triggers>
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -32,10 +37,16 @@
             Panel.ZIndex="10"
             Background="{StaticResource LighterBackgroundColorBrush}"
             BorderThickness="0">
-            <StackPanel Margin="0,5,0,0">
+            <Grid Margin="0,5,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="40" />
+                </Grid.RowDefinitions>
+
                 <ListBox
                     Grid.Row="0"
-                    Grid.Column="0"
                     Background="{StaticResource LighterBackgroundColorBrush}"
                     BorderThickness="0"
                     ItemContainerStyle="{StaticResource MainPaneListBoxItemStyle}"
@@ -72,12 +83,19 @@
                     Foreground="CornflowerBlue"
                     Text="Collections" />
                 <ListBox
+                    Grid.Row="2"
                     Background="{StaticResource LighterBackgroundColorBrush}"
                     ItemContainerStyle="{StaticResource MainPaneListBoxItemStyle}"
                     ItemsSource="{Binding Collections, Mode=OneWay}"
                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                    ScrollViewer.VerticalScrollBarVisibility="Auto"
                     SelectedItem="{Binding SelectedCollection}"
                     Style="{StaticResource MainPaneListBoxStyle}">
+                    <Behaviors:Interaction.Triggers>
+                        <Behaviors:EventTrigger EventName="SelectionChanged">
+                            <Behaviors:InvokeCommandAction Command="{Binding CollectionSelectionChangedCommand}" />
+                        </Behaviors:EventTrigger>
+                    </Behaviors:Interaction.Triggers>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <RadioButton
@@ -95,7 +113,13 @@
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
-            </StackPanel>
+
+                <Button
+                    Grid.Row="4"
+                    Margin="5"
+                    Content="IMPORT"
+                    Style="{StaticResource FlyoutButton}" />
+            </Grid>
         </Border>
 
         <ContentControl

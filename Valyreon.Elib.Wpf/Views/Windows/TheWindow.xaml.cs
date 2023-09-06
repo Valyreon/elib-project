@@ -35,6 +35,8 @@ namespace Valyreon.Elib.Wpf.Views.Windows
         public Button RestoreButton { get; private set; }
         public Button CloseButton { get; private set; }
         public Grid HeaderBar { get; private set; }
+        public Border MoveBorder1 { get; private set; }
+        public Border MoveBorder2 { get; private set; }
 
         public TheWindow()
         {
@@ -66,6 +68,8 @@ namespace Valyreon.Elib.Wpf.Views.Windows
             RestoreButton = GetRequiredTemplateChild<Button>("RestoreButton");
             CloseButton = GetRequiredTemplateChild<Button>("CloseButton");
             HeaderBar = GetRequiredTemplateChild<Grid>("PART_HeaderBar");
+            MoveBorder1 = GetRequiredTemplateChild<Border>("PART_HeaderBar_MoveBorder1");
+            MoveBorder2 = GetRequiredTemplateChild<Border>("PART_HeaderBar_MoveBorder2");
 
             if (CloseButton != null)
             {
@@ -87,10 +91,8 @@ namespace Valyreon.Elib.Wpf.Views.Windows
                 MaximizeButton.Click += MaximizeButton_Click;
             }
 
-            HeaderBar.MouseLeftButtonDown += OnHeaderBarMouseLeftButtonDown;
-            //HeaderBar.MouseDoubleClick += MaximizeButton_Click;
-
-            HeaderBar.AddHandler(MouseDoubleClickEvent, new MouseButtonEventHandler(MaximizeButton_Click));
+            MoveBorder1.MouseLeftButtonDown += OnHeaderBarMouseLeftButtonDown;
+            MoveBorder2.MouseLeftButtonDown += OnHeaderBarMouseLeftButtonDown;
 
             base.OnApplyTemplate();
         }
@@ -98,7 +100,7 @@ namespace Valyreon.Elib.Wpf.Views.Windows
         protected void OnHeaderBarMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             var position = e.GetPosition(this);
-            var headerBarHeight = 36;
+            var headerBarHeight = 50;
             var leftmostClickableOffset = 50;
 
             if (position.X - LayoutRoot.Margin.Left <= leftmostClickableOffset && position.Y <= headerBarHeight)
@@ -109,9 +111,10 @@ namespace Valyreon.Elib.Wpf.Views.Windows
                 }
                 else
                 {
-                    Close();
+                    e.Handled = false;
+                    return;
                 }
-                e.Handled = true;
+
                 return;
             }
 

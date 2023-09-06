@@ -121,11 +121,10 @@
 
     <Style x:Key="ElibWindowStyle" TargetType="{x:Type windows:TheWindow}">
         <Setter Property="Background" Value="#222" />
-        <Setter Property="BorderBrush" Value="Black" />
+        <Setter Property="BorderBrush" Value="CornflowerBlue" />
         <Setter Property="MinHeight" Value="320" />
         <Setter Property="MinWidth" Value="480" />
         <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality" />
-        <Setter Property="Title" Value="{Binding Title}" />
         <Setter Property="WindowChrome.WindowChrome">
             <Setter.Value>
                 <WindowChrome
@@ -142,16 +141,40 @@
                         BorderThickness="1"
                         CornerRadius="0">
                         <Grid x:Name="LayoutRoot" Background="{TemplateBinding Background}">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="*" />
-                            </Grid.RowDefinitions>
+
+                            <Grid VerticalAlignment="Top" Panel.ZIndex="100000">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="305" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="50" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <Border
+                                        x:Name="PART_HeaderBar_MoveBorder1"
+                                        Grid.Column="1"
+                                        Height="50"
+                                        Background="Transparent" />
+                                </Grid>
+
+                                <Border
+                                    x:Name="PART_HeaderBar_MoveBorder2"
+                                    Grid.Column="2"
+                                    Height="50"
+                                    VerticalAlignment="Top"
+                                    Background="Transparent" />
+                            </Grid>
 
                             <!--  TitleBar  -->
                             <Grid
                                 x:Name="PART_HeaderBar"
-                                Panel.ZIndex="100000"
-                                Background="Transparent">
+                                Height="30"
+                                VerticalAlignment="Top"
+                                Panel.ZIndex="100000">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />

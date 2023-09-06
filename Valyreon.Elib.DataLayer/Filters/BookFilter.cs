@@ -1,6 +1,6 @@
-namespace Valyreon.Elib.DataLayer
+namespace Valyreon.Elib.DataLayer.Filters
 {
-    public record FilterParameters
+    public record BookFilter : IFilterParameters
     {
         public int? AuthorId { get; set; }
         public int? SeriesId { get; set; }

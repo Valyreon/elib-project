@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Valyreon.Elib.DataLayer.Interfaces;
@@ -18,6 +20,9 @@ namespace Valyreon.Elib.DataLayer
         public async Task<IUnitOfWork> CreateAsync()
         {
             await semaphore.WaitAsync();
+            //Console.WriteLine("\nGETTING A UOW");
+            //Environment.StackTrace.Split("\n").ToList().ForEach(Console.WriteLine);
+            //Console.WriteLine("=========================");
             return new UnitOfWork(connection);
         }
 

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Valyreon.Elib.DataLayer.Filters;
 using Valyreon.Elib.Domain;
 
 namespace Valyreon.Elib.DataLayer.Interfaces
@@ -12,11 +13,11 @@ namespace Valyreon.Elib.DataLayer.Interfaces
 
         Task<IEnumerable<Book>> FindByAuthorIdAsync(int authorId);
 
-        Task<IEnumerable<Book>> GetByFilterAsync(FilterParameters filter, int? offset = null, int? pageSize = null);
+        Task<IEnumerable<Book>> GetByFilterAsync(BookFilter filter, int? offset = null, int? pageSize = null);
 
-        Task<IEnumerable<int>> GetIdsByFilterAsync(FilterParameters filter);
+        Task<IEnumerable<int>> GetIdsByFilterAsync(BookFilter filter);
 
-        Task<int> CountAsync(FilterParameters filter);
+        Task<int> CountAsync(BookFilter filter);
 
         Task<bool> SignatureExistsAsync(string signature);
 

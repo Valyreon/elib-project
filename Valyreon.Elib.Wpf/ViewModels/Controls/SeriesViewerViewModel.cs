@@ -1,11 +1,15 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
-using Valyreon.Elib.DataLayer;
+using Valyreon.Elib.DataLayer.Filters;
+using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.Mvvm;
 using Valyreon.Elib.Mvvm.Messaging;
+using Valyreon.Elib.Wpf.BindingItems;
 using Valyreon.Elib.Wpf.Messages;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Controls
@@ -32,11 +36,53 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             set
             {
                 Set(() => SearchText, ref searchText, value);
+                Filter = Filter with { SearchText = value };
                 Refresh();
             }
         }
 
-        public FilterParameters Filter => null;
+        public Filter Filter { get; set; }
+
+        public IFilterParameters GetFilter()
+        {
+            return Filter;
+        }
+
+        public ICommand RefreshCommand => new RelayCommand(Refresh);
+
+        public IEnumerable<FilterComboBoxOption<Filter>> CollectionComboBoxOptions { set; get; }
+        public IEnumerable<FilterComboBoxOption<Filter>> SortComboBoxOptions { get; } = FilterComboBoxOption<Filter>.AuthorSortFilterOptions;
+
+        public int CollectionComboBoxSelectedIndex
+        {
+            get => collectionComboBoxSelectedIndex;
+            set
+            {
+                Set(() => CollectionComboBoxSelectedIndex, ref collectionComboBoxSelectedIndex, value);
+                Filter = CollectionComboBoxOptions.ElementAt(value).TransformFilter(Filter);
+            }
+        }
+
+        public int SortComboBoxSelectedIndex
+        {
+            get => sortComboBoxSelectedIndex;
+            set
+            {
+                Set(() => SortComboBoxSelectedIndex, ref sortComboBoxSelectedIndex, value);
+                Filter = SortComboBoxOptions.ElementAt(value).TransformFilter(Filter);
+            }
+        }
+
+        public bool IsAscendingSortDirection { get => isAscendingSortDirection; set => Set(() => IsAscendingSortDirection, ref isAscendingSortDirection, value); }
+
+        public ICommand SortDirectionChangedCommand => new RelayCommand<bool>(HandleSortDirectionChange);
+
+        private void HandleSortDirectionChange(bool isAscending)
+        {
+            Filter = Filter with { Ascending = isAscending };
+            Refresh();
+        }
+
         private Action backAction;
 
         public Action Back
@@ -57,8 +103,9 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             set => Set(() => IsResultEmpty, ref isResultEmpty, value);
         }
 
-        public SeriesViewerViewModel()
+        public SeriesViewerViewModel(Filter filter)
         {
+            Filter = filter;
             MessengerInstance.Register<RefreshCurrentViewMessage>(this, _ =>
             {
                 if (!isLoading)
@@ -66,11 +113,10 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                     Refresh();
                 }
             });
-        }
 
-        public SeriesViewerViewModel(string searchText) : this()
-        {
-            this.searchText = searchText;
+            sortComboBoxSelectedIndex = Filter.SortByName ? 0 : 1;
+            isAscendingSortDirection = Filter.Ascending;
+            searchText = Filter.SearchText;
         }
 
         public void Clear()
@@ -80,6 +126,9 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         private volatile bool isLoading;
         private ObservableCollection<BookSeries> series;
+        private int collectionComboBoxSelectedIndex;
+        private int sortComboBoxSelectedIndex;
+        private bool isAscendingSortDirection;
 
         public void Refresh()
         {
@@ -92,30 +141,47 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         private async void LoadSeries()
         {
             using var uow = await App.UnitOfWorkFactory.CreateAsync();
-            var results = string.IsNullOrWhiteSpace(SearchText)
-                ? await uow.SeriesRepository.GetAllAsync()
-                : await uow.SeriesRepository.SearchAsync(SearchText);
 
-            if (!results.Any())
+            await SetupCollectionOptions(uow);
+
+            var result = await uow.SeriesRepository.GetSeriesWithNumberOfBooks(Filter);
+
+            if (!result.Any())
             {
+                Series = new ObservableCollection<BookSeries>();
                 IsResultEmpty = true;
                 return;
             }
 
-            foreach (var item in results)
-            {
-                item.NumberOfBooks = await uow.SeriesRepository.CountBooksInSeriesAsync(item.Id);
-            }
-
-            Series = new ObservableCollection<BookSeries>(results);
-
+            Series = new ObservableCollection<BookSeries>(result);
             isLoading = false;
+        }
+
+        private async Task SetupCollectionOptions(IUnitOfWork uow)
+        {
+            var collections = await uow.CollectionRepository.GetAllAsync();
+            var collectionOptions = collections.OrderBy(c => c.Tag).Select(c => new FilterComboBoxOption<Filter>
+            {
+                Name = c.Tag,
+                TransformFilter = f => f with { CollectionId = c.Id },
+            }).ToList();
+
+            collectionOptions = collectionOptions.Prepend(new FilterComboBoxOption<Filter> { Name = "ALL", TransformFilter = f => f with { CollectionId = null } }).ToList();
+
+            CollectionComboBoxOptions = collectionOptions;
+
+            if (Filter.CollectionId.HasValue && Filter.CollectionId.Value > 0 && collectionComboBoxSelectedIndex == 0)
+            {
+                var selectedCollection = collections.Single(c => c.Id == Filter.CollectionId.Value);
+                var option = collectionOptions.Single(o => o.Name == selectedCollection.Tag);
+                collectionComboBoxSelectedIndex = collectionOptions.IndexOf(option);
+            }
         }
 
         public Func<IViewer> GetCloneFunction()
         {
-            var searchToken = searchText;
-            return () => new SeriesViewerViewModel(searchToken);
+            var f = Filter with { };
+            return () => new SeriesViewerViewModel(f);
         }
 
         public void Dispose()

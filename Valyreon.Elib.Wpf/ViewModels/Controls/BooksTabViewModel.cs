@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Valyreon.Elib.DataLayer;
+using Valyreon.Elib.DataLayer.Filters;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.Mvvm;
 using Valyreon.Elib.Wpf.BindingItems;
@@ -15,6 +16,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 {
     public class BooksTabViewModel : ViewModelBase, ITabViewModel
     {
+        private bool rememberFilterInNextView;
         private readonly PaneMainItem selectedMainItem;
         private readonly ViewerHistory history = new();
         private string caption = "Books";
@@ -25,29 +27,24 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         public BooksTabViewModel()
         {
-            selectedMainItem = new PaneMainItem("Selected", "Selected Books", new FilterParameters { Selected = true });
+            selectedMainItem = new PaneMainItem("Selected", "Selected Books", new BookFilter { Selected = true });
 
             MessengerInstance.Register<AuthorSelectedMessage>(this, HandleAuthorSelection);
             MessengerInstance.Register<SeriesSelectedMessage>(this, HandleSeriesSelection);
             MessengerInstance.Register<CollectionSelectedMessage>(this, HandleCollectionSelection);
             MessengerInstance.Register<GoBackMessage>(this, _ => GoToPreviousViewer());
-            MessengerInstance.Register<ResetPaneSelectionMessage>(this, _ =>
-            {
-                SelectedMainPaneItem = MainPaneItems[0];
-                PaneSelectionChanged();
-            });
+            MessengerInstance.Register<ResetPaneSelectionMessage>(this, _ => SelectedMainPaneItem = MainPaneItems[0]);
             MessengerInstance.Register<RefreshSidePaneCollectionsMessage>(this, CollectionsRefreshHandler);
 
             MainPaneItems = new ObservableCollection<PaneMainItem>
             {
                 new PaneMainItem("All", "All Books", null),
-                new PaneMainItem("Favorite", "Favorite Books", new FilterParameters { Favorite = true }),
+                new PaneMainItem("Favorite", "Favorite Books", new BookFilter { Favorite = true }),
                 new PaneMainItem("Authors", "Authors", null),
                 new PaneMainItem("Series", "Series", null)
             };
             SelectedMainPaneItem = MainPaneItems[0];
-            PaneSelectionChanged();
-            MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
+            CollectionsRefreshHandler(null);
 
             Selector.Instance.SelectionChanged += HandleSelectionChanged;
         }
@@ -90,7 +87,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             CurrentViewer?.Dispose();
             value.Back = history.Count > 0 ? GoToPreviousViewer : null;
             Set(() => CurrentViewer, ref currentViewer, value);
-            await Task.Delay(10);
             CurrentViewer.Refresh();
         }
 
@@ -98,35 +94,11 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         public ObservableCollection<PaneMainItem> MainPaneItems { get; set; }
 
-        public ICommand PaneSelectionChangedCommand => new RelayCommand(PaneSelectionChanged);
-
         public UserCollection SelectedCollection
         {
             get => selectedCollection;
 
-            set
-            {
-                Set(() => SelectedCollection, ref selectedCollection, value);
-
-                if (value == null)
-                {
-                    return;
-                }
-
-                history.Clear();
-
-                var filter = new FilterParameters
-                {
-                    CollectionId = selectedCollection.Id
-                };
-
-                var newViewer = new BookViewerViewModel(filter)
-                {
-                    Caption = $"Collection {selectedCollection.Tag}"
-                };
-
-                SetCurrentViewer(newViewer);
-            }
+            set => Set(() => SelectedCollection, ref selectedCollection, value);
         }
 
         public PaneMainItem SelectedMainPaneItem
@@ -144,6 +116,31 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         private void HandleCollectionSelection(CollectionSelectedMessage message)
         {
             SelectedCollection = Collections.FirstOrDefault(c => c.Id == message.CollectionId);
+            HandleCollectionSelectionChanged();
+        }
+
+        public ICommand CollectionSelectionChangedCommand => new RelayCommand(HandleCollectionSelectionChanged);
+
+        private void HandleCollectionSelectionChanged()
+        {
+            if (selectedCollection == null)
+            {
+                return;
+            }
+
+            history.Clear();
+
+            var filter = new BookFilter
+            {
+                CollectionId = selectedCollection.Id
+            };
+
+            var newViewer = new BookViewerViewModel(filter)
+            {
+                Caption = $"Collection {selectedCollection.Tag}"
+            };
+
+            SetCurrentViewer(newViewer);
         }
 
         private void GoToPreviousViewer()
@@ -166,10 +163,16 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             history.Push(CurrentViewer.GetCloneFunction());
 
-            var filter = new FilterParameters
+            BookFilter filter = null;
+
+            if (rememberFilterInNextView && CurrentViewer.GetFilter() is BookFilter bFilter)
             {
-                AuthorId = obj.Author.Id
-            };
+                filter = bFilter with { AuthorId = obj.Author.Id };
+            }
+            else
+            {
+                filter = new BookFilter { AuthorId = obj.Author.Id };
+            }
 
             var newViewer = new BookViewerViewModel(filter)
             {
@@ -193,39 +196,48 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 return;
             }
 
-            var filter = new FilterParameters
+            BookFilter filter = null;
+
+            if (rememberFilterInNextView && CurrentViewer.GetFilter() is BookFilter bFilter)
             {
-                SeriesId = obj.Series.Id
-            };
+                filter = bFilter with { SeriesId = obj.Series.Id };
+            }
+            else
+            {
+                filter = new BookFilter { SeriesId = obj.Series.Id };
+            }
+
             history.Push(CurrentViewer.GetCloneFunction());
 
             SetCurrentViewer(new BookViewerViewModel(filter) { Caption = viewerCaption, Back = GoToPreviousViewer });
         }
 
+        public ICommand PaneSelectionChangedCommand => new RelayCommand(PaneSelectionChanged);
+
         private void PaneSelectionChanged()
         {
-            if (SelectedMainPaneItem == null)
+            if (selectedMainPaneItem == null)
             {
                 return;
             }
 
             history.Clear();
 
-            var filter = SelectedMainPaneItem.Filter != null
-                ? SelectedMainPaneItem.Filter with { }
-                : new FilterParameters();
+            var filter = selectedMainPaneItem.Filter != null
+                ? selectedMainPaneItem.Filter with { }
+                : new BookFilter();
 
-            if (SelectedMainPaneItem.PaneCaption == "Authors")
+            if (selectedMainPaneItem.PaneCaption == "Authors")
             {
-                SetCurrentViewer(new AuthorViewerViewModel() { Caption = SelectedMainPaneItem.PaneCaption });
+                SetCurrentViewer(new AuthorViewerViewModel(new Filter()) { Caption = selectedMainPaneItem.PaneCaption });
             }
-            else if (SelectedMainPaneItem.PaneCaption == "Series")
+            else if (selectedMainPaneItem.PaneCaption == "Series")
             {
-                SetCurrentViewer(new SeriesViewerViewModel() { Caption = SelectedMainPaneItem.PaneCaption });
+                SetCurrentViewer(new SeriesViewerViewModel(new Filter()) { Caption = selectedMainPaneItem.PaneCaption });
             }
             else
             {
-                SetCurrentViewer(new BookViewerViewModel(filter) { Caption = SelectedMainPaneItem.ViewerCaption });
+                SetCurrentViewer(new BookViewerViewModel(filter) { Caption = selectedMainPaneItem.ViewerCaption });
             }
         }
     }

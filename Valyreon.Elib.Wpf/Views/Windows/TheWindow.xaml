@@ -7,6 +7,7 @@
     xmlns:ControlViews="clr-namespace:Valyreon.Elib.Wpf.Views.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="Elib"
     MinWidth="1100"
     MinHeight="650"
     BorderBrush="{StaticResource AccentColorBrush}"
@@ -43,7 +44,8 @@
             Margin="10"
             HorizontalAlignment="Right"
             VerticalAlignment="Top"
-            Panel.ZIndex="10000">
+            Panel.ZIndex="10000"
+            Visibility="Collapsed">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="200" />
                 <ColumnDefinition Width="5" />
@@ -83,9 +85,9 @@
                 <DataTemplate DataType="{x:Type ControlViewModels:QuotesTabViewModel}">
                     <ControlViews:QuotesTabControl />
                 </DataTemplate>
-                <!--<DataTemplate DataType="{x:Type ControlViewModels:SettingsTabViewModel}">
+                <DataTemplate DataType="{x:Type ControlViewModels:SettingsTabViewModel}">
                     <ControlViews:SettingsTabControl />
-                </DataTemplate>-->
+                </DataTemplate>
             </TabControl.Resources>
         </Components:TabControlWithCache>
 
@@ -94,8 +96,7 @@
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             Panel.ZIndex="80000"
-            Content="{Binding FlyoutControl}"
-            Visibility="Collapsed" />
+            Content="{Binding FlyoutControl}" />
 
         <Grid
             x:Name="DialogGrid"

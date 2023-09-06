@@ -5,8 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
-using ControlzEx.Standard;
-using Valyreon.Elib.DataLayer;
+using Valyreon.Elib.DataLayer.Filters;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.Mvvm;
 using Valyreon.Elib.Mvvm.Messaging;
@@ -23,7 +22,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         private string caption;
         private double scrollVerticalOffset;
         private bool dontLoad = false;
-        private static FilterOptions filterOptions = new FilterOptions();
         private bool isResultEmpty = false;
 
         private Action backAction;
@@ -38,13 +36,10 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             }
         }
 
-        public BookViewerViewModel(FilterParameters filter)
+        public BookViewerViewModel(BookFilter filter)
         {
-            Selector.Instance.LastSelectedId = 0;
             Filter = filter;
-            SearchText = filter.SearchText;
-            Books = new ObservableCollection<Book>();
-            ApplyFilterOptionsToFilter(filterOptions, filter);
+            Selector.Instance.LastSelectedId = 0;
             MessengerInstance.Register<RefreshCurrentViewMessage>(this, _ =>
             {
                 if (!isLoading)
@@ -55,6 +50,33 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             MessengerInstance.Register<BookSelectedMessage>(this, HandleBookSelection);
             MessengerInstance.Register<BooksRemovedMessage>(this, HandleRemovedMessage);
+
+            searchText = filter.SearchText;
+            statusComboBoxSelectedIndex = filter.Read switch
+            {
+                true => 1, // READ
+                false => 2, // UNREAD
+                _ => 0 // ALL
+            };
+
+            if (filter.SortByImportOrder)
+            {
+                sortComboBoxSelectedIndex = 0;
+            }
+            else if (filter.SortByTitle)
+            {
+                sortComboBoxSelectedIndex = 1;
+            }
+            else if (filter.SortByAuthor)
+            {
+                sortComboBoxSelectedIndex = 2;
+            }
+            else if (filter.SortBySeries)
+            {
+                sortComboBoxSelectedIndex = 3;
+            }
+
+            IsAscendingSortDirection = filter.Ascending;
         }
 
         private void HandleRemovedMessage(BooksRemovedMessage message)
@@ -70,14 +92,53 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             }
         }
 
+        public IEnumerable<FilterComboBoxOption<BookFilter>> StatusComboBoxOptions { get; } = FilterComboBoxOption<BookFilter>.BookStatusFilterOptions;
+        public IEnumerable<FilterComboBoxOption<BookFilter>> SortComboBoxOptions { get; } = FilterComboBoxOption<BookFilter>.BookSortFilterOptions;
+
+        public int StatusComboBoxSelectedIndex
+        {
+            get => statusComboBoxSelectedIndex;
+            set
+            {
+                Set(() => StatusComboBoxSelectedIndex, ref statusComboBoxSelectedIndex, value);
+                Filter = StatusComboBoxOptions.ElementAt(value).TransformFilter(Filter);
+            }
+        }
+
+        public int SortComboBoxSelectedIndex
+        {
+            get => sortComboBoxSelectedIndex;
+            set
+            {
+                Set(() => SortComboBoxSelectedIndex, ref sortComboBoxSelectedIndex, value);
+                Filter = SortComboBoxOptions.ElementAt(value).TransformFilter(Filter);
+            }
+        }
+
+        public bool IsAscendingSortDirection
+        {
+            get => isAscendingSortDirection;
+            set
+            {
+                Set(() => IsAscendingSortDirection, ref isAscendingSortDirection, value);
+                Filter = Filter with { Ascending = value };
+            }
+        }
         public ICommand BackCommand => new RelayCommand(Back);
+
+        public ICommand SortDirectionChangedCommand => new RelayCommand<bool>(HandleSortDirectionChange);
+
+        private void HandleSortDirectionChange(bool isAscending)
+        {
+            Filter = Filter with { Ascending = isAscending };
+        }
 
         public ICommand SelectAllCommand => new RelayCommand(HandleSelectAllBooksInView);
 
         private async void HandleSelectAllBooksInView()
         {
             using var uow = await App.UnitOfWorkFactory.CreateAsync();
-            var results = await uow.BookRepository.GetIdsByFilterAsync(filter);
+            var results = await uow.BookRepository.GetIdsByFilterAsync(Filter);
 
             Selector.Instance.SelectIds(results);
             foreach (var item in Books)
@@ -91,7 +152,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         private async void HandleClearSelectedBooksInView()
         {
             using var uow = await App.UnitOfWorkFactory.CreateAsync();
-            var results = await uow.BookRepository.GetIdsByFilterAsync(filter);
+            var results = await uow.BookRepository.GetIdsByFilterAsync(Filter);
 
             Selector.Instance.DeselectIds(results);
             foreach (var item in Books)
@@ -100,15 +161,13 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             }
         }
 
-        public ObservableCollection<Book> Books { get; set; }
+        public ObservableCollection<Book> Books { get => books; set => Set(() => Books, ref books, value); }
 
         public ICommand LoadMoreCommand => new RelayCommand(LoadMore);
 
         public bool IsBackEnabled => Back != null;
 
         public ICommand RefreshCommand => new RelayCommand(Refresh);
-
-        public ICommand FilterBooksCommand => new RelayCommand(HandleFilter);
 
         public ICommand ClearSelectedBooksCommand => new RelayCommand(HandleClearButton);
 
@@ -133,19 +192,11 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             set => Set(() => ScrollVertical, ref scrollVerticalOffset, value);
         }
 
-        private FilterParameters filter = null;
+        public BookFilter Filter { get; set; } = null;
 
-        public FilterParameters Filter
+        public IFilterParameters GetFilter()
         {
-            get => filter;
-            set
-            {
-                filter = value;
-                if (Books != null)
-                {
-                    Refresh();
-                }
-            }
+            return Filter;
         }
 
         public string Caption
@@ -170,7 +221,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             set
             {
                 Set(() => SearchText, ref searchText, value);
-                Filter = filter with { SearchText = value };
+                Filter = Filter with { SearchText = value };
+                Refresh();
             }
         }
 
@@ -209,14 +261,14 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             using var uow = await App.UnitOfWorkFactory.CreateAsync();
             IEnumerable<Book> results;
-            if (filter.Selected.HasValue && filter.Selected == true)
+            if (Filter.Selected.HasValue && Filter.Selected == true)
             {
                 dontLoad = true;
                 results = await uow.BookRepository.FindAsync(Selector.Instance.SelectedIds);
             }
             else
             {
-                results = await uow.BookRepository.GetByFilterAsync(filter, Books.Count, 25);
+                results = await uow.BookRepository.GetByFilterAsync(Filter, Books.Count, 25);
             }
 
             if (!results.Any())
@@ -228,10 +280,10 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             foreach (var book in results)
             {
+                Books.Add(book);
                 await book.LoadBookAsync(uow);
                 Selector.Instance.SetMarked(book);
-                Books.Add(book);
-                await Task.Delay(10);
+                await Task.Delay(5);
             }
 
             IsResultEmpty = Books.Count == 0;
@@ -239,6 +291,10 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         }
 
         private volatile bool isLoading;
+        private int statusComboBoxSelectedIndex;
+        private int sortComboBoxSelectedIndex;
+        private bool isAscendingSortDirection;
+        private ObservableCollection<Book> books = new();
 
         public async void Refresh()
         {
@@ -248,7 +304,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             }
             isLoading = true;
             ScrollVertical = 0;
-            Books.Clear();
+            Books = new();
 
             using (var uow = await App.UnitOfWorkFactory.CreateAsync())
             {
@@ -257,17 +313,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             UpdateSubcaption();
             LoadMore();
-        }
-
-        private void HandleFilter()
-        {
-            var viewModel = new FilterOptionsDialogViewModel(filterOptions, f =>
-            {
-                filterOptions = f;
-                ApplyFilterOptionsToFilter(f, filter);
-                Refresh();
-            });
-            MessengerInstance.Send(new ShowDialogMessage(viewModel));
         }
 
         public ICommand ExportSelectedBooksCommand => new RelayCommand(HandleExport);
@@ -298,31 +343,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             }
         }
 
-        private void ApplyFilterOptionsToFilter(FilterOptions f, FilterParameters p)
-        {
-            if (f != null && p != null)
-            {
-                if (f.ShowAll)
-                {
-                    p.Read = null;
-                }
-                else if (f.ShowRead)
-                {
-                    p.Read = true;
-                }
-                else if (f.ShowUnread)
-                {
-                    p.Read = false;
-                }
-
-                p.SortByAuthor = f.SortByAuthor;
-                p.SortByImportOrder = f.SortByImportTime;
-                p.SortBySeries = f.SortBySeries;
-                p.SortByTitle = f.SortByTitle;
-                p.Ascending = f.Ascending;
-            }
-        }
-
         public void Clear()
         {
             Books.Clear();
@@ -335,7 +355,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             if (!IsSelectedBooksViewer)
             {
                 using var uow = await App.UnitOfWorkFactory.CreateAsync();
-                count = await uow.BookRepository.CountAsync(filter);
+                count = await uow.BookRepository.CountAsync(Filter);
             }
             else
             {

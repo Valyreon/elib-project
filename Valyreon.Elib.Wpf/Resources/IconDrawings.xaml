@@ -89,4 +89,54 @@
             </DrawingGroup>
         </DrawingImage.Drawing>
     </DrawingImage>
+    <DrawingImage x:Key="ExpandMore">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Transform>
+                    <TranslateTransform X="0" Y="960" />
+                </DrawingGroup.Transform>
+                <GeometryDrawing Brush="Black" Geometry="M480-333 240-573l51-51 189 189 189-189 51 51-240 240Z" />
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+    <DrawingImage x:Key="ArrowDownAltGray">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Transform>
+                    <TranslateTransform X="0" Y="960" />
+                </DrawingGroup.Transform>
+                <GeometryDrawing Brush="#ccc" Geometry="M480-288 288-480l51-51 105 105v-294h72v294l105-105 51 51-192 192Z" />
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+    <DrawingImage x:Key="ArrowDownAltBlack">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Transform>
+                    <TranslateTransform X="0" Y="960" />
+                </DrawingGroup.Transform>
+                <GeometryDrawing Brush="#222" Geometry="M480-288 288-480l51-51 105 105v-294h72v294l105-105 51 51-192 192Z" />
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+    <DrawingImage x:Key="ArrowUpAltGray">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Transform>
+                    <TranslateTransform X="0" Y="960" />
+                </DrawingGroup.Transform>
+                <GeometryDrawing Brush="#ccc" Geometry="M444-240v-294L339-429l-51-51 192-192 192 192-51 51-105-105v294h-72Z" />
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+    <DrawingImage x:Key="ArrowUpAltBlack">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Transform>
+                    <TranslateTransform X="0" Y="960" />
+                </DrawingGroup.Transform>
+                <GeometryDrawing Brush="#222" Geometry="M444-240v-294L339-429l-51-51 192-192 192 192-51 51-105-105v294h-72Z" />
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
 </ResourceDictionary>

@@ -2,7 +2,7 @@
 
     <SolidColorBrush x:Key="AccentColorBrush" Color="#6495ED" />
     <SolidColorBrush x:Key="BackgroundColorBrush" Color="#222222" />
-    <SolidColorBrush x:Key="LighterBackgroundColorBrush" Color="#373737" />
+    <SolidColorBrush x:Key="LighterBackgroundColorBrush" Color="#2f2f2f" />
     <SolidColorBrush x:Key="TabItemPanelBackgroundBrush" Color="#222222" />
     <SolidColorBrush x:Key="DefaultDarkFont" Color="#484b4e" />
     <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="CornflowerBlue" />

@@ -65,6 +65,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
             {
                 new BooksTabViewModel(),
                 new QuotesTabViewModel(),
+                new SettingsTabViewModel()
             };
             SelectedTab = Tabs[0];
 
