@@ -16,7 +16,5 @@ namespace Valyreon.Elib.DataLayer.Interfaces
         void Commit();
 
         void Vacuum();
-
-        void ClearCache();
     }
 }

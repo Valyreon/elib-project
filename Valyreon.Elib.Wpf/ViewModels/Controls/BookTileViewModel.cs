@@ -39,6 +39,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         public ICommand ReadMarkCommand => new RelayCommand(HandleMarkRead);
 
+        public ICommand OpenInReaderCommand => new RelayCommand(HandleOpenInReader);
+
         private bool IsOnlyThisBookSelected()
         {
             return !Book.IsMarked || Selector.Instance.SelectedIds.Count() == 1;
@@ -124,6 +126,17 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 Process.Start("explorer.exe", "/select, " + $@"""{Book.Path}""");
             }
         }
+
+        private void HandleOpenInReader()
+        {
+            var appSettings = ApplicationData.GetProperties();
+
+            if(!string.IsNullOrWhiteSpace(appSettings.ExternalReaderPath) && File.Exists(appSettings.ExternalReaderPath))
+            {
+                Process.Start(appSettings.ExternalReaderPath, $@"""{Book.Path}""");
+            }
+        }
+
 
         private async void HandleExport()
         {

@@ -136,6 +136,11 @@
     </UserControl.Triggers>
     <UserControl.ContextMenu>
         <ContextMenu>
+            <MenuItem Command="{Binding OpenInReaderCommand}">
+                <MenuItem.Header>
+                    <TextBlock Style="{StaticResource MenuHeader}" Text="OPEN" />
+                </MenuItem.Header>
+            </MenuItem>
             <MenuItem Command="{Binding ExportCommand}">
                 <MenuItem.Header>
                     <TextBlock Style="{StaticResource MenuHeader}" Text="EXPORT" />

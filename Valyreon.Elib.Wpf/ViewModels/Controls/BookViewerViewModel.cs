@@ -86,7 +86,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 return;
             }
 
-            foreach (var book in message.Books)
+            var toRemove = message.Books.Select(b => Books.Single(bv => bv.Book == b));
+            foreach (var book in toRemove)
             {
                 Books.Remove(book);
             }
@@ -124,6 +125,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 Filter = Filter with { Ascending = value };
             }
         }
+
         public ICommand BackCommand => new RelayCommand(Back);
 
         public ICommand SortDirectionChangedCommand => new RelayCommand<bool>(HandleSortDirectionChange);
@@ -143,7 +145,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             Selector.Instance.SelectIds(results);
             foreach (var item in Books)
             {
-                Selector.Instance.SetMarked(item);
+                Selector.Instance.SetMarked(item.Book);
             }
         }
 
@@ -157,11 +159,11 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             Selector.Instance.DeselectIds(results);
             foreach (var item in Books)
             {
-                Selector.Instance.SetMarked(item);
+                Selector.Instance.SetMarked(item.Book);
             }
         }
 
-        public ObservableCollection<Book> Books { get => books; set => Set(() => Books, ref books, value); }
+        public ObservableCollection<BookTileViewModel> Books { get => books; set => Set(() => Books, ref books, value); }
 
         public ICommand LoadMoreCommand => new RelayCommand(LoadMore);
 
@@ -236,8 +238,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             }
 
             var lastSelectedId = Selector.Instance.LastSelectedId;
-            var lastSelectedIndex = Selector.Instance.LastSelectedId == 0 ? 0 : Books.IndexOf(Books.Single(b => b.Id == lastSelectedId));
-            var currentIndex = Books.IndexOf(message.Book);
+            var lastSelectedIndex = Selector.Instance.LastSelectedId == 0 ? 0 : Books.IndexOf(Books.Single(b => b.Book.Id == lastSelectedId));
+            var currentIndex = Books.Select(b => b.Book).ToList().IndexOf(message.Book);
 
             var ascIndexArray = new int[2];
             ascIndexArray[0] = currentIndex > lastSelectedIndex ? lastSelectedIndex : currentIndex;
@@ -245,9 +247,9 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             Enumerable.Range(ascIndexArray[0], ascIndexArray[1])
                 .Select(i => Books.ElementAt(i))
-                .Where(b => !b.IsMarked)
+                .Where(b => !b.Book.IsMarked)
                 .ToList()
-                .ForEach(b => Selector.Instance.Select(b));
+                .ForEach(b => Selector.Instance.Select(b.Book));
 
             Selector.Instance.LastSelectedId = lastSelectedId;
         }
@@ -280,7 +282,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             foreach (var book in results)
             {
-                Books.Add(book);
+                Books.Add(new BookTileViewModel(book));
                 await book.LoadBookAsync(uow);
                 Selector.Instance.SetMarked(book);
                 await Task.Delay(5);
@@ -294,9 +296,9 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         private int statusComboBoxSelectedIndex;
         private int sortComboBoxSelectedIndex;
         private bool isAscendingSortDirection;
-        private ObservableCollection<Book> books = new();
+        private ObservableCollection<BookTileViewModel> books = new();
 
-        public async void Refresh()
+        public void Refresh()
         {
             if (isLoading)
             {
@@ -305,11 +307,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             isLoading = true;
             ScrollVertical = 0;
             Books = new();
-
-            using (var uow = await App.UnitOfWorkFactory.CreateAsync())
-            {
-                uow.ClearCache();
-            }
 
             UpdateSubcaption();
             LoadMore();

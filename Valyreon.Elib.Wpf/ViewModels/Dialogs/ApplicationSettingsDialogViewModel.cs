@@ -2,7 +2,9 @@ using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
 using System.Windows.Input;
+using Valyreon.Elib.Domain;
 using Valyreon.Elib.Mvvm;
 using Valyreon.Elib.Wpf.Interfaces;
 using Valyreon.Elib.Wpf.Messages;
@@ -45,11 +47,18 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
         }
 
         private bool scanAzw;
+        private string externalReaderPath;
 
         public bool ScanAzw
         {
             get => scanAzw;
             set => Set(() => ScanAzw, ref scanAzw, value);
+        }
+
+        public string ExternalReaderPath
+        {
+            get => externalReaderPath;
+            set => Set(() => ExternalReaderPath, ref externalReaderPath, value);
         }
 
         public ObservableCollection<SourcePath> SourcePaths { get; set; }
@@ -81,12 +90,33 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
             {
                 ScanAzw = true;
             }
+
+            ExternalReaderPath = properties.ExternalReaderPath;
         }
 
         public ICommand AddSourceCommand => new RelayCommand(HandleAddSource);
         public ICommand RemoveSourceCommand => new RelayCommand(HandleRemoveSource);
         public ICommand SaveCommand => new RelayCommand(Save);
         public ICommand CancelCommand => new RelayCommand(Close);
+        public ICommand ChooseExternalReaderCommand => new RelayCommand(HandleChooseExternalReader);
+
+        private void HandleChooseExternalReader()
+        {
+            using var dlg = new OpenFileDialog
+            {
+                CheckFileExists = true,
+                CheckPathExists = true,
+                FilterIndex = 0,
+                Multiselect = false,
+                InitialDirectory = Environment.ExpandEnvironmentVariables("%ProgramW6432%")
+        };
+
+            var result = dlg.ShowDialog();
+            if (result == DialogResult.OK && dlg.FileName != null)
+            {
+                ExternalReaderPath = dlg.FileName;
+            }
+        }
 
         private void HandleScan()
         {
@@ -125,7 +155,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
             {
                 ScanAtStartup = ScanAtStartup,
                 Sources = SourcePaths.ToList(),
-                Formats = new()
+                Formats = new(),
+                ExternalReaderPath = ExternalReaderPath
             };
 
             if (ScanEpub)
@@ -149,10 +180,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
             }
 
             ApplicationData.SaveProperties(newProperties);
-            Close();
-
-            MessengerInstance.Send(new ScanForNewBooksMessage());
             MessengerInstance.Send(new AppSettingsChangedMessage());
+            MessengerInstance.Send(new ShowNotificationMessage("Application settings saved.", NotificationType.Success));
         }
     }
 }

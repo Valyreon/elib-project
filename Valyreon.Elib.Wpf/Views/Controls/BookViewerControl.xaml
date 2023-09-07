@@ -246,7 +246,7 @@
                 </ItemsControl.ContextMenu>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <TileComponents1:BookTileControl Margin="5" DataContext="{Binding ., Converter={StaticResource BookToTileViewModelConverter}}" />
+                        <TileComponents1:BookTileControl Margin="5" DataContext="{Binding .}" />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
                 <ItemsControl.Template>

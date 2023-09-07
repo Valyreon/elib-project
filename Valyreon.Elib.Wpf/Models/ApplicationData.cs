@@ -59,6 +59,7 @@ namespace Valyreon.Elib.Wpf.Models
     {
         public List<SourcePath> Sources { get; set; } = new List<SourcePath>();
         public bool ScanAtStartup { get; set; } = true;
+        public string ExternalReaderPath { get; set; }
         public List<string> Formats { get; set; } = new List<string> { ".epub", ".mobi" };
     }
 

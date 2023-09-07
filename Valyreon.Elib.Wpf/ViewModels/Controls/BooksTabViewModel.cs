@@ -80,10 +80,9 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         public IViewer CurrentViewer => currentViewer;
 
-        private async void SetCurrentViewer(IViewer value)
+        private void SetCurrentViewer(IViewer value)
         {
-            using var uow = await App.UnitOfWorkFactory.CreateAsync();
-            uow.ClearCache();
+            UnitOfWork.ClearCache();
             CurrentViewer?.Dispose();
             value.Back = history.Count > 0 ? GoToPreviousViewer : null;
             Set(() => CurrentViewer, ref currentViewer, value);
