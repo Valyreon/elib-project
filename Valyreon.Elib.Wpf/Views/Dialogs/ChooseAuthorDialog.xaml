@@ -30,36 +30,20 @@
             </Behaviors:Interaction.Triggers>
         </Components:ElibTextBox>
 
-        <Border
+
+        <ListBox
+            x:Name="grid"
+            Height="400"
+            MinWidth="400"
             Margin="0,0,0,15"
-            Background="LightGray"
+            AlternationCount="2"
             BorderBrush="LightGray"
-            BorderThickness="1">
-            <DataGrid
-                x:Name="grid"
-                Height="400"
-                MinWidth="400"
-                AlternationCount="2"
-                AutoGenerateColumns="False"
-                CanUserResizeRows="False"
-                Focusable="True"
-                IsReadOnly="True"
-                ItemsSource="{Binding ShownAuthors}"
-                SelectedItem="{Binding SelectedItem, UpdateSourceTrigger=PropertyChanged}"
-                SelectionMode="Single">
-                <DataGrid.Columns>
-                    <DataGridTextColumn
-                        MinWidth="400"
-                        Binding="{Binding Name}"
-                        Header="NAME" />
-                </DataGrid.Columns>
-                <DataGrid.Resources>
-                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="CornflowerBlue" />
-                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="CornflowerBlue" />
-                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
-                </DataGrid.Resources>
-            </DataGrid>
-        </Border>
+            DisplayMemberPath="Name"
+            Focusable="True"
+            FontSize="13"
+            ItemsSource="{Binding ShownAuthors}"
+            SelectedItem="{Binding SelectedItem, UpdateSourceTrigger=PropertyChanged}"
+            SelectionMode="Single" />
 
         <Grid>
             <Grid.ColumnDefinitions>

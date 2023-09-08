@@ -10,33 +10,15 @@ namespace Valyreon.Elib.Wpf.Models
     public class Selector
     {
         private static readonly object key = new object();
-        private static Selector instance;
 
         private readonly HashSet<int> selectedBookIds;
 
-        private Selector()
+        public Selector()
         {
             selectedBookIds = new HashSet<int>();
         }
 
         public event Action SelectionChanged;
-
-        public static Selector Instance
-        {
-            get
-            {
-                // double checked locking
-                if (instance == null)
-                {
-                    lock (key)
-                    {
-                        instance ??= new Selector();
-                    }
-                }
-
-                return instance;
-            }
-        }
 
         public int Count => selectedBookIds.Count;
 
@@ -46,7 +28,7 @@ namespace Valyreon.Elib.Wpf.Models
 
         public async Task<IList<Book>> GetSelectedBooks(IUnitOfWork uow)
         {
-            var result = await uow.BookRepository.FindAsync(Instance.SelectedIds);
+            var result = await uow.BookRepository.FindAsync(SelectedIds);
             return result.ToList();
         }
 

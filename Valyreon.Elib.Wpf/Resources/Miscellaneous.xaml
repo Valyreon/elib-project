@@ -51,7 +51,7 @@
                     <Border
                         x:Name="border"
                         Background="{TemplateBinding Background}"
-                        BorderBrush="WhiteSmoke"
+                        BorderBrush="#aaa"
                         BorderThickness="1"
                         CornerRadius="1">
                         <Grid x:Name="theGrid">
@@ -66,7 +66,7 @@
                             <Setter Property="Foreground" Value="{StaticResource AccentColorBrush}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="border" Property="BorderBrush" Value="Gray" />
+                            <Setter TargetName="border" Property="BorderBrush" Value="#666" />
                             <Setter Property="Foreground" Value="Gray" />
                         </Trigger>
                         <EventTrigger RoutedEvent="MouseEnter">
@@ -99,6 +99,7 @@
 
     <Style TargetType="{x:Type CheckBox}">
         <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FontSize" Value="13" />
         <Setter Property="Background" Value="White" />
         <Setter Property="Template">
             <Setter.Value>
@@ -108,7 +109,7 @@
                             x:Name="border"
                             Width="18"
                             Height="18"
-                            Margin="3,3,5,3"
+                            Margin="3,3,8,3"
                             VerticalAlignment="Center"
                             Background="{TemplateBinding Background}"
                             BorderBrush="#ccc"
@@ -210,25 +211,27 @@
 
     <Style x:Key="DarkCheckBox" TargetType="{x:Type CheckBox}">
         <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FontSize" Value="13" />
         <Setter Property="Foreground" Value="WhiteSmoke" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type CheckBox}">
                     <StackPanel Orientation="Horizontal">
                         <Border
                             x:Name="border"
-                            Width="22"
-                            Height="22"
-                            Margin="3,3,5,3"
+                            Width="18"
+                            Height="18"
+                            Margin="3,3,8,3"
                             VerticalAlignment="Center"
-                            Background="Transparent"
-                            BorderBrush="WhiteSmoke"
+                            Background="#222"
+                            BorderBrush="#888"
                             BorderThickness="1"
                             CornerRadius="1">
                             <Image
                                 x:Name="img"
-                                Width="16"
-                                Height="16"
+                                Width="14"
+                                Height="14"
                                 RenderTransformOrigin="0.5,0.5"
                                 Source="{StaticResource CheckboxCheck}"
                                 Stretch="Uniform">
@@ -350,52 +353,7 @@
         <Setter Property="Background" Value="#222" />
         <Setter Property="PlaceholderForeground" Value="#777" />
         <Setter Property="PlaceholderForegroundFocused" Value="#444" />
-        <Setter Property="BorderBrush" Value="WhiteSmoke" />
-    </Style>
-
-    <Style TargetType="{x:Type ListBoxItem}">
-        <Style.Resources>
-            <!--  Use your own colors here if you want, or do it per class  -->
-            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="CornflowerBlue" />
-            <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="CornflowerBlue" />
-        </Style.Resources>
-
-        <Setter Property="Template">
-            <!--  Revert the Template in Windows 10 to match the Windows 7 template that used "SystemColors.HighlightBrushKey" and such  -->
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                    <Border
-                        x:Name="Bd"
-                        Padding="{TemplateBinding Padding}"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        SnapsToDevicePixels="true">
-                        <ContentPresenter
-                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsSelected" Value="true">
-                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
-                            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" />
-                        </Trigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="IsSelected" Value="true" />
-                                <Condition Property="Selector.IsSelectionActive" Value="false" />
-                            </MultiTrigger.Conditions>
-                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightBrushKey}}" />
-                            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}}" />
-                        </MultiTrigger>
-                        <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
+        <Setter Property="BorderBrush" Value="#888" />
     </Style>
 
     <Style TargetType="{x:Type MenuItem}">
@@ -413,6 +371,118 @@
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type ListBox}">
+        <Setter Property="ItemContainerStyle">
+            <Setter.Value>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Template">
+                        <!--  Revert the Template in Windows 10 to match the Windows 7 template that used "SystemColors.HighlightBrushKey" and such  -->
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                <Border
+                                    x:Name="Bd"
+                                    Padding="{TemplateBinding Padding}"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    SnapsToDevicePixels="true">
+                                    <ContentPresenter
+                                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                        SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="true">
+                                        <Setter TargetName="Bd" Property="Background" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
+                                        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" />
+                                    </Trigger>
+                                    <MultiTrigger>
+                                        <MultiTrigger.Conditions>
+                                            <Condition Property="IsSelected" Value="true" />
+                                            <Condition Property="Selector.IsSelectionActive" Value="false" />
+                                        </MultiTrigger.Conditions>
+                                        <Setter TargetName="Bd" Property="Background" Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightBrushKey}}" />
+                                        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}}" />
+                                    </MultiTrigger>
+                                    <Trigger Property="IsEnabled" Value="false">
+                                        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                            <Setter Property="Control.Background" Value="White" />
+                        </Trigger>
+                        <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                            <Setter Property="Control.Background" Value="#efefef" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="DarkListBox" TargetType="{x:Type ListBox}">
+        <Setter Property="Background" Value="#222" />
+        <Setter Property="BorderBrush" Value="#888" />
+        <Setter Property="ItemContainerStyle">
+            <Setter.Value>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Background" Value="#222" />
+                    <Setter Property="Foreground" Value="White" />
+                    <Setter Property="BorderThickness" Value="0" />
+                    <Setter Property="FontSize" Value="13" />
+                    <Setter Property="Template">
+                        <!--  Revert the Template in Windows 10 to match the Windows 7 template that used "SystemColors.HighlightBrushKey" and such  -->
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                <Border
+                                    x:Name="Bd"
+                                    Padding="{TemplateBinding Padding}"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    SnapsToDevicePixels="true">
+                                    <ContentPresenter
+                                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                        SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="true">
+                                        <Setter TargetName="Bd" Property="Background" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
+                                        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" />
+                                    </Trigger>
+                                    <MultiTrigger>
+                                        <MultiTrigger.Conditions>
+                                            <Condition Property="IsSelected" Value="true" />
+                                            <Condition Property="Selector.IsSelectionActive" Value="false" />
+                                        </MultiTrigger.Conditions>
+                                        <Setter TargetName="Bd" Property="Background" Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightBrushKey}}" />
+                                        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}}" />
+                                    </MultiTrigger>
+                                    <Trigger Property="IsEnabled" Value="false">
+                                        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                            <Setter Property="Control.Background" Value="#222" />
+                        </Trigger>
+                        <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                            <Setter Property="Control.Background" Value="#262626" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
             </Setter.Value>
         </Setter>
     </Style>

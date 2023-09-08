@@ -97,7 +97,7 @@
                                     Background="White"
                                     BorderBrush="#aaa"
                                     BorderThickness="1"
-                                    CornerRadius="4">
+                                    CornerRadius="2">
                                     <ScrollViewer Margin="2" SnapsToDevicePixels="True">
                                         <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
                                     </ScrollViewer>
@@ -116,7 +116,7 @@
                             <Setter Property="ScrollViewer.CanContentScroll" Value="false" />
                         </Trigger>
                         <Trigger SourceName="Popup" Property="Popup.AllowsTransparency" Value="true">
-                            <Setter TargetName="DropDownBorder" Property="CornerRadius" Value="0" />
+                            <Setter TargetName="DropDownBorder" Property="CornerRadius" Value="2" />
                             <Setter TargetName="DropDownBorder" Property="Margin" Value="0,2,0,0" />
                         </Trigger>
                         <Trigger Property="IsEditable" Value="true">

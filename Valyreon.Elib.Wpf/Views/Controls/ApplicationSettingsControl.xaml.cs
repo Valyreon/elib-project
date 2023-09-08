@@ -1,13 +1,13 @@
 using System.Windows.Controls;
 
-namespace Valyreon.Elib.Wpf.Views.Dialogs
+namespace Valyreon.Elib.Wpf.Views.Controls
 {
     /// <summary>
     /// Interaction logic for ApplicationSettingsDialog.xaml
     /// </summary>
-    public partial class ApplicationSettingsDialog : UserControl
+    public partial class ApplicationSettingsControl : UserControl
     {
-        public ApplicationSettingsDialog()
+        public ApplicationSettingsControl()
         {
             InitializeComponent();
         }

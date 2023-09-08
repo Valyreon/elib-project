@@ -59,7 +59,7 @@
                         Visibility="{Binding Book.IsFileMissing, Converter={StaticResource BoolToVisibilityConverter}}" />
                 </Grid>
             </Border>
-            <Grid Margin="0,0,0,10">
+            <Grid Margin="0,0,0,15">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition Width="5" />
@@ -85,33 +85,64 @@
                     IsChecked="{Binding IsBookFavorite}"
                     Text="Favorite" />
             </Grid>
-            <Button
-                Height="30"
-                Margin="0,0,0,5"
-                Background="#222"
-                Command="{Binding EditButtonCommand}"
-                Content="EDIT"
-                Focusable="True"
-                FontSize="12"
-                Style="{StaticResource FlyoutButton}" />
 
-            <Button
-                Height="30"
-                Margin="0,0,0,5"
-                Command="{Binding ShowFileInfoCommand}"
-                Content="FILE INFO"
-                Focusable="True"
-                FontSize="12"
-                Style="{StaticResource FlyoutButton}" />
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="5" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition Height="5" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
 
-            <Button
-                Height="30"
-                Command="{Binding ExportButtonCommand}"
-                Content="EXPORT"
-                Focusable="True"
-                FontSize="12"
-                IsEnabled="{Binding Book.IsFileMissing, Converter={StaticResource BoolToInverseConverter}}"
-                Style="{StaticResource FlyoutButton}" />
+                <Button
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Height="30"
+                    Command="{Binding OpenBookCommand}"
+                    Content="OPEN"
+                    Focusable="True"
+                    FontSize="12"
+                    IsEnabled="{Binding IsExternalReaderSpecified}"
+                    Style="{StaticResource FlyoutButton}" />
+
+                <Button
+                    Grid.Row="0"
+                    Grid.Column="2"
+                    Height="30"
+                    Background="#222"
+                    Command="{Binding EditButtonCommand}"
+                    Content="EDIT"
+                    Focusable="True"
+                    FontSize="12"
+                    Style="{StaticResource FlyoutButton}" />
+
+                <Button
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Height="30"
+                    Command="{Binding ShowFileInfoCommand}"
+                    Content="FILE INFO"
+                    Focusable="True"
+                    FontSize="12"
+                    Style="{StaticResource FlyoutButton}" />
+
+                <Button
+                    Grid.Row="2"
+                    Grid.Column="2"
+                    Height="30"
+                    Command="{Binding ExportButtonCommand}"
+                    Content="EXPORT"
+                    Focusable="True"
+                    FontSize="12"
+                    IsEnabled="{Binding Book.IsFileMissing, Converter={StaticResource BoolToInverseConverter}}"
+                    Style="{StaticResource FlyoutButton}" />
+
+
+            </Grid>
         </StackPanel>
         <StackPanel Grid.Column="2" Orientation="Vertical">
             <TextBlock

@@ -135,7 +135,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                     result = book;
                 });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 result = new Book
                 {

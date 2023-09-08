@@ -25,7 +25,7 @@
             x:Name="filter"
             Margin="0,0,0,5"
             VerticalContentAlignment="Center"
-            Placeholder="Filter authors"
+            Placeholder="Filter series"
             Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}">
             <Behaviors:Interaction.Triggers>
                 <Behaviors:EventTrigger EventName="TextChanged" SourceName="filter">
@@ -34,32 +34,19 @@
             </Behaviors:Interaction.Triggers>
         </Components:ElibTextBox>
 
-        <Border
+
+        <ListBox
+            x:Name="grid"
+            Height="400"
+            MinWidth="400"
             Margin="0,0,0,15"
-            Background="LightGray"
-            BorderBrush="LightGray"
-            BorderThickness="1">
-            <DataGrid
-                x:Name="grid"
-                Height="400"
-                MinWidth="400"
-                AlternationCount="2"
-                AutoGenerateColumns="False"
-                CanUserResizeRows="False"
-                Focusable="True"
-                IsReadOnly="True"
-                ItemsSource="{Binding ShownSeries}"
-                SelectedItem="{Binding SelectedItem, UpdateSourceTrigger=PropertyChanged}"
-                SelectionMode="Single">
-                <DataGrid.Columns>
-                    <DataGridTextColumn
-                        Width="*"
-                        MinWidth="400"
-                        Binding="{Binding Name}"
-                        Header="NAME" />
-                </DataGrid.Columns>
-            </DataGrid>
-        </Border>
+            AlternationCount="2"
+            DisplayMemberPath="Name"
+            Focusable="True"
+            FontSize="13"
+            ItemsSource="{Binding ShownSeries}"
+            SelectedItem="{Binding SelectedItem, UpdateSourceTrigger=PropertyChanged}"
+            SelectionMode="Single" />
 
         <Grid Grid.Row="4">
             <Grid.ColumnDefinitions>

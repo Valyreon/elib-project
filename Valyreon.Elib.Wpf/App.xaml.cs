@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using Valyreon.Elib.DataLayer;
 using Valyreon.Elib.Wpf.Models;
+using Valyreon.Elib.Wpf.ViewModels.Windows;
+using Valyreon.Elib.Wpf.Views.Windows;
 
 namespace Valyreon.Elib.Wpf
 {
@@ -39,6 +41,15 @@ namespace Valyreon.Elib.Wpf
 #if TEST
             FreeConsole();
 #endif
+            foreach (Window window in Current.Windows)
+            {
+                if (window is TheWindow)
+                {
+                    var viewModel = window.DataContext as TheWindowViewModel;
+                    window.DataContext = null;
+                    viewModel.Dispose();
+                }
+            }
         }
 
         private void SetupExceptionHandling()

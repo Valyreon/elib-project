@@ -136,7 +136,7 @@
     </UserControl.Triggers>
     <UserControl.ContextMenu>
         <ContextMenu>
-            <MenuItem Command="{Binding OpenInReaderCommand}">
+            <MenuItem Command="{Binding OpenInReaderCommand}" Visibility="{Binding IsExternalReaderSpecified, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <MenuItem.Header>
                     <TextBlock Style="{StaticResource MenuHeader}" Text="OPEN" />
                 </MenuItem.Header>

@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
-using Valyreon.Elib.Mvvm;
 
 namespace Valyreon.Elib.Wpf.Models
 {
@@ -46,7 +46,14 @@ namespace Valyreon.Elib.Wpf.Models
 
         public static ApplicationProperties GetProperties()
         {
-            return JsonSerializer.Deserialize<ApplicationProperties>(File.ReadAllText(PropertiesPath));
+            try
+            {
+                return JsonSerializer.Deserialize<ApplicationProperties>(File.ReadAllText(PropertiesPath));
+            }
+            catch (Exception)
+            {
+                return new ApplicationProperties();
+            }
         }
 
         public static void SaveProperties(ApplicationProperties properties)
@@ -55,29 +62,33 @@ namespace Valyreon.Elib.Wpf.Models
         }
     }
 
-    public class ApplicationProperties
+    public record ApplicationProperties
     {
         public List<SourcePath> Sources { get; set; } = new List<SourcePath>();
         public bool ScanAtStartup { get; set; } = true;
         public string ExternalReaderPath { get; set; }
+        public bool RememberFilterInNextView { get; set; } = false;
+        public bool AutomaticallyImportWithFoundISBN { get; set; } = true;
         public List<string> Formats { get; set; } = new List<string> { ".epub", ".mobi" };
+
+        public bool IsExternalReaderSpecifiedAndValid()
+        {
+            return !string.IsNullOrWhiteSpace(ExternalReaderPath) && File.Exists(ExternalReaderPath);
+        }
+
+        // override copy constructor for record
+        protected ApplicationProperties(ApplicationProperties other)
+        {
+            ScanAtStartup = other.ScanAtStartup;
+            ExternalReaderPath = other.ExternalReaderPath;
+            Formats = other.Formats.ToList();
+            Sources = other.Sources.Select(s => s with { }).ToList();
+        }
     }
 
-    public class SourcePath : ObservableObject
+    public record SourcePath
     {
-        private string path;
-        private bool recursiveScan;
-
-        public string Path
-        {
-            get => path;
-            set => Set(() => Path, ref path, value);
-        }
-
-        public bool RecursiveScan
-        {
-            get => recursiveScan;
-            set => Set(() => RecursiveScan, ref recursiveScan, value);
-        }
+        public string Path { get; set; }
+        public bool RecursiveScan { get; set; }
     }
 }

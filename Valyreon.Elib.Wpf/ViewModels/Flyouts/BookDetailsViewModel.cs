@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -20,10 +21,16 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
     {
         private ObservableCollection<ObservableEntity> collectionSuggestions;
         private IEnumerable<UserCollection> allUserCollections;
+        private bool isExternalReaderSpecified;
 
-        public BookDetailsViewModel(Book book)
+        public BookDetailsViewModel(Book book, ApplicationProperties properties)
         {
             Book = book;
+            Properties = properties;
+
+            IsExternalReaderSpecified = Properties.IsExternalReaderSpecifiedAndValid();
+
+            MessengerInstance.Register<AppSettingsChangedMessage>(this, _ => IsExternalReaderSpecified = Properties.IsExternalReaderSpecifiedAndValid());
         }
 
         public ObservableCollection<ObservableEntity> CollectionSuggestions
@@ -31,6 +38,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             get => collectionSuggestions;
             set => Set(() => CollectionSuggestions, ref collectionSuggestions, value);
         }
+
+        public bool IsExternalReaderSpecified { get => isExternalReaderSpecified; set => Set(() => IsExternalReaderSpecified, ref isExternalReaderSpecified, value); }
 
         public ICommand AddCollectionCommand => new RelayCommand<string>(AddCollection);
 
@@ -50,6 +59,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
         }
 
         public Book Book { get; }
+        public ApplicationProperties Properties { get; }
 
         public ICommand EditButtonCommand => new RelayCommand(HandleEditButton);
 
@@ -102,6 +112,15 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
         }
 
         public ICommand RemoveCollectionCommand => new RelayCommand<UserCollection>(RemoveCollection);
+        public ICommand OpenBookCommand => new RelayCommand(HandleOpenBook);
+
+        private void HandleOpenBook()
+        {
+            if (Properties.IsExternalReaderSpecifiedAndValid())
+            {
+                Process.Start(Properties.ExternalReaderPath, $@"""{Book.Path}""");
+            }
+        }
 
         private void GoToCollection(UserCollection obj)
         {

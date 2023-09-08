@@ -40,13 +40,13 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
         {
             if (EditBookForm.UpdateBook())
             {
-                MessengerInstance.Send(new OpenFlyoutMessage(new BookDetailsViewModel(Book)));
+                MessengerInstance.Send(new OpenBookDetailsFlyoutMessage(Book));
             }
         }
 
         private void HandleCancel()
         {
-            MessengerInstance.Send(new OpenFlyoutMessage(new BookDetailsViewModel(Book)));
+            MessengerInstance.Send(new OpenBookDetailsFlyoutMessage(Book));
         }
     }
 }

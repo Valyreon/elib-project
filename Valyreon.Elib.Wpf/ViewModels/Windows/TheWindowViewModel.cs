@@ -12,7 +12,6 @@ using Valyreon.Elib.Wpf.Models;
 using Valyreon.Elib.Wpf.Services;
 using Valyreon.Elib.Wpf.Themes.CustomComponents.Controls;
 using Valyreon.Elib.Wpf.ViewModels.Controls;
-using Valyreon.Elib.Wpf.ViewModels.Dialogs;
 using Valyreon.Elib.Wpf.ViewModels.Flyouts;
 using Timer = System.Timers.Timer;
 
@@ -22,10 +21,11 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
     {
         private IFlyoutPanel flyoutControl;
         private ITabViewModel selectedTab;
+        private readonly ApplicationProperties applicationProperties = ApplicationData.GetProperties();
 
         private readonly Queue<ShowNotificationMessage> messages = new();
         private readonly Timer notificationTimer = new();
-        private ElibFileSystemWatcher fileSystemWatcher = new ElibFileSystemWatcher();
+        private ElibFileSystemWatcher fileSystemWatcher;
 
         public ShowNotificationMessage CurrentNotificationMessage
         {
@@ -40,12 +40,15 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
             notificationTimer.Interval = 3000;
             notificationTimer.Elapsed += HandleNextNotification;
 
+            fileSystemWatcher = new(applicationProperties);
+
             MessengerInstance.Register<AppSettingsChangedMessage>(this, _ =>
             {
                 fileSystemWatcher.Dispose();
-                fileSystemWatcher = new ElibFileSystemWatcher();
+                fileSystemWatcher = new ElibFileSystemWatcher(applicationProperties);
             });
             MessengerInstance.Register<OpenFlyoutMessage>(this, m => HandleOpenFlyout(m.ViewModel));
+            MessengerInstance.Register<OpenBookDetailsFlyoutMessage>(this, m => HandleOpenFlyout(new BookDetailsViewModel(m.Book, applicationProperties)));
             MessengerInstance.Register<ShowNotificationMessage>(this, HandleShowNotification);
             MessengerInstance.Register(this, (ShowDialogMessage m) =>
             {
@@ -63,9 +66,9 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
 
             Tabs = new ObservableCollection<ITabViewModel>
             {
-                new BooksTabViewModel(),
+                new BooksTabViewModel(applicationProperties),
                 new QuotesTabViewModel(),
-                new SettingsTabViewModel()
+                new ApplicationSettingsViewModel(applicationProperties)
             };
             SelectedTab = Tabs[0];
 
@@ -110,7 +113,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
 
         public ICommand EscKeyCommand => new RelayCommand(ProcessEscKey);
         public ICommand CloseFlyoutCommand => new RelayCommand(() => FlyoutControl = null);
-        public ICommand OpenSettingsCommand => new RelayCommand(() => MessengerInstance.Send(new ShowDialogMessage(new ApplicationSettingsDialogViewModel())));
         public ICommand ScanForNewContentCommand => new RelayCommand(HandleScanForNewBooks);
         public ICommand RefreshViewCommand => new RelayCommand(HandleRefreshView);
 
@@ -158,7 +160,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
         private async void HandleScanForNewBooks()
         {
             using var uow = await App.UnitOfWorkFactory.CreateAsync();
-            var importer = new ImportService(uow);
+            var importer = new ImportService(uow, applicationProperties);
             var newBookPaths = (await importer.ImportAsync()).ToList();
 
             if (!newBookPaths.Any())

@@ -84,8 +84,8 @@
                         <Trigger Property="IsChecked" Value="True">
                             <Trigger.Setters>
                                 <Setter TargetName="CheckImage" Property="Source" Value="{Binding Path=ImageChecked, RelativeSource={RelativeSource AncestorType={x:Type Components:CheckboxButton}}}" />
-                                <Setter TargetName="Label" Property="Foreground" Value="WhiteSmoke" />
-                                <Setter TargetName="Enveloper" Property="BorderBrush" Value="WhiteSmoke" />
+                                <Setter TargetName="Label" Property="Foreground" Value="White" />
+                                <Setter TargetName="Enveloper" Property="BorderBrush" Value="#bbb" />
                             </Trigger.Setters>
                         </Trigger>
                         <Trigger Property="IsChecked" Value="False">

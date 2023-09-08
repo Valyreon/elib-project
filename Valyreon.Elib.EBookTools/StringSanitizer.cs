@@ -10,7 +10,7 @@ namespace Valyreon.Elib.EBookTools
     {
         public static string Clean(this string str, bool clearNewLines = true, bool clearForPath = true)
         {
-            if (str == null)
+            if (string.IsNullOrWhiteSpace(str))
             {
                 return null;
             }

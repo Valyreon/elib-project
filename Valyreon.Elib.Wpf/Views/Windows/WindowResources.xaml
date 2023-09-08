@@ -29,6 +29,9 @@
     <DataTemplate DataType="{x:Type ControlViewModels:EditBookFormViewModel}">
         <ControlViews:EditBookFormControl />
     </DataTemplate>
+    <DataTemplate DataType="{x:Type ControlViewModels:ApplicationSettingsViewModel}">
+        <ControlViews:ApplicationSettingsControl />
+    </DataTemplate>
 
     <DataTemplate DataType="{x:Type ControlViewModels:BookTileViewModel}">
         <ControlViews:BookTileControl />
@@ -56,9 +59,6 @@
     </DataTemplate>
     <DataTemplate DataType="{x:Type DialogViewModels:ChooseSeriesDialogViewModel}">
         <DialogViews:ChooseSeriesDialog />
-    </DataTemplate>
-    <DataTemplate DataType="{x:Type DialogViewModels:ApplicationSettingsDialogViewModel}">
-        <DialogViews:ApplicationSettingsDialog />
     </DataTemplate>
     <DataTemplate DataType="{x:Type DialogViewModels:FilterOptionsDialogViewModel}">
         <DialogViews:FilterOptionsDialog />

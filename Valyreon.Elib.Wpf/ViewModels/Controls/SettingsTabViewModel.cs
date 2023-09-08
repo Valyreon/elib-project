@@ -1,5 +1,4 @@
 using Valyreon.Elib.Mvvm;
-using Valyreon.Elib.Wpf.ViewModels.Dialogs;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Controls
 {
@@ -11,7 +10,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         public SettingsTabViewModel()
         {
-            SettingsContent = new ApplicationSettingsDialogViewModel();
+            //SettingsContent = new ApplicationSettingsViewModel();
         }
     }
 }

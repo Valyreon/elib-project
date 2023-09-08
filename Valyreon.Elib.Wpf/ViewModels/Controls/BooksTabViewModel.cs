@@ -1,7 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using Valyreon.Elib.DataLayer;
 using Valyreon.Elib.DataLayer.Filters;
@@ -11,22 +10,25 @@ using Valyreon.Elib.Wpf.BindingItems;
 using Valyreon.Elib.Wpf.CustomDataStructures;
 using Valyreon.Elib.Wpf.Messages;
 using Valyreon.Elib.Wpf.Models;
+using Valyreon.Elib.Wpf.Services;
+using Valyreon.Elib.Wpf.ViewModels.Flyouts;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Controls
 {
     public class BooksTabViewModel : ViewModelBase, ITabViewModel
     {
-        private bool rememberFilterInNextView;
         private readonly PaneMainItem selectedMainItem;
         private readonly ViewerHistory history = new();
         private string caption = "Books";
         private IViewer currentViewer;
-
+        private readonly Selector selector = new Selector();
+        private readonly ApplicationProperties applicationProperties;
         private UserCollection selectedCollection;
         private PaneMainItem selectedMainPaneItem;
 
-        public BooksTabViewModel()
+        public BooksTabViewModel(ApplicationProperties applicationProperties)
         {
+            this.applicationProperties = applicationProperties;
             selectedMainItem = new PaneMainItem("Selected", "Selected Books", new BookFilter { Selected = true });
 
             MessengerInstance.Register<AuthorSelectedMessage>(this, HandleAuthorSelection);
@@ -46,12 +48,11 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             SelectedMainPaneItem = MainPaneItems[0];
             CollectionsRefreshHandler(null);
 
-            Selector.Instance.SelectionChanged += HandleSelectionChanged;
+            selector.SelectionChanged += HandleSelectionChanged;
         }
 
         private void HandleSelectionChanged()
         {
-            var selector = Selector.Instance;
             if (selector.Count > 0 && !MainPaneItems.Contains(selectedMainItem))
             {
                 MainPaneItems.Add(selectedMainItem);
@@ -134,7 +135,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 CollectionId = selectedCollection.Id
             };
 
-            var newViewer = new BookViewerViewModel(filter)
+            var newViewer = new BookViewerViewModel(filter, selector, applicationProperties)
             {
                 Caption = $"Collection {selectedCollection.Tag}"
             };
@@ -164,7 +165,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             BookFilter filter = null;
 
-            if (rememberFilterInNextView && CurrentViewer.GetFilter() is BookFilter bFilter)
+            if (applicationProperties.RememberFilterInNextView && CurrentViewer.GetFilter() is BookFilter bFilter)
             {
                 filter = bFilter with { AuthorId = obj.Author.Id };
             }
@@ -173,7 +174,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 filter = new BookFilter { AuthorId = obj.Author.Id };
             }
 
-            var newViewer = new BookViewerViewModel(filter)
+            var newViewer = new BookViewerViewModel(filter, selector, applicationProperties)
             {
                 Caption = viewerCaption,
                 Back = GoToPreviousViewer
@@ -197,7 +198,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             BookFilter filter = null;
 
-            if (rememberFilterInNextView && CurrentViewer.GetFilter() is BookFilter bFilter)
+            if (applicationProperties.RememberFilterInNextView && CurrentViewer.GetFilter() is BookFilter bFilter)
             {
                 filter = bFilter with { SeriesId = obj.Series.Id };
             }
@@ -208,7 +209,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             history.Push(CurrentViewer.GetCloneFunction());
 
-            SetCurrentViewer(new BookViewerViewModel(filter) { Caption = viewerCaption, Back = GoToPreviousViewer });
+            SetCurrentViewer(new BookViewerViewModel(filter, selector, applicationProperties) { Caption = viewerCaption, Back = GoToPreviousViewer });
         }
 
         public ICommand PaneSelectionChangedCommand => new RelayCommand(PaneSelectionChanged);
@@ -236,8 +237,25 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             }
             else
             {
-                SetCurrentViewer(new BookViewerViewModel(filter) { Caption = selectedMainPaneItem.ViewerCaption });
+                SetCurrentViewer(new BookViewerViewModel(filter, selector, applicationProperties) { Caption = selectedMainPaneItem.ViewerCaption });
             }
+        }
+
+        public ICommand ImportCommand => new RelayCommand(HandleImport);
+
+        private async void HandleImport()
+        {
+            using var uow = await App.UnitOfWorkFactory.CreateAsync();
+            var importer = new ImportService(uow, applicationProperties);
+            var newBookPaths = (await importer.ImportAsync()).ToList();
+
+            if (!newBookPaths.Any())
+            {
+                return;
+            }
+
+            var importFlyout = new AddNewBooksViewModel(newBookPaths);
+            MessengerInstance.Send(new OpenFlyoutMessage(importFlyout));
         }
     }
 }

@@ -22,7 +22,6 @@
                     <Converters:ImageConverter x:Key="ImageConverter" />
                     <Converters:BoolToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
                     <Converters:BoolToInverseVisibilityConverter x:Key="BooleanToInverseVisibilityConverter" />
-                    <BTConverters:BookToTileViewModelConverter x:Key="BookToTileViewModelConverter" />
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

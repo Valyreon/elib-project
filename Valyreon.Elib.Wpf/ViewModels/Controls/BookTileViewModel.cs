@@ -16,11 +16,20 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 {
     public class BookTileViewModel : ViewModelBase
     {
-        public Book Book { get; }
+        private readonly Selector selector;
+        private bool isExternalReaderSpecified;
 
-        public BookTileViewModel(Book book)
+        public Book Book { get; }
+        public ApplicationProperties ApplicationProperties { get; }
+
+        public BookTileViewModel(Book book, Selector selector, ApplicationProperties applicationProperties)
         {
             Book = book;
+            this.selector = selector;
+            ApplicationProperties = applicationProperties;
+            IsExternalReaderSpecified = applicationProperties.IsExternalReaderSpecifiedAndValid();
+
+            MessengerInstance.Register<AppSettingsChangedMessage>(this, _ => IsExternalReaderSpecified = applicationProperties.IsExternalReaderSpecifiedAndValid());
         }
 
         public ICommand GoToAuthor =>
@@ -43,7 +52,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         private bool IsOnlyThisBookSelected()
         {
-            return !Book.IsMarked || Selector.Instance.SelectedIds.Count() == 1;
+            return !Book.IsMarked || selector.SelectedIds.Count() == 1;
         }
 
         private async void HandleMarkRead()
@@ -59,7 +68,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             var markBooksAs = !Book.IsRead;
             using var uow = await App.UnitOfWorkFactory.CreateAsync();
-            var selectedBooks = await Selector.Instance.GetSelectedBooks(uow);
+            var selectedBooks = await selector.GetSelectedBooks(uow);
             var booksToUpdate = new List<Book>();
             booksToUpdate.AddRange(selectedBooks.Where(b => b.IsRead != markBooksAs));
             booksToUpdate.ForEach(b => b.IsRead = markBooksAs);
@@ -68,6 +77,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             uow.Commit();
             return;
         }
+
+        public bool IsExternalReaderSpecified { get => isExternalReaderSpecified; set => Set(() => IsExternalReaderSpecified, ref isExternalReaderSpecified, value); }
 
         public ICommand FavoriteMarkCommand => new RelayCommand(HandleMarkFavorite);
 
@@ -84,7 +95,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             var markBooksAs = !Book.IsFavorite;
             using var uow = await App.UnitOfWorkFactory.CreateAsync();
-            var selectedBooks = await Selector.Instance.GetSelectedBooks(uow);
+            var selectedBooks = await selector.GetSelectedBooks(uow);
             var booksToUpdate = new List<Book>();
             booksToUpdate.AddRange(selectedBooks.Where(b => b.IsFavorite != markBooksAs));
             booksToUpdate.ForEach(b => b.IsFavorite = markBooksAs);
@@ -96,7 +107,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         private void HandleSelectBook()
         {
-            Selector.Instance.Select(Book);
+            selector.Select(Book);
             MessengerInstance.Send(new BookSelectedMessage(
                 Book,
                 Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl),
@@ -110,12 +121,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             if (ctrlDown || shiftDown)
             {
-                Selector.Instance.Select(Book, false);
+                selector.Select(Book, false);
                 MessengerInstance.Send(new BookSelectedMessage(Book, ctrlDown, shiftDown));
             }
             else
             {
-                Messenger.Default.Send(new OpenFlyoutMessage(new BookDetailsViewModel(Book)));
+                Messenger.Default.Send(new OpenFlyoutMessage(new BookDetailsViewModel(Book, ApplicationProperties)));
             }
         }
 
@@ -129,14 +140,11 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         private void HandleOpenInReader()
         {
-            var appSettings = ApplicationData.GetProperties();
-
-            if(!string.IsNullOrWhiteSpace(appSettings.ExternalReaderPath) && File.Exists(appSettings.ExternalReaderPath))
+            if (ApplicationProperties.IsExternalReaderSpecifiedAndValid())
             {
-                Process.Start(appSettings.ExternalReaderPath, $@"""{Book.Path}""");
+                Process.Start(ApplicationProperties.ExternalReaderPath, $@"""{Book.Path}""");
             }
         }
-
 
         private async void HandleExport()
         {
@@ -147,7 +155,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             }
 
             using var uow = await App.UnitOfWorkFactory.CreateAsync();
-            var dialogViewModel = new ExportOptionsDialogViewModel(await Selector.Instance.GetSelectedBooks(uow));
+            var dialogViewModel = new ExportOptionsDialogViewModel(await selector.GetSelectedBooks(uow));
             MessengerInstance.Send(new ShowDialogMessage(dialogViewModel));
         }
 
@@ -188,7 +196,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             var viewModel = new SimpleTextInputDialogViewModel("Add To Collection", "Enter collection name.", async tag =>
             {
                 using var uow = await App.UnitOfWorkFactory.CreateAsync();
-                var books = IsOnlyThisBookSelected() ? new List<Book> { Book } : await Selector.Instance.GetSelectedBooks(uow);
+                var books = IsOnlyThisBookSelected() ? new List<Book> { Book } : await selector.GetSelectedBooks(uow);
                 var collection = await uow.CollectionRepository.GetByTagAsync(tag);
                 if (collection == null)
                 {
@@ -219,7 +227,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             IEnumerable<Book> books;
             using (var uow = await App.UnitOfWorkFactory.CreateAsync())
             {
-                books = IsOnlyThisBookSelected() ? new List<Book> { Book } : await Selector.Instance.GetSelectedBooks(uow);
+                books = IsOnlyThisBookSelected() ? new List<Book> { Book } : await selector.GetSelectedBooks(uow);
             }
             var prompt = books.Count() == 1
                 ? "Are you sure you want to remove this book from the library?\nFile will not be deleted."
@@ -228,7 +236,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             {
                 if (Book.IsMarked)
                 {
-                    Selector.Instance.Select(Book);
+                    selector.Select(Book);
                 }
 
                 using var uow = await App.UnitOfWorkFactory.CreateAsync();

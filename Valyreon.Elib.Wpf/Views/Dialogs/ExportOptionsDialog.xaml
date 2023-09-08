@@ -48,8 +48,7 @@
             <Button
                 Grid.Column="4"
                 Width="120"
-                Command="{Binding ChooseDestinationCommand}"
-                IsEnabled="False">
+                Command="{Binding ChooseDestinationCommand}">
                 CHOOSE FOLDER
             </Button>
         </StackPanel>

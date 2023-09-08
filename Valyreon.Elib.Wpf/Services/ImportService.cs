@@ -11,15 +11,16 @@ namespace Valyreon.Elib.Wpf.Services;
 public class ImportService : IImportService
 {
     private readonly IUnitOfWork _uow;
+    private readonly ApplicationProperties appSettings;
 
-    public ImportService(IUnitOfWork uow)
+    public ImportService(IUnitOfWork uow, ApplicationProperties appSettings)
     {
         _uow = uow;
+        this.appSettings = appSettings;
     }
 
     public async Task<IEnumerable<string>> ImportAsync()
     {
-        var appSettings = ApplicationData.GetProperties();
         var newBooks = new List<string>();
 
         foreach (var sourcePath in appSettings.Sources)
@@ -59,7 +60,6 @@ public class ImportService : IImportService
         }
 
         var newBooks = new List<string>();
-        var appSettings = ApplicationData.GetProperties();
         var extensions = filesToScan.Select(p => Path.GetExtension(p).ToLowerInvariant()).ToList();
         var filesWithFilteredExtension = filesToScan.Where(p => appSettings.Formats.Any(f => Path.GetExtension(p).ToLowerInvariant() == f)).ToList();
         // only books with correct extension

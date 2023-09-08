@@ -117,6 +117,7 @@
                 <Button
                     Grid.Row="4"
                     Margin="5"
+                    Command="{Binding ImportCommand}"
                     Content="IMPORT"
                     Style="{StaticResource FlyoutButton}" />
             </Grid>

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Valyreon.Elib.Domain;
 using Valyreon.Elib.Mvvm.Messaging;
 using Valyreon.Elib.Wpf.Extensions;
 using Valyreon.Elib.Wpf.Messages;
@@ -15,9 +14,9 @@ namespace Valyreon.Elib.Wpf.Models
         private readonly ApplicationProperties applicationProperties;
         private readonly IMessenger messenger;
 
-        public ElibFileSystemWatcher(IMessenger messenger = null)
+        public ElibFileSystemWatcher(ApplicationProperties applicationProperties, IMessenger messenger = null)
         {
-            applicationProperties = ApplicationData.GetProperties();
+            this.applicationProperties = applicationProperties;
             this.messenger = messenger;
 
             foreach (var path in applicationProperties.Sources)
@@ -133,7 +132,7 @@ namespace Valyreon.Elib.Wpf.Models
 
         public void CheckFiles()
         {
-            IEnumerable<Book> allBooks = null;
+            //IEnumerable<Book> allBooks = null;
         }
 
         public void Dispose()

@@ -40,35 +40,6 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        <Grid
-            Margin="10"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Top"
-            Panel.ZIndex="10000"
-            Visibility="Collapsed">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="200" />
-                <ColumnDefinition Width="5" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <Button
-                Grid.Column="0"
-                Height="30"
-                Command="{Binding ScanForNewContentCommand}"
-                Content="SCAN FOR NEW CONTENT"
-                Focusable="True"
-                FontSize="12"
-                ToolTip="Scan for new books in folders specified in Settings." />
-            <Components:SymbolButton
-                Grid.Column="2"
-                Width="30"
-                Height="30"
-                Command="{Binding OpenSettingsCommand}"
-                Content="SETTINGS"
-                Foreground="White"
-                IconSize="26"
-                Image="{StaticResource WhiteCog}" />
-        </Grid>
 
         <Components:TabControlWithCache
             Grid.Row="0"
@@ -142,7 +113,7 @@
         <Grid
             x:Name="NotificationGrid"
             Height="35"
-            Margin="0,0,0,-35"
+            Margin="0,0,0,-36"
             VerticalAlignment="Bottom"
             Panel.ZIndex="100000"
             Background="{Binding Type, Converter={StaticResource NotificationTypeToBrushConverter}}"

@@ -189,6 +189,7 @@
                 <Components:ElibTextBox
                     Grid.Column="6"
                     Height="35"
+                    MinWidth="30"
                     Focusable="{Binding IsSeriesSelected}"
                     FontFamily="Segoe UI Semibold"
                     IsEnabled="{Binding IsSeriesSelected}"

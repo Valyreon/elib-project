@@ -30,9 +30,9 @@
             <Border
                 x:Name="DropDownBorder"
                 Background="#222"
-                BorderBrush="WhiteSmoke"
+                BorderBrush="#888"
                 BorderThickness="1"
-                CornerRadius="4">
+                CornerRadius="2">
                 <ListBox
                     x:Name="SuggestionListBox"
                     Margin="0,0,0,5"
@@ -40,7 +40,8 @@
                     BorderThickness="0"
                     ItemsSource="{Binding Suggestions, RelativeSource={RelativeSource AncestorType=local:SuggestionTextBox}}"
                     KeyDown="SuggestionListBox_KeyDown"
-                    MouseLeftButtonUp="SuggestionListBox_MouseLeftButtonUp">
+                    MouseLeftButtonUp="SuggestionListBox_MouseLeftButtonUp"
+                    Style="{StaticResource DarkListBox}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <TextBlock
