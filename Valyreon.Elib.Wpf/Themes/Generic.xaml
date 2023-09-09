@@ -8,6 +8,7 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary>
             <Converters:ImageConverter x:Key="ImageConverter" />
+            <Converters:MultiplyConverter x:Key="MultiplyConverter" />
             <Converters:BoolToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
             <BookTileConverters:StringToBoolConverter x:Key="StringToBoolConverter" />
             <Converters:StringToInverseVisibilityConverter x:Key="StringToInverseVisibilityConverter" />
@@ -243,6 +244,80 @@
 
                         <Trigger Property="IsEnabled" Value="False" />
                     </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type Components:Spinner}">
+        <Setter Property="Width" Value="150" />
+        <Setter Property="Height" Value="150" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Components:Spinner}">
+                    <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
+                        <Viewbox
+                            Width="{TemplateBinding Width}"
+                            Height="{TemplateBinding Height}"
+                            Stretch="Uniform">
+                            <Viewbox.RenderTransform>
+                                <RotateTransform CenterX="{Binding Width, RelativeSource={RelativeSource AncestorType=Grid}, Converter={StaticResource MultiplyConverter}, ConverterParameter=0.5}" CenterY="{Binding Height, RelativeSource={RelativeSource AncestorType=Grid}, Converter={StaticResource MultiplyConverter}, ConverterParameter=0.5}" />
+                            </Viewbox.RenderTransform>
+                            <Viewbox.Triggers>
+                                <EventTrigger RoutedEvent="Loaded">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                                RepeatBehavior="Forever"
+                                                Storyboard.TargetProperty="(Image.RenderTransform).(RotateTransform.Angle)"
+                                                To="360"
+                                                Duration="0:0:1.8" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Viewbox.Triggers>
+                            <Canvas Width="100" Height="100">
+                                <Ellipse
+                                    Width="100"
+                                    Height="100"
+                                    Stretch="Uniform"
+                                    Stroke="{DynamicResource AccentColorBrush}"
+                                    StrokeDashArray="5,5"
+                                    StrokeThickness="14" />
+                            </Canvas>
+                        </Viewbox>
+                        <Viewbox
+                            Width="{TemplateBinding Width}"
+                            Height="{TemplateBinding Height}"
+                            Stretch="Uniform">
+                            <Viewbox.RenderTransform>
+                                <RotateTransform CenterX="{Binding Width, RelativeSource={RelativeSource AncestorType=Grid}, Converter={StaticResource MultiplyConverter}, ConverterParameter=0.5}" CenterY="{Binding Height, RelativeSource={RelativeSource AncestorType=Grid}, Converter={StaticResource MultiplyConverter}, ConverterParameter=0.5}" />
+                            </Viewbox.RenderTransform>
+                            <Viewbox.Triggers>
+                                <EventTrigger RoutedEvent="Loaded">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                                RepeatBehavior="Forever"
+                                                Storyboard.TargetProperty="(Image.RenderTransform).(RotateTransform.Angle)"
+                                                To="-360"
+                                                Duration="0:0:1.8" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Viewbox.Triggers>
+                            <Canvas Width="100" Height="100">
+                                <Ellipse
+                                    Width="100"
+                                    Height="100"
+                                    Opacity="0.25"
+                                    Stretch="Uniform"
+                                    Stroke="{DynamicResource AccentColorBrush}"
+                                    StrokeDashArray="5,5"
+                                    StrokeThickness="14" />
+                            </Canvas>
+                        </Viewbox>
+                    </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

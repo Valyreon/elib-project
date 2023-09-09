@@ -5,6 +5,7 @@
     xmlns:Behaviors="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:BindingItems="clr-namespace:Valyreon.Elib.Wpf.BindingItems"
     xmlns:Converters="clr-namespace:Valyreon.Elib.Wpf.Converters"
+    xmlns:c="clr-namespace:Valyreon.Elib.Wpf.CustomComponents"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="450"
@@ -140,11 +141,12 @@
                 CANCEL
             </Button>
         </Grid>
-        <!--<MetroControls:ProgressRing
+
+        <c:Spinner
             Grid.Row="2"
             Grid.Column="1"
-            Foreground="CornflowerBlue"
-            IsActive="True"
-            Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}" />-->
+            Width="100"
+            Height="100"
+            Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}" />
     </Grid>
 </UserControl>

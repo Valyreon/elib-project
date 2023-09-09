@@ -97,7 +97,7 @@ namespace Valyreon.Elib.Wpf
             stringBuilder.AppendLine();
             stringBuilder.AppendLine(exception.ToString());
 
-            var logPath = Path.Combine(ApplicationData.LogFolderPath, $"{timestamp:yyyyMMddTHHmmss}_{exception.GetType().Name}.txt");
+            var logPath = Path.Combine(ApplicationData.LogFolderPath, $"{timestamp:yyyyMMddTHHmmssfff}_{exception.GetType().Name}.txt");
             File.WriteAllText(logPath, stringBuilder.ToString());
 
 #if TEST
