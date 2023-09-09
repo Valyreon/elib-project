@@ -43,7 +43,7 @@ namespace Valyreon.Elib.Wpf.Models
         private void ExportBookToFolder(Book book, string destinationFolder)
         {
             var fileName = GenerateName(book);
-            File.Copy(book.Path, Path.Combine(destinationFolder, fileName));
+            File.Copy(book.Path, Path.Combine(destinationFolder, fileName), true);
         }
 
         public void ExportBooks(IEnumerable<Book> books, ExporterOptions options, Action<string> progressSet = null)

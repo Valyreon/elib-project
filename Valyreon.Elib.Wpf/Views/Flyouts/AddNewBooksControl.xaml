@@ -32,7 +32,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="80" MinHeight="80" />
-            <RowDefinition Height="Auto" MinHeight="400" />
+            <RowDefinition Height="425" MinHeight="300" />
             <RowDefinition Height="30" />
             <RowDefinition Height="30" />
             <RowDefinition Height="*" />
@@ -59,6 +59,7 @@
             <StackPanel
                 Grid.Row="1"
                 Grid.Column="1"
+                MaxWidth="1000"
                 HorizontalAlignment="Center"
                 Orientation="Horizontal">
                 <TextBlock
@@ -70,7 +71,7 @@
                 <TextBlock
                     FontSize="16"
                     Text="{Binding PathText}"
-                    TextWrapping="Wrap" />
+                    TextWrapping="WrapWithOverflow" />
             </StackPanel>
             <TextBlock
                 Grid.Row="2"

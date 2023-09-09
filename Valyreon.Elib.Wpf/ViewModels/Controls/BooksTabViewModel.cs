@@ -1,6 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Valyreon.Elib.DataLayer;
 using Valyreon.Elib.DataLayer.Filters;
@@ -11,6 +12,7 @@ using Valyreon.Elib.Wpf.CustomDataStructures;
 using Valyreon.Elib.Wpf.Messages;
 using Valyreon.Elib.Wpf.Models;
 using Valyreon.Elib.Wpf.Services;
+using Valyreon.Elib.Wpf.ViewModels.Dialogs;
 using Valyreon.Elib.Wpf.ViewModels.Flyouts;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Controls

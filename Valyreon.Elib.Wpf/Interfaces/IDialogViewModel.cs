@@ -9,5 +9,10 @@ namespace Valyreon.Elib.Wpf.Interfaces
         {
             MessengerInstance.Send(new CloseDialogMessage());
         }
+
+        public virtual bool CanBeClosedByUser()
+        {
+            return true;
+        }
     }
 }

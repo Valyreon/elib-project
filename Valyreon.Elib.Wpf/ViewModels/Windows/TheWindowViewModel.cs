@@ -183,9 +183,14 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
 
         private void ProcessEscKey()
         {
-            if (IsDialogOpen)
+            if (IsDialogOpen && DialogControl.CanBeClosedByUser())
             {
                 MessengerInstance.Send(new CloseDialogMessage());
+                return;
+            }
+
+            if (IsDialogOpen && !DialogControl.CanBeClosedByUser())
+            {
                 return;
             }
 

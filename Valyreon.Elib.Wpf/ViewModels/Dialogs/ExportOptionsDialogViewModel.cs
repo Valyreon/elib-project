@@ -5,7 +5,9 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.Mvvm;
+using Valyreon.Elib.Wpf.Extensions;
 using Valyreon.Elib.Wpf.Interfaces;
+using Valyreon.Elib.Wpf.Messages;
 using Valyreon.Elib.Wpf.Models;
 using Valyreon.Elib.Wpf.Models.Options;
 using Valyreon.Elib.Wpf.ValidationAttributes;
@@ -74,39 +76,52 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
                 return;
             }
 
-            /*var controlProgress =
-                await DialogCoordinator.Instance.ShowProgressAsync(Application.Current.MainWindow.DataContext,
-                    "Exporting books", "");
-            controlProgress.Minimum = 1;
-            controlProgress.Maximum = booksToExport.Count * 2;*/
+            var progressDialog = new ProgressBarWithMessageDialogViewModel
+            {
+                BarMaximum = booksToExport.Count * 2,
+                BarMinimum = 1,
+                Title = "Exporting books"
+            };
+            Close();
+            MessengerInstance.Send(new ShowDialogMessage(progressDialog));
 
             var counter = 0;
 
             void SetProgress(string message)
             {
-                //controlProgress.SetMessage("Exporting book: " + message);
-                //controlProgress.SetProgress(++counter);
+                progressDialog.CurrentMessage = message;
+                progressDialog.CurrentBarValue = ++counter;
             }
 
-            foreach (var b in booksToExport)
+            using (var uow = await App.UnitOfWorkFactory.CreateAsync())
             {
-                //controlProgress.SetMessage("Loading book files...");
-                //controlProgress.SetProgress(++counter);
+                foreach (var b in booksToExport)
+                {
+                    progressDialog.CurrentMessage = "Loading books...";
+                    if (!booksToExport[counter].IsLoaded)
+                    {
+                        await booksToExport[counter].LoadBookAsync(uow);
+                    }
+                    progressDialog.CurrentBarValue = ++counter;
+                }
             }
 
             using (var uow = await App.UnitOfWorkFactory.CreateAsync())
             {
                 var exporter = new Exporter(uow);
-                await Task.Run(() => exporter.ExportBooks(booksToExport,
-                    new ExporterOptions
-                    {
-                        DestinationDirectory = DestinationPath,
-                        GroupByAuthor = IsGroupByAuthorChecked,
-                        GroupBySeries = IsGroupBySeriesChecked
-                    }, SetProgress));
+                await Task.Run(() =>
+                {
+                    exporter.ExportBooks(booksToExport,
+                        new ExporterOptions
+                        {
+                            DestinationDirectory = DestinationPath,
+                            GroupByAuthor = IsGroupByAuthorChecked,
+                            GroupBySeries = IsGroupBySeriesChecked
+                        }, SetProgress);
+                    MessengerInstance.Send(new ShowNotificationMessage($"{booksToExport.Count} books exported."));
+                });
             }
 
-            //await controlProgress.CloseAsync();
             Close();
         }
     }
