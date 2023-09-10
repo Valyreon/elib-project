@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Domain;
@@ -10,7 +11,7 @@ namespace Valyreon.Elib.Wpf.Extensions
 {
     public static class DomainExtensions
     {
-        public static async Task<Book> ToBookAsync(this ParsedBook parsedBook, IUnitOfWork uow)
+        public static async Task<Book> ToBookAsync(this ParsedBook parsedBook, IUnitOfWorkFactory uowFactory)
         {
             var newBook = new Book
             {
@@ -31,6 +32,7 @@ namespace Valyreon.Elib.Wpf.Extensions
 
             foreach (var author in parsedBook.Authors)
             {
+                using var uow = await uowFactory.CreateAsync();
                 newBook.Authors.Add(await uow.AuthorRepository.GetAuthorWithNameAsync(author) ?? new Author { Name = author });
             }
 
@@ -58,6 +60,22 @@ namespace Valyreon.Elib.Wpf.Extensions
             }
 
             book.IsLoaded = true;
+        }
+
+        public static bool IsValid(this Book book)
+        {
+            if (book == null)
+            {
+                return false;
+            }
+
+            return book.Title.IsDefined() && book.Authors != null && book.Authors.Count > 0 && book.Authors.All(a => a.Name.IsDefined())
+                && book.Path.IsDefined() && book.Signature.IsDefined() && (book.Series == null || book.Series.Name.IsDefined());
+        }
+
+        public static void Clean(this Book book)
+        {
+            book.Title = book.Title.Trim();
         }
     }
 }

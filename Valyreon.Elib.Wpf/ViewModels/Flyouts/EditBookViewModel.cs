@@ -1,4 +1,5 @@
 using System.Windows.Input;
+using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.Mvvm;
 using Valyreon.Elib.Wpf.Messages;
@@ -9,11 +10,13 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
     public class EditBookViewModel : ViewModelWithValidation
     {
         private EditBookFormViewModel editBookForm;
+        private readonly IUnitOfWorkFactory uowFactory;
 
-        public EditBookViewModel(Book book)
+        public EditBookViewModel(Book book, IUnitOfWorkFactory uowFactory)
         {
             Book = book;
-            EditBookForm = new EditBookFormViewModel(book);
+            this.uowFactory = uowFactory;
+            EditBookForm = new EditBookFormViewModel(book, uowFactory);
             HandleRevert();
         }
 
@@ -33,7 +36,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
         private void HandleRevert()
         {
-            EditBookForm = new EditBookFormViewModel(Book);
+            EditBookForm = new EditBookFormViewModel(Book, uowFactory);
         }
 
         private void HandleSave()

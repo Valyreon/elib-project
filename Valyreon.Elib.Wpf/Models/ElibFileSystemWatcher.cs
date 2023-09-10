@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Mvvm.Messaging;
 using Valyreon.Elib.Wpf.Extensions;
 using Valyreon.Elib.Wpf.Messages;
@@ -12,11 +13,13 @@ namespace Valyreon.Elib.Wpf.Models
     {
         private readonly List<FileSystemWatcher> watchers = new();
         private readonly ApplicationProperties applicationProperties;
+        private readonly IUnitOfWorkFactory uowFactory;
         private readonly IMessenger messenger;
 
-        public ElibFileSystemWatcher(ApplicationProperties applicationProperties, IMessenger messenger = null)
+        public ElibFileSystemWatcher(ApplicationProperties applicationProperties, IUnitOfWorkFactory uowFactory, IMessenger messenger = null)
         {
             this.applicationProperties = applicationProperties;
+            this.uowFactory = uowFactory;
             this.messenger = messenger;
 
             foreach (var path in applicationProperties.Sources)
@@ -45,7 +48,7 @@ namespace Valyreon.Elib.Wpf.Models
             }
 
             // mark file as missing for UI
-            using var uow = await App.UnitOfWorkFactory.CreateAsync();
+            using var uow = await uowFactory.CreateAsync();
             var book = await uow.BookRepository.GetByPathAsync(filePath);
 
             if (book == null)
@@ -64,7 +67,7 @@ namespace Valyreon.Elib.Wpf.Models
             }
 
             // on create calculate signature and see if any signature matches the new file, it means it was moved
-            using var uow = await App.UnitOfWorkFactory.CreateAsync();
+            using var uow = await uowFactory.CreateAsync();
 
             while (filePath.IsFileLocked())
             {
@@ -95,7 +98,7 @@ namespace Valyreon.Elib.Wpf.Models
             }
 
             // on rename update the path
-            using var uow = await App.UnitOfWorkFactory.CreateAsync();
+            using var uow = await uowFactory.CreateAsync();
             var book = await uow.BookRepository.GetByPathAsync(oldFilePath);
 
             if (book == null)
@@ -116,7 +119,7 @@ namespace Valyreon.Elib.Wpf.Models
                 return;
             }
 
-            using var uow = await App.UnitOfWorkFactory.CreateAsync();
+            using var uow = await uowFactory.CreateAsync();
             var book = await uow.BookRepository.GetByPathAsync(filePath);
 
             if (book == null)

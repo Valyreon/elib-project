@@ -102,9 +102,10 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             set => Set(() => IsResultEmpty, ref isResultEmpty, value);
         }
 
-        public AuthorViewerViewModel(Filter filter)
+        public AuthorViewerViewModel(Filter filter, IUnitOfWorkFactory uowFactory)
         {
             Filter = filter;
+            this.uowFactory = uowFactory;
             MessengerInstance.Register<RefreshCurrentViewMessage>(this, _ =>
             {
                 if (!isLoading)
@@ -132,12 +133,13 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         private int sortComboBoxSelectedIndex;
         private int collectionComboBoxSelectedIndex;
         private bool isAscendingSortDirection;
+        private readonly IUnitOfWorkFactory uowFactory;
 
         public ICommand GoToAuthor => new RelayCommand<Author>(a => Messenger.Default.Send(new AuthorSelectedMessage(a)));
 
         private async Task LoadAuthors()
         {
-            using var uow = await App.UnitOfWorkFactory.CreateAsync();
+            using var uow = await uowFactory.CreateAsync();
 
             await SetupCollectionOptions(uow);
 
@@ -184,7 +186,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         public Func<IViewer> GetCloneFunction()
         {
             var f = Filter with { };
-            return () => new AuthorViewerViewModel(f);
+            var fact = uowFactory;
+            return () => new AuthorViewerViewModel(f, fact);
         }
 
         public void Dispose()

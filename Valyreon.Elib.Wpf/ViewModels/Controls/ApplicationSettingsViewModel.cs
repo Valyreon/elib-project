@@ -54,6 +54,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             ScanAtStartup = properties.ScanAtStartup;
             Formats = new(properties.Formats);
             ExternalReaderPath = properties.ExternalReaderPath;
+            AutomaticallyImportWithFoundISBN = properties.AutomaticallyImportWithFoundISBN;
             this.properties = properties;
 
             // TODO Stop subscribing with anonymous methods here since we cant unsubscribe

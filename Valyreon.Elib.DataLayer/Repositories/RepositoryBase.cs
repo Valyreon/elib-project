@@ -14,7 +14,7 @@ namespace Valyreon.Elib.DataLayer.Repositories
 {
     public abstract class RepositoryBase<T> : IRepository<T>, ICache<T> where T : ObservableEntity, new()
     {
-        protected static IDictionary<int, T> Cache { get; } = new Dictionary<int, T>();
+        //protected static IDictionary<int, T> Cache { get; } = new Dictionary<int, T>();
         protected IDbTransaction Transaction { get; }
         protected IDbConnection Connection => Transaction.Connection;
 

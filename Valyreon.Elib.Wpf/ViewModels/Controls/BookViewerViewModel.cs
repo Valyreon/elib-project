@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
 using Valyreon.Elib.DataLayer.Filters;
+using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.Mvvm;
 using Valyreon.Elib.Mvvm.Messaging;
@@ -36,11 +37,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             }
         }
 
-        public BookViewerViewModel(BookFilter filter, Selector selector, ApplicationProperties applicationProperties)
+        public BookViewerViewModel(BookFilter filter, Selector selector, ApplicationProperties applicationProperties, IUnitOfWorkFactory uowFactory)
         {
             Filter = filter;
             this.selector = selector;
             this.applicationProperties = applicationProperties;
+            this.uowFactory = uowFactory;
             MessengerInstance.Register<RefreshCurrentViewMessage>(this, _ =>
             {
                 if (!isLoading)
@@ -140,7 +142,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         private async void HandleSelectAllBooksInView()
         {
-            using var uow = await App.UnitOfWorkFactory.CreateAsync();
+            using var uow = await uowFactory.CreateAsync();
             var results = await uow.BookRepository.GetIdsByFilterAsync(Filter);
 
             selector.SelectIds(results);
@@ -154,7 +156,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         private async void HandleClearSelectedBooksInView()
         {
-            using var uow = await App.UnitOfWorkFactory.CreateAsync();
+            using var uow = await uowFactory.CreateAsync();
             var results = await uow.BookRepository.GetIdsByFilterAsync(Filter);
 
             selector.DeselectIds(results);
@@ -265,7 +267,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 return;
             }
 
-            using var uow = await App.UnitOfWorkFactory.CreateAsync();
+            using var uow = await uowFactory.CreateAsync();
             IEnumerable<Book> results;
             if (Filter.Selected.HasValue && Filter.Selected == true)
             {
@@ -286,7 +288,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             foreach (var book in results)
             {
-                Books.Add(new BookTileViewModel(book, selector, applicationProperties));
+                Books.Add(new BookTileViewModel(book, selector, applicationProperties, uowFactory));
                 await book.LoadBookAsync(uow);
                 selector.SetMarked(book);
                 await Task.Delay(5);
@@ -303,6 +305,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         private ObservableCollection<BookTileViewModel> books = new();
         private readonly Selector selector;
         private readonly ApplicationProperties applicationProperties;
+        private readonly IUnitOfWorkFactory uowFactory;
 
         public void Refresh()
         {
@@ -322,8 +325,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         private async void HandleExport()
         {
-            using var uow = await App.UnitOfWorkFactory.CreateAsync();
-            var viewModel = new ExportOptionsDialogViewModel(await selector.GetSelectedBooks(uow));
+            using var uow = await uowFactory.CreateAsync();
+            var viewModel = new ExportOptionsDialogViewModel(await selector.GetSelectedBooks(uow), uowFactory);
             MessengerInstance.Send(new ShowDialogMessage(viewModel));
         }
 
@@ -357,7 +360,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             var count = 0;
             if (!IsSelectedBooksViewer)
             {
-                using var uow = await App.UnitOfWorkFactory.CreateAsync();
+                using var uow = await uowFactory.CreateAsync();
                 count = await uow.BookRepository.CountAsync(Filter);
             }
             else
@@ -383,7 +386,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             var caption = this.caption;
             var selector = this.selector;
             var props = applicationProperties;
-            return () => new BookViewerViewModel(filterClone, selector, props) { Caption = caption };
+            var fact = uowFactory;
+            return () => new BookViewerViewModel(filterClone, selector, props, fact) { Caption = caption };
         }
 
         public void Dispose()

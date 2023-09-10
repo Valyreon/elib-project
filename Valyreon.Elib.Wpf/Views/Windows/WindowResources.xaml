@@ -83,6 +83,7 @@
     </Style>
 
     <Converters:ObjectToVisibilityConverter x:Key="ObjectToVisibilityConverter" />
+    <Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     <Converters:ObjectToBoolConverter x:Key="ObjectToBoolConverter" />
     <Converters:NotificationTypeToBrushConverter x:Key="NotificationTypeToBrushConverter" />
 

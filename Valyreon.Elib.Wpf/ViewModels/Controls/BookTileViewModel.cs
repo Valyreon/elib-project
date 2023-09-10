@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Input;
+using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.Mvvm;
 using Valyreon.Elib.Mvvm.Messaging;
@@ -17,16 +18,18 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
     public class BookTileViewModel : ViewModelBase
     {
         private readonly Selector selector;
+        private readonly IUnitOfWorkFactory uowFactory;
         private bool isExternalReaderSpecified;
 
         public Book Book { get; }
         public ApplicationProperties ApplicationProperties { get; }
 
-        public BookTileViewModel(Book book, Selector selector, ApplicationProperties applicationProperties)
+        public BookTileViewModel(Book book, Selector selector, ApplicationProperties applicationProperties, IUnitOfWorkFactory uowFactory)
         {
             Book = book;
             this.selector = selector;
             ApplicationProperties = applicationProperties;
+            this.uowFactory = uowFactory;
             IsExternalReaderSpecified = applicationProperties.IsExternalReaderSpecifiedAndValid();
 
             MessengerInstance.Register<AppSettingsChangedMessage>(this, _ => IsExternalReaderSpecified = applicationProperties.IsExternalReaderSpecifiedAndValid());
@@ -60,14 +63,14 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             if (IsOnlyThisBookSelected())
             {
                 Book.IsRead = !Book.IsRead;
-                using var uow1 = await App.UnitOfWorkFactory.CreateAsync();
+                using var uow1 = await uowFactory.CreateAsync();
                 await uow1.BookRepository.UpdateAsync(Book);
                 uow1.Commit();
                 return;
             }
 
             var markBooksAs = !Book.IsRead;
-            using var uow = await App.UnitOfWorkFactory.CreateAsync();
+            using var uow = await uowFactory.CreateAsync();
             var selectedBooks = await selector.GetSelectedBooks(uow);
             var booksToUpdate = new List<Book>();
             booksToUpdate.AddRange(selectedBooks.Where(b => b.IsRead != markBooksAs));
@@ -87,14 +90,14 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             if (IsOnlyThisBookSelected())
             {
                 Book.IsFavorite = !Book.IsFavorite;
-                using var uow1 = await App.UnitOfWorkFactory.CreateAsync();
+                using var uow1 = await uowFactory.CreateAsync();
                 await uow1.BookRepository.UpdateAsync(Book);
                 uow1.Commit();
                 return;
             }
 
             var markBooksAs = !Book.IsFavorite;
-            using var uow = await App.UnitOfWorkFactory.CreateAsync();
+            using var uow = await uowFactory.CreateAsync();
             var selectedBooks = await selector.GetSelectedBooks(uow);
             var booksToUpdate = new List<Book>();
             booksToUpdate.AddRange(selectedBooks.Where(b => b.IsFavorite != markBooksAs));
@@ -126,7 +129,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             }
             else
             {
-                Messenger.Default.Send(new OpenFlyoutMessage(new BookDetailsViewModel(Book, ApplicationProperties)));
+                Messenger.Default.Send(new OpenFlyoutMessage(new BookDetailsViewModel(Book, ApplicationProperties, uowFactory)));
             }
         }
 
@@ -154,8 +157,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 return;
             }
 
-            using var uow = await App.UnitOfWorkFactory.CreateAsync();
-            var dialogViewModel = new ExportOptionsDialogViewModel(await selector.GetSelectedBooks(uow));
+            using var uow = await uowFactory.CreateAsync();
+            var dialogViewModel = new ExportOptionsDialogViewModel(await selector.GetSelectedBooks(uow), uowFactory);
             MessengerInstance.Send(new ShowDialogMessage(dialogViewModel));
         }
 
@@ -195,7 +198,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         {
             var viewModel = new SimpleTextInputDialogViewModel("Add To Collection", "Enter collection name.", async tag =>
             {
-                using var uow = await App.UnitOfWorkFactory.CreateAsync();
+                using var uow = await uowFactory.CreateAsync();
                 var books = IsOnlyThisBookSelected() ? new List<Book> { Book } : await selector.GetSelectedBooks(uow);
                 var collection = await uow.CollectionRepository.GetByTagAsync(tag);
                 if (collection == null)
@@ -225,7 +228,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         private async void HandleRemove()
         {
             IEnumerable<Book> books;
-            using (var uow = await App.UnitOfWorkFactory.CreateAsync())
+            using (var uow = await uowFactory.CreateAsync())
             {
                 books = IsOnlyThisBookSelected() ? new List<Book> { Book } : await selector.GetSelectedBooks(uow);
             }
@@ -239,7 +242,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                     selector.Select(Book);
                 }
 
-                using var uow = await App.UnitOfWorkFactory.CreateAsync();
+                using var uow = await uowFactory.CreateAsync();
                 await uow.BookRepository.DeleteAsync(books);
                 uow.Commit();
                 MessengerInstance.Send(new BooksRemovedMessage(books));

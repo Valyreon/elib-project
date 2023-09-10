@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.EBookTools;
 using Valyreon.Elib.Mvvm;
@@ -22,12 +23,13 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
         private ObservableCollection<ObservableEntity> collectionSuggestions;
         private IEnumerable<UserCollection> allUserCollections;
         private bool isExternalReaderSpecified;
+        private readonly IUnitOfWorkFactory uowFactory;
 
-        public BookDetailsViewModel(Book book, ApplicationProperties properties)
+        public BookDetailsViewModel(Book book, ApplicationProperties properties, IUnitOfWorkFactory uowFactory)
         {
             Book = book;
             Properties = properties;
-
+            this.uowFactory = uowFactory;
             IsExternalReaderSpecified = Properties.IsExternalReaderSpecifiedAndValid();
 
             MessengerInstance.Register<AppSettingsChangedMessage>(this, _ => IsExternalReaderSpecified = Properties.IsExternalReaderSpecifiedAndValid());
@@ -49,7 +51,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
         {
             if (allUserCollections == null)
             {
-                using var uow = await App.UnitOfWorkFactory.CreateAsync();
+                using var uow = await uowFactory.CreateAsync();
                 allUserCollections = await uow.CollectionRepository.GetAllAsync();
             }
 
@@ -87,7 +89,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
                 Task.Run(async () =>
                 {
-                    using var uow = await App.UnitOfWorkFactory.CreateAsync();
+                    using var uow = await uowFactory.CreateAsync();
                     await uow.BookRepository.UpdateAsync(Book);
                     uow.Commit();
                 });
@@ -104,7 +106,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
                 Task.Run(async () =>
                 {
-                    using var uow = await App.UnitOfWorkFactory.CreateAsync();
+                    using var uow = await uowFactory.CreateAsync();
                     await uow.BookRepository.UpdateAsync(Book);
                     uow.Commit();
                 });
@@ -134,7 +136,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
             Task.Run(async () =>
             {
-                using var uow = await App.UnitOfWorkFactory.CreateAsync();
+                using var uow = await uowFactory.CreateAsync();
                 await uow.CollectionRepository.RemoveCollectionForBookAsync(collection, Book.Id);
                 if (await uow.CollectionRepository.CountBooksInUserCollectionAsync(collection.Id) == 0)
                 {
@@ -162,7 +164,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             Book.Collections.Add(newCollection);
             Task.Run(async () =>
             {
-                using var uow = await App.UnitOfWorkFactory.CreateAsync();
+                using var uow = await uowFactory.CreateAsync();
                 var existingCollection = await uow.CollectionRepository.GetByTagAsync(tag);
                 if (existingCollection == null)
                 {

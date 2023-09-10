@@ -40,9 +40,9 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock
                     Grid.Column="0"
-                    Margin="10,0,10,1"
+                    Margin="10,0,10,0"
                     HorizontalAlignment="Left"
-                    VerticalAlignment="Center"
+                    VerticalAlignment="Stretch"
                     FontSize="14"
                     Text="{Binding Text, RelativeSource={RelativeSource AncestorType=local:ChipControl}}" />
                 <Components:SymbolButton

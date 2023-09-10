@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
+using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.Mvvm;
 using Valyreon.Elib.Wpf.Messages;
@@ -36,9 +37,10 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         private string descriptionFieldText;
 
-        public EditBookFormViewModel(Book book)
+        public EditBookFormViewModel(Book book, IUnitOfWorkFactory uowFactory)
         {
             Book = book;
+            this.uowFactory = uowFactory;
             AuthorsCollection = new ObservableCollection<Author>(Book.Authors);
             UserCollections = new ObservableCollection<UserCollection>(Book.Collections);
             Series = Book.Series == null
@@ -89,6 +91,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         private ObservableCollection<ObservableEntity> collectionSuggestions;
         private ObservableCollection<UserCollection> usersCollections;
+        private readonly IUnitOfWorkFactory uowFactory;
 
         public ObservableCollection<ObservableEntity> CollectionSuggestions
         {
@@ -111,7 +114,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 return;
             }
 
-            using var uow = await App.UnitOfWorkFactory.CreateAsync();
+            using var uow = await uowFactory.CreateAsync();
             var existingCollection = await uow.CollectionRepository.GetByTagAsync(tag);
 
             if (existingCollection == null)
@@ -128,7 +131,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         private async void HandleRefreshSuggestedCollections(string token)
         {
-            using var uow = await App.UnitOfWorkFactory.CreateAsync();
+            using var uow = await uowFactory.CreateAsync();
             var allUserCollections = await uow.CollectionRepository.GetAllAsync();
 
             var suggestions = allUserCollections.Where(c => !UserCollections.Contains(c) && c.Tag.ToLowerInvariant().Contains(token))
@@ -236,7 +239,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             _ = Task.Run(async () =>
             {
-                using var uow = await App.UnitOfWorkFactory.CreateAsync();
+                using var uow = await uowFactory.CreateAsync();
 
                 book.Series = Series;
                 if (Series?.Id == 0)
@@ -303,7 +306,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             Task.Run(async () =>
             {
-                using var uow = await App.UnitOfWorkFactory.CreateAsync();
+                using var uow = await uowFactory.CreateAsync();
 
                 if (Series != null && Series.Id == 0)
                 {
@@ -431,7 +434,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         private async void HandleAddExistingAuthor()
         {
-            using var uow = await App.UnitOfWorkFactory.CreateAsync();
+            using var uow = await uowFactory.CreateAsync();
             var allAuthors = await uow.AuthorRepository.GetAllAsync();
             var ignoreIds = AuthorsCollection.Select(a => a.Id).ToList();
 
@@ -442,7 +445,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         private async void HandleChooseExistingSeries()
         {
-            using var uow = await App.UnitOfWorkFactory.CreateAsync();
+            using var uow = await uowFactory.CreateAsync();
             var allSeries = await uow.SeriesRepository.GetAllAsync();
 
             var viewModel = new ChooseSeriesDialogViewModel(allSeries, x => Series = x);
@@ -484,7 +487,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
                 _ = Task.Run(async () =>
                 {
-                    using var uow = await App.UnitOfWorkFactory.CreateAsync();
+                    using var uow = await uowFactory.CreateAsync();
                     await uow.SeriesRepository.UpdateAsync(Series);
                     uow.Commit();
                 });

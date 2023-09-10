@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
+using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.Mvvm;
 using Valyreon.Elib.Wpf.Extensions;
@@ -17,16 +18,17 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
     public class ExportOptionsDialogViewModel : DialogViewModel
     {
         private readonly IList<Book> booksToExport;
-
+        private readonly IUnitOfWorkFactory uowFactory;
         private string destinationPath;
 
         private bool groupByAuthor;
 
         private bool groupBySeries;
 
-        public ExportOptionsDialogViewModel(IList<Book> booksToExport)
+        public ExportOptionsDialogViewModel(IList<Book> booksToExport, IUnitOfWorkFactory uowFactory)
         {
             this.booksToExport = booksToExport;
+            this.uowFactory = uowFactory;
         }
 
         public bool IsExportComplete { get; }
@@ -93,7 +95,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
                 progressDialog.CurrentBarValue = ++counter;
             }
 
-            using (var uow = await App.UnitOfWorkFactory.CreateAsync())
+            using (var uow = await uowFactory.CreateAsync())
             {
                 foreach (var b in booksToExport)
                 {
@@ -106,11 +108,11 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
                 }
             }
 
-            using (var uow = await App.UnitOfWorkFactory.CreateAsync())
+            using (var uow = await uowFactory.CreateAsync())
             {
-                var exporter = new Exporter(uow);
                 await Task.Run(() =>
                 {
+                    var exporter = new Exporter();
                     exporter.ExportBooks(booksToExport,
                         new ExporterOptions
                         {

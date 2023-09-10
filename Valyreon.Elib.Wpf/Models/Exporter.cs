@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.Wpf.Models.Options;
 
@@ -11,14 +10,7 @@ namespace Valyreon.Elib.Wpf.Models
 {
     public class Exporter
     {
-        private readonly IUnitOfWork _uow;
-
-        public Exporter(IUnitOfWork uow)
-        {
-            _uow = uow;
-        }
-
-        public static string GenerateName(Book book)
+public static string GenerateName(Book book)
         {
             var fileNameBuilder = new StringBuilder();
             // there can be more than one author

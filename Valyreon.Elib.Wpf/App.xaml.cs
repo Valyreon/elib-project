@@ -3,7 +3,6 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using Valyreon.Elib.DataLayer;
 using Valyreon.Elib.Wpf.Models;
 using Valyreon.Elib.Wpf.ViewModels.Windows;
 using Valyreon.Elib.Wpf.Views.Windows;
@@ -23,13 +22,11 @@ namespace Valyreon.Elib.Wpf
         public static extern void FreeConsole();
 #endif
 
-        public static UnitOfWorkFactory UnitOfWorkFactory { get; } = new UnitOfWorkFactory(ApplicationData.DatabasePath);
-
         private void OnStartup(object sender, StartupEventArgs e)
         {
             ApplicationData.InitializeAppData();
 
-            SetupExceptionHandling();
+            //SetupExceptionHandling();
 
 #if TEST
             AllocConsole();

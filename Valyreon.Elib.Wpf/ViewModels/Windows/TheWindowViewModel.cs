@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Timers;
 using System.Windows.Input;
+using Valyreon.Elib.DataLayer;
+using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.Mvvm;
 using Valyreon.Elib.Wpf.Interfaces;
@@ -26,6 +28,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
         private readonly Queue<ShowNotificationMessage> messages = new();
         private readonly Timer notificationTimer = new();
         private ElibFileSystemWatcher fileSystemWatcher;
+        private readonly IUnitOfWorkFactory unitOfWorkFactory = new UnitOfWorkFactory(ApplicationData.DatabasePath);
 
         public ShowNotificationMessage CurrentNotificationMessage
         {
@@ -40,15 +43,15 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
             notificationTimer.Interval = 3000;
             notificationTimer.Elapsed += HandleNextNotification;
 
-            fileSystemWatcher = new(applicationProperties);
+            fileSystemWatcher = new(applicationProperties, unitOfWorkFactory);
 
             MessengerInstance.Register<AppSettingsChangedMessage>(this, _ =>
             {
                 fileSystemWatcher.Dispose();
-                fileSystemWatcher = new ElibFileSystemWatcher(applicationProperties);
+                fileSystemWatcher = new ElibFileSystemWatcher(applicationProperties, unitOfWorkFactory);
             });
             MessengerInstance.Register<OpenFlyoutMessage>(this, m => HandleOpenFlyout(m.ViewModel));
-            MessengerInstance.Register<OpenBookDetailsFlyoutMessage>(this, m => HandleOpenFlyout(new BookDetailsViewModel(m.Book, applicationProperties)));
+            MessengerInstance.Register<OpenBookDetailsFlyoutMessage>(this, m => HandleOpenFlyout(new BookDetailsViewModel(m.Book, applicationProperties, unitOfWorkFactory)));
             MessengerInstance.Register<ShowNotificationMessage>(this, HandleShowNotification);
             MessengerInstance.Register(this, (ShowDialogMessage m) =>
             {
@@ -60,13 +63,14 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
             });
             MessengerInstance.Register(this, (CloseDialogMessage m) => IsDialogOpen = false);
             MessengerInstance.Register(this, (CloseFlyoutMessage _) => CloseFlyoutPanel());
+            MessengerInstance.Register(this, (SetGlobalLoaderMessage m) => IsGlobalLoaderOpen = m.IsVisible);
             MessengerInstance.Register(this, (OpenAddBooksFormMessage m) => HandleAddBooksFlyout(m.BooksToAdd));
             MessengerInstance.Register(this, (EditBookMessage m) => HandleEditBookFlyout(m.Book));
             MessengerInstance.Register(this, (ScanForNewBooksMessage m) => HandleScanForNewBooks());
 
             Tabs = new ObservableCollection<ITabViewModel>
             {
-                new BooksTabViewModel(applicationProperties),
+                new BooksTabViewModel(applicationProperties, unitOfWorkFactory),
                 new QuotesTabViewModel(),
                 new ApplicationSettingsViewModel(applicationProperties)
             };
@@ -120,6 +124,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
         private ShowNotificationMessage currentNotificationMessage;
         private DialogViewModel dialogControl;
         private bool isDialogOpen;
+        private bool isGlobalLoaderOpen;
         private static readonly TimeSpan refreshPause = new TimeSpan(0, 0, 0, 0, 500);
 
         public void HandleRefreshView()
@@ -149,6 +154,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
             set => Set(() => IsDialogOpen, ref isDialogOpen, value);
         }
 
+        public bool IsGlobalLoaderOpen
+        {
+            get => isGlobalLoaderOpen;
+            set => Set(() => IsGlobalLoaderOpen, ref isGlobalLoaderOpen, value);
+        }
+
         public ITabViewModel SelectedTab
         {
             get => selectedTab;
@@ -159,9 +170,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
 
         private async void HandleScanForNewBooks()
         {
-            using var uow = await App.UnitOfWorkFactory.CreateAsync();
-            var importer = new ImportService(uow, applicationProperties);
-            var newBookPaths = (await importer.ImportAsync()).ToList();
+            var importer = new ImportService(unitOfWorkFactory, applicationProperties);
+            var newBookPaths = (await importer.GetNotImportedBookPathsAsync()).ToList();
 
             if (!newBookPaths.Any())
             {
@@ -173,12 +183,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
 
         private void HandleEditBookFlyout(Book book)
         {
-            OpenFlyoutPanel(new EditBookViewModel(book));
+            OpenFlyoutPanel(new EditBookViewModel(book, unitOfWorkFactory));
         }
 
         private void HandleAddBooksFlyout(IList<string> booksToAdd)
         {
-            OpenFlyoutPanel(new AddNewBooksViewModel(booksToAdd));
+            OpenFlyoutPanel(new AddNewBooksViewModel(booksToAdd, unitOfWorkFactory));
         }
 
         private void ProcessEscKey()

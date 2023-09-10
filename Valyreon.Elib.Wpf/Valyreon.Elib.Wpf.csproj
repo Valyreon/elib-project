@@ -32,6 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Valyreon.Elib.BookDataAPI\Valyreon.Elib.BookDataAPI.csproj" />
     <ProjectReference Include="..\Valyreon.Elib.DataLayer\Valyreon.Elib.DataLayer.csproj" />
     <ProjectReference Include="..\Valyreon.Elib.Domain\Valyreon.Elib.Domain.csproj" />
     <ProjectReference Include="..\Valyreon.Elib.EBookTools\Valyreon.Elib.EBookTools.csproj" />

@@ -1,12 +1,10 @@
-using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Valyreon.Elib.DataLayer.Interfaces;
 
 namespace Valyreon.Elib.DataLayer
 {
-    public class UnitOfWorkFactory
+    public class UnitOfWorkFactory : IUnitOfWorkFactory
     {
         private readonly string connection;
 

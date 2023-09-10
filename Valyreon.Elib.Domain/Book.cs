@@ -17,7 +17,11 @@ namespace Valyreon.Elib.Domain
         private decimal? numberInSeries;
         private Cover cover;
         private ObservableCollection<Author> authors;
+        private ObservableCollection<UserCollection> collections = new();
         private BookSeries series;
+        private string path;
+        private bool isFileMissing;
+        private string isbn;
 
         [Column]
         public int? CoverId { get; set; }
@@ -36,10 +40,6 @@ namespace Valyreon.Elib.Domain
 
         [Column]
         public int? SeriesId { get; set; }
-
-        public ObservableCollection<UserCollection> collections = new();
-        private string path;
-        private bool isFileMissing;
 
         public ObservableCollection<UserCollection> Collections
         {
@@ -77,6 +77,13 @@ namespace Valyreon.Elib.Domain
         {
             get => description;
             set => Set(() => Description, ref description, value);
+        }
+
+        [Column]
+        public string ISBN
+        {
+            get => isbn;
+            set => Set(() => ISBN, ref isbn, value);
         }
 
         [Column]

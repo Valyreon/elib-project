@@ -34,5 +34,10 @@ namespace Valyreon.Elib.Wpf.Extensions
         {
             return Path.GetExtension(filePath);
         }
+
+        public static bool IsDefined(this string str)
+        {
+            return !string.IsNullOrWhiteSpace(str);
+        }
     }
 }

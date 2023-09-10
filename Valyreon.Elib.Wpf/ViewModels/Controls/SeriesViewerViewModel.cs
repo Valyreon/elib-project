@@ -103,9 +103,10 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             set => Set(() => IsResultEmpty, ref isResultEmpty, value);
         }
 
-        public SeriesViewerViewModel(Filter filter)
+        public SeriesViewerViewModel(Filter filter, IUnitOfWorkFactory uowFactory)
         {
             Filter = filter;
+            this.uowFactory = uowFactory;
             MessengerInstance.Register<RefreshCurrentViewMessage>(this, _ =>
             {
                 if (!isLoading)
@@ -129,6 +130,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         private int collectionComboBoxSelectedIndex;
         private int sortComboBoxSelectedIndex;
         private bool isAscendingSortDirection;
+        private readonly IUnitOfWorkFactory uowFactory;
 
         public void Refresh()
         {
@@ -140,7 +142,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         private async void LoadSeries()
         {
-            using var uow = await App.UnitOfWorkFactory.CreateAsync();
+            using var uow = await uowFactory.CreateAsync();
 
             await SetupCollectionOptions(uow);
 
@@ -181,7 +183,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         public Func<IViewer> GetCloneFunction()
         {
             var f = Filter with { };
-            return () => new SeriesViewerViewModel(f);
+            return () => new SeriesViewerViewModel(f, uowFactory);
         }
 
         public void Dispose()

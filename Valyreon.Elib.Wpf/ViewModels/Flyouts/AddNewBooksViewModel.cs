@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.EBookTools;
 using Valyreon.Elib.Mvvm;
@@ -18,7 +19,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
     public class AddNewBooksViewModel : ViewModelWithValidation
     {
         private readonly IList<string> books;
-
+        private readonly IUnitOfWorkFactory uowFactory;
         private int counter;
 
         private Book currentBook;
@@ -37,9 +38,10 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
         private string titleText;
         private EditBookFormViewModel editBookForm;
 
-        public AddNewBooksViewModel(IEnumerable<string> newBooks)
+        public AddNewBooksViewModel(IEnumerable<string> newBooks, IUnitOfWorkFactory uowFactory)
         {
             books = newBooks.ToList();
+            this.uowFactory = uowFactory;
         }
 
         public ICommand CancelButtonCommand => new RelayCommand(HandleCancel);
@@ -114,7 +116,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                 Set(() => CurrentBook, ref currentBook, value);
                 if (currentBook != null)
                 {
-                    EditBookForm = new EditBookFormViewModel(currentBook);
+                    EditBookForm = new EditBookFormViewModel(currentBook, uowFactory);
 
                     PathText = currentBook.Path;
                 }
@@ -130,8 +132,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                 await Task.Run(async () =>
                 {
                     var pBook = EbookParserFactory.Create(path).Parse();
-                    using var uow = await App.UnitOfWorkFactory.CreateAsync();
-                    var book = await pBook.ToBookAsync(uow);
+                    var book = await pBook.ToBookAsync(uowFactory);
                     result = book;
                 });
             }
@@ -167,7 +168,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
         private void HandleRevert()
         {
             ClearErrors();
-            EditBookForm = new EditBookFormViewModel(currentBook);
+            EditBookForm = new EditBookFormViewModel(currentBook, uowFactory);
         }
 
         private void HandleSaveAndNext()
@@ -213,7 +214,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
         private async void CheckDuplicate(Book book)
         {
-            using var uow = await App.UnitOfWorkFactory.CreateAsync();
+            using var uow = await uowFactory.CreateAsync();
             if (await uow.BookRepository.SignatureExistsAsync(book.Signature))
             {
                 WarningText = "This book is a duplicate of a book already in the database.";

@@ -11,7 +11,7 @@
     mc:Ignorable="d">
     <Behaviors:Interaction.Triggers>
         <Behaviors:EventTrigger EventName="Loaded">
-            <Behaviors:InvokeCommandAction Command="{Binding PaneSelectionChangedCommand}" />
+            <Behaviors:InvokeCommandAction Command="{Binding LoadedCommand}" />
         </Behaviors:EventTrigger>
     </Behaviors:Interaction.Triggers>
 

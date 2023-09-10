@@ -110,6 +110,13 @@
             </Grid>
         </Grid>
 
+        <Grid Panel.ZIndex="9000000" Visibility="{Binding IsGlobalLoaderOpen, Converter={StaticResource BoolToVisibilityConverter}}">
+            <Components:Spinner Width="150" Height="150" />
+            <Grid.Background>
+                <SolidColorBrush Opacity="0.96" Color="#222222" />
+            </Grid.Background>
+        </Grid>
+
         <Grid
             x:Name="NotificationGrid"
             Height="35"

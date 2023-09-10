@@ -19,12 +19,6 @@
             <TextBlock Margin="0,0,0,5" FontSize="14">
                 Folders to scan for books:
             </TextBlock>
-            <ProgressBar
-                Height="30"
-                Margin="15"
-                Maximum="100"
-                Minimum="0"
-                Value="50" />
             <Border BorderBrush="#888" BorderThickness="1">
                 <DataGrid
                     x:Name="grid"

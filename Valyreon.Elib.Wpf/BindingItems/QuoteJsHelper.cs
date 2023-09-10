@@ -2,7 +2,7 @@ using Valyreon.Elib.Domain;
 
 namespace Valyreon.Elib.Wpf.BindingItems
 {
-    public class QuoteJsHelper
+    /*public class QuoteJsHelper
     {
         private readonly Book book;
 
@@ -24,5 +24,5 @@ namespace Valyreon.Elib.Wpf.BindingItems
             await uow.QuoteRepository.CreateAsync(newQuote);
             uow.Commit();
         }
-    }
+    }*/
 }
