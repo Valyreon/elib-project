@@ -26,7 +26,7 @@ namespace Valyreon.Elib.Wpf
         {
             ApplicationData.InitializeAppData();
 
-            //SetupExceptionHandling();
+            SetupExceptionHandling();
 
 #if TEST
             AllocConsole();
