@@ -47,6 +47,7 @@ public class ImportService : IImportService
             if (existingSeries != null)
             {
                 book.Series.Id = existingSeries.Id;
+                book.SeriesId = existingSeries.Id;
             }
             else
             {
@@ -70,6 +71,7 @@ public class ImportService : IImportService
             if (existingAuthor != null)
             {
                 author.Id = existingAuthor.Id;
+                await uow.AuthorRepository.AddAuthorForBookAsync(existingAuthor, book.Id);
             }
             else
             {
