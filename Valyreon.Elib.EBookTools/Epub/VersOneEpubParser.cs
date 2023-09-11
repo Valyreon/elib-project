@@ -9,8 +9,6 @@ namespace Valyreon.Elib.EBookTools.Epub
 {
     public class VersOneEpubParser : EbookParser
     {
-        private readonly string filePath;
-
         private static readonly EpubReaderOptions epubReaderOptions = new()
         {
             ContentDownloaderOptions = new()
@@ -31,6 +29,8 @@ namespace Valyreon.Elib.EBookTools.Epub
                 SkipXmlHeaders = true
             }
         };
+
+        private readonly string filePath;
 
         public VersOneEpubParser(string filePath)
         {

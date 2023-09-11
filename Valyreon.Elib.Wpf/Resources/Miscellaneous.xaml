@@ -512,7 +512,6 @@
                                     <GradientStop Offset="0.5" Color="#5f92ec" />
                                     <GradientStop Offset="1" Color="#5f92ec" />
                                 </LinearGradientBrush>
-
                             </Border.Background>
                         </Border>
                     </Grid>

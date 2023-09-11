@@ -9,8 +9,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 {
     public class EditBookViewModel : ViewModelWithValidation
     {
-        private EditBookFormViewModel editBookForm;
         private readonly IUnitOfWorkFactory uowFactory;
+        private EditBookFormViewModel editBookForm;
 
         public EditBookViewModel(Book book, IUnitOfWorkFactory uowFactory)
         {
@@ -20,19 +20,24 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             HandleRevert();
         }
 
+        public Book Book { get; }
+
+        public ICommand CancelButtonCommand => new RelayCommand(HandleCancel);
+
         public EditBookFormViewModel EditBookForm
         {
             get => editBookForm;
             set => Set(() => EditBookForm, ref editBookForm, value);
         }
 
-        public Book Book { get; }
-
-        public ICommand CancelButtonCommand => new RelayCommand(HandleCancel);
-
         public ICommand RevertButtonCommand => new RelayCommand(HandleRevert);
 
         public ICommand SaveButtonCommand => new RelayCommand(HandleSave);
+
+        private void HandleCancel()
+        {
+            MessengerInstance.Send(new OpenBookDetailsFlyoutMessage(Book));
+        }
 
         private void HandleRevert()
         {
@@ -45,11 +50,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             {
                 MessengerInstance.Send(new OpenBookDetailsFlyoutMessage(Book));
             }
-        }
-
-        private void HandleCancel()
-        {
-            MessengerInstance.Send(new OpenBookDetailsFlyoutMessage(Book));
         }
     }
 }

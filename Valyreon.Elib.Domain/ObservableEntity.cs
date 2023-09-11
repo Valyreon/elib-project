@@ -6,7 +6,14 @@ namespace Valyreon.Elib.Domain
 {
     public class ObservableEntity : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public int Id { get; set; }
+
+        public void RaisePropertyChanged<T>(Expression<Func<T>> propertyExpression)
+        {
+            RaisePropertyChanged(GetName(propertyExpression));
+        }
 
         public void Set<T>(Expression<Func<T>> propertyExpression, ref T field, T value)
         {
@@ -14,16 +21,9 @@ namespace Valyreon.Elib.Domain
             RaisePropertyChanged(GetName(propertyExpression));
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
         protected void RaisePropertyChanged(string property)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
-        }
-
-        public void RaisePropertyChanged<T>(Expression<Func<T>> propertyExpression)
-        {
-            RaisePropertyChanged(GetName(propertyExpression));
         }
 
         private static string GetName<T>(Expression<Func<T>> exp)

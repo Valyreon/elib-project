@@ -6,10 +6,10 @@ namespace Valyreon.Elib.Wpf.CustomComponents
 {
     public class CheckboxButton : CheckBox
     {
-        public static DependencyProperty TextProperty;
         public static DependencyProperty IconSizeProperty;
         public static DependencyProperty ImageCheckedProperty;
         public static DependencyProperty ImageUncheckedProperty;
+        public static DependencyProperty TextProperty;
 
         static CheckboxButton()
         {
@@ -21,10 +21,10 @@ namespace Valyreon.Elib.Wpf.CustomComponents
             IconSizeProperty = DependencyProperty.Register("IconSize", typeof(double), typeof(CheckboxButton));
         }
 
-        public string Text
+        public double IconSize
         {
-            get => (string)GetValue(TextProperty);
-            set => SetValue(TextProperty, value);
+            get => (double)GetValue(IconSizeProperty);
+            set => SetValue(IconSizeProperty, value);
         }
 
         public ImageSource ImageChecked
@@ -39,10 +39,10 @@ namespace Valyreon.Elib.Wpf.CustomComponents
             set => SetValue(ImageUncheckedProperty, value);
         }
 
-        public double IconSize
+        public string Text
         {
-            get => (double)GetValue(IconSizeProperty);
-            set => SetValue(IconSizeProperty, value);
+            get => (string)GetValue(TextProperty);
+            set => SetValue(TextProperty, value);
         }
     }
 }

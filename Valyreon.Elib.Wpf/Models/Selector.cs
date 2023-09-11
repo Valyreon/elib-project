@@ -22,9 +22,31 @@ namespace Valyreon.Elib.Wpf.Models
 
         public int Count => selectedBookIds.Count;
 
+        public int LastSelectedId { get; set; }
         public IEnumerable<int> SelectedIds => selectedBookIds.AsEnumerable();
 
-        public int LastSelectedId { get; set; }
+        public void Clear()
+        {
+            selectedBookIds.Clear();
+            SelectionChanged.Invoke();
+        }
+
+        public void DeselectIds(IEnumerable<int> ids)
+        {
+            var changed = false;
+            foreach (var id in ids)
+            {
+                if (selectedBookIds.Remove(id))
+                {
+                    changed = true;
+                }
+            }
+
+            if (changed)
+            {
+                SelectionChanged.Invoke();
+            }
+        }
 
         public async Task<IList<Book>> GetSelectedBooks(IUnitOfWork uow)
         {
@@ -77,33 +99,10 @@ namespace Valyreon.Elib.Wpf.Models
             }
         }
 
-        public void DeselectIds(IEnumerable<int> ids)
-        {
-            var changed = false;
-            foreach (var id in ids)
-            {
-                if (selectedBookIds.Remove(id))
-                {
-                    changed = true;
-                }
-            }
-
-            if (changed)
-            {
-                SelectionChanged.Invoke();
-            }
-        }
-
         public Book SetMarked(Book book)
         {
             book.IsMarked = selectedBookIds.Contains(book.Id);
             return book;
-        }
-
-        public void Clear()
-        {
-            selectedBookIds.Clear();
-            SelectionChanged.Invoke();
         }
     }
 }

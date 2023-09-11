@@ -24,19 +24,17 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
         private Book currentBook;
 
+        private EditBookFormViewModel editBookForm;
         private bool isCurrentDuplicate = true;
 
+        private bool isLoading;
         private bool isSaving;
 
+        private string path;
         private string proceedButtonText;
 
-        private string warning;
-
-        private string path;
-
-        private bool isLoading;
         private string titleText;
-        private EditBookFormViewModel editBookForm;
+        private string warning;
 
         public AddNewBooksViewModel(IEnumerable<string> newBooks, IUnitOfWorkFactory uowFactory)
         {
@@ -45,6 +43,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
         }
 
         public ICommand CancelButtonCommand => new RelayCommand(HandleCancel);
+
+        public EditBookFormViewModel EditBookForm
+        {
+            get => editBookForm;
+            set => Set(() => EditBookForm, ref editBookForm, value);
+        }
 
         public bool IsCurrentBookDuplicate
         {
@@ -72,6 +76,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
         public ICommand NextButtonCommand => new RelayCommand(HandleSaveAndNext);
 
+        public string PathText
+        {
+            get => path;
+            set => Set(() => PathText, ref path, value);
+        }
+
         public string ProceedButtonText
         {
             get => proceedButtonText;
@@ -94,18 +104,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             set => Set(() => WarningText, ref warning, value);
         }
 
-        public string PathText
-        {
-            get => path;
-            set => Set(() => PathText, ref path, value);
-        }
-
-        public EditBookFormViewModel EditBookForm
-        {
-            get => editBookForm;
-            set => Set(() => EditBookForm, ref editBookForm, value);
-        }
-
         private Book CurrentBook
         {
             get => currentBook;
@@ -120,6 +118,78 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
                     PathText = currentBook.Path;
                 }
+            }
+        }
+
+        private async void CheckDuplicate(Book book)
+        {
+            using var uow = await uowFactory.CreateAsync();
+            if (await uow.BookRepository.SignatureExistsAsync(book.Signature))
+            {
+                WarningText = "This book is a duplicate of a book already in the database.";
+                IsCurrentBookDuplicate = true;
+            }
+            else
+            {
+                WarningText = null;
+                IsCurrentBookDuplicate = false;
+            }
+        }
+
+        private void HandleCancel()
+        {
+            MessengerInstance.Send(new CloseFlyoutMessage());
+        }
+
+        private async void HandleLoaded()
+        {
+            TitleText = $"Book 1 of {books.Count}";
+            PathText = books[0];
+            CurrentBook = await ParseBook(books[0]);
+
+            ProceedButtonText = books.Count == 1 ? "SAVE & FINISH" : "SAVE & NEXT";
+            CheckDuplicate(CurrentBook);
+        }
+
+        private void HandleRevert()
+        {
+            ClearErrors();
+            EditBookForm = new EditBookFormViewModel(currentBook, uowFactory);
+        }
+
+        private void HandleSaveAndNext()
+        {
+            IsSaving = true;
+
+            if (EditBookForm.CreateBook())
+            {
+                NextBook();
+            };
+
+            IsSaving = false;
+        }
+
+        private async void NextBook()
+        {
+            if (counter >= books.Count - 1)
+            {
+                MessengerInstance.Send(new CloseFlyoutMessage());
+                MessengerInstance.Send(new RefreshCurrentViewMessage());
+            }
+            else
+            {
+                ClearErrors();
+                TitleText = $"Book {counter + 2} of {books.Count}";
+                if (counter == books.Count - 2)
+                {
+                    ProceedButtonText = "SAVE & FINISH";
+                }
+
+                var nextBook = books[++counter];
+                PathText = nextBook;
+                CurrentBook = await ParseBook(nextBook);
+
+                CheckDuplicate(CurrentBook);
             }
         }
 
@@ -153,78 +223,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             }
 
             return result;
-        }
-
-        private async void HandleLoaded()
-        {
-            TitleText = $"Book 1 of {books.Count}";
-            PathText = books[0];
-            CurrentBook = await ParseBook(books[0]);
-
-            ProceedButtonText = books.Count == 1 ? "SAVE & FINISH" : "SAVE & NEXT";
-            CheckDuplicate(CurrentBook);
-        }
-
-        private void HandleRevert()
-        {
-            ClearErrors();
-            EditBookForm = new EditBookFormViewModel(currentBook, uowFactory);
-        }
-
-        private void HandleSaveAndNext()
-        {
-            IsSaving = true;
-
-            if (EditBookForm.CreateBook())
-            {
-                NextBook();
-            };
-
-            IsSaving = false;
-        }
-
-        private void HandleCancel()
-        {
-            MessengerInstance.Send(new CloseFlyoutMessage());
-        }
-
-        private async void NextBook()
-        {
-            if (counter >= books.Count - 1)
-            {
-                MessengerInstance.Send(new CloseFlyoutMessage());
-                MessengerInstance.Send(new RefreshCurrentViewMessage());
-            }
-            else
-            {
-                ClearErrors();
-                TitleText = $"Book {counter + 2} of {books.Count}";
-                if (counter == books.Count - 2)
-                {
-                    ProceedButtonText = "SAVE & FINISH";
-                }
-
-                var nextBook = books[++counter];
-                PathText = nextBook;
-                CurrentBook = await ParseBook(nextBook);
-
-                CheckDuplicate(CurrentBook);
-            }
-        }
-
-        private async void CheckDuplicate(Book book)
-        {
-            using var uow = await uowFactory.CreateAsync();
-            if (await uow.BookRepository.SignatureExistsAsync(book.Signature))
-            {
-                WarningText = "This book is a duplicate of a book already in the database.";
-                IsCurrentBookDuplicate = true;
-            }
-            else
-            {
-                WarningText = null;
-                IsCurrentBookDuplicate = false;
-            }
         }
     }
 }

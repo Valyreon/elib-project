@@ -5,35 +5,97 @@ namespace Valyreon.Elib.Wpf.BindingItems
 {
     public class FilterOptions : ObservableObject, ICloneable
     {
-        private void RaiseSortPropertiesChange()
-        {
-            RaisePropertyChanged(() => SortByTitle);
-            RaisePropertyChanged(() => SortByAuthor);
-            RaisePropertyChanged(() => SortBySeries);
-            RaisePropertyChanged(() => SortByImportTime);
-        }
+        private bool ascending = false;
 
-        /* Sort options */
+        private string fileTypeFilter = "epub|mobi";
+
+        private bool showAll;
+
+        private bool showAllTypes = true;
+
+        private bool showRead;
+
+        private bool showUnread;
+
+        private bool sortByAuthor;
+
+        private bool sortByImportTime;
+
+        private bool sortBySeries;
+
         private bool sortByTitle;
 
-        public bool SortByTitle
+        public FilterOptions()
         {
-            get => sortByTitle;
+            ShowAll = true;
+            SortByImportTime = true;
+        }
+
+        public bool Ascending
+        {
+            get => ascending;
+            set => Set(() => Ascending, ref ascending, value);
+        }
+
+        public string FileTypeFilter
+        {
+            get => fileTypeFilter;
+            set => Set(() => FileTypeFilter, ref fileTypeFilter, value);
+        }
+
+        public bool ShowAll
+        {
+            get => showAll;
 
             set
             {
-                sortByTitle = value;
-                if (sortByTitle)
+                showAll = value;
+                if (showAll)
                 {
-                    SortByAuthor = false;
-                    SortBySeries = false;
-                    SortByImportTime = false;
+                    ShowRead = false;
+                    ShowUnread = false;
                 }
-                RaiseSortPropertiesChange();
+                RaiseReadProperties();
             }
         }
 
-        private bool sortByAuthor;
+        public bool ShowAllTypes
+        {
+            get => showAllTypes;
+            set => Set(() => ShowAllTypes, ref showAllTypes, value);
+        }
+
+        public bool ShowRead
+        {
+            get => showRead;
+
+            set
+            {
+                showRead = value;
+                if (showRead)
+                {
+                    ShowAll = false;
+                    ShowUnread = false;
+                }
+                RaiseReadProperties();
+            }
+        }
+
+        public bool ShowUnread
+        {
+            get => showUnread;
+
+            set
+            {
+                showUnread = value;
+                if (showUnread)
+                {
+                    ShowAll = false;
+                    ShowRead = false;
+                }
+                RaiseReadProperties();
+            }
+        }
 
         public bool SortByAuthor
         {
@@ -52,7 +114,22 @@ namespace Valyreon.Elib.Wpf.BindingItems
             }
         }
 
-        private bool sortBySeries;
+        public bool SortByImportTime
+        {
+            get => sortByImportTime;
+
+            set
+            {
+                sortByImportTime = value;
+                if (sortByImportTime)
+                {
+                    SortByTitle = false;
+                    SortByAuthor = false;
+                    SortBySeries = false;
+                }
+                RaiseSortPropertiesChange();
+            }
+        }
 
         public bool SortBySeries
         {
@@ -71,38 +148,21 @@ namespace Valyreon.Elib.Wpf.BindingItems
             }
         }
 
-        private bool sortByImportTime;
-
-        public bool SortByImportTime
+        public bool SortByTitle
         {
-            get => sortByImportTime;
+            get => sortByTitle;
 
             set
             {
-                sortByImportTime = value;
-                if (sortByImportTime)
+                sortByTitle = value;
+                if (sortByTitle)
                 {
-                    SortByTitle = false;
                     SortByAuthor = false;
                     SortBySeries = false;
+                    SortByImportTime = false;
                 }
                 RaiseSortPropertiesChange();
             }
-        }
-
-        private bool ascending = false;
-
-        public bool Ascending
-        {
-            get => ascending;
-            set => Set(() => Ascending, ref ascending, value);
-        }
-
-        private void RaiseReadProperties()
-        {
-            RaisePropertyChanged(() => ShowAll);
-            RaisePropertyChanged(() => ShowRead);
-            RaisePropertyChanged(() => ShowUnread);
         }
 
         public object Clone()
@@ -122,82 +182,23 @@ namespace Valyreon.Elib.Wpf.BindingItems
             };
         }
 
+        private void RaiseReadProperties()
+        {
+            RaisePropertyChanged(() => ShowAll);
+            RaisePropertyChanged(() => ShowRead);
+            RaisePropertyChanged(() => ShowUnread);
+        }
+
+        private void RaiseSortPropertiesChange()
+        {
+            RaisePropertyChanged(() => SortByTitle);
+            RaisePropertyChanged(() => SortByAuthor);
+            RaisePropertyChanged(() => SortBySeries);
+            RaisePropertyChanged(() => SortByImportTime);
+        }
+
+        /* Sort options */
         /* Read filter */
-        private bool showAll;
-
-        public bool ShowAll
-        {
-            get => showAll;
-
-            set
-            {
-                showAll = value;
-                if (showAll)
-                {
-                    ShowRead = false;
-                    ShowUnread = false;
-                }
-                RaiseReadProperties();
-            }
-        }
-
-        private bool showRead;
-
-        public bool ShowRead
-        {
-            get => showRead;
-
-            set
-            {
-                showRead = value;
-                if (showRead)
-                {
-                    ShowAll = false;
-                    ShowUnread = false;
-                }
-                RaiseReadProperties();
-            }
-        }
-
-        private bool showUnread;
-
-        public bool ShowUnread
-        {
-            get => showUnread;
-
-            set
-            {
-                showUnread = value;
-                if (showUnread)
-                {
-                    ShowAll = false;
-                    ShowRead = false;
-                }
-                RaiseReadProperties();
-            }
-        }
-
-        private bool showAllTypes = true;
-
-        public bool ShowAllTypes
-        {
-            get => showAllTypes;
-            set => Set(() => ShowAllTypes, ref showAllTypes, value);
-        }
-
         /* File type filter */
-        private string fileTypeFilter = "epub|mobi";
-
-        public string FileTypeFilter
-        {
-            get => fileTypeFilter;
-            set => Set(() => FileTypeFilter, ref fileTypeFilter, value);
-        }
-
-        public FilterOptions()
-        {
-            ShowAll = true;
-            SortByImportTime = true;
-        }
     }
 }

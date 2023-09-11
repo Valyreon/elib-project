@@ -4,9 +4,9 @@ namespace Valyreon.Elib.EBookTools
     {
         public StyleSettings StyleSettings { get; set; }
 
-        public abstract ParsedBook Parse();
-
         public abstract string GenerateHtml();
+
+        public abstract ParsedBook Parse();
 
         /// <summary>
         ///     Generates <head> tag for Html book.

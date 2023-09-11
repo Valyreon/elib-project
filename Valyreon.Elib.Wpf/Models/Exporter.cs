@@ -10,7 +10,7 @@ namespace Valyreon.Elib.Wpf.Models
 {
     public class Exporter
     {
-public static string GenerateName(Book book)
+        public static string GenerateName(Book book)
         {
             var fileNameBuilder = new StringBuilder();
             // there can be more than one author
@@ -30,12 +30,6 @@ public static string GenerateName(Book book)
             var fileName = fileNameBuilder.ToString();
 
             return Path.GetInvalidFileNameChars().Aggregate(fileName, (current, invalid) => current.Replace(char.ToString(invalid), ""));
-        }
-
-        private void ExportBookToFolder(Book book, string destinationFolder)
-        {
-            var fileName = GenerateName(book);
-            File.Copy(book.Path, Path.Combine(destinationFolder, fileName), true);
         }
 
         public void ExportBooks(IEnumerable<Book> books, ExporterOptions options, Action<string> progressSet = null)
@@ -122,6 +116,12 @@ public static string GenerateName(Book book)
                     ProcessBySeries(authorGroup, thisAuthorsDestPath);
                 }
             }
+        }
+
+        private void ExportBookToFolder(Book book, string destinationFolder)
+        {
+            var fileName = GenerateName(book);
+            File.Copy(book.Path, Path.Combine(destinationFolder, fileName), true);
         }
     }
 }

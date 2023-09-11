@@ -23,11 +23,6 @@ namespace Valyreon.Elib.Wpf.Models
             return sha.ComputeHash(aggregateHash).ToHex();
         }
 
-        private static string ToHex(this byte[] bytes)
-        {
-            return string.Join(string.Empty, bytes.Select(b => b.ToString("X2")));
-        }
-
         private static IEnumerable<byte[]> ReadChunks(string fileName)
         {
             const int MAX_BUFFER = 20971520;// 20
@@ -56,6 +51,11 @@ namespace Valyreon.Elib.Wpf.Models
                     break;
                 }
             }
+        }
+
+        private static string ToHex(this byte[] bytes)
+        {
+            return string.Join(string.Empty, bytes.Select(b => b.ToString("X2")));
         }
     }
 }

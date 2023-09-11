@@ -1,5 +1,4 @@
 using System;
-using System.Drawing;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -20,23 +19,14 @@ namespace Valyreon.Elib.Wpf.Views.Windows
     /// </summary>
     public partial class TheWindow : Window
     {
-        private bool isMouseButtonDown;
+        private double HeightBeforeMaximize;
         private bool isManualDrag;
+        private bool isMouseButtonDown;
         private Point mouseDownPosition;
         private Point positionBeforeDrag;
         private System.Windows.Point previousScreenBounds;
-        private double HeightBeforeMaximize;
-        private double WidthBeforeMaximize;
         private WindowState PreviousState;
-
-        public Grid LayoutRoot { get; private set; }
-        public Button MinimizeButton { get; private set; }
-        public Button MaximizeButton { get; private set; }
-        public Button RestoreButton { get; private set; }
-        public Button CloseButton { get; private set; }
-        public Grid HeaderBar { get; private set; }
-        public Border MoveBorder1 { get; private set; }
-        public Border MoveBorder2 { get; private set; }
+        private double WidthBeforeMaximize;
 
         public TheWindow()
         {
@@ -54,6 +44,15 @@ namespace Valyreon.Elib.Wpf.Views.Windows
             AddHandler(MouseLeftButtonUpEvent, new MouseButtonEventHandler(OnMouseButtonUp), true);
             AddHandler(MouseMoveEvent, new System.Windows.Input.MouseEventHandler(OnMouseMove));
         }
+
+        public Button CloseButton { get; private set; }
+        public Grid HeaderBar { get; private set; }
+        public Grid LayoutRoot { get; private set; }
+        public Button MaximizeButton { get; private set; }
+        public Button MinimizeButton { get; private set; }
+        public Border MoveBorder1 { get; private set; }
+        public Border MoveBorder2 { get; private set; }
+        public Button RestoreButton { get; private set; }
 
         public T GetRequiredTemplateChild<T>(string childName) where T : DependencyObject
         {
@@ -95,6 +94,48 @@ namespace Valyreon.Elib.Wpf.Views.Windows
             MoveBorder2.MouseLeftButtonDown += OnHeaderBarMouseLeftButtonDown;
 
             base.OnApplyTemplate();
+        }
+
+        protected virtual Thickness GetDefaultMarginForDpi()
+        {
+            var currentDPI = SystemHelper.GetCurrentDPI();
+
+            return currentDPI switch
+            {
+                120 => new Thickness(7, 7, 4, 5),
+                144 => new Thickness(7, 7, 3, 1),
+                168 => new Thickness(6, 6, 2, 0),
+                192 => new Thickness(6, 6, 0, 0),
+                240 => new Thickness(6, 6, 0, 0),
+                _ => new Thickness(7, 7, 7, 7),
+            };
+        }
+
+        protected virtual Thickness GetFromMinimizedMarginForDpi()
+        {
+            var currentDPI = SystemHelper.GetCurrentDPI();
+            var thickness = new Thickness(7, 7, 5, 7);
+            if (currentDPI == 120)
+            {
+                thickness = new Thickness(6, 6, 4, 6);
+            }
+            else if (currentDPI == 144)
+            {
+                thickness = new Thickness(7, 7, 4, 4);
+            }
+            else if (currentDPI == 168)
+            {
+                thickness = new Thickness(6, 6, 2, 2);
+            }
+            else if (currentDPI == 192)
+            {
+                thickness = new Thickness(6, 6, 2, 2);
+            }
+            else if (currentDPI == 240)
+            {
+                thickness = new Thickness(6, 6, 0, 0);
+            }
+            return thickness;
         }
 
         protected void OnHeaderBarMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -151,30 +192,9 @@ namespace Valyreon.Elib.Wpf.Views.Windows
             RestoreButton.Visibility = WindowState == WindowState.Normal ? Visibility.Collapsed : Visibility.Visible;
         }
 
-        private void MaximizeButton_Click(object sender, RoutedEventArgs e)
-        {
-            ToggleWindowState();
-        }
-
-        private void RestoreButton_Click(object sender, RoutedEventArgs e)
-        {
-            ToggleWindowState();
-        }
-
-        private void MinimizeButton_Click(object sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState.Minimized;
-        }
-
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             Close();
-        }
-
-        private void NotificationGrid_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            var sb = FindResource("ShowNotificationStoryboard") as Storyboard;
-            sb?.Begin(NotificationGrid, false);
         }
 
         private void DialogGrid_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -198,46 +218,21 @@ namespace Valyreon.Elib.Wpf.Views.Windows
                 sb.Completed += (s, e) => DialogContentControl.Content = null;
             }
         }
-        protected virtual Thickness GetDefaultMarginForDpi()
-        {
-            var currentDPI = SystemHelper.GetCurrentDPI();
 
-            return currentDPI switch
-            {
-                120 => new Thickness(7, 7, 4, 5),
-                144 => new Thickness(7, 7, 3, 1),
-                168 => new Thickness(6, 6, 2, 0),
-                192 => new Thickness(6, 6, 0, 0),
-                240 => new Thickness(6, 6, 0, 0),
-                _ => new Thickness(7, 7, 7, 7),
-            };
+        private void MaximizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleWindowState();
         }
 
-        protected virtual Thickness GetFromMinimizedMarginForDpi()
+        private void MinimizeButton_Click(object sender, RoutedEventArgs e)
         {
-            var currentDPI = SystemHelper.GetCurrentDPI();
-            var thickness = new Thickness(7, 7, 5, 7);
-            if (currentDPI == 120)
-            {
-                thickness = new Thickness(6, 6, 4, 6);
-            }
-            else if (currentDPI == 144)
-            {
-                thickness = new Thickness(7, 7, 4, 4);
-            }
-            else if (currentDPI == 168)
-            {
-                thickness = new Thickness(6, 6, 2, 2);
-            }
-            else if (currentDPI == 192)
-            {
-                thickness = new Thickness(6, 6, 2, 2);
-            }
-            else if (currentDPI == 240)
-            {
-                thickness = new Thickness(6, 6, 0, 0);
-            }
-            return thickness;
+            WindowState = WindowState.Minimized;
+        }
+
+        private void NotificationGrid_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            var sb = FindResource("ShowNotificationStoryboard") as Storyboard;
+            sb?.Begin(NotificationGrid, false);
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
@@ -248,13 +243,52 @@ namespace Valyreon.Elib.Wpf.Views.Windows
             previousScreenBounds = new System.Windows.Point(width, (double)workingArea.Height);
         }
 
-        private void SystemEvents_DisplaySettingsChanged(object sender, EventArgs e)
+        private void OnMouseButtonUp(object sender, MouseButtonEventArgs e)
         {
-            var screen = Screen.FromHandle(new WindowInteropHelper(this).Handle);
-            var width = (double)screen.WorkingArea.Width;
-            var workingArea = screen.WorkingArea;
-            previousScreenBounds = new System.Windows.Point(width, (double)workingArea.Height);
-            RefreshWindowState();
+            isMouseButtonDown = false;
+            isManualDrag = false;
+            ReleaseMouseCapture();
+        }
+
+        private void OnMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (!isMouseButtonDown)
+            {
+                return;
+            }
+
+            var currentDPIScaleFactor = (double)SystemHelper.GetCurrentDPIScaleFactor();
+            var position = e.GetPosition(this);
+            System.Diagnostics.Debug.WriteLine(position);
+            var screen = PointToScreen(position);
+            var x = mouseDownPosition.X - position.X;
+            var y = mouseDownPosition.Y - position.Y;
+            if (Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2)) > 1)
+            {
+                var actualWidth = mouseDownPosition.X;
+
+                if (mouseDownPosition.X <= 0)
+                {
+                    actualWidth = 0;
+                }
+                else if (mouseDownPosition.X >= ActualWidth)
+                {
+                    actualWidth = WidthBeforeMaximize;
+                }
+
+                if (WindowState == WindowState.Maximized)
+                {
+                    ToggleWindowState();
+                    Top = (screen.Y - position.Y) / currentDPIScaleFactor;
+                    Left = (screen.X - actualWidth) / currentDPIScaleFactor;
+                    CaptureMouse();
+                }
+
+                isManualDrag = true;
+
+                Top = (screen.Y - mouseDownPosition.Y) / currentDPIScaleFactor;
+                Left = (screen.X - actualWidth) / currentDPIScaleFactor;
+            }
         }
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
@@ -306,60 +340,6 @@ namespace Valyreon.Elib.Wpf.Views.Windows
             PreviousState = WindowState;
         }
 
-        private void SetMaximizeButtonsVisibility(Visibility collapsed, Visibility visible)
-        {
-            MaximizeButton.Visibility = collapsed;
-            RestoreButton.Visibility = visible;
-        }
-
-        private void OnMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
-        {
-            if (!isMouseButtonDown)
-            {
-                return;
-            }
-
-            var currentDPIScaleFactor = (double)SystemHelper.GetCurrentDPIScaleFactor();
-            var position = e.GetPosition(this);
-            System.Diagnostics.Debug.WriteLine(position);
-            var screen = PointToScreen(position);
-            var x = mouseDownPosition.X - position.X;
-            var y = mouseDownPosition.Y - position.Y;
-            if (Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2)) > 1)
-            {
-                var actualWidth = mouseDownPosition.X;
-
-                if (mouseDownPosition.X <= 0)
-                {
-                    actualWidth = 0;
-                }
-                else if (mouseDownPosition.X >= ActualWidth)
-                {
-                    actualWidth = WidthBeforeMaximize;
-                }
-
-                if (WindowState == WindowState.Maximized)
-                {
-                    ToggleWindowState();
-                    Top = (screen.Y - position.Y) / currentDPIScaleFactor;
-                    Left = (screen.X - actualWidth) / currentDPIScaleFactor;
-                    CaptureMouse();
-                }
-
-                isManualDrag = true;
-
-                Top = (screen.Y - mouseDownPosition.Y) / currentDPIScaleFactor;
-                Left = (screen.X - actualWidth) / currentDPIScaleFactor;
-            }
-        }
-
-        private void OnMouseButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            isMouseButtonDown = false;
-            isManualDrag = false;
-            ReleaseMouseCapture();
-        }
-
         private void RefreshWindowState()
         {
             if (WindowState == WindowState.Maximized)
@@ -367,6 +347,26 @@ namespace Valyreon.Elib.Wpf.Views.Windows
                 ToggleWindowState();
                 ToggleWindowState();
             }
+        }
+
+        private void RestoreButton_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleWindowState();
+        }
+
+        private void SetMaximizeButtonsVisibility(Visibility collapsed, Visibility visible)
+        {
+            MaximizeButton.Visibility = collapsed;
+            RestoreButton.Visibility = visible;
+        }
+
+        private void SystemEvents_DisplaySettingsChanged(object sender, EventArgs e)
+        {
+            var screen = Screen.FromHandle(new WindowInteropHelper(this).Handle);
+            var width = (double)screen.WorkingArea.Width;
+            var workingArea = screen.WorkingArea;
+            previousScreenBounds = new System.Windows.Point(width, (double)workingArea.Height);
+            RefreshWindowState();
         }
     }
 }

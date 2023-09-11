@@ -11,13 +11,18 @@ namespace Valyreon.Elib.EbookTools.Mobi
 
     internal struct PalmRecordInfo
     {
-        public uint DataOffset;
         public uint Attributes;
+        public uint DataOffset;
         public uint UniqueId;
     }
 
     internal class PalmFile
     {
+        // Database Name
+        internal uint MAttributes;
+
+        internal PalmRecordInfo[] MRecordInfoList;
+        internal PalmRecord[] MRecordList;
         protected uint MAppInfoId;
         protected uint MCompression;
 
@@ -49,12 +54,6 @@ namespace Valyreon.Elib.EbookTools.Mobi
 
         // bit field.
         protected uint MVersion;
-
-        // Database Name
-        internal uint MAttributes;
-
-        internal PalmRecordInfo[] MRecordInfoList;
-        internal PalmRecord[] MRecordList;
 
         public uint AppInfoId => MAppInfoId;
 
@@ -107,6 +106,11 @@ namespace Valyreon.Elib.EbookTools.Mobi
         public uint UniqueIdSeed => MUniqueIdSeed;
 
         public uint Version => MVersion;
+
+        public static uint BytesToUint(byte[] bytes)
+        {
+            return (uint)((bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3]);
+        }
 
         public static PalmFile LoadFile(byte[] file)
         {
@@ -243,11 +247,6 @@ namespace Valyreon.Elib.EbookTools.Mobi
             }
 
             return retval;
-        }
-
-        public static uint BytesToUint(byte[] bytes)
-        {
-            return (uint)((bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3]);
         }
     }
 }

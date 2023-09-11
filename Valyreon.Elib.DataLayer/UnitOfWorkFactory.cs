@@ -6,9 +6,8 @@ namespace Valyreon.Elib.DataLayer
 {
     public class UnitOfWorkFactory : IUnitOfWorkFactory
     {
-        private readonly string connection;
-
         private static readonly SemaphoreSlim semaphore = new(1, 1);
+        private readonly string connection;
 
         public UnitOfWorkFactory(string connection)
         {
@@ -18,9 +17,6 @@ namespace Valyreon.Elib.DataLayer
         public async Task<IUnitOfWork> CreateAsync()
         {
             await semaphore.WaitAsync();
-            //Console.WriteLine("\nGETTING A UOW");
-            //Environment.StackTrace.Split("\n").ToList().ForEach(Console.WriteLine);
-            //Console.WriteLine("=========================");
             return new UnitOfWork(connection);
         }
 

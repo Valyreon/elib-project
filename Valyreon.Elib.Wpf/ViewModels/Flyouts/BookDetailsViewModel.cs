@@ -20,10 +20,10 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 {
     public class BookDetailsViewModel : ViewModelBase
     {
-        private ObservableCollection<ObservableEntity> collectionSuggestions;
-        private IEnumerable<UserCollection> allUserCollections;
-        private bool isExternalReaderSpecified;
         private readonly IUnitOfWorkFactory uowFactory;
+        private IEnumerable<UserCollection> allUserCollections;
+        private ObservableCollection<ObservableEntity> collectionSuggestions;
+        private bool isExternalReaderSpecified;
 
         public BookDetailsViewModel(Book book, ApplicationProperties properties, IUnitOfWorkFactory uowFactory)
         {
@@ -35,35 +35,18 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             MessengerInstance.Register<AppSettingsChangedMessage>(this, _ => IsExternalReaderSpecified = Properties.IsExternalReaderSpecifiedAndValid());
         }
 
+        public ICommand AddCollectionCommand => new RelayCommand<string>(AddCollection);
+
+        public Book Book { get; }
+
         public ObservableCollection<ObservableEntity> CollectionSuggestions
         {
             get => collectionSuggestions;
             set => Set(() => CollectionSuggestions, ref collectionSuggestions, value);
         }
 
-        public bool IsExternalReaderSpecified { get => isExternalReaderSpecified; set => Set(() => IsExternalReaderSpecified, ref isExternalReaderSpecified, value); }
-
-        public ICommand AddCollectionCommand => new RelayCommand<string>(AddCollection);
-
-        public ICommand RefreshSuggestedCollectionsCommand => new RelayCommand<string>(HandleRefreshSuggestedCollections);
-
-        private async void HandleRefreshSuggestedCollections(string token)
-        {
-            if (allUserCollections == null)
-            {
-                using var uow = await uowFactory.CreateAsync();
-                allUserCollections = await uow.CollectionRepository.GetAllAsync();
-            }
-
-            var suggestions = allUserCollections.Where(c => !Book.Collections.Contains(c) && c.Tag.ToLowerInvariant().Contains(token))
-                .Take(4);
-            CollectionSuggestions = new ObservableCollection<ObservableEntity>(suggestions.Cast<ObservableEntity>());
-        }
-
-        public Book Book { get; }
-        public ApplicationProperties Properties { get; }
-
         public ICommand EditButtonCommand => new RelayCommand(HandleEditButton);
+        public ICommand ExportButtonCommand => new RelayCommand(HandleExport);
 
         public ICommand GoToAuthor => new RelayCommand<ICollection<Author>>(a =>
         {
@@ -113,39 +96,14 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             }
         }
 
-        public ICommand RemoveCollectionCommand => new RelayCommand<UserCollection>(RemoveCollection);
+        public bool IsExternalReaderSpecified { get => isExternalReaderSpecified; set => Set(() => IsExternalReaderSpecified, ref isExternalReaderSpecified, value); }
         public ICommand OpenBookCommand => new RelayCommand(HandleOpenBook);
+        public ApplicationProperties Properties { get; }
+        public ICommand RefreshSuggestedCollectionsCommand => new RelayCommand<string>(HandleRefreshSuggestedCollections);
 
-        private void HandleOpenBook()
-        {
-            if (Properties.IsExternalReaderSpecifiedAndValid())
-            {
-                Process.Start(Properties.ExternalReaderPath, $@"""{Book.Path}""");
-            }
-        }
+        public ICommand RemoveCollectionCommand => new RelayCommand<UserCollection>(RemoveCollection);
 
-        private void GoToCollection(UserCollection obj)
-        {
-            MessengerInstance.Send(new CollectionSelectedMessage(obj.Id));
-            MessengerInstance.Send(new CloseFlyoutMessage());
-        }
-
-        private void RemoveCollection(UserCollection collection)
-        {
-            Book.Collections.Remove(collection);
-
-            Task.Run(async () =>
-            {
-                using var uow = await uowFactory.CreateAsync();
-                await uow.CollectionRepository.RemoveCollectionForBookAsync(collection, Book.Id);
-                if (await uow.CollectionRepository.CountBooksInUserCollectionAsync(collection.Id) == 0)
-                {
-                    await uow.CollectionRepository.DeleteAsync(collection);
-                    MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
-                }
-                uow.Commit();
-            });
-        }
+        public ICommand ShowFileInfoCommand => new RelayCommand(HandleShowFileInfo);
 
         private void AddCollection(string tag)
         {
@@ -181,12 +139,16 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             });
         }
 
+        private void GoToCollection(UserCollection obj)
+        {
+            MessengerInstance.Send(new CollectionSelectedMessage(obj.Id));
+            MessengerInstance.Send(new CloseFlyoutMessage());
+        }
+
         private void HandleEditButton()
         {
             MessengerInstance.Send(new EditBookMessage(Book));
         }
-
-        public ICommand ExportButtonCommand => new RelayCommand(HandleExport);
 
         private void HandleExport()
         {
@@ -216,7 +178,26 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             }
         }
 
-        public ICommand ShowFileInfoCommand => new RelayCommand(HandleShowFileInfo);
+        private void HandleOpenBook()
+        {
+            if (Properties.IsExternalReaderSpecifiedAndValid())
+            {
+                Process.Start(Properties.ExternalReaderPath, $@"""{Book.Path}""");
+            }
+        }
+
+        private async void HandleRefreshSuggestedCollections(string token)
+        {
+            if (allUserCollections == null)
+            {
+                using var uow = await uowFactory.CreateAsync();
+                allUserCollections = await uow.CollectionRepository.GetAllAsync();
+            }
+
+            var suggestions = allUserCollections.Where(c => !Book.Collections.Contains(c) && c.Tag.ToLowerInvariant().Contains(token))
+                .Take(4);
+            CollectionSuggestions = new ObservableCollection<ObservableEntity>(suggestions.Cast<ObservableEntity>());
+        }
 
         private void HandleShowFileInfo()
         {
@@ -235,6 +216,23 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
             var viewModel = new TextMessageDialogViewModel("File Information", builder.ToString());
             MessengerInstance.Send(new ShowDialogMessage(viewModel));
+        }
+
+        private void RemoveCollection(UserCollection collection)
+        {
+            Book.Collections.Remove(collection);
+
+            Task.Run(async () =>
+            {
+                using var uow = await uowFactory.CreateAsync();
+                await uow.CollectionRepository.RemoveCollectionForBookAsync(collection, Book.Id);
+                if (await uow.CollectionRepository.CountBooksInUserCollectionAsync(collection.Id) == 0)
+                {
+                    await uow.CollectionRepository.DeleteAsync(collection);
+                    MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
+                }
+                uow.Commit();
+            });
         }
     }
 }

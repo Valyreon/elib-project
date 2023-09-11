@@ -13,12 +13,12 @@ namespace Valyreon.Elib.Wpf.Views.Dialogs
             InitializeComponent();
         }
 
-        private void UserControl_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        private void UserControl_Initialized(object sender, System.EventArgs e)
         {
             Keyboard.Focus(InputTextBox);
         }
 
-        private void UserControl_Initialized(object sender, System.EventArgs e)
+        private void UserControl_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {
             Keyboard.Focus(InputTextBox);
         }

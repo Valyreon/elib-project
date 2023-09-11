@@ -6,15 +6,14 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
     {
         private int barMaximum;
         private int barMinimum;
+        private int currentBarValue;
         private string currentMessage;
         private string title;
-        private int currentBarValue;
-
         public int BarMaximum { get => barMaximum; set => Set(() => BarMaximum, ref barMaximum, value); }
         public int BarMinimum { get => barMinimum; set => Set(() => BarMinimum, ref barMinimum, value); }
+        public int CurrentBarValue { get => currentBarValue; set => Set(() => CurrentBarValue, ref currentBarValue, value); }
         public string CurrentMessage { get => currentMessage; set => Set(() => CurrentMessage, ref currentMessage, value); }
         public string Title { get => title; set => Set(() => Title, ref title, value); }
-        public int CurrentBarValue { get => currentBarValue; set => Set(() => CurrentBarValue, ref currentBarValue, value); }
 
         public override bool CanBeClosedByUser()
         {

@@ -8,12 +8,12 @@ namespace Valyreon.Elib.Wpf.Views.Controls
     /// </summary>
     public partial class EditBookFormControl : UserControl
     {
+        private static readonly Regex digitsOnly = new(@"^\d*\.?\d?$");
+
         public EditBookFormControl()
         {
             InitializeComponent();
         }
-
-        private static readonly Regex digitsOnly = new(@"^\d*\.?\d?$");
 
         private void SeriesNumberField_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
         {

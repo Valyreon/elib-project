@@ -28,6 +28,14 @@ namespace Valyreon.Elib.Wpf.ViewModels
             }
         }
 
+        public void ClearErrors()
+        {
+            lock (lockObject)
+            {
+                errors.Clear();
+            }
+        }
+
         public IEnumerable GetErrors(string propertyName = null)
         {
             lock (lockObject)
@@ -44,14 +52,6 @@ namespace Valyreon.Elib.Wpf.ViewModels
             }
 
             return null;
-        }
-
-        public void ClearErrors()
-        {
-            lock (lockObject)
-            {
-                errors.Clear();
-            }
         }
 
         public void OnErrorsChanged(string propertyName)

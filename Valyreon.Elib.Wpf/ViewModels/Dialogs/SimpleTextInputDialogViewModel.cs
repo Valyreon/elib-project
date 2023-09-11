@@ -8,9 +8,9 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
     internal class SimpleTextInputDialogViewModel : DialogViewModel
     {
         private readonly Action<string> onConfirm;
-        private string title;
-        private string text;
         private string inputText;
+        private string text;
+        private string title;
 
         public SimpleTextInputDialogViewModel(string title, string text, Action<string> onConfirm)
         {
@@ -23,14 +23,16 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
 
         public ICommand ConfirmCommand => new RelayCommand(HandleSubmit);
 
+        public string InputText { get => inputText; set => Set(() => InputText, ref inputText, value); }
+
+        public string Text { get => text; set => Set(() => Text, ref text, value); }
+
+        public string Title { get => title; set => Set(() => Title, ref title, value); }
+
         private void HandleSubmit()
         {
             onConfirm(InputText);
             Close();
         }
-
-        public string Title { get => title; set => Set(() => Title, ref title, value); }
-        public string Text { get => text; set => Set(() => Text, ref text, value); }
-        public string InputText { get => inputText; set => Set(() => InputText, ref inputText, value); }
     }
 }

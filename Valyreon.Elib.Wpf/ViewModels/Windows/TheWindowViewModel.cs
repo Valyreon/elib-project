@@ -21,22 +21,19 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
 {
     public class TheWindowViewModel : ViewModelBase, IDisposable
     {
-        private IFlyoutPanel flyoutControl;
-        private ITabViewModel selectedTab;
+        private static readonly TimeSpan refreshPause = new TimeSpan(0, 0, 0, 0, 500);
+        private static DateTime lastRefresh = DateTime.MinValue;
         private readonly ApplicationProperties applicationProperties = ApplicationData.GetProperties();
-
         private readonly Queue<ShowNotificationMessage> messages = new();
         private readonly Timer notificationTimer = new();
-        private ElibFileSystemWatcher fileSystemWatcher;
         private readonly IUnitOfWorkFactory unitOfWorkFactory = new UnitOfWorkFactory(ApplicationData.DatabasePath);
-
-        public ShowNotificationMessage CurrentNotificationMessage
-        {
-            get => currentNotificationMessage;
-            set => Set(() => CurrentNotificationMessage, ref currentNotificationMessage, value);
-        }
-
-        public ICommand NextNotificationCommand => new RelayCommand(() => HandleNextNotification());
+        private ShowNotificationMessage currentNotificationMessage;
+        private DialogViewModel dialogControl;
+        private ElibFileSystemWatcher fileSystemWatcher;
+        private IFlyoutPanel flyoutControl;
+        private bool isDialogOpen;
+        private bool isGlobalLoaderOpen;
+        private ITabViewModel selectedTab;
 
         public TheWindowViewModel()
         {
@@ -79,73 +76,26 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
             FlyoutControl = new FlyoutPanel();
         }
 
-        private void HandleNextNotification(object sender = null, ElapsedEventArgs e = null)
-        {
-            if (messages.Count > 0)
-            {
-                CurrentNotificationMessage = messages.Dequeue();
-                return;
-            }
-
-            notificationTimer.Stop();
-            CurrentNotificationMessage = null;
-        }
-
-        private void HandleShowNotification(ShowNotificationMessage message)
-        {
-            if (notificationTimer.Enabled)
-            {
-                messages.Enqueue(message);
-                return;
-            }
-
-            CurrentNotificationMessage = message;
-            notificationTimer.Start();
-        }
-
-        public void OpenFlyoutPanel(object content)
-        {
-            flyoutControl.ContentControl = content;
-            flyoutControl.IsOpen = true;
-        }
-
-        public void CloseFlyoutPanel()
-        {
-            flyoutControl.IsOpen = false;
-            flyoutControl.ContentControl = null;
-        }
-
-        public ICommand EscKeyCommand => new RelayCommand(ProcessEscKey);
         public ICommand CloseFlyoutCommand => new RelayCommand(() => FlyoutControl = null);
-        public ICommand ScanForNewContentCommand => new RelayCommand(HandleScanForNewBooks);
-        public ICommand RefreshViewCommand => new RelayCommand(HandleRefreshView);
 
-        private static DateTime lastRefresh = DateTime.MinValue;
-        private ShowNotificationMessage currentNotificationMessage;
-        private DialogViewModel dialogControl;
-        private bool isDialogOpen;
-        private bool isGlobalLoaderOpen;
-        private static readonly TimeSpan refreshPause = new TimeSpan(0, 0, 0, 0, 500);
-
-        public void HandleRefreshView()
+        public ShowNotificationMessage CurrentNotificationMessage
         {
-            if (DateTime.Now - lastRefresh > refreshPause)
-            {
-                MessengerInstance.Send(new RefreshCurrentViewMessage());
-                lastRefresh = DateTime.Now;
-            }
-        }
-
-        public IFlyoutPanel FlyoutControl
-        {
-            get => flyoutControl;
-            set => Set(() => FlyoutControl, ref flyoutControl, value);
+            get => currentNotificationMessage;
+            set => Set(() => CurrentNotificationMessage, ref currentNotificationMessage, value);
         }
 
         public DialogViewModel DialogControl
         {
             get => dialogControl;
             set => Set(() => DialogControl, ref dialogControl, value);
+        }
+
+        public ICommand EscKeyCommand => new RelayCommand(ProcessEscKey);
+
+        public IFlyoutPanel FlyoutControl
+        {
+            get => flyoutControl;
+            set => Set(() => FlyoutControl, ref flyoutControl, value);
         }
 
         public bool IsDialogOpen
@@ -160,6 +110,11 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
             set => Set(() => IsGlobalLoaderOpen, ref isGlobalLoaderOpen, value);
         }
 
+        public ICommand NextNotificationCommand => new RelayCommand(() => HandleNextNotification());
+        public ICommand RefreshViewCommand => new RelayCommand(HandleRefreshView);
+
+        public ICommand ScanForNewContentCommand => new RelayCommand(HandleScanForNewBooks);
+
         public ITabViewModel SelectedTab
         {
             get => selectedTab;
@@ -167,6 +122,60 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
         }
 
         public ObservableCollection<ITabViewModel> Tabs { get; set; }
+
+        public void CloseFlyoutPanel()
+        {
+            flyoutControl.IsOpen = false;
+            flyoutControl.ContentControl = null;
+        }
+
+        public void Dispose()
+        {
+            fileSystemWatcher.Dispose();
+            MessengerInstance.Unregister(this);
+        }
+
+        public void HandleRefreshView()
+        {
+            if (DateTime.Now - lastRefresh > refreshPause)
+            {
+                MessengerInstance.Send(new RefreshCurrentViewMessage());
+                lastRefresh = DateTime.Now;
+            }
+        }
+
+        public void OpenFlyoutPanel(object content)
+        {
+            flyoutControl.ContentControl = content;
+            flyoutControl.IsOpen = true;
+        }
+
+        private void HandleAddBooksFlyout(IList<string> booksToAdd)
+        {
+            OpenFlyoutPanel(new AddNewBooksViewModel(booksToAdd, unitOfWorkFactory));
+        }
+
+        private void HandleEditBookFlyout(Book book)
+        {
+            OpenFlyoutPanel(new EditBookViewModel(book, unitOfWorkFactory));
+        }
+
+        private void HandleNextNotification(object sender = null, ElapsedEventArgs e = null)
+        {
+            if (messages.Count > 0)
+            {
+                CurrentNotificationMessage = messages.Dequeue();
+                return;
+            }
+
+            notificationTimer.Stop();
+            CurrentNotificationMessage = null;
+        }
+
+        private void HandleOpenFlyout(ViewModelBase obj)
+        {
+            OpenFlyoutPanel(obj);
+        }
 
         private async void HandleScanForNewBooks()
         {
@@ -181,14 +190,16 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
             HandleAddBooksFlyout(newBookPaths);
         }
 
-        private void HandleEditBookFlyout(Book book)
+        private void HandleShowNotification(ShowNotificationMessage message)
         {
-            OpenFlyoutPanel(new EditBookViewModel(book, unitOfWorkFactory));
-        }
+            if (notificationTimer.Enabled)
+            {
+                messages.Enqueue(message);
+                return;
+            }
 
-        private void HandleAddBooksFlyout(IList<string> booksToAdd)
-        {
-            OpenFlyoutPanel(new AddNewBooksViewModel(booksToAdd, unitOfWorkFactory));
+            CurrentNotificationMessage = message;
+            notificationTimer.Start();
         }
 
         private void ProcessEscKey()
@@ -211,17 +222,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
             }
 
             MessengerInstance.Send(new GoBackMessage());
-        }
-
-        private void HandleOpenFlyout(ViewModelBase obj)
-        {
-            OpenFlyoutPanel(obj);
-        }
-
-        public void Dispose()
-        {
-            fileSystemWatcher.Dispose();
-            MessengerInstance.Unregister(this);
         }
     }
 }

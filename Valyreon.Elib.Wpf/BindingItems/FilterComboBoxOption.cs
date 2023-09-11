@@ -6,23 +6,18 @@ namespace Valyreon.Elib.Wpf.BindingItems
 {
     public class FilterComboBoxOption<T> where T : IFilterParameters
     {
-        public static readonly IEnumerable<FilterComboBoxOption<BookFilter>> BookStatusFilterOptions = new List<FilterComboBoxOption<BookFilter>>()
+        public static readonly IEnumerable<FilterComboBoxOption<Filter>> AuthorSortFilterOptions = new List<FilterComboBoxOption<Filter>>()
         {
-            new FilterComboBoxOption<BookFilter>
+            new FilterComboBoxOption<Filter>
             {
-                Name = "ALL",
-                TransformFilter = filter => filter with { Read = null }
+                Name = "NAME",
+                TransformFilter = filter => filter with { SortByName = true, SortByBookCount = false }
             },
-            new FilterComboBoxOption<BookFilter>
+            new FilterComboBoxOption<Filter>
             {
-                Name = "READ",
-                TransformFilter = filter => filter with { Read = true }
-            },
-            new FilterComboBoxOption<BookFilter>
-            {
-                Name = "UNREAD",
-                TransformFilter = filter => filter with { Read = false }
-            },
+                Name = "BOOK COUNT",
+                TransformFilter = filter => filter with { SortByBookCount = true, SortByName = false }
+            }
         };
 
         public static readonly IEnumerable<FilterComboBoxOption<BookFilter>> BookSortFilterOptions = new List<FilterComboBoxOption<BookFilter>>()
@@ -49,18 +44,23 @@ namespace Valyreon.Elib.Wpf.BindingItems
             },
         };
 
-        public static readonly IEnumerable<FilterComboBoxOption<Filter>> AuthorSortFilterOptions = new List<FilterComboBoxOption<Filter>>()
+        public static readonly IEnumerable<FilterComboBoxOption<BookFilter>> BookStatusFilterOptions = new List<FilterComboBoxOption<BookFilter>>()
         {
-            new FilterComboBoxOption<Filter>
+            new FilterComboBoxOption<BookFilter>
             {
-                Name = "NAME",
-                TransformFilter = filter => filter with { SortByName = true, SortByBookCount = false }
+                Name = "ALL",
+                TransformFilter = filter => filter with { Read = null }
             },
-            new FilterComboBoxOption<Filter>
+            new FilterComboBoxOption<BookFilter>
             {
-                Name = "BOOK COUNT",
-                TransformFilter = filter => filter with { SortByBookCount = true, SortByName = false }
-            }
+                Name = "READ",
+                TransformFilter = filter => filter with { Read = true }
+            },
+            new FilterComboBoxOption<BookFilter>
+            {
+                Name = "UNREAD",
+                TransformFilter = filter => filter with { Read = false }
+            },
         };
 
         public string Name { get; set; }

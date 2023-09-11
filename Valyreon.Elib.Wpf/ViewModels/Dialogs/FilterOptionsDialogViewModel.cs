@@ -8,10 +8,19 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
 {
     public class FilterOptionsDialogViewModel : DialogViewModel
     {
-        public FilterOptions Options { get; }
-
-        private int orderSelectedIndex;
         private readonly Action<FilterOptions> onConfirm;
+        private int orderSelectedIndex;
+
+        public FilterOptionsDialogViewModel(FilterOptions options, Action<FilterOptions> onConfirm)
+        {
+            Options = (FilterOptions)options.Clone();
+            this.onConfirm = onConfirm;
+            OrderSelectedIndex = Options.Ascending ? 1 : 0;
+        }
+
+        public ICommand ApplyCommand => new RelayCommand(Apply);
+        public ICommand CancelCommand => new RelayCommand(Close);
+        public FilterOptions Options { get; }
 
         public int OrderSelectedIndex
         {
@@ -22,17 +31,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
                 Options.Ascending = orderSelectedIndex != 0;
             }
         }
-
-        public FilterOptionsDialogViewModel(FilterOptions options, Action<FilterOptions> onConfirm)
-        {
-            Options = (FilterOptions)options.Clone();
-            this.onConfirm = onConfirm;
-            OrderSelectedIndex = Options.Ascending ? 1 : 0;
-        }
-
-        public ICommand CancelCommand => new RelayCommand(Close);
-
-        public ICommand ApplyCommand => new RelayCommand(Apply);
 
         private void Apply()
         {

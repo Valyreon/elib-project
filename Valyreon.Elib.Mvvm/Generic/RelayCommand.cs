@@ -5,14 +5,9 @@ namespace Valyreon.Elib.Mvvm
 {
     public class RelayCommand<T> : ICommand
     {
-        public event EventHandler CanExecuteChanged
-        {
-            add { }
-            remove { }
-        }
+        private readonly Func<bool> canExecuteEvaluator;
 
         private readonly Action<T> methodToExecute;
-        private readonly Func<bool> canExecuteEvaluator;
 
         public RelayCommand(Action<T> methodToExecute, Func<bool> canExecuteEvaluator)
         {
@@ -23,6 +18,12 @@ namespace Valyreon.Elib.Mvvm
         public RelayCommand(Action<T> methodToExecute)
             : this(methodToExecute, null)
         {
+        }
+
+        public event EventHandler CanExecuteChanged
+        {
+            add { }
+            remove { }
         }
 
         public bool CanExecute(object parameter)

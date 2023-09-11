@@ -11,11 +11,11 @@ namespace Valyreon.Elib.Wpf.Themes.CustomComponents.Controls;
 /// </summary>
 public partial class FlyoutPanel : UserControl, IFlyoutPanel
 {
-    public static DependencyProperty IsOpenProperty;
     public static DependencyProperty ContentControlProperty;
-    private Window window;
-    private double opacity;
+    public static DependencyProperty IsOpenProperty;
     private static readonly Duration animationDuration = new Duration(new TimeSpan(0, 0, 0, 0, 250));
+    private double opacity;
+    private Window window;
 
     static FlyoutPanel()
     {
@@ -33,6 +33,12 @@ public partial class FlyoutPanel : UserControl, IFlyoutPanel
             theGrid.Visibility = Visibility.Collapsed;
             opacity = theGrid.Opacity;
         });
+    }
+
+    public object ContentControl
+    {
+        get => GetValue(ContentControlProperty);
+        set => SetValue(ContentControlProperty, value);
     }
 
     public bool IsOpen
@@ -55,10 +61,9 @@ public partial class FlyoutPanel : UserControl, IFlyoutPanel
         }
     }
 
-    public object ContentControl
+    private void Button_Click(object sender, RoutedEventArgs e)
     {
-        get => GetValue(ContentControlProperty);
-        set => SetValue(ContentControlProperty, value);
+        IsOpen = false;
     }
 
     private void Close()
@@ -83,10 +88,5 @@ public partial class FlyoutPanel : UserControl, IFlyoutPanel
         thicknessAnimation.Completed += (a, i) => theGrid.Margin = endThickness;
         theGrid.BeginAnimation(MarginProperty, thicknessAnimation);
         theGrid.BeginAnimation(OpacityProperty, opacityAnimation);
-    }
-
-    private void Button_Click(object sender, RoutedEventArgs e)
-    {
-        IsOpen = false;
     }
 }

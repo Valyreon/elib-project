@@ -24,13 +24,13 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 {
     public class BooksTabViewModel : ViewModelBase, ITabViewModel
     {
-        private readonly PaneMainItem selectedMainItem;
+        private readonly ApplicationProperties applicationProperties;
         private readonly ViewerHistory history = new();
+        private readonly PaneMainItem selectedMainItem;
+        private readonly Selector selector = new Selector();
+        private readonly IUnitOfWorkFactory unitOfWorkFactory;
         private string caption = "Books";
         private IViewer currentViewer;
-        private readonly Selector selector = new Selector();
-        private readonly ApplicationProperties applicationProperties;
-        private readonly IUnitOfWorkFactory unitOfWorkFactory;
         private UserCollection selectedCollection;
         private PaneMainItem selectedMainPaneItem;
 
@@ -60,48 +60,27 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             selector.SelectionChanged += HandleSelectionChanged;
         }
 
-        private void HandleSelectionChanged()
+        public string Caption
         {
-            if (selector.Count > 0 && !MainPaneItems.Contains(selectedMainItem))
-            {
-                MainPaneItems.Add(selectedMainItem);
-            }
-            else if (selector.Count == 0)
-            {
-                _ = MainPaneItems.Remove(selectedMainItem);
-            }
+            get => caption;
+            set => Set(() => Caption, ref caption, value);
         }
 
         public ObservableCollection<UserCollection> Collections { get; set; }
 
-        public async void CollectionsRefreshHandler(RefreshSidePaneCollectionsMessage msg)
-        {
-            using var uow = await unitOfWorkFactory.CreateAsync();
-            var collections = await uow.CollectionRepository.GetAllAsync(new QueryParameters
-            {
-                SortBy = new()
-                {
-                    PropertyName = "Tag"
-                }
-            });
-            Collections = new ObservableCollection<UserCollection>(collections);
-            RaisePropertyChanged(() => Collections);
-        }
+        public ICommand CollectionSelectionChangedCommand => new RelayCommand(HandleCollectionSelectionChanged);
 
         public IViewer CurrentViewer => currentViewer;
 
-        private void SetCurrentViewer(IViewer value)
-        {
-            UnitOfWork.ClearCache();
-            CurrentViewer?.Dispose();
-            value.Back = history.Count > 0 ? GoToPreviousViewer : null;
-            Set(() => CurrentViewer, ref currentViewer, value);
-            CurrentViewer.Refresh();
-        }
+        public ICommand ImportCommand => new RelayCommand(HandleImport);
 
         public bool IsBackEnabled => history.Count > 0;
 
+        public ICommand LoadedCommand => new RelayCommand(HandleLoaded);
+
         public ObservableCollection<PaneMainItem> MainPaneItems { get; set; }
+
+        public ICommand PaneSelectionChangedCommand => new RelayCommand(PaneSelectionChanged);
 
         public UserCollection SelectedCollection
         {
@@ -116,40 +95,18 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             set => Set(() => SelectedMainPaneItem, ref selectedMainPaneItem, value);
         }
 
-        public string Caption
+        public async void CollectionsRefreshHandler(RefreshSidePaneCollectionsMessage msg)
         {
-            get => caption;
-            set => Set(() => Caption, ref caption, value);
-        }
-
-        private void HandleCollectionSelection(CollectionSelectedMessage message)
-        {
-            SelectedCollection = Collections.FirstOrDefault(c => c.Id == message.CollectionId);
-            HandleCollectionSelectionChanged();
-        }
-
-        public ICommand CollectionSelectionChangedCommand => new RelayCommand(HandleCollectionSelectionChanged);
-
-        private void HandleCollectionSelectionChanged()
-        {
-            if (selectedCollection == null)
+            using var uow = await unitOfWorkFactory.CreateAsync();
+            var collections = await uow.CollectionRepository.GetAllAsync(new QueryParameters
             {
-                return;
-            }
-
-            history.Clear();
-
-            var filter = new BookFilter
-            {
-                CollectionId = selectedCollection.Id
-            };
-
-            var newViewer = new BookViewerViewModel(filter, selector, applicationProperties, unitOfWorkFactory)
-            {
-                Caption = $"Collection {selectedCollection.Tag}"
-            };
-
-            SetCurrentViewer(newViewer);
+                SortBy = new()
+                {
+                    PropertyName = "Tag"
+                }
+            });
+            Collections = new ObservableCollection<UserCollection>(collections);
+            RaisePropertyChanged(() => Collections);
         }
 
         private void GoToPreviousViewer()
@@ -192,6 +149,150 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             SetCurrentViewer(newViewer);
         }
 
+        private void HandleCollectionSelection(CollectionSelectedMessage message)
+        {
+            SelectedCollection = Collections.FirstOrDefault(c => c.Id == message.CollectionId);
+            HandleCollectionSelectionChanged();
+        }
+
+        private void HandleCollectionSelectionChanged()
+        {
+            if (selectedCollection == null)
+            {
+                return;
+            }
+
+            history.Clear();
+
+            var filter = new BookFilter
+            {
+                CollectionId = selectedCollection.Id
+            };
+
+            var newViewer = new BookViewerViewModel(filter, selector, applicationProperties, unitOfWorkFactory)
+            {
+                Caption = $"Collection {selectedCollection.Tag}"
+            };
+
+            SetCurrentViewer(newViewer);
+        }
+
+        private void HandleImport()
+        {
+            _ = Task.Run(async () =>
+            {
+                var importer = new ImportService(unitOfWorkFactory, applicationProperties);
+
+                MessengerInstance.Send(new SetGlobalLoaderMessage(true));
+                var newBookPaths = await importer.GetNotImportedBookPathsAsync();
+
+                if (!newBookPaths.Any())
+                {
+                    return;
+                }
+
+                var importFlyout = new AddNewBooksViewModel(newBookPaths, unitOfWorkFactory);
+                MessengerInstance.Send(new SetGlobalLoaderMessage(false));
+
+                Application.Current.Dispatcher.Invoke(() => MessengerInstance.Send(new OpenFlyoutMessage(importFlyout)));
+            });
+        }
+
+        private void HandleLoaded()
+        {
+            PaneSelectionChanged();
+
+            if (!applicationProperties.AutomaticallyImportWithFoundISBN)
+            {
+                return;
+            }
+
+            _ = Task.Run(async () =>
+            {
+                IReadOnlyList<string> foundBooks = null;
+                var importService = new ImportService(unitOfWorkFactory, applicationProperties);
+                foundBooks = await importService.GetNotImportedBookPathsAsync();
+
+                //MessengerInstance.Send(new ShowNotificationMessage($"Found {foundBooks.Count} books to be imported."));
+                var counter = 0;
+                var withISBN = 0;
+                var nullReturned = 0;
+                var excHappened = 0;
+
+                var epubCount = foundBooks.Count(b => b.ToLowerInvariant().EndsWith(".epub"));
+                var mobiCount = foundBooks.Count(b => b.ToLowerInvariant().EndsWith(".mobi"));
+                var pdfCount = foundBooks.Count(b => b.ToLowerInvariant().EndsWith(".pdf"));
+
+                var toProcess = foundBooks.Where(b => b.ToLowerInvariant().EndsWith(".epub")).ToList();
+
+                if (toProcess.Any())
+                {
+                    MessengerInstance.Send(new ShowNotificationMessage($"Importing books..."));
+                }
+
+                foreach (var book in toProcess)
+                {
+                    var parser = new VersOneEpubParser(book);
+                    try
+                    {
+                        var parsedBook = parser.Parse();
+
+                        if (string.IsNullOrWhiteSpace(parsedBook.Isbn))
+                        {
+                            continue;
+                        }
+
+                        withISBN++;
+                        var client = new GoogleBooksClient();
+                        var bData = await client.GetByIsbnAsync(parsedBook.Isbn);
+
+                        if (bData == null)
+                        {
+                            nullReturned++;
+                            continue;
+                        }
+
+                        //File.WriteAllText(@"C:\Users\Luka\Desktop\log.txt", JsonConvert.SerializeObject(result, Formatting.Indented));
+                        //parsedBook.Description = olBook.Data.Description;
+
+                        parsedBook.Title = bData.Title;
+                        parsedBook.Authors = bData.Authors.ToList();
+                        parsedBook.Cover = ImageOptimizer.GetBiggerImage(bData.Cover, parsedBook.Cover);
+                        parsedBook.Description = bData.Description;
+                        parsedBook.Publisher = bData.Publisher;
+
+                        var bookForImport = await parsedBook.ToBookAsync(unitOfWorkFactory);
+
+                        await importService.ImportBookAsync(bookForImport);
+                        Application.Current.Dispatcher.Invoke(() => MessengerInstance.Send(new RefreshCurrentViewMessage()));
+                        counter++;
+                    }
+                    catch (Exception ex)
+                    {
+                        excHappened++;
+                        var m = ex.Message;
+                    }
+                }
+
+                if (counter > 0)
+                {
+                    MessengerInstance.Send(new ShowNotificationMessage($"Successfully imported {counter} books using Google Books."));
+                }
+            });
+        }
+
+        private void HandleSelectionChanged()
+        {
+            if (selector.Count > 0 && !MainPaneItems.Contains(selectedMainItem))
+            {
+                MainPaneItems.Add(selectedMainItem);
+            }
+            else if (selector.Count == 0)
+            {
+                _ = MainPaneItems.Remove(selectedMainItem);
+            }
+        }
+
         private void HandleSeriesSelection(SeriesSelectedMessage obj)
         {
             if (obj.Series == null)
@@ -221,85 +322,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             SetCurrentViewer(new BookViewerViewModel(filter, selector, applicationProperties, unitOfWorkFactory) { Caption = viewerCaption, Back = GoToPreviousViewer });
         }
 
-        public ICommand PaneSelectionChangedCommand => new RelayCommand(PaneSelectionChanged);
-
-        public ICommand LoadedCommand => new RelayCommand(HandleLoaded);
-
-        private void HandleLoaded()
-        {
-            PaneSelectionChanged();
-
-            if (!applicationProperties.AutomaticallyImportWithFoundISBN)
-            {
-                return;
-            }
-
-            _ = Task.Run(async () =>
-            {
-                IReadOnlyList<string> foundBooks = null;
-                var importService = new ImportService(unitOfWorkFactory, applicationProperties);
-                foundBooks = await importService.GetNotImportedBookPathsAsync();
-
-                //MessengerInstance.Send(new ShowNotificationMessage($"Found {foundBooks.Count} books to be imported."));
-                var counter = 0;
-                var withISBN = 0;
-                var nullReturned = 0;
-                var excHappened = 0;
-
-                var epubCount = foundBooks.Count(b => b.ToLowerInvariant().EndsWith(".epub"));
-                var mobiCount = foundBooks.Count(b => b.ToLowerInvariant().EndsWith(".mobi"));
-                var pdfCount = foundBooks.Count(b => b.ToLowerInvariant().EndsWith(".pdf"));
-
-                foreach (var book in foundBooks.Where(b => b.ToLowerInvariant().EndsWith(".epub")))
-                {
-                    var parser = new VersOneEpubParser(book);
-                    try
-                    {
-                        var parsedBook = parser.Parse();
-
-                        if (string.IsNullOrWhiteSpace(parsedBook.Isbn))
-                        {
-                            continue;
-                        }
-
-                        withISBN++;
-                        var client = new GoogleBooksClient();
-                        var bData = await client.GetByIsbnAsync(parsedBook.Isbn);
-
-                        if (bData == null)
-                        {
-                            nullReturned++;
-                            continue;
-                        }
-
-                        //File.WriteAllText(@"C:\Users\Luka\Desktop\log.txt", JsonConvert.SerializeObject(result, Formatting.Indented));
-                        //parsedBook.Description = olBook.Data.Description;
-
-                        parsedBook.Title = bData.Title;
-                        parsedBook.Authors = bData.Authors.ToList();
-                        parsedBook.Cover = bData.Cover ?? parsedBook.Cover;
-                        parsedBook.Description = bData.Description;
-                        parsedBook.Publisher = bData.Publisher;
-
-                        var bookForImport = await parsedBook.ToBookAsync(unitOfWorkFactory);
-
-                        await importService.ImportBookAsync(bookForImport);
-                        counter++;
-                    }
-                    catch (Exception ex)
-                    {
-                        excHappened++;
-                        var m = ex.Message;
-                    }
-                }
-
-                if (counter > 0)
-                {
-                    MessengerInstance.Send(new ShowNotificationMessage($"Successfully imported {counter} books using Google Books."));
-                }
-            });
-        }
-
         private void PaneSelectionChanged()
         {
             if (selectedMainPaneItem == null)
@@ -327,27 +349,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             }
         }
 
-        public ICommand ImportCommand => new RelayCommand(HandleImport);
-
-        private void HandleImport()
+        private void SetCurrentViewer(IViewer value)
         {
-            _ = Task.Run(async () =>
-            {
-                var importer = new ImportService(unitOfWorkFactory, applicationProperties);
-
-                MessengerInstance.Send(new SetGlobalLoaderMessage(true));
-                var newBookPaths = await importer.GetNotImportedBookPathsAsync();
-
-                if (!newBookPaths.Any())
-                {
-                    return;
-                }
-
-                var importFlyout = new AddNewBooksViewModel(newBookPaths, unitOfWorkFactory);
-                MessengerInstance.Send(new SetGlobalLoaderMessage(false));
-
-                Application.Current.Dispatcher.Invoke(() => MessengerInstance.Send(new OpenFlyoutMessage(importFlyout)));
-            });
+            CurrentViewer?.Dispose();
+            value.Back = history.Count > 0 ? GoToPreviousViewer : null;
+            Set(() => CurrentViewer, ref currentViewer, value);
+            CurrentViewer.Refresh();
         }
     }
 }

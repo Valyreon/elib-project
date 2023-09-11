@@ -7,10 +7,10 @@ namespace Valyreon.Elib.Wpf.Themes.CustomComponents.Controls
 {
     public partial class SeriesTileControl : UserControl
     {
-        public static DependencyProperty SeriesNameProperty;
-        public static DependencyProperty SeriesBookCountProperty;
         public static DependencyProperty CommandProperty;
         public static DependencyProperty ParameterProperty;
+        public static DependencyProperty SeriesBookCountProperty;
+        public static DependencyProperty SeriesNameProperty;
 
         static SeriesTileControl()
         {
@@ -25,18 +25,6 @@ namespace Valyreon.Elib.Wpf.Themes.CustomComponents.Controls
             InitializeComponent();
         }
 
-        public string SeriesName
-        {
-            get => (string)GetValue(SeriesNameProperty);
-            set => SetValue(SeriesNameProperty, value);
-        }
-
-        public string SeriesBookCount
-        {
-            get => (string)GetValue(SeriesBookCountProperty);
-            set => SetValue(SeriesBookCountProperty, value);
-        }
-
         public ICommand Command
         {
             get => (ICommand)GetValue(CommandProperty);
@@ -47,6 +35,18 @@ namespace Valyreon.Elib.Wpf.Themes.CustomComponents.Controls
         {
             get => (BookSeries)GetValue(ParameterProperty);
             set => SetValue(ParameterProperty, value);
+        }
+
+        public string SeriesBookCount
+        {
+            get => (string)GetValue(SeriesBookCountProperty);
+            set => SetValue(SeriesBookCountProperty, value);
+        }
+
+        public string SeriesName
+        {
+            get => (string)GetValue(SeriesNameProperty);
+            set => SetValue(SeriesNameProperty, value);
         }
 
         private void TileBorder_MouseUp(object sender, MouseButtonEventArgs e)

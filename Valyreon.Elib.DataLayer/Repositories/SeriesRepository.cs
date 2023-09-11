@@ -1,9 +1,7 @@
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
-using Valyreon.Elib.DataLayer.Extensions;
 using Valyreon.Elib.DataLayer.Filters;
 using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Domain;
@@ -21,18 +19,11 @@ namespace Valyreon.Elib.DataLayer.Repositories
             return Connection.QueryFirstAsync<int>("SELECT COUNT(*) FROM Books WHERE SeriesId = @SeriesId", new { SeriesId = seriesId }, Transaction);
         }
 
-        public async Task<BookSeries> GetByNameAsync(string name)
+        public Task<BookSeries> GetByNameAsync(string name)
         {
-            var cacheResult = Cache.Values.FirstOrDefault(s => s.Name == name);
-            return cacheResult ?? await Connection.QueryFirstOrDefaultAsync<BookSeries>("SELECT * FROM Series WHERE Name = @Name LIMIT 1",
+            return Connection.QueryFirstOrDefaultAsync<BookSeries>("SELECT * FROM Series WHERE Name = @Name LIMIT 1",
                 new { Name = name },
                 Transaction);
-        }
-
-        public async Task<IEnumerable<BookSeries>> SearchAsync(string token)
-        {
-            var result = await Connection.QueryAsync<BookSeries>("SELECT * FROM Series WHERE Name LIKE @Token", new { Token = $"%{token}%" }, Transaction);
-            return Cache.FilterAndUpdateCache(result);
         }
 
         public async Task<IEnumerable<BookSeries>> GetSeriesWithNumberOfBooks(Filter filter)
@@ -61,6 +52,12 @@ namespace Valyreon.Elib.DataLayer.Repositories
 
             var result = await Connection.QueryAsync<dynamic>(query, new { filter.CollectionId }, Transaction);
             return ProcessWithBookCount(result);
+        }
+
+        public async Task<IEnumerable<BookSeries>> SearchAsync(string token)
+        {
+            var result = await Connection.QueryAsync<BookSeries>("SELECT * FROM Series WHERE Name LIKE @Token", new { Token = $"%{token}%" }, Transaction);
+            return result;
         }
 
         private static IEnumerable<BookSeries> ProcessWithBookCount(IEnumerable<dynamic> dynamicResult)

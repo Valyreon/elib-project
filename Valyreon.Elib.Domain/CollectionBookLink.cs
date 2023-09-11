@@ -6,10 +6,8 @@ namespace Valyreon.Elib.Domain
     [Table("UserCollectionBooks")]
     public class CollectionBookLink
     {
-        public int Id { get; set; }
-
         [Required] public int BookId { get; set; }
-
+        public int Id { get; set; }
         [Required] public int UserCollectionId { get; set; }
     }
 }

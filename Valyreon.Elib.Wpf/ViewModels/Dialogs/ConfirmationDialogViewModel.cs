@@ -7,11 +7,11 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
 {
     public class ConfirmationDialogViewModel : DialogViewModel
     {
-        private string title;
-        private string text;
-        private string yesText;
-        private string noText;
         private readonly Action onConfirm;
+        private string noText;
+        private string text;
+        private string title;
+        private string yesText;
 
         public ConfirmationDialogViewModel(string title, string text, Action onConfirm, string yesText = "YES", string noText = "NO")
         {
@@ -22,13 +22,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
             NoText = noText;
         }
 
-        public string Title { get => title; set => Set(() => Title, ref title, value); }
-        public string Text { get => text; set => Set(() => Text, ref text, value); }
-        public string YesText { get => yesText; set => Set(() => YesText, ref yesText, value); }
-        public string NoText { get => noText; set => Set(() => NoText, ref noText, value); }
-
-        public ICommand YesCommand => new RelayCommand(HandleConfirm);
         public ICommand NoCommand => new RelayCommand(Close);
+        public string NoText { get => noText; set => Set(() => NoText, ref noText, value); }
+        public string Text { get => text; set => Set(() => Text, ref text, value); }
+        public string Title { get => title; set => Set(() => Title, ref title, value); }
+        public ICommand YesCommand => new RelayCommand(HandleConfirm);
+        public string YesText { get => yesText; set => Set(() => YesText, ref yesText, value); }
 
         private void HandleConfirm()
         {

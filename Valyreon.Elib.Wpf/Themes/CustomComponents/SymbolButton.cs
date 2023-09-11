@@ -6,8 +6,8 @@ namespace Valyreon.Elib.Wpf.CustomComponents
 {
     public class SymbolButton : Button
     {
-        public static DependencyProperty ImageProperty;
         public static DependencyProperty IconSizeProperty;
+        public static DependencyProperty ImageProperty;
 
         static SymbolButton()
         {
@@ -17,16 +17,16 @@ namespace Valyreon.Elib.Wpf.CustomComponents
             IconSizeProperty = DependencyProperty.Register("IconSize", typeof(double), typeof(SymbolButton));
         }
 
-        public ImageSource Image
-        {
-            get => (ImageSource)GetValue(ImageProperty);
-            set => SetValue(ImageProperty, value);
-        }
-
         public double IconSize
         {
             get => (double)GetValue(IconSizeProperty);
             set => SetValue(IconSizeProperty, value);
+        }
+
+        public ImageSource Image
+        {
+            get => (ImageSource)GetValue(ImageProperty);
+            set => SetValue(ImageProperty, value);
         }
     }
 }

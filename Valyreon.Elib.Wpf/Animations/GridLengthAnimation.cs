@@ -33,11 +33,6 @@ namespace Valyreon.Elib.Wpf.Animations
             set => SetValue(ToProperty, value);
         }
 
-        protected override Freezable CreateInstanceCore()
-        {
-            return new GridLengthAnimation();
-        }
-
         public override object GetCurrentValue(object defaultOriginValue, object defaultDestinationValue,
             AnimationClock animationClock)
         {
@@ -51,6 +46,11 @@ namespace Valyreon.Elib.Wpf.Animations
 
             return new GridLength((animationClock.CurrentProgress.Value *
                 (toVal - fromVal)) + fromVal, GridUnitType.Pixel);
+        }
+
+        protected override Freezable CreateInstanceCore()
+        {
+            return new GridLengthAnimation();
         }
     }
 }

@@ -14,39 +14,13 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 {
     public class ApplicationSettingsViewModel : ViewModelBase, ITabViewModel
     {
+        private readonly ApplicationProperties properties;
+        private bool automaticallyImportWithFoundISBN;
+        private string caption = "Settings";
+        private string externalReaderPath;
         private bool scanAtStartup;
 
-        public bool ScanAtStartup
-        {
-            get => scanAtStartup;
-            set => Set(() => ScanAtStartup, ref scanAtStartup, value);
-        }
-
-        public bool AutomaticallyImportWithFoundISBN
-        {
-            get => automaticallyImportWithFoundISBN;
-            set => Set(() => AutomaticallyImportWithFoundISBN, ref automaticallyImportWithFoundISBN, value);
-        }
-
-        public string SelectedFormat { get => selectedFormat; set => Set(() => SelectedFormat, ref selectedFormat, value); }
-
-        private string externalReaderPath;
-        private string caption = "Settings";
-        private bool automaticallyImportWithFoundISBN;
         private string selectedFormat;
-        private readonly ApplicationProperties properties;
-
-        public string ExternalReaderPath
-        {
-            get => externalReaderPath;
-            set => Set(() => ExternalReaderPath, ref externalReaderPath, value);
-        }
-
-        public ObservableCollection<SourcePathObservable> SourcePaths { get; set; }
-
-        public ObservableCollection<string> Formats { get; set; }
-
-        public SourcePathObservable SelectedItem { get; set; }
 
         public ApplicationSettingsViewModel(ApplicationProperties properties)
         {
@@ -67,20 +41,47 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             }
         }
 
-        public ICommand AddSourceCommand => new RelayCommand(HandleAddSource);
-        public ICommand RemoveSourceCommand => new RelayCommand(HandleRemoveSource);
+        public ICommand AddFormatCommand => new RelayCommand(HandleAddFormat);
 
-        private void HandleRemoveSource()
+        public ICommand AddSourceCommand => new RelayCommand(HandleAddSource);
+
+        public bool AutomaticallyImportWithFoundISBN
         {
-            SourcePaths.Remove(SelectedItem);
+            get => automaticallyImportWithFoundISBN;
+            set => Set(() => AutomaticallyImportWithFoundISBN, ref automaticallyImportWithFoundISBN, value);
+        }
+
+        public string Caption
+        {
+            get => caption;
+            set => Set(() => Caption, ref caption, value);
         }
 
         public ICommand ChooseExternalReaderCommand => new RelayCommand(HandleChooseExternalReader);
 
-        public ICommand AddFormatCommand => new RelayCommand(HandleAddFormat);
+        public ICommand ClearExternalReaderCommand => new RelayCommand(() => ExternalReaderPath = null);
+
+        public string ExternalReaderPath
+        {
+            get => externalReaderPath;
+            set => Set(() => ExternalReaderPath, ref externalReaderPath, value);
+        }
+
+        public ObservableCollection<string> Formats { get; set; }
+
         public ICommand RemoveFormatCommand => new RelayCommand(() => Formats.Remove(SelectedFormat));
 
-        public ICommand ClearExternalReaderCommand => new RelayCommand(() => ExternalReaderPath = null);
+        public ICommand RemoveSourceCommand => new RelayCommand(HandleRemoveSource);
+
+        public bool ScanAtStartup
+        {
+            get => scanAtStartup;
+            set => Set(() => ScanAtStartup, ref scanAtStartup, value);
+        }
+
+        public string SelectedFormat { get => selectedFormat; set => Set(() => SelectedFormat, ref selectedFormat, value); }
+        public SourcePathObservable SelectedItem { get; set; }
+        public ObservableCollection<SourcePathObservable> SourcePaths { get; set; }
 
         private void HandleAddFormat()
         {
@@ -115,30 +116,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             MessengerInstance.Send(new ShowDialogMessage(dialogViewModel));
         }
 
-        public string Caption
-        {
-            get => caption;
-            set => Set(() => Caption, ref caption, value);
-        }
-
-        private void HandleChooseExternalReader()
-        {
-            using var dlg = new OpenFileDialog
-            {
-                CheckFileExists = true,
-                CheckPathExists = true,
-                FilterIndex = 0,
-                Multiselect = false,
-                InitialDirectory = Environment.ExpandEnvironmentVariables("%ProgramW6432%")
-            };
-
-            var result = dlg.ShowDialog();
-            if (result == DialogResult.OK && dlg.FileName != null)
-            {
-                ExternalReaderPath = dlg.FileName;
-            }
-        }
-
         private void HandleAddSource()
         {
             using var dialog = new System.Windows.Forms.FolderBrowserDialog
@@ -164,13 +141,27 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             }
         }
 
-        private void UpdateCurrentSettings()
+        private void HandleChooseExternalReader()
         {
-            properties.ScanAtStartup = ScanAtStartup;
-            properties.Sources = SourcePaths.Select(s => s.GetSourcePath()).ToList();
-            properties.Formats = Formats.ToList();
-            properties.AutomaticallyImportWithFoundISBN = AutomaticallyImportWithFoundISBN;
-            properties.ExternalReaderPath = ExternalReaderPath;
+            using var dlg = new OpenFileDialog
+            {
+                CheckFileExists = true,
+                CheckPathExists = true,
+                FilterIndex = 0,
+                Multiselect = false,
+                InitialDirectory = Environment.ExpandEnvironmentVariables("%ProgramW6432%")
+            };
+
+            var result = dlg.ShowDialog();
+            if (result == DialogResult.OK && dlg.FileName != null)
+            {
+                ExternalReaderPath = dlg.FileName;
+            }
+        }
+
+        private void HandleRemoveSource()
+        {
+            SourcePaths.Remove(SelectedItem);
         }
 
         private void SaveChanges()
@@ -178,6 +169,15 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             UpdateCurrentSettings();
             ApplicationData.SaveProperties(properties);
             MessengerInstance.Send(new AppSettingsChangedMessage());
+        }
+
+        private void UpdateCurrentSettings()
+        {
+            properties.ScanAtStartup = ScanAtStartup;
+            properties.Sources = SourcePaths.Select(s => s.GetSourcePath()).ToList();
+            properties.Formats = Formats.ToList();
+            properties.AutomaticallyImportWithFoundISBN = AutomaticallyImportWithFoundISBN;
+            properties.ExternalReaderPath = ExternalReaderPath;
         }
     }
 }

@@ -16,6 +16,23 @@ namespace Valyreon.Elib.Wpf.Models
 
         public static string PropertiesPath { get; } = Path.Combine(_elibDataFolder, "properties.json");
 
+        public static void ClearAppData()
+        {
+            Directory.Delete(_elibDataFolder, true);
+        }
+
+        public static ApplicationProperties GetProperties()
+        {
+            try
+            {
+                return JsonSerializer.Deserialize<ApplicationProperties>(File.ReadAllText(PropertiesPath));
+            }
+            catch (Exception)
+            {
+                return new ApplicationProperties();
+            }
+        }
+
         public static void InitializeAppData()
         {
             if (!Directory.Exists(_elibDataFolder))
@@ -36,23 +53,6 @@ namespace Valyreon.Elib.Wpf.Models
             if (!File.Exists(PropertiesPath))
             {
                 File.WriteAllText(PropertiesPath, JsonSerializer.Serialize(new ApplicationProperties(), new JsonSerializerOptions { WriteIndented = true }));
-            }
-        }
-
-        public static void ClearAppData()
-        {
-            Directory.Delete(_elibDataFolder, true);
-        }
-
-        public static ApplicationProperties GetProperties()
-        {
-            try
-            {
-                return JsonSerializer.Deserialize<ApplicationProperties>(File.ReadAllText(PropertiesPath));
-            }
-            catch (Exception)
-            {
-                return new ApplicationProperties();
             }
         }
 

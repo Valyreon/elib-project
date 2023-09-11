@@ -5,14 +5,14 @@ namespace Valyreon.Elib.Wpf.Interfaces
 {
     public abstract class DialogViewModel : ViewModelWithValidation
     {
-        public virtual void Close()
-        {
-            MessengerInstance.Send(new CloseDialogMessage());
-        }
-
         public virtual bool CanBeClosedByUser()
         {
             return true;
+        }
+
+        public virtual void Close()
+        {
+            MessengerInstance.Send(new CloseDialogMessage());
         }
     }
 }

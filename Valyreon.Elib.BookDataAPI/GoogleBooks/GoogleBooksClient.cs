@@ -31,7 +31,7 @@ public class GoogleBooksClient : IBookInformationAPI
         client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/117.0");
         //client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip");
 
-        if(throttle && lastRequestTime.HasValue && DateTime.UtcNow - lastRequestTime.Value < TimeSpan.FromMilliseconds(250))
+        if (throttle && lastRequestTime.HasValue && DateTime.UtcNow - lastRequestTime.Value < TimeSpan.FromMilliseconds(250))
         {
             await Task.Delay(DateTime.UtcNow - lastRequestTime.Value);
         }
@@ -57,7 +57,7 @@ public class GoogleBooksClient : IBookInformationAPI
             volumeInfo.PageCount,
             null);
 
-        if(includeCover && !string.IsNullOrWhiteSpace(volumeInfo.ImageLinks?.Thumbnail))
+        if (includeCover && !string.IsNullOrWhiteSpace(volumeInfo.ImageLinks?.Thumbnail))
         {
             var cover = await client.GetByteArrayAsync($"https://books.google.com/books/publisher/content/images/frontcover/{volumeResult.Id}?fife=w400-h600");
 

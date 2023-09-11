@@ -4,14 +4,22 @@ using Valyreon.Elib.Domain;
 
 namespace Valyreon.Elib.DataLayer.Interfaces;
 
-public interface IRepository<T> : ICache<T> where T : ObservableEntity
+public interface IRepository<T> where T : ObservableEntity
 {
-    string Table { get; }
     IEnumerable<string> ColumnNames { get; }
+    string Table { get; }
 
     Task CreateAsync(T entity);
 
     Task CreateAsync(IEnumerable<T> entities);
+
+    Task DeleteAsync(T entity);
+
+    Task DeleteAsync(int id);
+
+    Task DeleteAsync(IEnumerable<T> entities);
+
+    Task DeleteAsync(IEnumerable<int> ids);
 
     Task<T> FindAsync(int id);
 
@@ -22,12 +30,4 @@ public interface IRepository<T> : ICache<T> where T : ObservableEntity
     Task UpdateAsync(T entity);
 
     Task UpdateAsync(IEnumerable<T> entities);
-
-    Task DeleteAsync(T entity);
-
-    Task DeleteAsync(int id);
-
-    Task DeleteAsync(IEnumerable<T> entities);
-
-    Task DeleteAsync(IEnumerable<int> ids);
 }

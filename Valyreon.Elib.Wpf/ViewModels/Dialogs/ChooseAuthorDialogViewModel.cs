@@ -12,10 +12,10 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
 {
     public class ChooseAuthorDialogViewModel : DialogViewModel
     {
+        private readonly IEnumerable<Author> allAuthors;
         private readonly Action<Author> onConfirm;
         private string filterText;
         private Author selectedItem;
-        private readonly IEnumerable<Author> allAuthors;
 
         public ChooseAuthorDialogViewModel(IEnumerable<Author> authors, Action<Author> onConfirm)
         {
@@ -44,6 +44,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
 
         public ObservableCollection<Author> ShownAuthors { get; set; }
 
+        private void Done()
+        {
+            onConfirm(SelectedItem);
+            Close();
+        }
+
         private void FilterAuthors()
         {
             Application.Current.Dispatcher.Invoke(() =>
@@ -54,12 +60,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
                     ShownAuthors.Add(a);
                 }
             });
-        }
-
-        private void Done()
-        {
-            onConfirm(SelectedItem);
-            Close();
         }
     }
 }

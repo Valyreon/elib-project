@@ -10,41 +10,23 @@ namespace Valyreon.Elib.Wpf.Themes.CustomComponents.Controls
     /// </summary>
     public partial class ChipControl : UserControl
     {
-        private bool isNewObservableEntity = false;
-        public static DependencyProperty TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(ChipControl));
-        public static DependencyProperty RemoveCommandProperty = DependencyProperty.Register("RemoveCommand", typeof(ICommand), typeof(ChipControl));
-        public static DependencyProperty ObjectProperty = DependencyProperty.Register("Object", typeof(object), typeof(ChipControl));
+        public static DependencyProperty CommandProperty = DependencyProperty.Register("Command", typeof(ICommand), typeof(ChipControl));
         public static DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(ChipControl));
         public static DependencyProperty MarkNewObjectsProperty = DependencyProperty.Register("MarkNewObjects", typeof(bool), typeof(ChipControl));
-        public static DependencyProperty CommandProperty = DependencyProperty.Register("Command", typeof(ICommand), typeof(ChipControl));
+        public static DependencyProperty ObjectProperty = DependencyProperty.Register("Object", typeof(object), typeof(ChipControl));
+        public static DependencyProperty RemoveCommandProperty = DependencyProperty.Register("RemoveCommand", typeof(ICommand), typeof(ChipControl));
+        public static DependencyProperty TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(ChipControl));
+        private bool isNewObservableEntity = false;
 
         public ChipControl()
         {
             InitializeComponent();
         }
 
-        public string Text
-        {
-            get => (string)GetValue(TextProperty);
-            set => SetValue(TextProperty, value);
-        }
-
-        public ICommand RemoveCommand
-        {
-            get => (ICommand)GetValue(RemoveCommandProperty);
-            set => SetValue(RemoveCommandProperty, value);
-        }
-
         public ICommand Command
         {
             get => (ICommand)GetValue(CommandProperty);
             set => SetValue(CommandProperty, value);
-        }
-
-        public object Object
-        {
-            get => (object)GetValue(ObjectProperty);
-            set => SetValue(ObjectProperty, value);
         }
 
         public bool IsReadOnly
@@ -59,9 +41,22 @@ namespace Valyreon.Elib.Wpf.Themes.CustomComponents.Controls
             set => SetValue(MarkNewObjectsProperty, value);
         }
 
-        private void ChipBorder_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        public object Object
         {
-            Command?.Execute(Object);
+            get => (object)GetValue(ObjectProperty);
+            set => SetValue(ObjectProperty, value);
+        }
+
+        public ICommand RemoveCommand
+        {
+            get => (ICommand)GetValue(RemoveCommandProperty);
+            set => SetValue(RemoveCommandProperty, value);
+        }
+
+        public string Text
+        {
+            get => (string)GetValue(TextProperty);
+            set => SetValue(TextProperty, value);
         }
 
         private void ChipBorder_MouseEnter(object sender, MouseEventArgs e)
@@ -83,6 +78,11 @@ namespace Valyreon.Elib.Wpf.Themes.CustomComponents.Controls
             }
 
             ChipBorder.BorderBrush = System.Windows.Media.Brushes.WhiteSmoke;
+        }
+
+        private void ChipBorder_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            Command?.Execute(Object);
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)

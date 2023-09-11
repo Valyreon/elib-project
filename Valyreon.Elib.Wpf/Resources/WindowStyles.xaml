@@ -1,7 +1,6 @@
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:components="clr-namespace:Valyreon.Elib.Wpf.CustomComponents"
     xmlns:windows="clr-namespace:Valyreon.Elib.Wpf.Views.Windows">
 
     <Style x:Key="ElibWindowButtonStyle" TargetType="Button">

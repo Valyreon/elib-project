@@ -6,8 +6,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs;
 
 public class TextMessageDialogViewModel : DialogViewModel
 {
-    private string title;
     private string text;
+    private string title;
 
     public TextMessageDialogViewModel(string title, string text)
     {
@@ -15,8 +15,7 @@ public class TextMessageDialogViewModel : DialogViewModel
         Text = text;
     }
 
-    public string Title { get => title; set => Set(() => Title, ref title, value); }
-    public string Text { get => text; set => Set(() => Text, ref text, value); }
-
     public ICommand OkCommand => new RelayCommand(Close);
+    public string Text { get => text; set => Set(() => Text, ref text, value); }
+    public string Title { get => title; set => Set(() => Title, ref title, value); }
 }

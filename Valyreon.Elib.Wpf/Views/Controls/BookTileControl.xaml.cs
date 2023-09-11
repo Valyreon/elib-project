@@ -81,18 +81,6 @@ public partial class BookTileControl : UserControl
         }
     }
 
-    private void UserControl_Loaded(object sender, RoutedEventArgs e)
-    {
-        tileBorder = FindName("TileBorder") as Border;
-        theBookTitle = FindName("TheBookTitle") as TextLinkButton;
-        selectedCheckbox = FindName("SelectedCheckbox") as SelectedBannerCheck;
-
-        if (selectedCheckbox.IsChecked != null && selectedCheckbox.IsChecked.Value)
-        {
-            selectedCheckbox.Opacity = 1;
-        }
-    }
-
     private void SelectedCheckbox_Checked(object sender, RoutedEventArgs e)
     {
         if (selectedCheckbox != null)
@@ -106,6 +94,18 @@ public partial class BookTileControl : UserControl
         if (selectedCheckbox != null && !IsMouseOver)
         {
             selectedCheckbox.Opacity = 0;
+        }
+    }
+
+    private void UserControl_Loaded(object sender, RoutedEventArgs e)
+    {
+        tileBorder = FindName("TileBorder") as Border;
+        theBookTitle = FindName("TheBookTitle") as TextLinkButton;
+        selectedCheckbox = FindName("SelectedCheckbox") as SelectedBannerCheck;
+
+        if (selectedCheckbox.IsChecked != null && selectedCheckbox.IsChecked.Value)
+        {
+            selectedCheckbox.Opacity = 1;
         }
     }
 }

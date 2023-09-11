@@ -11,27 +11,15 @@ namespace Valyreon.Elib.Wpf.Themes.CustomComponents.Controls
     /// </summary>
     public partial class SuggestionTextBox : UserControl
     {
+        public static DependencyProperty PlaceholderProperty = DependencyProperty.Register("Placeholder", typeof(string), typeof(SuggestionTextBox));
+        public static DependencyProperty SubmitCommandProperty = DependencyProperty.Register("SubmitCommand", typeof(ICommand), typeof(SuggestionTextBox));
         public static DependencyProperty SuggestionsProperty = DependencyProperty.Register("Suggestions", typeof(ObservableCollection<ObservableEntity>), typeof(SuggestionTextBox));
         public static DependencyProperty TextChangedCommandProperty = DependencyProperty.Register("TextChangedCommand", typeof(ICommand), typeof(SuggestionTextBox));
-        public static DependencyProperty SubmitCommandProperty = DependencyProperty.Register("SubmitCommand", typeof(ICommand), typeof(SuggestionTextBox));
-        public static DependencyProperty PlaceholderProperty = DependencyProperty.Register("Placeholder", typeof(string), typeof(SuggestionTextBox));
         public static DependencyProperty TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(SuggestionTextBox));
 
         public SuggestionTextBox()
         {
             InitializeComponent();
-        }
-
-        public ObservableCollection<ObservableEntity> Suggestions
-        {
-            get => (ObservableCollection<ObservableEntity>)GetValue(SuggestionsProperty);
-            set => SetValue(SuggestionsProperty, value);
-        }
-
-        public ICommand TextChangedCommand
-        {
-            get => (ICommand)GetValue(TextChangedCommandProperty);
-            set => SetValue(TextChangedCommandProperty, value);
         }
 
         public string Placeholder
@@ -40,40 +28,37 @@ namespace Valyreon.Elib.Wpf.Themes.CustomComponents.Controls
             set => SetValue(PlaceholderProperty, value);
         }
 
-        public string Text
-        {
-            get => (string)GetValue(TextProperty);
-            set => SetValue(TextProperty, value);
-        }
-
         public ICommand SubmitCommand
         {
             get => (ICommand)GetValue(SubmitCommandProperty);
             set => SetValue(SubmitCommandProperty, value);
         }
 
-        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        public ObservableCollection<ObservableEntity> Suggestions
         {
-            TextChangedCommand?.Execute(TextBox.Text);
-            Popup.IsOpen = TextBox.Text != null && TextBox.Text.Length > 1 && Suggestions.Count > 0;
+            get => (ObservableCollection<ObservableEntity>)GetValue(SuggestionsProperty);
+            set => SetValue(SuggestionsProperty, value);
         }
 
-        private void TextBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        public string Text
         {
-            if (e.Key is Key.Down or Key.Tab)
-            {
-                SuggestionListBox.SelectedIndex = 0;
-                SuggestionListBox.Focus();
-                e.Handled = true;
-            }
-            else if (e.Key is Key.Enter)
-            {
-                SubmitCommand?.Execute(TextBox.Text);
-                TextBox.Text = string.Empty;
-                Popup.IsOpen = false;
-                SuggestionListBox.SelectedItem = null;
-                e.Handled = true;
-            }
+            get => (string)GetValue(TextProperty);
+            set => SetValue(TextProperty, value);
+        }
+
+        public ICommand TextChangedCommand
+        {
+            get => (ICommand)GetValue(TextChangedCommandProperty);
+            set => SetValue(TextChangedCommandProperty, value);
+        }
+
+        private void SubmitExisting()
+        {
+            SubmitCommand?.Execute(((UserCollection)SuggestionListBox.SelectedItem).Tag);
+            TextBox.Text = string.Empty;
+            TextBox.Focus();
+            Popup.IsOpen = false;
+            SuggestionListBox.SelectedItem = null;
         }
 
         private void SuggestionListBox_KeyDown(object sender, KeyEventArgs e)
@@ -99,13 +84,28 @@ namespace Valyreon.Elib.Wpf.Themes.CustomComponents.Controls
             }
         }
 
-        private void SubmitExisting()
+        private void TextBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            SubmitCommand?.Execute(((UserCollection)SuggestionListBox.SelectedItem).Tag);
-            TextBox.Text = string.Empty;
-            TextBox.Focus();
-            Popup.IsOpen = false;
-            SuggestionListBox.SelectedItem = null;
+            if (e.Key is Key.Down or Key.Tab)
+            {
+                SuggestionListBox.SelectedIndex = 0;
+                SuggestionListBox.Focus();
+                e.Handled = true;
+            }
+            else if (e.Key is Key.Enter)
+            {
+                SubmitCommand?.Execute(TextBox.Text);
+                TextBox.Text = string.Empty;
+                Popup.IsOpen = false;
+                SuggestionListBox.SelectedItem = null;
+                e.Handled = true;
+            }
+        }
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TextChangedCommand?.Execute(TextBox.Text);
+            Popup.IsOpen = TextBox.Text != null && TextBox.Text.Length > 1 && Suggestions.Count > 0;
         }
     }
 }

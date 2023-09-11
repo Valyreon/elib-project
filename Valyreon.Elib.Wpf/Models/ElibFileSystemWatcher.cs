@@ -11,10 +11,10 @@ namespace Valyreon.Elib.Wpf.Models
 {
     public class ElibFileSystemWatcher : IDisposable
     {
-        private readonly List<FileSystemWatcher> watchers = new();
         private readonly ApplicationProperties applicationProperties;
-        private readonly IUnitOfWorkFactory uowFactory;
         private readonly IMessenger messenger;
+        private readonly IUnitOfWorkFactory uowFactory;
+        private readonly List<FileSystemWatcher> watchers = new();
 
         public ElibFileSystemWatcher(ApplicationProperties applicationProperties, IUnitOfWorkFactory uowFactory, IMessenger messenger = null)
         {
@@ -40,14 +40,23 @@ namespace Valyreon.Elib.Wpf.Models
             }
         }
 
-        private async void HandleFileDelete(string filePath)
+        public void CheckFiles()
+        {
+            //IEnumerable<Book> allBooks = null;
+        }
+
+        public void Dispose()
+        {
+            watchers.ForEach(w => w.Dispose());
+        }
+
+        private async void HandleFileChange(string filePath)
         {
             if (!applicationProperties.Formats.Contains(filePath.GetExtension()))
             {
                 return;
             }
 
-            // mark file as missing for UI
             using var uow = await uowFactory.CreateAsync();
             var book = await uow.BookRepository.GetByPathAsync(filePath);
 
@@ -56,7 +65,10 @@ namespace Valyreon.Elib.Wpf.Models
                 return;
             }
 
-            book.IsFileMissing = true;
+            await book.LoadBookAsync(uow);
+            book.Signature = Signer.ComputeHash(filePath);
+            await uow.BookRepository.UpdateAsync(book);
+            messenger?.Send(new ShowNotificationMessage($"Book file change detected. Updated signature.", NotificationType.Info));
         }
 
         private async void HandleFileCreate(string filePath)
@@ -90,6 +102,25 @@ namespace Valyreon.Elib.Wpf.Models
             uow.Commit();
         }
 
+        private async void HandleFileDelete(string filePath)
+        {
+            if (!applicationProperties.Formats.Contains(filePath.GetExtension()))
+            {
+                return;
+            }
+
+            // mark file as missing for UI
+            using var uow = await uowFactory.CreateAsync();
+            var book = await uow.BookRepository.GetByPathAsync(filePath);
+
+            if (book == null)
+            {
+                return;
+            }
+
+            book.IsFileMissing = true;
+        }
+
         private async void HandleFileRename(string oldFilePath, string newFilepath)
         {
             if (!applicationProperties.Formats.Contains(Path.GetExtension(newFilepath)))
@@ -110,37 +141,6 @@ namespace Valyreon.Elib.Wpf.Models
             await uow.BookRepository.UpdateAsync(book);
             uow.Commit();
             messenger?.Send(new ShowNotificationMessage($"Book file path updated.", NotificationType.Info));
-        }
-
-        private async void HandleFileChange(string filePath)
-        {
-            if (!applicationProperties.Formats.Contains(filePath.GetExtension()))
-            {
-                return;
-            }
-
-            using var uow = await uowFactory.CreateAsync();
-            var book = await uow.BookRepository.GetByPathAsync(filePath);
-
-            if (book == null)
-            {
-                return;
-            }
-
-            await book.LoadBookAsync(uow);
-            book.Signature = Signer.ComputeHash(filePath);
-            await uow.BookRepository.UpdateAsync(book);
-            messenger?.Send(new ShowNotificationMessage($"Book file change detected. Updated signature.", NotificationType.Info));
-        }
-
-        public void CheckFiles()
-        {
-            //IEnumerable<Book> allBooks = null;
-        }
-
-        public void Dispose()
-        {
-            watchers.ForEach(w => w.Dispose());
         }
     }
 }

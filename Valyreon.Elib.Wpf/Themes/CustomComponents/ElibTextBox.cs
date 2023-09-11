@@ -7,9 +7,18 @@ namespace Valyreon.Elib.Wpf.CustomComponents
 {
     public class ElibTextBox : TextBox
     {
-        public static DependencyProperty PlaceholderProperty;
-        public static DependencyProperty PlaceholderForegroundProperty;
         public static DependencyProperty PlaceholderForegroundFocusedProperty;
+        public static DependencyProperty PlaceholderForegroundProperty;
+        public static DependencyProperty PlaceholderProperty;
+
+        static ElibTextBox()
+        {
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(ElibTextBox),
+                new FrameworkPropertyMetadata(typeof(ElibTextBox)));
+            PlaceholderProperty = DependencyProperty.Register("Placeholder", typeof(string), typeof(ElibTextBox));
+            PlaceholderForegroundProperty = DependencyProperty.Register("PlaceholderForeground", typeof(SolidColorBrush), typeof(ElibTextBox));
+            PlaceholderForegroundFocusedProperty = DependencyProperty.Register("PlaceholderForegroundFocused", typeof(SolidColorBrush), typeof(ElibTextBox));
+        }
 
         public ElibTextBox()
         {
@@ -19,15 +28,6 @@ namespace Valyreon.Elib.Wpf.CustomComponents
               new RoutedEventHandler(SelectAllText), true);
             AddHandler(MouseDoubleClickEvent,
               new RoutedEventHandler(SelectAllText), true);
-        }
-
-        static ElibTextBox()
-        {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(ElibTextBox),
-                new FrameworkPropertyMetadata(typeof(ElibTextBox)));
-            PlaceholderProperty = DependencyProperty.Register("Placeholder", typeof(string), typeof(ElibTextBox));
-            PlaceholderForegroundProperty = DependencyProperty.Register("PlaceholderForeground", typeof(SolidColorBrush), typeof(ElibTextBox));
-            PlaceholderForegroundFocusedProperty = DependencyProperty.Register("PlaceholderForegroundFocused", typeof(SolidColorBrush), typeof(ElibTextBox));
         }
 
         public string Placeholder
@@ -48,8 +48,14 @@ namespace Valyreon.Elib.Wpf.CustomComponents
             set => SetValue(PlaceholderForegroundFocusedProperty, value);
         }
 
+        private static void SelectAllText(object sender, RoutedEventArgs e)
+        {
+            var textBox = e.OriginalSource as TextBox;
+            textBox?.SelectAll();
+        }
+
         private static void SelectivelyIgnoreMouseButton(object sender,
-                                                         MouseButtonEventArgs e)
+                                                                 MouseButtonEventArgs e)
         {
             // Find the TextBox
             DependencyObject parent = e.OriginalSource as UIElement;
@@ -69,12 +75,6 @@ namespace Valyreon.Elib.Wpf.CustomComponents
                     e.Handled = true;
                 }
             }
-        }
-
-        private static void SelectAllText(object sender, RoutedEventArgs e)
-        {
-            var textBox = e.OriginalSource as TextBox;
-            textBox?.SelectAll();
         }
     }
 }

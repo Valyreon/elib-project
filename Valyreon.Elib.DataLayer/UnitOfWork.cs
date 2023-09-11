@@ -9,15 +9,14 @@ namespace Valyreon.Elib.DataLayer
 {
     public class UnitOfWork : IUnitOfWork, IDisposable
     {
-        private IDbConnection connection;
-        private IDbTransaction transaction;
-
-        private IBookRepository bookRepository;
         private IAuthorRepository authorRepository;
+        private IBookRepository bookRepository;
         private ICollectionRepository collectionRepository;
-        private ISeriesRepository seriesRepository;
+        private IDbConnection connection;
         private ICoverRepository coverRepository;
         private IQuoteRepository quoteRepository;
+        private ISeriesRepository seriesRepository;
+        private IDbTransaction transaction;
 
         internal UnitOfWork(string dbPath)
         {
@@ -32,17 +31,13 @@ namespace Valyreon.Elib.DataLayer
             transaction = connection.BeginTransaction();
         }
 
+        public IAuthorRepository AuthorRepository => authorRepository ??= new AuthorRepository(transaction);
         public IBookRepository BookRepository => bookRepository ??= new BookRepository(transaction);
 
-        public ISeriesRepository SeriesRepository => seriesRepository ??= new SeriesRepository(transaction);
-
         public ICollectionRepository CollectionRepository => collectionRepository ??= new CollectionRepository(transaction);
-
-        public IAuthorRepository AuthorRepository => authorRepository ??= new AuthorRepository(transaction);
-
         public ICoverRepository CoverRepository => coverRepository ??= new CoverRepository(transaction);
-
         public IQuoteRepository QuoteRepository => quoteRepository ??= new QuoteRepository(transaction);
+        public ISeriesRepository SeriesRepository => seriesRepository ??= new SeriesRepository(transaction);
 
         public void Commit()
         {
@@ -63,16 +58,6 @@ namespace Valyreon.Elib.DataLayer
             }
         }
 
-        private void ResetRepositories()
-        {
-            bookRepository = null;
-            authorRepository = null;
-            collectionRepository = null;
-            seriesRepository = null;
-            coverRepository = null;
-            quoteRepository = null;
-        }
-
         public void Dispose()
         {
             if (transaction != null)
@@ -87,16 +72,6 @@ namespace Valyreon.Elib.DataLayer
             }
             GC.SuppressFinalize(this);
             UnitOfWorkFactory.ReleaseSemaphore();
-        }
-
-        public static void ClearCache()
-        {
-            new BookRepository(null).ClearCache();
-            new SeriesRepository(null).ClearCache();
-            new AuthorRepository(null).ClearCache();
-            new CollectionRepository(null).ClearCache();
-            new QuoteRepository(null).ClearCache();
-            new CoverRepository(null).ClearCache();
         }
 
         public void Truncate()
@@ -122,6 +97,16 @@ namespace Valyreon.Elib.DataLayer
              * SQL statement or an open transaction. */
             connection.Execute("VACUUM;");
             transaction = connection.BeginTransaction();
+        }
+
+        private void ResetRepositories()
+        {
+            bookRepository = null;
+            authorRepository = null;
+            collectionRepository = null;
+            seriesRepository = null;
+            coverRepository = null;
+            quoteRepository = null;
         }
     }
 }

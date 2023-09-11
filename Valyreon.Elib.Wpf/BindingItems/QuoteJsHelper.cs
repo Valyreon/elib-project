@@ -1,5 +1,3 @@
-using Valyreon.Elib.Domain;
-
 namespace Valyreon.Elib.Wpf.BindingItems
 {
     /*public class QuoteJsHelper

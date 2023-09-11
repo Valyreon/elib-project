@@ -1,5 +1,5 @@
 --
--- File generated with SQLiteStudio v3.2.1 on Thu Sep 7 01:26:10 2023
+-- File generated with SQLiteStudio v3.2.1 on Mon Sep 11 22:49:12 2023
 --
 -- Text encoding used: System
 --
@@ -35,9 +35,11 @@ CREATE TABLE Books (
                                    DEFAULT (false),
     CoverId        INTEGER         REFERENCES Covers (Id),
     Format         VARCHAR (10)    NOT NULL,
-    Signature      VARCHAR (64)    NOT NULL,
+    Signature      VARCHAR (64)    NOT NULL
+                                   UNIQUE,
     Path           VARCHAR (32767) NOT NULL,
-    Description    VARCHAR (3000) 
+    Description    VARCHAR (3000),
+    ISBN           VARCHAR (13) 
 );
 
 
@@ -207,7 +209,8 @@ CREATE VIEW AuthorId_Book_View AS
            Books.SeriesId,
            Books.Signature,
            Books.Format,
-           Books.Path
+           Books.Path,
+           Books.ISBN
       FROM Books
            INNER JOIN
            AuthorBooks ON Books.Id = AuthorBooks.BookId;
@@ -250,6 +253,7 @@ CREATE VIEW Book_Author_Join AS
            AuthorId_Book_View.Signature,
            AuthorId_Book_View.Format,
            AuthorId_Book_View.Path,
+           AuthorId_Book_View.ISBN,
            Authors.Name AS AuthorName
       FROM AuthorId_Book_View
            INNER JOIN
@@ -269,6 +273,7 @@ CREATE VIEW Book_Series_Join AS
            Books.Signature,
            Books.Format,
            Books.Path,
+           Books.ISBN,
            Series.Name AS SeriesName
       FROM Books
            LEFT JOIN
@@ -307,7 +312,8 @@ CREATE VIEW CollectionId_Book_View AS
            Books.SeriesId,
            Books.Signature,
            Books.Format,
-           Books.Path
+           Books.Path,
+           Books.ISBN
       FROM Books
            INNER JOIN
            UserCollectionBooks ON Books.Id = UserCollectionBooks.BookId;
@@ -340,6 +346,7 @@ CREATE VIEW Full_Join AS
            X.Signature,
            X.Format,
            X.Path,
+           X.ISBN,
            Tag,
            BookId_Collection_View.Id AS CollectionId
       FROM (
@@ -356,7 +363,8 @@ CREATE VIEW Full_Join AS
                       Name AS AuthorName,
                       Signature,
                       Format,
-                      Path
+                      Path,
+                      ISBN
                  FROM Book_Series_Join
                       INNER JOIN
                       BookId_Author_View ON Book_Series_Join.Id = BookId_Author_View.BookId

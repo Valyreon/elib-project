@@ -31,10 +31,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
             this.uowFactory = uowFactory;
         }
 
-        public bool IsExportComplete { get; }
-
         public ICommand CancelCommand => new RelayCommand(Close);
-
         public ICommand ChooseDestinationCommand => new RelayCommand(ChooseDestination);
 
         [Required(ErrorMessage = "You must specify destination directory.")]
@@ -46,6 +43,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
         }
 
         public ICommand ExportCommand => new RelayCommand(Export);
+        public bool IsExportComplete { get; }
 
         public bool IsGroupByAuthorChecked
         {

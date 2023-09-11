@@ -4,6 +4,49 @@ using System.Text;
 
 namespace Valyreon.Elib.EbookTools.Mobi
 {
+    public class BitReader
+    {
+        private readonly List<byte> mData;
+        private readonly int mNbits;
+        private uint mPos;
+
+        public BitReader(IEnumerable<byte> bytes)
+        {
+            mData = new List<byte>(bytes)
+            {
+                0,
+                0,
+                0,
+                0
+            };
+            mNbits = (mData.Count - 4) * 8;
+        }
+
+        public bool Eat(uint n)
+        {
+            mPos += n;
+            return mPos <= mNbits;
+        }
+
+        public bool Left()
+        {
+            return mNbits - mPos > 0;
+        }
+
+        public ulong Peek(ulong n)
+        {
+            ulong r = 0;
+            ulong g = 0;
+            while (g < n)
+            {
+                r = (r << 8) | (char)mData[(int)(long)((mPos + g) >> 3)];
+                g = g + 8 - ((mPos + g) & 7);
+            }
+
+            return (r >> (int)(long)(g - n)) & (((ulong)1 << (int)n) - 1);
+        }
+    }
+
     internal class MobiFile : PalmFile
     {
         protected static string Ret = "";
@@ -208,8 +251,42 @@ namespace Valyreon.Elib.EbookTools.Mobi
             return retval;
         }
 
+        protected static int GetSizeOfTrailingDataEntries(byte[] ptr, int size, uint flags)
+        {
+            var retval = 0;
+            flags >>= 1;
+            while (flags > 0)
+            {
+                if ((flags & 1) > 0)
+                {
+                    retval += (int)GetSizeOfTrailingDataEntry(ptr, size - retval);
+                }
+
+                flags >>= 1;
+            }
+
+            return retval;
+        }
+
+        protected static uint GetSizeOfTrailingDataEntry(byte[] ptr, int size)
+        {
+            uint retval = 0;
+            var bitpos = 0;
+            while (true)
+            {
+                uint v = (char)ptr[size - 1];
+                retval |= (v & 0x7F) << bitpos;
+                bitpos += 7;
+                --size;
+                if ((v & 0x80) != 0 || bitpos >= 28 || size == 0)
+                {
+                    return retval;
+                }
+            }
+        }
+
         protected static string Unpack(BitReader bits, uint[] huffdict1, uint[] huffdict2, List<List<byte>> huffdicts,
-            int entrybits)
+                            int entrybits)
         {
             return Unpack(bits, 0, huffdict1, huffdict2, huffdicts, entrybits);
         }
@@ -263,83 +340,6 @@ namespace Valyreon.Elib.EbookTools.Mobi
             }
 
             return retval.ToString();
-        }
-
-        protected static int GetSizeOfTrailingDataEntries(byte[] ptr, int size, uint flags)
-        {
-            var retval = 0;
-            flags >>= 1;
-            while (flags > 0)
-            {
-                if ((flags & 1) > 0)
-                {
-                    retval += (int)GetSizeOfTrailingDataEntry(ptr, size - retval);
-                }
-
-                flags >>= 1;
-            }
-
-            return retval;
-        }
-
-        protected static uint GetSizeOfTrailingDataEntry(byte[] ptr, int size)
-        {
-            uint retval = 0;
-            var bitpos = 0;
-            while (true)
-            {
-                uint v = (char)ptr[size - 1];
-                retval |= (v & 0x7F) << bitpos;
-                bitpos += 7;
-                --size;
-                if ((v & 0x80) != 0 || bitpos >= 28 || size == 0)
-                {
-                    return retval;
-                }
-            }
-        }
-    }
-
-    public class BitReader
-    {
-        private readonly List<byte> mData;
-        private readonly int mNbits;
-        private uint mPos;
-
-        public BitReader(IEnumerable<byte> bytes)
-        {
-            mData = new List<byte>(bytes)
-            {
-                0,
-                0,
-                0,
-                0
-            };
-            mNbits = (mData.Count - 4) * 8;
-        }
-
-        public ulong Peek(ulong n)
-        {
-            ulong r = 0;
-            ulong g = 0;
-            while (g < n)
-            {
-                r = (r << 8) | (char)mData[(int)(long)((mPos + g) >> 3)];
-                g = g + 8 - ((mPos + g) & 7);
-            }
-
-            return (r >> (int)(long)(g - n)) & (((ulong)1 << (int)n) - 1);
-        }
-
-        public bool Eat(uint n)
-        {
-            mPos += n;
-            return mPos <= mNbits;
-        }
-
-        public bool Left()
-        {
-            return mNbits - mPos > 0;
         }
     }
 }

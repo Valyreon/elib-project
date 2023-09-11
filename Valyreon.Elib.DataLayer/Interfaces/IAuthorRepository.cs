@@ -9,16 +9,16 @@ namespace Valyreon.Elib.DataLayer.Interfaces
     {
         Task AddAuthorForBookAsync(Author author, int bookId);
 
-        Task RemoveAuthorForBookAsync(Author author, int bookId);
+        Task<int> CountBooksByAuthorAsync(int authorId);
 
         Task<IEnumerable<Author>> GetAuthorsOfBookAsync(int bookId);
 
+        Task<IEnumerable<Author>> GetAuthorsWithNumberOfBooks(Filter filter);
+
         Task<Author> GetAuthorWithNameAsync(string name);
 
-        Task<int> CountBooksByAuthorAsync(int authorId);
+        Task RemoveAuthorForBookAsync(Author author, int bookId);
 
         Task<IEnumerable<Author>> SearchAsync(string token);
-
-        Task<IEnumerable<Author>> GetAuthorsWithNumberOfBooks(Filter filter);
     }
 }

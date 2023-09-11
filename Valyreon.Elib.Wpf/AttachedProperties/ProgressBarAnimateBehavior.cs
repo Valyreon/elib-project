@@ -17,6 +17,18 @@ namespace Valyreon.Elib.Wpf.AttachedProperties
             progressBar.ValueChanged += ProgressBar_ValueChanged;
         }
 
+        protected override void OnDetaching()
+        {
+            base.OnDetaching();
+            var progressBar = AssociatedObject;
+            progressBar.ValueChanged -= ProgressBar_ValueChanged;
+        }
+
+        private void Db_Completed(object sender, EventArgs e)
+        {
+            _IsAnimating = false;
+        }
+
         private void ProgressBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (_IsAnimating)
@@ -33,18 +45,6 @@ namespace Valyreon.Elib.Wpf.AttachedProperties
             ((ProgressBar)sender).BeginAnimation(System.Windows.Controls.Primitives.RangeBase.ValueProperty, doubleAnimation);
 
             e.Handled = true;
-        }
-
-        private void Db_Completed(object sender, EventArgs e)
-        {
-            _IsAnimating = false;
-        }
-
-        protected override void OnDetaching()
-        {
-            base.OnDetaching();
-            var progressBar = AssociatedObject;
-            progressBar.ValueChanged -= ProgressBar_ValueChanged;
         }
     }
 }

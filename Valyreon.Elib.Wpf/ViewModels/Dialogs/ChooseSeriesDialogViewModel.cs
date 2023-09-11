@@ -13,9 +13,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
     public class ChooseSeriesDialogViewModel : DialogViewModel
     {
         private readonly Action<BookSeries> onConfirm;
-        private string filterText;
         private readonly IEnumerable<BookSeries> series;
-
+        private string filterText;
         private BookSeries selectedItem;
 
         public ChooseSeriesDialogViewModel(IEnumerable<BookSeries> series, Action<BookSeries> onConfirm)
@@ -47,6 +46,16 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
 
         private List<BookSeries> AllSeries { get; } = new List<BookSeries>();
 
+        private void Done()
+        {
+            if (SelectedItem != null)
+            {
+                onConfirm(SelectedItem);
+            }
+
+            Close();
+        }
+
         private void FilterSeries()
         {
             Application.Current.Dispatcher.Invoke(() =>
@@ -57,16 +66,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
                     ShownSeries.Add(a);
                 }
             });
-        }
-
-        private void Done()
-        {
-            if (SelectedItem != null)
-            {
-                onConfirm(SelectedItem);
-            }
-
-            Close();
         }
     }
 }

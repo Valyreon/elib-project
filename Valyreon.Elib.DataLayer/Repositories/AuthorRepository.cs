@@ -1,9 +1,7 @@
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
-using Valyreon.Elib.DataLayer.Extensions;
 using Valyreon.Elib.DataLayer.Filters;
 using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Domain;
@@ -26,34 +24,14 @@ namespace Valyreon.Elib.DataLayer.Repositories
             await Connection.ExecuteAsync("INSERT INTO AuthorBooks(AuthorId, BookId) VALUES (@AuthorId, @BookId)", new { AuthorId = author.Id, BookId = bookId }, Transaction);
         }
 
-        public async Task<int> CountBooksByAuthorAsync(int authorId)
+        public Task<int> CountBooksByAuthorAsync(int authorId)
         {
-            return await Connection.QueryFirstAsync<int>("SELECT COUNT(*) FROM AuthorBooks WHERE AuthorId = @AuthorId", new { AuthorId = authorId }, Transaction);
+            return Connection.QueryFirstAsync<int>("SELECT COUNT(*) FROM AuthorBooks WHERE AuthorId = @AuthorId", new { AuthorId = authorId }, Transaction);
         }
 
-        public async Task<IEnumerable<Author>> GetAuthorsOfBookAsync(int bookId)
+        public Task<IEnumerable<Author>> GetAuthorsOfBookAsync(int bookId)
         {
-            var dbResult = await Connection.QueryAsync<Author>("SELECT Id, Name FROM BookId_Author_View WHERE BookId = @BookId", new { BookId = bookId }, Transaction);
-            return Cache.FilterAndUpdateCache(dbResult);
-        }
-
-        public async Task<Author> GetAuthorWithNameAsync(string name)
-        {
-            var result = Cache.Values.FirstOrDefault(x => x.Name == name);
-
-            return result ?? await Connection.QueryFirstOrDefaultAsync<Author>("SELECT * FROM Authors WHERE Name = @AuthorName LIMIT 1", new { AuthorName = name }, Transaction);
-        }
-
-        public async Task<IEnumerable<Author>> SearchAsync(string token)
-        {
-            var result = await Connection.QueryAsync<Author>("SELECT * FROM Authors WHERE Name LIKE @Token", new { Token = $"%{token}%" }, Transaction);
-            return Cache.FilterAndUpdateCache(result);
-        }
-
-        public async Task RemoveAuthorForBookAsync(Author author, int bookId)
-        {
-            await Connection.ExecuteAsync("DELETE FROM AuthorBooks WHERE AuthorId = @AuthorId AND BookId = @BookId", new { AuthorId = author.Id, BookId = bookId }, Transaction);
-            Cache.Remove(author.Id);
+            return Connection.QueryAsync<Author>("SELECT Id, Name FROM BookId_Author_View WHERE BookId = @BookId", new { BookId = bookId }, Transaction);
         }
 
         public async Task<IEnumerable<Author>> GetAuthorsWithNumberOfBooks(Filter filter)
@@ -82,6 +60,21 @@ namespace Valyreon.Elib.DataLayer.Repositories
 
             var result = await Connection.QueryAsync<dynamic>(query, new { filter.CollectionId }, Transaction);
             return ProcessWithBookCount(result);
+        }
+
+        public Task<Author> GetAuthorWithNameAsync(string name)
+        {
+            return Connection.QueryFirstOrDefaultAsync<Author>("SELECT * FROM Authors WHERE Name = @AuthorName LIMIT 1", new { AuthorName = name }, Transaction);
+        }
+
+        public Task RemoveAuthorForBookAsync(Author author, int bookId)
+        {
+            return Connection.ExecuteAsync("DELETE FROM AuthorBooks WHERE AuthorId = @AuthorId AND BookId = @BookId", new { AuthorId = author.Id, BookId = bookId }, Transaction);
+        }
+
+        public Task<IEnumerable<Author>> SearchAsync(string token)
+        {
+            return Connection.QueryAsync<Author>("SELECT * FROM Authors WHERE Name LIKE @Token", new { Token = $"%{token}%" }, Transaction);
         }
 
         private static IEnumerable<Author> ProcessWithBookCount(IEnumerable<dynamic> dynamicResult)

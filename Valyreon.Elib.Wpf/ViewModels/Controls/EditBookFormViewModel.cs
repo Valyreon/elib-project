@@ -21,10 +21,13 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 {
     public class EditBookFormViewModel : ViewModelWithValidation
     {
+        private readonly IUnitOfWorkFactory uowFactory;
         private ObservableCollection<Author> authorCollection;
 
+        private ObservableCollection<ObservableEntity> collectionSuggestions;
         private byte[] coverImage;
 
+        private string descriptionFieldText;
         private bool isFavorite;
 
         private bool isRead;
@@ -34,8 +37,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         private string seriesNumberFieldText;
 
         private string titleFieldText;
-
-        private string descriptionFieldText;
+        private ObservableCollection<UserCollection> usersCollections;
 
         public EditBookFormViewModel(Book book, IUnitOfWorkFactory uowFactory)
         {
@@ -54,10 +56,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             Cover = Book.Cover?.Image;
         }
 
-        public Book Book { get; }
-
+        public ICommand AddCollectionCommand => new RelayCommand<string>(AddCollection);
         public ICommand AddExistingAuthorButtonCommand => new RelayCommand(HandleAddExistingAuthor);
-
         public ICommand AddNewAuthorButtonCommand => new RelayCommand(HandleAddNewAuthor);
 
         [NotEmpty(ErrorMessage = "Book has to have at least one author.")]
@@ -67,17 +67,18 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             private set => Set(() => AuthorsCollection, ref authorCollection, value);
         }
 
-        public ObservableCollection<UserCollection> UserCollections
-        {
-            get => usersCollections;
-            private set => Set(() => UserCollections, ref usersCollections, value);
-        }
-
+        public Book Book { get; }
         public ICommand ChangeCoverButtonCommand => new RelayCommand(HandleChangeCoverButton);
 
         public ICommand ChooseExistingSeriesCommand => new RelayCommand(HandleChooseExistingSeries);
 
         public ICommand ClearSeriesCommand => new RelayCommand(HandleClearSeries);
+
+        public ObservableCollection<ObservableEntity> CollectionSuggestions
+        {
+            get => collectionSuggestions;
+            set => Set(() => CollectionSuggestions, ref collectionSuggestions, value);
+        }
 
         public byte[] Cover
         {
@@ -87,57 +88,13 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         public ICommand CreateNewSeriesCommand => new RelayCommand(HandleCreateNewSeries);
 
+        public string DescriptionFieldText
+        {
+            get => descriptionFieldText;
+            set => Set(() => DescriptionFieldText, ref descriptionFieldText, value);
+        }
+
         public ICommand EditSeriesCommand => new RelayCommand(HandleEditSeries);
-
-        private ObservableCollection<ObservableEntity> collectionSuggestions;
-        private ObservableCollection<UserCollection> usersCollections;
-        private readonly IUnitOfWorkFactory uowFactory;
-
-        public ObservableCollection<ObservableEntity> CollectionSuggestions
-        {
-            get => collectionSuggestions;
-            set => Set(() => CollectionSuggestions, ref collectionSuggestions, value);
-        }
-
-        public ICommand AddCollectionCommand => new RelayCommand<string>(AddCollection);
-
-        private async void AddCollection(string tag)
-        {
-            if (string.IsNullOrWhiteSpace(tag))
-            {
-                return;
-            }
-
-            tag = tag.Trim();
-            if (UserCollections.Any(c => c.Tag == tag)) // check if book is already in that collection
-            {
-                return;
-            }
-
-            using var uow = await uowFactory.CreateAsync();
-            var existingCollection = await uow.CollectionRepository.GetByTagAsync(tag);
-
-            if (existingCollection == null)
-            {
-                UserCollections.Add(new UserCollection { Tag = tag });
-            }
-            else
-            {
-                UserCollections.Add(existingCollection);
-            }
-        }
-
-        public ICommand RefreshSuggestedCollectionsCommand => new RelayCommand<string>(HandleRefreshSuggestedCollections);
-
-        private async void HandleRefreshSuggestedCollections(string token)
-        {
-            using var uow = await uowFactory.CreateAsync();
-            var allUserCollections = await uow.CollectionRepository.GetAllAsync();
-
-            var suggestions = allUserCollections.Where(c => !UserCollections.Contains(c) && c.Tag.ToLowerInvariant().Contains(token))
-                .Take(4);
-            CollectionSuggestions = new ObservableCollection<ObservableEntity>(suggestions.Cast<ObservableEntity>());
-        }
 
         public bool IsFavoriteCheck
         {
@@ -151,24 +108,15 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             set => Set(() => IsReadCheck, ref isRead, value);
         }
 
-        public string DescriptionFieldText
-        {
-            get => descriptionFieldText;
-            set => Set(() => DescriptionFieldText, ref descriptionFieldText, value);
-        }
-
         public bool IsSeriesSelected => Series != null;
+
+        public ICommand RefreshSuggestedCollectionsCommand => new RelayCommand<string>(HandleRefreshSuggestedCollections);
 
         public ICommand RemoveAuthorCommand => new RelayCommand<Author>(HandleRemoveAuthor);
 
-        public ICommand RemoveCoverButtonCommand => new RelayCommand(() => Cover = null);
-
         public ICommand RemoveCollectionCommand => new RelayCommand<UserCollection>(RemoveCollection);
 
-        private void RemoveCollection(UserCollection collection)
-        {
-            UserCollections.Remove(collection);
-        }
+        public ICommand RemoveCoverButtonCommand => new RelayCommand(() => Cover = null);
 
         public BookSeries Series
         {
@@ -205,26 +153,10 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             set => Set(() => TitleFieldText, ref titleFieldText, value);
         }
 
-        private void HandleAddNewAuthor()
+        public ObservableCollection<UserCollection> UserCollections
         {
-            var viewModel = new SimpleTextInputDialogViewModel("Add New Author", "Author's name:", name =>
-            {
-                if (string.IsNullOrWhiteSpace(name))
-                {
-                    return;
-                }
-
-                name = name.Trim();
-                var newAuthor = new Author { Name = name };
-                AuthorsCollection.Add(newAuthor);
-            });
-
-            MessengerInstance.Send(new ShowDialogMessage(viewModel));
-        }
-
-        private void HandleRemoveAuthor(Author author)
-        {
-            _ = AuthorsCollection.Remove(author);
+            get => usersCollections;
+            private set => Set(() => UserCollections, ref usersCollections, value);
         }
 
         public bool CreateBook()
@@ -414,6 +346,60 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             return true;
         }
 
+        private async void AddCollection(string tag)
+        {
+            if (string.IsNullOrWhiteSpace(tag))
+            {
+                return;
+            }
+
+            tag = tag.Trim();
+            if (UserCollections.Any(c => c.Tag == tag)) // check if book is already in that collection
+            {
+                return;
+            }
+
+            using var uow = await uowFactory.CreateAsync();
+            var existingCollection = await uow.CollectionRepository.GetByTagAsync(tag);
+
+            if (existingCollection == null)
+            {
+                UserCollections.Add(new UserCollection { Tag = tag });
+            }
+            else
+            {
+                UserCollections.Add(existingCollection);
+            }
+        }
+
+        private async void HandleAddExistingAuthor()
+        {
+            using var uow = await uowFactory.CreateAsync();
+            var allAuthors = await uow.AuthorRepository.GetAllAsync();
+            var ignoreIds = AuthorsCollection.Select(a => a.Id).ToList();
+
+            var viewModel = new ChooseAuthorDialogViewModel(allAuthors.Where(a => !ignoreIds.Contains(a.Id)),
+                    x => Application.Current.Dispatcher.Invoke(() => AuthorsCollection.Add(x)));
+            MessengerInstance.Send(new ShowDialogMessage(viewModel));
+        }
+
+        private void HandleAddNewAuthor()
+        {
+            var viewModel = new SimpleTextInputDialogViewModel("Add New Author", "Author's name:", name =>
+            {
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    return;
+                }
+
+                name = name.Trim();
+                var newAuthor = new Author { Name = name };
+                AuthorsCollection.Add(newAuthor);
+            });
+
+            MessengerInstance.Send(new ShowDialogMessage(viewModel));
+        }
+
         private void HandleChangeCoverButton()
         {
             using var dlg = new OpenFileDialog
@@ -432,17 +418,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             }
         }
 
-        private async void HandleAddExistingAuthor()
-        {
-            using var uow = await uowFactory.CreateAsync();
-            var allAuthors = await uow.AuthorRepository.GetAllAsync();
-            var ignoreIds = AuthorsCollection.Select(a => a.Id).ToList();
-
-            var viewModel = new ChooseAuthorDialogViewModel(allAuthors.Where(a => !ignoreIds.Contains(a.Id)),
-                    x => Application.Current.Dispatcher.Invoke(() => AuthorsCollection.Add(x)));
-            MessengerInstance.Send(new ShowDialogMessage(viewModel));
-        }
-
         private async void HandleChooseExistingSeries()
         {
             using var uow = await uowFactory.CreateAsync();
@@ -450,6 +425,11 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             var viewModel = new ChooseSeriesDialogViewModel(allSeries, x => Series = x);
             MessengerInstance.Send(new ShowDialogMessage(viewModel));
+        }
+
+        private void HandleClearSeries()
+        {
+            Series = null;
         }
 
         private void HandleCreateNewSeries()
@@ -467,11 +447,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             });
 
             MessengerInstance.Send(new ShowDialogMessage(dialogViewModel));
-        }
-
-        private void HandleClearSeries()
-        {
-            Series = null;
         }
 
         private void HandleEditSeries()
@@ -492,6 +467,26 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                     uow.Commit();
                 });
             });
+        }
+
+        private async void HandleRefreshSuggestedCollections(string token)
+        {
+            using var uow = await uowFactory.CreateAsync();
+            var allUserCollections = await uow.CollectionRepository.GetAllAsync();
+
+            var suggestions = allUserCollections.Where(c => !UserCollections.Contains(c) && c.Tag.ToLowerInvariant().Contains(token))
+                .Take(4);
+            CollectionSuggestions = new ObservableCollection<ObservableEntity>(suggestions.Cast<ObservableEntity>());
+        }
+
+        private void HandleRemoveAuthor(Author author)
+        {
+            _ = AuthorsCollection.Remove(author);
+        }
+
+        private void RemoveCollection(UserCollection collection)
+        {
+            UserCollections.Remove(collection);
         }
     }
 }

@@ -1,12 +1,12 @@
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:ControlViewModels="clr-namespace:Valyreon.Elib.Wpf.ViewModels.Controls"
-    xmlns:ControlViews="clr-namespace:Valyreon.Elib.Wpf.Views.Controls"
     xmlns:Converters="clr-namespace:Valyreon.Elib.Wpf.Converters"
+    xmlns:ControlViewModels="clr-namespace:Valyreon.Elib.Wpf.ViewModels.Controls"
     xmlns:DialogViewModels="clr-namespace:Valyreon.Elib.Wpf.ViewModels.Dialogs"
-    xmlns:DialogViews="clr-namespace:Valyreon.Elib.Wpf.Views.Dialogs"
     xmlns:FlyoutViewModels="clr-namespace:Valyreon.Elib.Wpf.ViewModels.Flyouts"
+    xmlns:ControlViews="clr-namespace:Valyreon.Elib.Wpf.Views.Controls"
+    xmlns:DialogViews="clr-namespace:Valyreon.Elib.Wpf.Views.Dialogs"
     xmlns:FlyoutViews="clr-namespace:Valyreon.Elib.Wpf.Views.Flyouts">
 
     <!--#region CONTROLS-->

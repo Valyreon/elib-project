@@ -20,14 +20,14 @@ namespace Valyreon.Elib.Wpf.Views.Windows
             //Browser.Focus();
         }
 
-        private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            //Cef.Shutdown();
-        }
-
         private void Browser_LostFocus(object sender, System.Windows.RoutedEventArgs e)
         {
             //Browser.Focus();
+        }
+
+        private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            //Cef.Shutdown();
         }
     }
 }

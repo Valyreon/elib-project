@@ -6,13 +6,19 @@ namespace Valyreon.Elib.Domain
     [Table("Quotes")]
     public class Quote : ObservableEntity
     {
-        private string text;
         private string note;
-
+        private string text;
         [ForeignKey("BookId")] public Book Book { get; set; }
 
         [Column]
         public int? BookId { get; set; }
+
+        [Column]
+        public string Note
+        {
+            get => note;
+            set => Set(() => Note, ref note, value);
+        }
 
         [Required]
         [Column]
@@ -20,13 +26,6 @@ namespace Valyreon.Elib.Domain
         {
             get => text;
             set => Set(() => Text, ref text, value);
-        }
-
-        [Column]
-        public string Note
-        {
-            get => note;
-            set => Set(() => Note, ref note, value);
         }
     }
 }
