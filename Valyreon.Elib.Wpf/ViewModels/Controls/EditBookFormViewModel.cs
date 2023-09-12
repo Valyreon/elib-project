@@ -17,6 +17,7 @@ using Valyreon.Elib.Wpf.Messages;
 using Valyreon.Elib.Wpf.Models;
 using Valyreon.Elib.Wpf.ValidationAttributes;
 using Valyreon.Elib.Wpf.ViewModels.Dialogs;
+using Valyreon.Elib.Wpf.Views.Dialogs;
 using Application = System.Windows.Application;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Controls
@@ -510,6 +511,13 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             MessengerInstance.Send(new SetGlobalLoaderMessage());
             var info = await client.GetByIsbnAsync(IsbnText);
+
+            if(info == null)
+            {
+                var msgDialog = new TextMessageDialogViewModel("Not Found", "Nothing was found on Google Books for that particular ISBN.");
+                MessengerInstance.Send(new ShowDialogMessage(msgDialog));
+                return;
+            }
 
             var newAuthors = new ObservableCollection<Author>();
             foreach (var authName in info.Authors)
