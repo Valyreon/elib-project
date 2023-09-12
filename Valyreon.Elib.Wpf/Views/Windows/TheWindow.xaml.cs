@@ -19,8 +19,6 @@ namespace Valyreon.Elib.Wpf.Views.Windows
     /// </summary>
     public partial class TheWindow : Window
     {
-        private double HeightBeforeMaximize;
-        private bool isManualDrag;
         private bool isMouseButtonDown;
         private Point mouseDownPosition;
         private Point positionBeforeDrag;
@@ -35,12 +33,12 @@ namespace Valyreon.Elib.Wpf.Views.Windows
 
             var currentDPIScaleFactor = (double)SystemHelper.GetCurrentDPIScaleFactor();
             var screen = Screen.FromHandle(new WindowInteropHelper(this).Handle);
-            SizeChanged += new SizeChangedEventHandler(OnSizeChanged);
-            StateChanged += new EventHandler(OnStateChanged);
-            Loaded += new RoutedEventHandler(OnLoaded);
+            SizeChanged += OnSizeChanged;
+            StateChanged += OnStateChanged;
+            Loaded += OnLoaded;
             var workingArea = screen.WorkingArea;
             MaxHeight = (double)(workingArea.Height + 16) / currentDPIScaleFactor;
-            SystemEvents.DisplaySettingsChanged += new EventHandler(SystemEvents_DisplaySettingsChanged);
+            SystemEvents.DisplaySettingsChanged += SystemEvents_DisplaySettingsChanged;
             AddHandler(MouseLeftButtonUpEvent, new MouseButtonEventHandler(OnMouseButtonUp), true);
             AddHandler(MouseMoveEvent, new System.Windows.Input.MouseEventHandler(OnMouseMove));
         }
@@ -114,35 +112,34 @@ namespace Valyreon.Elib.Wpf.Views.Windows
         protected virtual Thickness GetFromMinimizedMarginForDpi()
         {
             var currentDPI = SystemHelper.GetCurrentDPI();
-            var thickness = new Thickness(7, 7, 5, 7);
             if (currentDPI == 120)
             {
-                thickness = new Thickness(6, 6, 4, 6);
+                return new Thickness(6, 6, 4, 6);
             }
             else if (currentDPI == 144)
             {
-                thickness = new Thickness(7, 7, 4, 4);
+                return new Thickness(7, 7, 4, 4);
             }
             else if (currentDPI == 168)
             {
-                thickness = new Thickness(6, 6, 2, 2);
+                return new Thickness(6, 6, 2, 2);
             }
             else if (currentDPI == 192)
             {
-                thickness = new Thickness(6, 6, 2, 2);
+                return new Thickness(6, 6, 2, 2);
             }
             else if (currentDPI == 240)
             {
-                thickness = new Thickness(6, 6, 0, 0);
+                return new Thickness(6, 6, 0, 0);
             }
-            return thickness;
+            return new Thickness(7, 7, 5, 7);
         }
 
         protected void OnHeaderBarMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             var position = e.GetPosition(this);
-            var headerBarHeight = 50;
-            var leftmostClickableOffset = 50;
+            const int headerBarHeight = 50;
+            const int leftmostClickableOffset = 50;
 
             if (position.X - LayoutRoot.Margin.Left <= leftmostClickableOffset && position.Y <= headerBarHeight)
             {
@@ -246,7 +243,6 @@ namespace Valyreon.Elib.Wpf.Views.Windows
         private void OnMouseButtonUp(object sender, MouseButtonEventArgs e)
         {
             isMouseButtonDown = false;
-            isManualDrag = false;
             ReleaseMouseCapture();
         }
 
@@ -284,8 +280,6 @@ namespace Valyreon.Elib.Wpf.Views.Windows
                     CaptureMouse();
                 }
 
-                isManualDrag = true;
-
                 Top = (screen.Y - mouseDownPosition.Y) / currentDPIScaleFactor;
                 Left = (screen.X - actualWidth) / currentDPIScaleFactor;
             }
@@ -295,7 +289,6 @@ namespace Valyreon.Elib.Wpf.Views.Windows
         {
             if (WindowState == WindowState.Normal)
             {
-                HeightBeforeMaximize = ActualHeight;
                 WidthBeforeMaximize = ActualWidth;
                 return;
             }
@@ -328,7 +321,7 @@ namespace Valyreon.Elib.Wpf.Views.Windows
             else
             {
                 thickness = GetDefaultMarginForDpi();
-                if (PreviousState == WindowState.Minimized || Left == positionBeforeDrag.X && Top == positionBeforeDrag.Y)
+                if (PreviousState == WindowState.Minimized || (Left == positionBeforeDrag.X && Top == positionBeforeDrag.Y))
                 {
                     thickness = GetFromMinimizedMarginForDpi();
                 }

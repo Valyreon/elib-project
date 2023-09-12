@@ -21,6 +21,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         private bool scanAtStartup;
 
         private string selectedFormat;
+        private static readonly Regex _regex = new Regex(@"\.[a-zA-Z0-9]+");
 
         public ApplicationSettingsViewModel(ApplicationProperties properties)
         {
@@ -94,12 +95,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
                 str = str.ToLowerInvariant().Trim();
 
-                if (str.StartsWith(".") == false)
+                if (!str.StartsWith("."))
                 {
                     str = "." + str;
                 }
 
-                if (!Regex.IsMatch(str, @"\.[a-zA-Z0-9]+"))
+                if (!_regex.IsMatch(str))
                 {
                     MessengerInstance.Send(new ShowNotificationMessage("Invalid file format.", NotificationType.Error));
                     return;

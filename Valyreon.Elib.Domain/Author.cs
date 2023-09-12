@@ -32,8 +32,17 @@ namespace Valyreon.Elib.Domain
             }
         }
 
-        public string NumberOfBooksString => NumberOfBooks > 0
-            ? (NumberOfBooks == 1 ? "1 book" : NumberOfBooks + " books")
-            : string.Empty;
+        public string NumberOfBooksString
+        {
+            get
+            {
+                if (NumberOfBooks > 0)
+                {
+                    return NumberOfBooks == 1 ? "1 book" : NumberOfBooks + " books";
+                }
+
+                return string.Empty;
+            }
+        }
     }
 }

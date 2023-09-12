@@ -25,6 +25,11 @@ namespace Valyreon.Elib.Wpf.Models
 
         public static byte[] ResizeAndFill(byte[] imgBytes, int width = 200, int height = 300)
         {
+            if (imgBytes == null)
+            {
+                return null;
+            }
+
             using var image = Image.Load(imgBytes);
             using var image2 = Image.Load(imgBytes);
 

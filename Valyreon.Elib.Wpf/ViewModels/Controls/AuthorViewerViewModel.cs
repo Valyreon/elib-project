@@ -14,7 +14,7 @@ using Valyreon.Elib.Wpf.Messages;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Controls
 {
-    public class AuthorViewerViewModel : ViewModelBase, IViewer, IDisposable
+    public class AuthorViewerViewModel : ViewModelBase, IViewer
     {
         private readonly IUnitOfWorkFactory uowFactory;
         private ObservableCollection<Author> authors;
@@ -184,7 +184,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             CollectionComboBoxOptions = collectionOptions;
 
-            if (Filter.CollectionId.HasValue && Filter.CollectionId.Value > 0 && collectionComboBoxSelectedIndex == 0)
+            if (Filter.CollectionId > 0 && collectionComboBoxSelectedIndex == 0)
             {
                 var selectedCollection = collections.Single(c => c.Id == Filter.CollectionId.Value);
                 var option = collectionOptions.Single(o => o.Name == selectedCollection.Tag);

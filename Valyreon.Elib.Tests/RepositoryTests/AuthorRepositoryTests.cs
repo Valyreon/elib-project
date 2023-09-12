@@ -14,7 +14,7 @@ namespace Valyreon.Elib.Tests.RepositoryTests
     [TestClass]
     public class AuthorRepositoryTests
     {
-        private readonly List<Author> addedAuthors = new List<Author>();
+        private readonly List<Author> addedAuthors = new();
 
         [TestCleanup]
         public async Task Clean()

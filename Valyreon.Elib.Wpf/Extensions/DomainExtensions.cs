@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Valyreon.Elib.BookDataAPI;
 using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.EBookTools;
@@ -16,6 +17,33 @@ namespace Valyreon.Elib.Wpf.Extensions
             book.Title = book.Title.Trim();
         }
 
+        public static async Task Fill(this Book book, BookInformation info, IUnitOfWorkFactory uowFactory)
+        {
+            book.Title = info.Title.Trim();
+            book.Description = info.Description.Trim();
+
+            book.Cover ??= new Cover();
+            book.Cover.Image = ImageOptimizer.ResizeAndFill(info.Cover);
+
+            var newAuthors = new ObservableCollection<Author>();
+            foreach (var authName in info.Authors)
+            {
+                var alreadyAdded = book.Authors.FirstOrDefault(a => a.Name == authName);
+                if (alreadyAdded != null)
+                {
+                    newAuthors.Add(alreadyAdded);
+                }
+                else
+                {
+                    using var uow = await uowFactory.CreateAsync();
+                    var authorInDb = await uow.AuthorRepository.GetAuthorWithNameAsync(authName);
+                    newAuthors.Add(authorInDb ?? new Author { Name = authName });
+                }
+            }
+
+            book.Authors = newAuthors;
+        }
+
         public static bool IsValid(this Book book)
         {
             if (book == null)
@@ -23,8 +51,8 @@ namespace Valyreon.Elib.Wpf.Extensions
                 return false;
             }
 
-            return book.Title.IsDefined() && book.Authors != null && book.Authors.Count > 0 && book.Authors.All(a => a.Name.IsDefined())
-                && book.Path.IsDefined() && book.Signature.IsDefined() && (book.Series == null || book.Series.Name.IsDefined());
+            return book.Title.IsDefined() && book.Authors?.Count > 0 && book.Authors.All(a => a.Name.IsDefined())
+                && book.Path.IsDefined() && book.Signature.IsDefined() && (book.Series?.Name.IsDefined() != false);
         }
 
         public static async Task LoadBookAsync(this Book book, IUnitOfWork uow)
@@ -61,7 +89,8 @@ namespace Valyreon.Elib.Wpf.Extensions
                 Format = Path.GetExtension(parsedBook.Path),
                 Signature = Signer.ComputeHash(parsedBook.Path),
                 Path = parsedBook.Path,
-                Description = parsedBook.Description
+                Description = parsedBook.Description,
+                ISBN = parsedBook.Isbn
             };
 
             if (parsedBook.Authors == null)

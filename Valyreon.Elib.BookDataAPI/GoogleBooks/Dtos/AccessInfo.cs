@@ -5,8 +5,8 @@ public class AccessInfo
     public string AccessViewStatus { get; set; }
     public string Country { get; set; }
     public bool? Embeddable { get; set; }
-    public FormatAvailability? Epub { get; set; }
-    public FormatAvailability? Pdf { get; set; }
+    public FormatAvailability Epub { get; set; }
+    public FormatAvailability Pdf { get; set; }
     public bool? PublicDomain { get; set; }
     public bool? QuoteSharingAllowed { get; set; }
     public string TextToSpeechPermission { get; set; }

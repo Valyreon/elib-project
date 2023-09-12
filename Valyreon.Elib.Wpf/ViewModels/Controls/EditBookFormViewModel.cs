@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
+using Valyreon.Elib.BookDataAPI.GoogleBooks;
 using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.Mvvm;
@@ -21,6 +23,9 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 {
     public class EditBookFormViewModel : ViewModelWithValidation
     {
+        private static readonly Regex isbnRegex = new(@"^(\d{10}|\d{13})$");
+        private static readonly Regex nonDigitCharsRegex = new Regex(@"[^\d]+");
+        private static readonly Regex seriesNumberRegex = new(@"\d+(\.\d+)?");
         private readonly IUnitOfWorkFactory uowFactory;
         private ObservableCollection<Author> authorCollection;
 
@@ -28,8 +33,10 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         private byte[] coverImage;
 
         private string descriptionFieldText;
+        private string isbnText = string.Empty;
         private bool isFavorite;
 
+        private bool isIsbnValid;
         private bool isRead;
 
         private BookSeries series;
@@ -54,6 +61,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             IsFavoriteCheck = Book.IsFavorite;
             IsReadCheck = Book.IsRead;
             Cover = Book.Cover?.Image;
+            IsbnText = Book.ISBN;
+            IsIsbnValid = CheckIsIsbnValid();
         }
 
         public ICommand AddCollectionCommand => new RelayCommand<string>(AddCollection);
@@ -95,11 +104,28 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         }
 
         public ICommand EditSeriesCommand => new RelayCommand(HandleEditSeries);
+        public ICommand GetDataWithISBNCommand => new RelayCommand(HandleGetGoogleBooksData);
+
+        public string IsbnText
+        {
+            get => isbnText;
+            set
+            {
+                Set(() => IsbnText, ref isbnText, value);
+                IsIsbnValid = CheckIsIsbnValid();
+            }
+        }
 
         public bool IsFavoriteCheck
         {
             get => isFavorite;
             set => Set(() => IsFavoriteCheck, ref isFavorite, value);
+        }
+
+        public bool IsIsbnValid
+        {
+            get => isIsbnValid;
+            set => Set(() => IsIsbnValid, ref isIsbnValid, value);
         }
 
         public bool IsReadCheck
@@ -159,6 +185,17 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             private set => Set(() => UserCollections, ref usersCollections, value);
         }
 
+        public bool CheckIsIsbnValid()
+        {
+            if (string.IsNullOrWhiteSpace(IsbnText))
+            {
+                return false;
+            }
+
+            var cleanedIsbnText = nonDigitCharsRegex.Replace(IsbnText.Trim(), string.Empty);
+            return isbnRegex.IsMatch(cleanedIsbnText);
+        }
+
         public bool CreateBook()
         {
             Validate();
@@ -169,7 +206,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             var book = Book;
 
-            _ = Task.Run(async () =>
+            _ = Task.Run((Func<Task>)(async () =>
             {
                 using var uow = await uowFactory.CreateAsync();
 
@@ -185,17 +222,15 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                     book.SeriesId = book.SeriesId;
                 }
 
-                if (IsSeriesSelected)
+                if (IsSeriesSelected && seriesNumberRegex.IsMatch(SeriesNumberFieldText))
                 {
-                    if (Regex.IsMatch(SeriesNumberFieldText, @"\d+(\.\d+)?"))
-                    {
-                        book.NumberInSeries = decimal.Parse(SeriesNumberFieldText);
-                    }
+                    book.NumberInSeries = decimal.Parse(SeriesNumberFieldText);
                 }
 
                 book.Title = TitleFieldText;
                 book.IsFavorite = IsFavoriteCheck;
                 book.IsRead = IsReadCheck;
+                book.ISBN = IsbnText.Trim();
 
                 if (Cover != null)
                 {
@@ -221,7 +256,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
                 uow.Commit();
                 MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
-            });
+            }));
 
             return true;
         }
@@ -236,11 +271,11 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             var book = Book;
 
-            Task.Run(async () =>
+            Task.Run((Func<Task>)(async () =>
             {
                 using var uow = await uowFactory.CreateAsync();
 
-                if (Series != null && Series.Id == 0)
+                if (Series?.Id == 0)
                 {
                     await uow.SeriesRepository.CreateAsync(Series);
                     book.SeriesId = Series.Id;
@@ -259,7 +294,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
                 if (IsSeriesSelected)
                 {
-                    if (Regex.IsMatch(SeriesNumberFieldText, @"\d+(\.\d+)?"))
+                    if (seriesNumberRegex.IsMatch(SeriesNumberFieldText))
                     {
                         book.NumberInSeries = decimal.Parse(SeriesNumberFieldText);
                     }
@@ -273,6 +308,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 book.IsFavorite = IsFavoriteCheck;
                 book.IsRead = IsReadCheck;
                 book.Description = DescriptionFieldText;
+                book.ISBN = IsbnText;
 
                 var removedAuthorIds = new List<int>();
                 var oldAndNewCommonAuthorIds = AuthorsCollection.Select(a => a.Id).Intersect(book.Authors.Select(a => a.Id));
@@ -342,7 +378,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
                 uow.Commit();
                 MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
-            });
+            }));
             return true;
         }
 
@@ -442,8 +478,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 }
 
                 name = name.Trim();
-                var newSeries = new BookSeries { Name = name };
-                Series = newSeries;
+                Series = new BookSeries { Name = name };
             });
 
             MessengerInstance.Send(new ShowDialogMessage(dialogViewModel));
@@ -467,6 +502,37 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                     uow.Commit();
                 });
             });
+        }
+
+        private async void HandleGetGoogleBooksData()
+        {
+            var client = new GoogleBooksClient();
+
+            MessengerInstance.Send(new SetGlobalLoaderMessage());
+            var info = await client.GetByIsbnAsync(IsbnText);
+
+            var newAuthors = new ObservableCollection<Author>();
+            foreach (var authName in info.Authors)
+            {
+                var alreadyAdded = AuthorsCollection.FirstOrDefault(a => a.Name == authName);
+                if (alreadyAdded != null)
+                {
+                    newAuthors.Add(alreadyAdded);
+                }
+                else
+                {
+                    using var uow = await uowFactory.CreateAsync();
+                    var authorInDb = await uow.AuthorRepository.GetAuthorWithNameAsync(authName);
+                    newAuthors.Add(authorInDb ?? new Author { Name = authName });
+                }
+            }
+
+            AuthorsCollection = newAuthors;
+            TitleFieldText = info.Title;
+            Cover = ImageOptimizer.ResizeAndFill(info.Cover);
+            DescriptionFieldText = info.Description;
+
+            MessengerInstance.Send(new SetGlobalLoaderMessage(false));
         }
 
         private async void HandleRefreshSuggestedCollections(string token)

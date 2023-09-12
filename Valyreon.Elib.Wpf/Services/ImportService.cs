@@ -12,121 +12,119 @@ namespace Valyreon.Elib.Wpf.Services;
 
 public class ImportService : IImportService
 {
-    private readonly IUnitOfWorkFactory _uowFactory;
-    private readonly ApplicationProperties appSettings;
+	private readonly IUnitOfWorkFactory _uowFactory;
+	private readonly ApplicationProperties appSettings;
 
-    public ImportService(IUnitOfWorkFactory uowFactory, ApplicationProperties appSettings)
-    {
-        _uowFactory = uowFactory;
-        this.appSettings = appSettings;
-    }
+	public ImportService(IUnitOfWorkFactory uowFactory, ApplicationProperties appSettings)
+	{
+		_uowFactory = uowFactory;
+		this.appSettings = appSettings;
+	}
 
-    public async Task<IReadOnlyList<string>> GetNotImportedBookPathsAsync()
-    {
-        var newBooks = new List<string>();
+	public async Task<IReadOnlyList<string>> GetNotImportedBookPathsAsync()
+	{
+		var newBooks = new List<string>();
 
-        foreach (var sourcePath in appSettings.Sources)
-        {
-            newBooks.AddRange(await GetNotImportedBookPathsAsync(sourcePath));
-        }
+		foreach(var sourcePath in appSettings.Sources)
+		{
+			newBooks.AddRange(await GetNotImportedBookPathsAsync(sourcePath));
+		}
 
-        return newBooks;
-    }
+		return newBooks;
+	}
 
-    public async Task ImportBookAsync(Book book)
-    {
-        if (book.IsValid() == false || book.Id != 0)
-        {
-            throw new ArgumentException("Book has to be valid and not imported already.", nameof(book));
-        }
+	public async Task ImportBookAsync(Book book)
+	{
+        if (!book.IsValid() || book.Id != 0)
+		{
+			throw new ArgumentException("Book has to be valid and not imported already.", nameof(book));
+		}
 
-        using var uow = await _uowFactory.CreateAsync();
-        if (book.Series != null)
-        {
-            var existingSeries = await uow.SeriesRepository.GetByNameAsync(book.Series.Name);
-            if (existingSeries != null)
-            {
-                book.Series.Id = existingSeries.Id;
-                book.SeriesId = existingSeries.Id;
-            }
-            else
-            {
-                book.Series.Id = 0;
-                await uow.SeriesRepository.CreateAsync(book.Series);
-            }
-            book.SeriesId = book.Series.Id;
-        }
+		using var uow = await _uowFactory.CreateAsync();
+		if(book.Series != null)
+		{
+			var existingSeries = await uow.SeriesRepository.GetByNameAsync(book.Series.Name);
+			if(existingSeries != null)
+			{
+				book.Series.Id = existingSeries.Id;
+				book.SeriesId = existingSeries.Id;
+			}
+			else
+			{
+				book.Series.Id = 0;
+				await uow.SeriesRepository.CreateAsync(book.Series);
+			}
+			book.SeriesId = book.Series.Id;
+		}
 
-        if (book.Cover != null)
-        {
-            await uow.CoverRepository.CreateAsync(book.Cover);
-            book.CoverId = book.Cover.Id;
-        }
+		if(book.Cover != null)
+		{
+			await uow.CoverRepository.CreateAsync(book.Cover);
+			book.CoverId = book.Cover.Id;
+		}
 
-        await uow.BookRepository.CreateAsync(book);
+		await uow.BookRepository.CreateAsync(book);
 
-        foreach (var author in book.Authors)
-        {
-            var existingAuthor = await uow.AuthorRepository.GetAuthorWithNameAsync(author.Name);
-            if (existingAuthor != null)
-            {
-                author.Id = existingAuthor.Id;
-                await uow.AuthorRepository.AddAuthorForBookAsync(existingAuthor, book.Id);
-            }
-            else
-            {
-                author.Id = 0;
-                await uow.AuthorRepository.CreateAsync(author);
-                await uow.AuthorRepository.AddAuthorForBookAsync(author, book.Id);
-            }
-        }
+		foreach(var author in book.Authors)
+		{
+			var existingAuthor = await uow.AuthorRepository.GetAuthorWithNameAsync(author.Name);
+			if(existingAuthor != null)
+			{
+				author.Id = existingAuthor.Id;
+				await uow.AuthorRepository.AddAuthorForBookAsync(existingAuthor, book.Id);
+			}
+			else
+			{
+				author.Id = 0;
+				await uow.AuthorRepository.CreateAsync(author);
+				await uow.AuthorRepository.AddAuthorForBookAsync(author, book.Id);
+			}
+		}
 
-        uow.Commit();
-    }
+		uow.Commit();
+	}
 
-    private async Task<IEnumerable<string>> GetNotImportedBookPathsAsync(SourcePath sourcePath)
-    {
-        if (!Directory.Exists(sourcePath.Path))
-        {
-            throw new ArgumentException(nameof(sourcePath.Path));
-        }
+	private async Task<IEnumerable<string>> GetNotImportedBookPathsAsync(SourcePath sourcePath)
+	{
+		if(!Directory.Exists(sourcePath.Path))
+		{
+			throw new ArgumentException(nameof(sourcePath.Path));
+		}
 
-        var filesToScan = new List<string>();
+		var filesToScan = new List<string>();
 
-        var directories = new Stack<string>();
-        directories.Push(sourcePath.Path);
+		var directories = new Stack<string>();
+		directories.Push(sourcePath.Path);
 
-        while (directories.Any())
-        {
-            var currentDir = directories.Pop();
-            filesToScan.AddRange(Directory.GetFiles(currentDir));
+		while(directories.Any())
+		{
+			var currentDir = directories.Pop();
+			filesToScan.AddRange(Directory.GetFiles(currentDir));
 
-            if (sourcePath.RecursiveScan)
-            {
-                var subDirs = Directory.GetDirectories(currentDir);
+			if(sourcePath.RecursiveScan)
+			{
+				foreach(var subDir in Directory.GetDirectories(currentDir))
+				{
+					directories.Push(subDir);
+				}
+			}
+		}
 
-                foreach (var subDir in subDirs)
-                {
-                    directories.Push(subDir);
-                }
-            }
-        }
+		var newBooks = new List<string>();
+		var extensions = filesToScan.ConvertAll(p => Path.GetExtension(p).ToLowerInvariant());
 
-        var newBooks = new List<string>();
-        var extensions = filesToScan.Select(p => Path.GetExtension(p).ToLowerInvariant()).ToList();
-        var filesWithFilteredExtension = filesToScan.Where(p => appSettings.Formats.Any(f => Path.GetExtension(p).ToLowerInvariant() == f)).ToList();
-        // only books with correct extension
-        foreach (var bookPath in filesWithFilteredExtension)
-        {
-            var signature = Signer.ComputeHash(bookPath);
-            // only books which have not been added already
-            using var uow = await _uowFactory.CreateAsync();
-            if (!await uow.BookRepository.PathExistsAsync(bookPath) && !await uow.BookRepository.SignatureExistsAsync(signature))
-            {
-                newBooks.Add(bookPath);
-            }
-        }
+		// only books with correct extension
+		foreach(var bookPath in filesToScan.Where(p => appSettings.Formats.Any(f => Path.GetExtension(p).ToLowerInvariant() == f)).ToList())
+		{
+			var signature = Signer.ComputeHash(bookPath);
+			// only books which have not been added already
+			using var uow = await _uowFactory.CreateAsync();
+			if(!await uow.BookRepository.PathExistsAsync(bookPath) && !await uow.BookRepository.SignatureExistsAsync(signature))
+			{
+				newBooks.Add(bookPath);
+			}
+		}
 
-        return newBooks;
-    }
+		return newBooks;
+	}
 }

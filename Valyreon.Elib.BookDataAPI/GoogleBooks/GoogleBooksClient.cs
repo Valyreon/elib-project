@@ -6,6 +6,7 @@ namespace Valyreon.Elib.BookDataAPI.GoogleBooks;
 
 public class GoogleBooksClient : IBookInformationAPI
 {
+    private static readonly Regex isbnRegex = new(@"^(\d{10}|\d{13})$");
     private readonly string _baseUrl = "https://www.googleapis.com/books/v1";
     private readonly bool throttle;
     private DateTime? lastRequestTime;
@@ -17,7 +18,7 @@ public class GoogleBooksClient : IBookInformationAPI
 
     public async Task<BookInformation> GetByIsbnAsync(string isbn, bool includeCover = true)
     {
-        if (string.IsNullOrWhiteSpace(isbn) || !Regex.IsMatch(isbn, @"^(\d{10}|\d{13})$"))
+        if (string.IsNullOrWhiteSpace(isbn) || !isbnRegex.IsMatch(isbn))
         {
             throw new ArgumentException("ISBN is not in the correct form.", nameof(isbn));
         }

@@ -210,8 +210,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             if (File.Exists(Book.Path))
             {
                 var x = EbookParserFactory.Create(Book.Path).Parse();
-                builder.Append("ISBN: ").AppendLine(strCheck(x.Isbn));
-                builder.Append("Publisher: ").AppendLine(strCheck(x.Publisher));
+                builder.Append("ISBN: ").AppendLine(strCheck(x.Isbn))
+                    .Append("Publisher: ").AppendLine(strCheck(x.Publisher));
             }
 
             var viewModel = new TextMessageDialogViewModel("File Information", builder.ToString());

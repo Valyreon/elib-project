@@ -86,7 +86,7 @@ namespace Valyreon.Elib.EbookTools.Mobi
 
         public uint EncryptionType => MEncryptionType;
 
-        public new static MobiFile LoadFile(byte[] file)
+        public static new MobiFile LoadFile(byte[] file)
         {
             var retval = new MobiFile(PalmFile.LoadFile(file));
             var empty2 = new List<byte>();

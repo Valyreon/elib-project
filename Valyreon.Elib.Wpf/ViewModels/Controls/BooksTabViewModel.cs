@@ -219,15 +219,15 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 var nullReturned = 0;
                 var excHappened = 0;
 
-                var epubCount = foundBooks.Count(b => b.ToLowerInvariant().EndsWith(".epub"));
-                var mobiCount = foundBooks.Count(b => b.ToLowerInvariant().EndsWith(".mobi"));
-                var pdfCount = foundBooks.Count(b => b.ToLowerInvariant().EndsWith(".pdf"));
+                var epubCount = foundBooks.Count(b => b.EndsWith(".epub", StringComparison.InvariantCultureIgnoreCase));
+                var mobiCount = foundBooks.Count(b => b.EndsWith(".mobi", StringComparison.InvariantCultureIgnoreCase));
+                var pdfCount = foundBooks.Count(b => b.EndsWith(".pdf", StringComparison.InvariantCultureIgnoreCase));
 
-                var toProcess = foundBooks.Where(b => b.ToLowerInvariant().EndsWith(".epub")).ToList();
+                var toProcess = foundBooks.Where(b => b.EndsWith(".epub", StringComparison.InvariantCultureIgnoreCase)).ToList();
 
                 if (toProcess.Any())
                 {
-                    MessengerInstance.Send(new ShowNotificationMessage($"Importing books..."));
+                    MessengerInstance.Send(new ShowNotificationMessage("Importing books..."));
                 }
 
                 foreach (var book in toProcess)

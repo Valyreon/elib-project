@@ -32,11 +32,8 @@ namespace Valyreon.Elib.Mvvm
             {
                 return true;
             }
-            else
-            {
-                var result = canExecuteEvaluator.Invoke();
-                return result;
-            }
+
+            return canExecuteEvaluator.Invoke();
         }
 
         public void Execute(object parameter)

@@ -164,7 +164,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             if (EditBookForm.CreateBook())
             {
                 NextBook();
-            };
+            }
 
             IsSaving = false;
         }
@@ -202,11 +202,10 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                 await Task.Run(async () =>
                 {
                     var pBook = EbookParserFactory.Create(path).Parse();
-                    var book = await pBook.ToBookAsync(uowFactory);
-                    result = book;
+                    result = await pBook.ToBookAsync(uowFactory);
                 });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 result = new Book
                 {
