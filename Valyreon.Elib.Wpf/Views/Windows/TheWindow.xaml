@@ -17,8 +17,8 @@
     SnapsToDevicePixels="True"
     Style="{StaticResource ElibWindowStyle}"
     TextOptions.TextFormattingMode="Ideal"
-    TextOptions.TextHintingMode="Auto"
-    TextOptions.TextRenderingMode="ClearType"
+    TextOptions.TextHintingMode="Fixed"
+    TextOptions.TextRenderingMode="Auto"
     Top="0"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">

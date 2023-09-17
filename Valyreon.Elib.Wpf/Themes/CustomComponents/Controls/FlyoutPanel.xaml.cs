@@ -71,6 +71,7 @@ public partial class FlyoutPanel : UserControl, IFlyoutPanel
     private void Button_Click(object sender, RoutedEventArgs e)
     {
         IsOpen = false;
+        ContentControl = null;
     }
 
     private void Close()
@@ -84,6 +85,11 @@ public partial class FlyoutPanel : UserControl, IFlyoutPanel
         theGrid.BeginAnimation(OpacityProperty, opacityAnimation);
     }
 
+    private void ContentControl_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        flyoutControl.MoveFocus(new System.Windows.Input.TraversalRequest(System.Windows.Input.FocusNavigationDirection.Down));
+    }
+
     private void Open()
     {
         theGrid.Margin = new Thickness { Left = window.Width, Right = 0, Bottom = 0, Top = 0 };
@@ -95,10 +101,5 @@ public partial class FlyoutPanel : UserControl, IFlyoutPanel
         thicknessAnimation.Completed += (a, i) => theGrid.Margin = endThickness;
         theGrid.BeginAnimation(MarginProperty, thicknessAnimation);
         theGrid.BeginAnimation(OpacityProperty, opacityAnimation);
-    }
-
-    private void ContentControl_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-    {
-        flyoutControl.MoveFocus(new System.Windows.Input.TraversalRequest(System.Windows.Input.FocusNavigationDirection.Down));
     }
 }

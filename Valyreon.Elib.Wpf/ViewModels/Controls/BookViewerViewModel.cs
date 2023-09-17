@@ -16,13 +16,21 @@ using Valyreon.Elib.Wpf.Messages;
 using Valyreon.Elib.Wpf.Models;
 using Valyreon.Elib.Wpf.ViewModels.Dialogs;
 using Valyreon.Elib.Wpf.ViewModels.Flyouts;
+using Valyreon.Elib.Wpf.Views.Windows;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Controls
 {
     public class BookViewerViewModel : ViewModelBase, IViewer
     {
+        private const double tileWidth = 176;
+        private const double tileHeight = 309;
+        private const double tileSurface = tileWidth * tileHeight;
+        private const double windowHeightOffset = 110;
+        private const double windowWidthOffset = 220;
+        private const int pageSize = 25;
         private readonly ApplicationProperties applicationProperties;
         private readonly LinkedList<Book> linkedBooks = new();
+        private readonly TheWindow mainWindow;
         private readonly Selector selector;
         private readonly IUnitOfWorkFactory uowFactory;
         private Action backAction;
@@ -34,7 +42,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         private bool isResultEmpty;
         private double scrollVerticalOffset;
         private string searchText;
-
         private int sortComboBoxSelectedIndex;
 
         private int statusComboBoxSelectedIndex;
@@ -43,6 +50,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         public BookViewerViewModel(BookFilter filter, Selector selector, ApplicationProperties applicationProperties, IUnitOfWorkFactory uowFactory)
         {
+            mainWindow = System.Windows.Application.Current.Windows.OfType<TheWindow>().Single();
             Filter = filter;
             this.selector = selector;
             this.applicationProperties = applicationProperties;
@@ -115,6 +123,23 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         public int CurrentCount => Books.Count;
 
         public ICommand ExportSelectedBooksCommand => new RelayCommand(HandleExport);
+
+        public ICommand SizeChangedCommand => new RelayCommand(HandleSizeChanged);
+
+        private void HandleSizeChanged()
+        {
+            var viewerSurface = (mainWindow.ActualWidth - windowWidthOffset) * (mainWindow.ActualHeight - windowHeightOffset);
+            var viewerFitsBooks = viewerSurface / tileSurface;
+            if (viewerFitsBooks > Books.Count)
+            {
+                var loadTimes = (int)Math.Ceiling((viewerFitsBooks - Books.Count) / pageSize);
+
+                for (var i = 0; i < loadTimes; ++i)
+                {
+                    LoadMore();
+                }
+            }
+        }
 
         public BookFilter Filter { get; set; }
 
@@ -331,7 +356,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             }
             else
             {
-                results = await uow.BookRepository.GetByFilterAsync(Filter, Books.Count, 25);
+                results = await uow.BookRepository.GetByFilterAsync(Filter, Books.Count, pageSize);
             }
 
             if (!results.Any())
@@ -357,6 +382,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             IsResultEmpty = Books.Count == 0;
             isLoading = false;
+            HandleSizeChanged();
         }
 
         private void ProcessAddBook()

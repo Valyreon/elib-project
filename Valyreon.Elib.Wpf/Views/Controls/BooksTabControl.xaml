@@ -42,7 +42,7 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
-                    <RowDefinition Height="40" />
+                    <RowDefinition Height="5" />
                 </Grid.RowDefinitions>
 
                 <ListBox
@@ -88,7 +88,7 @@
                     ItemContainerStyle="{StaticResource MainPaneListBoxItemStyle}"
                     ItemsSource="{Binding Collections, Mode=OneWay}"
                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                    ScrollViewer.VerticalScrollBarVisibility="Hidden"
                     SelectedItem="{Binding SelectedCollection}"
                     Style="{StaticResource MainPaneListBoxStyle}">
                     <Behaviors:Interaction.Triggers>

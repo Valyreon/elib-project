@@ -165,7 +165,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
         private void HandleEditButton()
         {
-            MessengerInstance.Send(new OpenFlyoutMessage(new EditBookViewModel(bookNode, uowFactory)));
+            MessengerInstance.Send(new OpenFlyoutMessage(new EditBookViewModel(bookNode, uowFactory, Properties)));
         }
 
         private void HandleExport()

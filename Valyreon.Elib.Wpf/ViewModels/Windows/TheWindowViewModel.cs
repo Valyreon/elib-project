@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Input;
 using Valyreon.Elib.DataLayer;
@@ -44,8 +45,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
                 fileSystemWatcher.Dispose();
                 fileSystemWatcher = new ElibFileSystemWatcher(applicationProperties, unitOfWorkFactory);
             });
-            MessengerInstance.Register<OpenFlyoutMessage>(this, m => HandleOpenFlyout(m.ViewModel));
-            MessengerInstance.Register<OpenBookDetailsFlyoutMessage>(this, m => HandleOpenFlyout(new BookDetailsViewModel(m.Book, applicationProperties, unitOfWorkFactory)));
+            MessengerInstance.Register<OpenFlyoutMessage>(this, m => OpenFlyoutPanel(m.ViewModel));
             MessengerInstance.Register<ShowNotificationMessage>(this, HandleShowNotification);
             MessengerInstance.Register(this, (ShowDialogMessage m) =>
             {
@@ -141,10 +141,14 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
             }
         }
 
-        public void OpenFlyoutPanel(object content)
+        public async void OpenFlyoutPanel(object content)
         {
-            flyoutControl.ContentControl = content;
             flyoutControl.IsOpen = true;
+
+            // awaiting here fixes a stutter when the detail flyout has a lot of text
+            // I guess UI thread gets too busy when we set the content?
+            await Task.Delay(150);
+            flyoutControl.ContentControl = content;
         }
 
         private void HandleNextNotification(object sender = null, ElapsedEventArgs e = null)
@@ -157,11 +161,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
 
             notificationTimer.Stop();
             CurrentNotificationMessage = null;
-        }
-
-        private void HandleOpenFlyout(ViewModelBase obj)
-        {
-            OpenFlyoutPanel(obj);
         }
 
         private void HandleShowNotification(ShowNotificationMessage message)

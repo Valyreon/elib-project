@@ -1,8 +1,8 @@
 <Application
     x:Class="Valyreon.Elib.Wpf.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:d1p1="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d1p1:Ignorable="d"
     Exit="OnExit"
@@ -12,6 +12,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Colors.xaml" />
+                <ResourceDictionary Source="Resources/ScrollBarStyles.xaml" />
                 <ResourceDictionary Source="Resources/DashboardTabControlStyles.xaml" />
                 <ResourceDictionary Source="Resources/BookTileSubLinksStyle.xaml" />
                 <ResourceDictionary Source="Resources/IconDrawings.xaml" />

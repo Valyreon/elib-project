@@ -19,9 +19,9 @@
         </Grid.Background>
 
         <ContentControl
+            x:Name="content"
             Grid.Row="0"
             Grid.Column="0"
-            Background="Red"
             Content="{Binding ContentControl, ElementName=flyoutControl}"
             Foreground="WhiteSmoke"
             MouseDown="ContentControl_MouseDown" />
