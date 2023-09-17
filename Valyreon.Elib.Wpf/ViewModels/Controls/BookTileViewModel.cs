@@ -17,13 +17,15 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 {
     public class BookTileViewModel : ViewModelBase
     {
+        private readonly LinkedListNode<Book> node;
         private readonly Selector selector;
         private readonly IUnitOfWorkFactory uowFactory;
         private bool isExternalReaderSpecified;
 
-        public BookTileViewModel(Book book, Selector selector, ApplicationProperties applicationProperties, IUnitOfWorkFactory uowFactory)
+        public BookTileViewModel(LinkedListNode<Book> bookNode, Selector selector, ApplicationProperties applicationProperties, IUnitOfWorkFactory uowFactory)
         {
-            Book = book;
+            node = bookNode;
+            Book = bookNode.Value;
             this.selector = selector;
             ApplicationProperties = applicationProperties;
             this.uowFactory = uowFactory;
@@ -91,12 +93,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             if (ctrlDown || shiftDown)
             {
-                selector.Select(Book, false);
+                selector.Select(Book, ctrlDown);
                 MessengerInstance.Send(new BookSelectedMessage(Book, ctrlDown, shiftDown));
             }
             else
             {
-                Messenger.Default.Send(new OpenFlyoutMessage(new BookDetailsViewModel(Book, ApplicationProperties, uowFactory)));
+                Messenger.Default.Send(new OpenFlyoutMessage(new BookDetailsViewModel(node, ApplicationProperties, uowFactory)));
             }
         }
 
@@ -133,7 +135,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             await uow.BookRepository.UpdateAsync(booksToUpdate);
             uow.Commit();
-            return;
         }
 
         private async void HandleMarkRead()
@@ -156,7 +157,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             await uow.BookRepository.UpdateAsync(booksToUpdate);
             uow.Commit();
-            return;
         }
 
         private void HandleOpenInReader()

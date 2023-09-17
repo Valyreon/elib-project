@@ -18,7 +18,6 @@ using Valyreon.Elib.Wpf.Extensions;
 using Valyreon.Elib.Wpf.Messages;
 using Valyreon.Elib.Wpf.Models;
 using Valyreon.Elib.Wpf.Services;
-using Valyreon.Elib.Wpf.ViewModels.Flyouts;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Controls
 {
@@ -71,8 +70,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         public ICommand CollectionSelectionChangedCommand => new RelayCommand(HandleCollectionSelectionChanged);
 
         public IViewer CurrentViewer => currentViewer;
-
-        public ICommand ImportCommand => new RelayCommand(HandleImport);
 
         public bool IsBackEnabled => history.Count > 0;
 
@@ -177,27 +174,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             SetCurrentViewer(newViewer);
         }
 
-        private void HandleImport()
-        {
-            _ = Task.Run(async () =>
-            {
-                var importer = new ImportService(unitOfWorkFactory, applicationProperties);
-
-                MessengerInstance.Send(new SetGlobalLoaderMessage(true));
-                var newBookPaths = await importer.GetNotImportedBookPathsAsync();
-
-                if (!newBookPaths.Any())
-                {
-                    return;
-                }
-
-                var importFlyout = new AddNewBooksViewModel(newBookPaths, unitOfWorkFactory);
-                MessengerInstance.Send(new SetGlobalLoaderMessage(false));
-
-                Application.Current.Dispatcher.Invoke(() => MessengerInstance.Send(new OpenFlyoutMessage(importFlyout)));
-            });
-        }
-
         private void HandleLoaded()
         {
             PaneSelectionChanged();
@@ -211,7 +187,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             {
                 IReadOnlyList<string> foundBooks = null;
                 var importService = new ImportService(unitOfWorkFactory, applicationProperties);
-                foundBooks = await importService.GetNotImportedBookPathsAsync();
+                foundBooks = await importService.GetNotImportedBookPathsAsync(applicationProperties.LibraryFolder);
 
                 //MessengerInstance.Send(new ShowNotificationMessage($"Found {foundBooks.Count} books to be imported."));
                 var counter = 0;
@@ -219,9 +195,9 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 var nullReturned = 0;
                 var excHappened = 0;
 
-                var epubCount = foundBooks.Count(b => b.EndsWith(".epub", StringComparison.InvariantCultureIgnoreCase));
-                var mobiCount = foundBooks.Count(b => b.EndsWith(".mobi", StringComparison.InvariantCultureIgnoreCase));
-                var pdfCount = foundBooks.Count(b => b.EndsWith(".pdf", StringComparison.InvariantCultureIgnoreCase));
+                //var epubCount = foundBooks.Count(b => b.EndsWith(".epub", StringComparison.InvariantCultureIgnoreCase));
+                //var mobiCount = foundBooks.Count(b => b.EndsWith(".mobi", StringComparison.InvariantCultureIgnoreCase));
+                //var pdfCount = foundBooks.Count(b => b.EndsWith(".pdf", StringComparison.InvariantCultureIgnoreCase));
 
                 var toProcess = foundBooks.Where(b => b.EndsWith(".epub", StringComparison.InvariantCultureIgnoreCase)).ToList();
 
@@ -232,6 +208,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
                 foreach (var book in toProcess)
                 {
+                    await Task.Delay(200);
                     var parser = new VersOneEpubParser(book);
                     try
                     {

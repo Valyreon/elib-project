@@ -15,21 +15,23 @@ using Valyreon.Elib.Wpf.Extensions;
 using Valyreon.Elib.Wpf.Messages;
 using Valyreon.Elib.Wpf.Models;
 using Valyreon.Elib.Wpf.ViewModels.Dialogs;
+using Valyreon.Elib.Wpf.ViewModels.Flyouts;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Controls
 {
     public class BookViewerViewModel : ViewModelBase, IViewer
     {
         private readonly ApplicationProperties applicationProperties;
+        private readonly LinkedList<Book> linkedBooks = new();
         private readonly Selector selector;
         private readonly IUnitOfWorkFactory uowFactory;
         private Action backAction;
         private ObservableCollection<BookTileViewModel> books = new();
         private string caption;
-        private bool dontLoad = false;
+        private bool dontLoad;
         private bool isAscendingSortDirection;
         private volatile bool isLoading;
-        private bool isResultEmpty = false;
+        private bool isResultEmpty;
         private double scrollVerticalOffset;
         private string searchText;
 
@@ -114,7 +116,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         public ICommand ExportSelectedBooksCommand => new RelayCommand(HandleExport);
 
-        public BookFilter Filter { get; set; } = null;
+        public BookFilter Filter { get; set; }
 
         public bool IsAscendingSortDirection
         {
@@ -189,12 +191,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         {
             get => subCaption;
             set => Set(() => SubCaption, ref subCaption, value);
-        }
-
-        public void Clear()
-        {
-            Books.Clear();
-            ScrollVertical = 0;
         }
 
         public void Dispose()
@@ -286,24 +282,28 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         private void HandleRemovedMessage(BooksRemovedMessage message)
         {
-            if (message.Books == null || !message.Books.Any())
+            if (message.Books?.Any() != true)
             {
                 return;
             }
 
-            var toRemove = message.Books.Select(b => Books.Single(bv => bv.Book == b));
-            foreach (var book in toRemove)
+            foreach (var book in message.Books.Select(b => Books.Single(bv => bv.Book.Id == b.Id)))
             {
                 Books.Remove(book);
+                linkedBooks.Remove(book.Book);
             }
         }
 
         private async void HandleSelectAllBooksInView()
         {
-            using var uow = await uowFactory.CreateAsync();
-            var results = await uow.BookRepository.GetIdsByFilterAsync(Filter);
+            IEnumerable<int> ids = null;
 
-            selector.SelectIds(results);
+            using (var uow = await uowFactory.CreateAsync())
+            {
+                ids = await uow.BookRepository.GetIdsByFilterAsync(Filter);
+            }
+
+            selector.SelectIds(ids);
             foreach (var item in Books)
             {
                 selector.SetMarked(item.Book);
@@ -341,11 +341,17 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 return;
             }
 
-            foreach (var book in results)
+            List<LinkedListNode<Book>> addedNodes = new();
+            foreach (var item in results)
             {
-                Books.Add(new BookTileViewModel(book, selector, applicationProperties, uowFactory));
-                await book.LoadBookAsync(uow);
-                selector.SetMarked(book);
+                addedNodes.Add(linkedBooks.AddLast(item));
+            }
+
+            foreach (var node in addedNodes)
+            {
+                Books.Add(new BookTileViewModel(node, selector, applicationProperties, uowFactory));
+                await node.Value.LoadBookAsync(uow);
+                selector.SetMarked(node.Value);
                 await Task.Delay(5);
             }
 
@@ -366,7 +372,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             var result = dlg.ShowDialog();
             if (result == DialogResult.OK && dlg.FileNames.Length > 0)
             {
-                MessengerInstance.Send(new OpenAddBooksFormMessage(dlg.FileNames));
+                MessengerInstance.Send(new OpenFlyoutMessage(new AddNewBooksViewModel(dlg.FileNames, uowFactory)));
             }
         }
 

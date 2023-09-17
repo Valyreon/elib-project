@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Windows.Input;
 using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Domain;
@@ -9,14 +10,16 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 {
     public class EditBookViewModel : ViewModelWithValidation
     {
+        private readonly LinkedListNode<Book> node;
         private readonly IUnitOfWorkFactory uowFactory;
         private EditBookFormViewModel editBookForm;
 
-        public EditBookViewModel(Book book, IUnitOfWorkFactory uowFactory)
+        public EditBookViewModel(LinkedListNode<Book> node, IUnitOfWorkFactory uowFactory)
         {
-            Book = book;
+            this.node = node;
+            Book = node.Value;
             this.uowFactory = uowFactory;
-            EditBookForm = new EditBookFormViewModel(book, uowFactory);
+            EditBookForm = new EditBookFormViewModel(Book, uowFactory);
             HandleRevert();
         }
 
@@ -36,7 +39,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
         private void HandleCancel()
         {
-            MessengerInstance.Send(new OpenBookDetailsFlyoutMessage(Book));
+            MessengerInstance.Send(new OpenBookDetailsFlyoutMessage(node));
         }
 
         private void HandleRevert()
@@ -48,7 +51,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
         {
             if (EditBookForm.UpdateBook())
             {
-                MessengerInstance.Send(new OpenBookDetailsFlyoutMessage(Book));
+                MessengerInstance.Send(new OpenBookDetailsFlyoutMessage(node));
             }
         }
     }

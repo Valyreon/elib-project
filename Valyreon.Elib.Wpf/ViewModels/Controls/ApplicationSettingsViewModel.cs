@@ -3,48 +3,73 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
+using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Mvvm;
 using Valyreon.Elib.Wpf.Messages;
 using Valyreon.Elib.Wpf.Models;
+using Valyreon.Elib.Wpf.Services;
 using Valyreon.Elib.Wpf.ViewModels.Dialogs;
+using Valyreon.Elib.Wpf.ViewModels.Flyouts;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Controls
 {
     public class ApplicationSettingsViewModel : ViewModelBase, ITabViewModel
     {
+        private static readonly Regex _regex = new Regex(@"\.[a-zA-Z0-9]+");
         private readonly ApplicationProperties properties;
+        private readonly IUnitOfWorkFactory uowFactory;
         private bool automaticallyImportWithFoundISBN;
         private string caption = "Settings";
         private string externalReaderPath;
+        private string libraryPath;
         private bool scanAtStartup;
 
         private string selectedFormat;
-        private static readonly Regex _regex = new Regex(@"\.[a-zA-Z0-9]+");
 
-        public ApplicationSettingsViewModel(ApplicationProperties properties)
+        public ApplicationSettingsViewModel(ApplicationProperties properties, IUnitOfWorkFactory uowFactory)
         {
-            SourcePaths = new ObservableCollection<SourcePathObservable>(properties.Sources.Select(s => new SourcePathObservable(s)));
+            LibraryPath = properties.LibraryFolder;
             ScanAtStartup = properties.ScanAtStartup;
             Formats = new(properties.Formats);
             ExternalReaderPath = properties.ExternalReaderPath;
             AutomaticallyImportWithFoundISBN = properties.AutomaticallyImportWithFoundISBN;
             this.properties = properties;
+            this.uowFactory = uowFactory;
 
             // TODO Stop subscribing with anonymous methods here since we cant unsubscribe
-            SourcePaths.CollectionChanged += (_, _) => SaveChanges();
             Formats.CollectionChanged += (_, _) => SaveChanges();
             PropertyChanged += (_, _) => SaveChanges();
-            foreach (var item in SourcePaths)
-            {
-                item.PropertyChanged += (_, _) => SaveChanges();
-            }
         }
 
         public ICommand AddFormatCommand => new RelayCommand(HandleAddFormat);
 
-        public ICommand AddSourceCommand => new RelayCommand(HandleAddSource);
+        public ICommand ChooseLibraryCommand => new RelayCommand(HandleChooseLibrary);
+
+        public ICommand ScanLibraryCommand => new RelayCommand(HandleScanLibraryForNewContent);
+
+        private void HandleScanLibraryForNewContent()
+        {
+            _ = Task.Run(async () =>
+            {
+                var importer = new ImportService(uowFactory, properties);
+
+                MessengerInstance.Send(new SetGlobalLoaderMessage(true));
+                var newBookPaths = await importer.GetNotImportedBookPathsAsync(properties.LibraryFolder);
+
+                if (!newBookPaths.Any())
+                {
+                    return;
+                }
+
+                var importFlyout = new AddNewBooksViewModel(newBookPaths, uowFactory);
+                MessengerInstance.Send(new SetGlobalLoaderMessage(false));
+
+                Application.Current.Dispatcher.Invoke(() => MessengerInstance.Send(new OpenFlyoutMessage(importFlyout)));
+            });
+        }
 
         public bool AutomaticallyImportWithFoundISBN
         {
@@ -70,9 +95,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         public ObservableCollection<string> Formats { get; set; }
 
+        public string LibraryPath { get => libraryPath; set => Set(() => LibraryPath, ref libraryPath, value); }
         public ICommand RemoveFormatCommand => new RelayCommand(() => Formats.Remove(SelectedFormat));
-
-        public ICommand RemoveSourceCommand => new RelayCommand(HandleRemoveSource);
 
         public bool ScanAtStartup
         {
@@ -81,8 +105,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         }
 
         public string SelectedFormat { get => selectedFormat; set => Set(() => SelectedFormat, ref selectedFormat, value); }
-        public SourcePathObservable SelectedItem { get; set; }
-        public ObservableCollection<SourcePathObservable> SourcePaths { get; set; }
 
         private void HandleAddFormat()
         {
@@ -117,34 +139,9 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             MessengerInstance.Send(new ShowDialogMessage(dialogViewModel));
         }
 
-        private void HandleAddSource()
-        {
-            using var dialog = new System.Windows.Forms.FolderBrowserDialog
-            {
-                Description = "Select source folder",
-                UseDescriptionForTitle = true,
-                SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
-                    + Path.DirectorySeparatorChar,
-                ShowNewFolderButton = true
-            };
-
-            if (dialog.ShowDialog() == DialogResult.OK && !SourcePaths.Any(s => s.Path == dialog.SelectedPath))
-            {
-                var obs = new SourcePathObservable(new SourcePath
-                {
-                    Path = dialog.SelectedPath,
-                    RecursiveScan = false
-                });
-
-                obs.PropertyChanged += (_, _) => SaveChanges();
-
-                SourcePaths.Add(obs);
-            }
-        }
-
         private void HandleChooseExternalReader()
         {
-            using var dlg = new OpenFileDialog
+            using var dlg = new System.Windows.Forms.OpenFileDialog
             {
                 CheckFileExists = true,
                 CheckPathExists = true,
@@ -154,15 +151,29 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             };
 
             var result = dlg.ShowDialog();
-            if (result == DialogResult.OK && dlg.FileName != null)
+            if (result == System.Windows.Forms.DialogResult.OK && dlg.FileName != null)
             {
                 ExternalReaderPath = dlg.FileName;
             }
         }
 
-        private void HandleRemoveSource()
+        private void HandleChooseLibrary()
         {
-            SourcePaths.Remove(SelectedItem);
+            using var dialog = new System.Windows.Forms.FolderBrowserDialog
+            {
+                Description = "Select library folder",
+                UseDescriptionForTitle = true,
+                SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
+                    + Path.DirectorySeparatorChar,
+                ShowNewFolderButton = true
+            };
+
+            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                LibraryPath = dialog.SelectedPath;
+
+                // TODO: what to do with already imported files if user changes library?
+            }
         }
 
         private void SaveChanges()
@@ -175,7 +186,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         private void UpdateCurrentSettings()
         {
             properties.ScanAtStartup = ScanAtStartup;
-            properties.Sources = SourcePaths.Select(s => s.GetSourcePath()).ToList();
+            properties.LibraryFolder = LibraryPath;
             properties.Formats = Formats.ToList();
             properties.AutomaticallyImportWithFoundISBN = AutomaticallyImportWithFoundISBN;
             properties.ExternalReaderPath = ExternalReaderPath;

@@ -22,22 +22,32 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
     {
         private readonly IUnitOfWorkFactory uowFactory;
         private IEnumerable<UserCollection> allUserCollections;
+        private Book book;
+        private LinkedListNode<Book> bookNode;
+        private bool canGoNext;
+        private bool canGoPrevious;
         private ObservableCollection<ObservableEntity> collectionSuggestions;
         private bool isExternalReaderSpecified;
 
-        public BookDetailsViewModel(Book book, ApplicationProperties properties, IUnitOfWorkFactory uowFactory)
+        public BookDetailsViewModel(LinkedListNode<Book> node, ApplicationProperties properties, IUnitOfWorkFactory uowFactory)
         {
-            Book = book;
+            bookNode = node;
+            Book = node.Value;
             Properties = properties;
             this.uowFactory = uowFactory;
             IsExternalReaderSpecified = Properties.IsExternalReaderSpecifiedAndValid();
-
+            UpdateNavigationState();
             MessengerInstance.Register<AppSettingsChangedMessage>(this, _ => IsExternalReaderSpecified = Properties.IsExternalReaderSpecifiedAndValid());
+            MessengerInstance.Register<KeyPressedMessage>(this, HandleKeyMessage);
         }
 
         public ICommand AddCollectionCommand => new RelayCommand<string>(AddCollection);
 
-        public Book Book { get; }
+        public Book Book { get => book; set => Set(() => Book, ref book, value); }
+
+        public bool CanGoNext { get => canGoNext; set => Set(() => CanGoNext, ref canGoNext, value); }
+
+        public bool CanGoPrevious { get => canGoPrevious; set => Set(() => CanGoPrevious, ref canGoPrevious, value); }
 
         public ObservableCollection<ObservableEntity> CollectionSuggestions
         {
@@ -46,6 +56,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
         }
 
         public ICommand EditButtonCommand => new RelayCommand(HandleEditButton);
+
         public ICommand ExportButtonCommand => new RelayCommand(HandleExport);
 
         public ICommand GoToAuthor => new RelayCommand<ICollection<Author>>(a =>
@@ -97,8 +108,15 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
         }
 
         public bool IsExternalReaderSpecified { get => isExternalReaderSpecified; set => Set(() => IsExternalReaderSpecified, ref isExternalReaderSpecified, value); }
+
+        public ICommand NextBookCommand => new RelayCommand(HandleNextBook);
+
         public ICommand OpenBookCommand => new RelayCommand(HandleOpenBook);
+
+        public ICommand PreviousBookCommand => new RelayCommand(HandlePreviousBook);
+
         public ApplicationProperties Properties { get; }
+
         public ICommand RefreshSuggestedCollectionsCommand => new RelayCommand<string>(HandleRefreshSuggestedCollections);
 
         public ICommand RemoveCollectionCommand => new RelayCommand<UserCollection>(RemoveCollection);
@@ -147,7 +165,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
         private void HandleEditButton()
         {
-            MessengerInstance.Send(new EditBookMessage(Book));
+            MessengerInstance.Send(new OpenFlyoutMessage(new EditBookViewModel(bookNode, uowFactory)));
         }
 
         private void HandleExport()
@@ -178,6 +196,31 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             }
         }
 
+        private void HandleKeyMessage(KeyPressedMessage message)
+        {
+            if (message.Key == Key.Left)
+            {
+                HandlePreviousBook();
+            }
+            else if (message.Key == Key.Right)
+            {
+                HandleNextBook();
+            }
+        }
+
+        private async void HandleNextBook()
+        {
+            if (bookNode.Next == null)
+            {
+                return;
+            }
+
+            bookNode = bookNode.Next;
+            Book = bookNode.Value;
+            await ReloadCollections();
+            UpdateNavigationState();
+        }
+
         private void HandleOpenBook()
         {
             if (Properties.IsExternalReaderSpecifiedAndValid())
@@ -186,15 +229,27 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             }
         }
 
+        private async void HandlePreviousBook()
+        {
+            if (bookNode.Previous == null)
+            {
+                return;
+            }
+
+            bookNode = bookNode.Previous;
+            Book = bookNode.Value;
+            await ReloadCollections();
+            UpdateNavigationState();
+        }
+
         private async void HandleRefreshSuggestedCollections(string token)
         {
             if (allUserCollections == null)
             {
-                using var uow = await uowFactory.CreateAsync();
-                allUserCollections = await uow.CollectionRepository.GetAllAsync();
+                await ReloadCollections();
             }
 
-            var suggestions = allUserCollections.Where(c => !Book.Collections.Contains(c) && c.Tag.ToLowerInvariant().Contains(token))
+            var suggestions = allUserCollections.Where(c => !Book.Collections.Select(x => x.Tag).Contains(c.Tag) && c.Tag.ToLowerInvariant().Contains(token))
                 .Take(4);
             CollectionSuggestions = new ObservableCollection<ObservableEntity>(suggestions.Cast<ObservableEntity>());
         }
@@ -218,6 +273,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             MessengerInstance.Send(new ShowDialogMessage(viewModel));
         }
 
+        private async Task ReloadCollections()
+        {
+            using var uow = await uowFactory.CreateAsync();
+            allUserCollections = await uow.CollectionRepository.GetAllAsync();
+        }
+
         private void RemoveCollection(UserCollection collection)
         {
             Book.Collections.Remove(collection);
@@ -233,6 +294,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                 }
                 uow.Commit();
             });
+        }
+
+        private void UpdateNavigationState()
+        {
+            CanGoNext = bookNode.Next != null;
+            CanGoPrevious = bookNode.Previous != null;
         }
     }
 }

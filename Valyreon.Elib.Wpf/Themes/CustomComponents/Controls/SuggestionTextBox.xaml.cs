@@ -72,6 +72,10 @@ namespace Valyreon.Elib.Wpf.Themes.CustomComponents.Controls
             {
                 SubmitExisting();
             }
+            else if (e.Key is Key.Escape)
+            {
+                TextBox.MoveFocus(new TraversalRequest(FocusNavigationDirection.Previous));
+            }
             e.Handled = true;
         }
 

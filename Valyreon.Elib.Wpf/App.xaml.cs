@@ -31,6 +31,7 @@ namespace Valyreon.Elib.Wpf
 #if TEST
             AllocConsole();
 #endif
+            //Current.Resources["AccentColorBrush"] = (SolidColorBrush)new BrushConverter().ConvertFrom("#ffaacc");
         }
 
         private void OnExit(object sender, ExitEventArgs e)
@@ -90,9 +91,9 @@ namespace Valyreon.Elib.Wpf
             var timestamp = DateTime.UtcNow;
             var stringBuilder = new StringBuilder();
 
-            stringBuilder.AppendLine(message);
-            stringBuilder.AppendLine();
-            stringBuilder.AppendLine(exception.ToString());
+            stringBuilder.AppendLine(message)
+                .AppendLine()
+                .AppendLine(exception.ToString());
 
             var logPath = Path.Combine(ApplicationData.LogFolderPath, $"{timestamp:yyyyMMddTHHmmssfff}_{exception.GetType().Name}.txt");
             File.WriteAllText(logPath, stringBuilder.ToString());

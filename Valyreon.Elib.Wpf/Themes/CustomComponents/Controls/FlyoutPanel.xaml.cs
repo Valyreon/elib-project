@@ -38,7 +38,14 @@ public partial class FlyoutPanel : UserControl, IFlyoutPanel
     public object ContentControl
     {
         get => GetValue(ContentControlProperty);
-        set => SetValue(ContentControlProperty, value);
+        set
+        {
+            SetValue(ContentControlProperty, value);
+            if (value != null)
+            {
+                flyoutControl.MoveFocus(new System.Windows.Input.TraversalRequest(System.Windows.Input.FocusNavigationDirection.Down));
+            }
+        }
     }
 
     public bool IsOpen
@@ -88,5 +95,10 @@ public partial class FlyoutPanel : UserControl, IFlyoutPanel
         thicknessAnimation.Completed += (a, i) => theGrid.Margin = endThickness;
         theGrid.BeginAnimation(MarginProperty, thicknessAnimation);
         theGrid.BeginAnimation(OpacityProperty, opacityAnimation);
+    }
+
+    private void ContentControl_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        flyoutControl.MoveFocus(new System.Windows.Input.TraversalRequest(System.Windows.Input.FocusNavigationDirection.Down));
     }
 }

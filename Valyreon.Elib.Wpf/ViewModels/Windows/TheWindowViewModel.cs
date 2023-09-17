@@ -1,17 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Timers;
 using System.Windows.Input;
 using Valyreon.Elib.DataLayer;
 using Valyreon.Elib.DataLayer.Interfaces;
-using Valyreon.Elib.Domain;
 using Valyreon.Elib.Mvvm;
 using Valyreon.Elib.Wpf.Interfaces;
 using Valyreon.Elib.Wpf.Messages;
 using Valyreon.Elib.Wpf.Models;
-using Valyreon.Elib.Wpf.Services;
 using Valyreon.Elib.Wpf.Themes.CustomComponents.Controls;
 using Valyreon.Elib.Wpf.ViewModels.Controls;
 using Valyreon.Elib.Wpf.ViewModels.Flyouts;
@@ -58,18 +55,15 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
                     IsDialogOpen = true;
                 }
             });
-            MessengerInstance.Register(this, (CloseDialogMessage m) => IsDialogOpen = false);
+            MessengerInstance.Register(this, (CloseDialogMessage _) => IsDialogOpen = false);
             MessengerInstance.Register(this, (CloseFlyoutMessage _) => CloseFlyoutPanel());
             MessengerInstance.Register(this, (SetGlobalLoaderMessage m) => IsGlobalLoaderOpen = m.IsVisible);
-            MessengerInstance.Register(this, (OpenAddBooksFormMessage m) => HandleAddBooksFlyout(m.BooksToAdd));
-            MessengerInstance.Register(this, (EditBookMessage m) => HandleEditBookFlyout(m.Book));
-            MessengerInstance.Register(this, (ScanForNewBooksMessage m) => HandleScanForNewBooks());
 
             Tabs = new ObservableCollection<ITabViewModel>
             {
                 new BooksTabViewModel(applicationProperties, unitOfWorkFactory),
                 new QuotesTabViewModel(),
-                new ApplicationSettingsViewModel(applicationProperties)
+                new ApplicationSettingsViewModel(applicationProperties, unitOfWorkFactory)
             };
             SelectedTab = Tabs[0];
 
@@ -110,10 +104,13 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
             set => Set(() => IsGlobalLoaderOpen, ref isGlobalLoaderOpen, value);
         }
 
+        public ICommand LeftKeyCommand => new RelayCommand(() => MessengerInstance.Send(new KeyPressedMessage(Key.Left)));
+
         public ICommand NextNotificationCommand => new RelayCommand(() => HandleNextNotification());
+
         public ICommand RefreshViewCommand => new RelayCommand(HandleRefreshView);
 
-        public ICommand ScanForNewContentCommand => new RelayCommand(HandleScanForNewBooks);
+        public ICommand RightKeyCommand => new RelayCommand(() => MessengerInstance.Send(new KeyPressedMessage(Key.Right)));
 
         public ITabViewModel SelectedTab
         {
@@ -150,16 +147,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
             flyoutControl.IsOpen = true;
         }
 
-        private void HandleAddBooksFlyout(IList<string> booksToAdd)
-        {
-            OpenFlyoutPanel(new AddNewBooksViewModel(booksToAdd, unitOfWorkFactory));
-        }
-
-        private void HandleEditBookFlyout(Book book)
-        {
-            OpenFlyoutPanel(new EditBookViewModel(book, unitOfWorkFactory));
-        }
-
         private void HandleNextNotification(object sender = null, ElapsedEventArgs e = null)
         {
             if (messages.Count > 0)
@@ -175,19 +162,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
         private void HandleOpenFlyout(ViewModelBase obj)
         {
             OpenFlyoutPanel(obj);
-        }
-
-        private async void HandleScanForNewBooks()
-        {
-            var importer = new ImportService(unitOfWorkFactory, applicationProperties);
-            var newBookPaths = (await importer.GetNotImportedBookPathsAsync()).ToList();
-
-            if (!newBookPaths.Any())
-            {
-                return;
-            }
-
-            HandleAddBooksFlyout(newBookPaths);
         }
 
         private void HandleShowNotification(ShowNotificationMessage message)

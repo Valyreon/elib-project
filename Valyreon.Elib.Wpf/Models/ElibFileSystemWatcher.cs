@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Valyreon.Elib.DataLayer.Interfaces;
@@ -14,7 +13,7 @@ namespace Valyreon.Elib.Wpf.Models
         private readonly ApplicationProperties applicationProperties;
         private readonly IMessenger messenger;
         private readonly IUnitOfWorkFactory uowFactory;
-        private readonly List<FileSystemWatcher> watchers = new();
+        private readonly FileSystemWatcher watcher = new();
 
         public ElibFileSystemWatcher(ApplicationProperties applicationProperties, IUnitOfWorkFactory uowFactory, IMessenger messenger = null)
         {
@@ -22,22 +21,22 @@ namespace Valyreon.Elib.Wpf.Models
             this.uowFactory = uowFactory;
             this.messenger = messenger;
 
-            foreach (var path in applicationProperties.Sources)
+            if (string.IsNullOrWhiteSpace(applicationProperties.LibraryFolder) || !Directory.Exists(applicationProperties.LibraryFolder))
             {
-                var watcher = new FileSystemWatcher(path.Path)
-                {
-                    Filter = "*.*",
-                    IncludeSubdirectories = path.RecursiveScan,
-                    EnableRaisingEvents = true
-                };
-
-                watcher.Deleted += (_, e) => HandleFileDelete(e.FullPath);
-                watcher.Created += (_, e) => HandleFileCreate(e.FullPath);
-                watcher.Renamed += (_, e) => HandleFileRename(e.OldFullPath, e.FullPath);
-                watcher.Changed += (_, e) => HandleFileChange(e.FullPath);
-
-                watchers.Add(watcher);
+                return;
             }
+
+            watcher = new FileSystemWatcher(applicationProperties.LibraryFolder)
+            {
+                Filter = "*.*",
+                IncludeSubdirectories = true,
+                EnableRaisingEvents = true
+            };
+
+            watcher.Deleted += (_, e) => HandleFileDelete(e.FullPath);
+            watcher.Created += (_, e) => HandleFileCreate(e.FullPath);
+            watcher.Renamed += (_, e) => HandleFileRename(e.OldFullPath, e.FullPath);
+            watcher.Changed += (_, e) => HandleFileChange(e.FullPath);
         }
 
         public void CheckFiles()
@@ -47,7 +46,7 @@ namespace Valyreon.Elib.Wpf.Models
 
         public void Dispose()
         {
-            watchers.ForEach(w => w.Dispose());
+            watcher.Dispose();
         }
 
         private async void HandleFileChange(string filePath)

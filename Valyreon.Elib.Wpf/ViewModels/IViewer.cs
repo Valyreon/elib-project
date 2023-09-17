@@ -6,9 +6,8 @@ namespace Valyreon.Elib.Wpf.ViewModels
     public interface IViewer : IDisposable
     {
         Action Back { get; set; }
-        string Caption { get; set; }
 
-        void Clear();
+        string Caption { get; set; }
 
         Func<IViewer> GetCloneFunction();
 

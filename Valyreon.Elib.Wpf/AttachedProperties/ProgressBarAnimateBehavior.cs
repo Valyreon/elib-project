@@ -8,7 +8,7 @@ namespace Valyreon.Elib.Wpf.AttachedProperties
 {
     public class ProgresBarAnimateBehavior : Behavior<ProgressBar>
     {
-        private bool _IsAnimating = false;
+        private bool _IsAnimating;
 
         protected override void OnAttached()
         {

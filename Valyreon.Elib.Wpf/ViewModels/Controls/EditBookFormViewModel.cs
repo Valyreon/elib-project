@@ -17,7 +17,6 @@ using Valyreon.Elib.Wpf.Messages;
 using Valyreon.Elib.Wpf.Models;
 using Valyreon.Elib.Wpf.ValidationAttributes;
 using Valyreon.Elib.Wpf.ViewModels.Dialogs;
-using Valyreon.Elib.Wpf.Views.Dialogs;
 using Application = System.Windows.Application;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Controls
@@ -231,7 +230,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 book.Title = TitleFieldText;
                 book.IsFavorite = IsFavoriteCheck;
                 book.IsRead = IsReadCheck;
-                book.ISBN = IsbnText.Trim();
+                book.ISBN = IsbnText?.Trim();
 
                 if (Cover != null)
                 {
@@ -512,9 +511,10 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             MessengerInstance.Send(new SetGlobalLoaderMessage());
             var info = await client.GetByIsbnAsync(IsbnText);
 
-            if(info == null)
+            if (info == null)
             {
                 var msgDialog = new TextMessageDialogViewModel("Not Found", "Nothing was found on Google Books for that particular ISBN.");
+                MessengerInstance.Send(new SetGlobalLoaderMessage(false));
                 MessengerInstance.Send(new ShowDialogMessage(msgDialog));
                 return;
             }
@@ -537,7 +537,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
             AuthorsCollection = newAuthors;
             TitleFieldText = info.Title;
-            Cover = ImageOptimizer.ResizeAndFill(info.Cover);
+            var cov = info.Cover ?? Cover;
+            Cover = Cover == cov ? cov : ImageOptimizer.ResizeAndFill(info.Cover);
             DescriptionFieldText = info.Description;
 
             MessengerInstance.Send(new SetGlobalLoaderMessage(false));

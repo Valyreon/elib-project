@@ -16,7 +16,7 @@ namespace Valyreon.Elib.Wpf.Themes.CustomComponents.Controls
         public static DependencyProperty ObjectProperty = DependencyProperty.Register("Object", typeof(object), typeof(ChipControl));
         public static DependencyProperty RemoveCommandProperty = DependencyProperty.Register("RemoveCommand", typeof(ICommand), typeof(ChipControl));
         public static DependencyProperty TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(ChipControl));
-        private bool isNewObservableEntity = false;
+        private bool isNewObservableEntity;
 
         public ChipControl()
         {

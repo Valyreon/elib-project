@@ -1,12 +1,12 @@
 <Window
     x:Class="Valyreon.Elib.Wpf.Views.Windows.TheWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:Components="clr-namespace:Valyreon.Elib.Wpf.CustomComponents"
     xmlns:ControlViewModels="clr-namespace:Valyreon.Elib.Wpf.ViewModels.Controls"
     xmlns:ControlViews="clr-namespace:Valyreon.Elib.Wpf.Views.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="Elib"
     MinWidth="1100"
     MinHeight="650"
@@ -27,6 +27,8 @@
         <KeyBinding Key="F5" Command="{Binding RefreshViewCommand}" />
         <KeyBinding Key="Backspace" Command="{Binding EscKeyCommand}" />
         <KeyBinding Key="BrowserBack" Command="{Binding EscKeyCommand}" />
+        <KeyBinding Key="Left" Command="{Binding LeftKeyCommand}" />
+        <KeyBinding Key="Right" Command="{Binding RightKeyCommand}" />
     </Window.InputBindings>
 
     <Window.Resources>
@@ -113,7 +115,7 @@
         <Grid Panel.ZIndex="9000000" Visibility="{Binding IsGlobalLoaderOpen, Converter={StaticResource BoolToVisibilityConverter}}">
             <Components:Spinner Width="150" Height="150" />
             <Grid.Background>
-                <SolidColorBrush Opacity="0.96" Color="#222222" />
+                <SolidColorBrush Opacity="0.8" Color="#222222" />
             </Grid.Background>
         </Grid>
 

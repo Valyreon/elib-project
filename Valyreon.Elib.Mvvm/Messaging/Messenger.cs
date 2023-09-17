@@ -173,8 +173,7 @@ namespace Valyreon.Elib.Mvvm.Messaging
                 return false;
             }
 
-            var interfaces = instanceType.GetInterfaces();
-            foreach (var currentInterface in interfaces)
+            foreach (var currentInterface in instanceType.GetInterfaces())
             {
                 if (currentInterface == interfaceType)
                 {
@@ -191,25 +190,23 @@ namespace Valyreon.Elib.Mvvm.Messaging
             Type messageTargetType,
             object token)
         {
-            if (list != null)
+            if (list == null)
             {
-                // Clone to protect from people registering in a "receive message" method
-                // Bug correction Messaging BL0004.007
-                var listClone = list.Take(list.Count()).ToList();
+                return;
+            }
 
-                foreach (var item in listClone)
+            foreach (var item in list.Take(list.Count()).ToList())
+            {
+                if (item.Action is IExecuteWithObject executeAction
+                    && item.Action.IsAlive
+                    && item.Action.Target != null
+                    && (messageTargetType == null
+                        || item.Action.Target.GetType() == messageTargetType
+                        || Implements(item.Action.Target.GetType(), messageTargetType))
+                    && ((item.Token == null && token == null)
+                        || (item.Token?.Equals(token) == true)))
                 {
-                    if (item.Action is IExecuteWithObject executeAction
-                        && item.Action.IsAlive
-                        && item.Action.Target != null
-                        && (messageTargetType == null
-                            || item.Action.Target.GetType() == messageTargetType
-                            || Implements(item.Action.Target.GetType(), messageTargetType))
-                        && ((item.Token == null && token == null)
-                            || (item.Token?.Equals(token) == true)))
-                    {
-                        executeAction.ExecuteWithObject(message);
-                    }
+                    executeAction.ExecuteWithObject(message);
                 }
             }
         }
@@ -315,7 +312,7 @@ namespace Valyreon.Elib.Mvvm.Messaging
 
             if (_recipientsOfSubclassesAction != null)
             {
-                foreach (var type in _recipientsOfSubclassesAction.Keys.Take(_recipientsOfSubclassesAction.Count).ToList())
+                foreach (var type in _recipientsOfSubclassesAction.Keys)
                 {
                     List<WeakActionAndToken> list = null;
 

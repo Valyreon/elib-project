@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.Json;
 
 namespace Valyreon.Elib.Wpf.Models
@@ -62,33 +61,19 @@ namespace Valyreon.Elib.Wpf.Models
         }
     }
 
-    public record ApplicationProperties
+    public class ApplicationProperties
     {
-        public List<SourcePath> Sources { get; set; } = new List<SourcePath>();
-        public bool ScanAtStartup { get; set; } = true;
+        public bool AutomaticallyImportWithFoundISBN { get; set; }
+        public bool AutomaticallyImportBooksWithValidData { get; set; }
         public string ExternalReaderPath { get; set; }
-        public bool RememberFilterInNextView { get; set; } = false;
-        public bool AutomaticallyImportWithFoundISBN { get; set; } = true;
         public List<string> Formats { get; set; } = new List<string> { ".epub", ".mobi" };
+        public string LibraryFolder { get; set; }
+        public bool RememberFilterInNextView { get; set; }
+        public bool ScanAtStartup { get; set; } = true;
 
         public bool IsExternalReaderSpecifiedAndValid()
         {
             return !string.IsNullOrWhiteSpace(ExternalReaderPath) && File.Exists(ExternalReaderPath);
         }
-
-        // override copy constructor for record
-        protected ApplicationProperties(ApplicationProperties other)
-        {
-            ScanAtStartup = other.ScanAtStartup;
-            ExternalReaderPath = other.ExternalReaderPath;
-            Formats = other.Formats.ToList();
-            Sources = other.Sources.Select(s => s with { }).ToList();
-        }
-    }
-
-    public record SourcePath
-    {
-        public string Path { get; set; }
-        public bool RecursiveScan { get; set; }
     }
 }

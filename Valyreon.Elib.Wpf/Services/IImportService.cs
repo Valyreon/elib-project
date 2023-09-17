@@ -6,7 +6,7 @@ namespace Valyreon.Elib.Wpf.Services
 {
     public interface IImportService
     {
-        Task<IReadOnlyList<string>> GetNotImportedBookPathsAsync();
+        Task<IReadOnlyList<string>> GetNotImportedBookPathsAsync(string path);
 
         Task ImportBookAsync(Book book);
     }

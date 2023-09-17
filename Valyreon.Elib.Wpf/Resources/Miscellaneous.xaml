@@ -16,7 +16,7 @@
                         Background="White"
                         BorderBrush="#aaa"
                         BorderThickness="1"
-                        CornerRadius="4">
+                        CornerRadius="2">
                         <Grid x:Name="theGrid">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Grid>
@@ -32,7 +32,8 @@
                             <Setter TargetName="border" Property="BorderThickness" Value="2" />
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="border" Property="Background" Value="#eee" />
+                            <Setter TargetName="border" Property="Background" Value="{StaticResource AccentColorVeryLightBrush}" />
+                            <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource AccentColorBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -161,7 +162,7 @@
                                     <ColorAnimation
                                         Storyboard.TargetName="border"
                                         Storyboard.TargetProperty="Background.Color"
-                                        To="Transparent"
+                                        To="White"
                                         Duration="0:0:0.24" />
                                 </Storyboard>
                             </BeginStoryboard>
@@ -336,7 +337,7 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="HasDropShadow" Value="true">
                             <Setter TargetName="Border" Property="Padding" Value="0,3,0,3" />
-                            <Setter TargetName="Border" Property="CornerRadius" Value="4" />
+                            <Setter TargetName="Border" Property="CornerRadius" Value="2" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -397,19 +398,19 @@
                                 </Border>
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsSelected" Value="true">
-                                        <Setter TargetName="Bd" Property="Background" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
-                                        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" />
+                                        <Setter TargetName="Bd" Property="Background" Value="{StaticResource AccentColorBrush}" />
+                                        <Setter Property="Foreground" Value="White" />
                                     </Trigger>
                                     <MultiTrigger>
                                         <MultiTrigger.Conditions>
                                             <Condition Property="IsSelected" Value="true" />
                                             <Condition Property="Selector.IsSelectionActive" Value="false" />
                                         </MultiTrigger.Conditions>
-                                        <Setter TargetName="Bd" Property="Background" Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightBrushKey}}" />
-                                        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}}" />
+                                        <Setter TargetName="Bd" Property="Background" Value="Gray" />
+                                        <Setter Property="Foreground" Value="White" />
                                     </MultiTrigger>
                                     <Trigger Property="IsEnabled" Value="false">
-                                        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                                        <Setter Property="Foreground" Value="Gray" />
                                     </Trigger>
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>
@@ -456,19 +457,19 @@
                                 </Border>
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsSelected" Value="true">
-                                        <Setter TargetName="Bd" Property="Background" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
-                                        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" />
+                                        <Setter TargetName="Bd" Property="Background" Value="{StaticResource AccentColorBrush}" />
+                                        <Setter Property="Foreground" Value="White" />
                                     </Trigger>
                                     <MultiTrigger>
                                         <MultiTrigger.Conditions>
                                             <Condition Property="IsSelected" Value="true" />
                                             <Condition Property="Selector.IsSelectionActive" Value="false" />
                                         </MultiTrigger.Conditions>
-                                        <Setter TargetName="Bd" Property="Background" Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightBrushKey}}" />
-                                        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}}" />
+                                        <Setter TargetName="Bd" Property="Background" Value="Gray" />
+                                        <Setter Property="Foreground" Value="White" />
                                     </MultiTrigger>
                                     <Trigger Property="IsEnabled" Value="false">
-                                        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                                        <Setter Property="Foreground" Value="Gray" />
                                     </Trigger>
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>

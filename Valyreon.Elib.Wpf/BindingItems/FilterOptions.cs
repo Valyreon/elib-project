@@ -5,7 +5,7 @@ namespace Valyreon.Elib.Wpf.BindingItems
 {
     public class FilterOptions : ObservableObject, ICloneable
     {
-        private bool ascending = false;
+        private bool ascending;
 
         private string fileTypeFilter = "epub|mobi";
 
