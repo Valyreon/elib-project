@@ -22,12 +22,12 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 {
     public class BookViewerViewModel : ViewModelBase, IViewer
     {
-        private const double tileWidth = 176;
+        private const int pageSize = 25;
         private const double tileHeight = 309;
         private const double tileSurface = tileWidth * tileHeight;
+        private const double tileWidth = 176;
         private const double windowHeightOffset = 110;
         private const double windowWidthOffset = 220;
-        private const int pageSize = 25;
         private readonly ApplicationProperties applicationProperties;
         private readonly LinkedList<Book> linkedBooks = new();
         private readonly TheWindow mainWindow;
@@ -124,23 +124,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         public ICommand ExportSelectedBooksCommand => new RelayCommand(HandleExport);
 
-        public ICommand SizeChangedCommand => new RelayCommand(HandleSizeChanged);
-
-        private void HandleSizeChanged()
-        {
-            var viewerSurface = (mainWindow.ActualWidth - windowWidthOffset) * (mainWindow.ActualHeight - windowHeightOffset);
-            var viewerFitsBooks = viewerSurface / tileSurface;
-            if (viewerFitsBooks > Books.Count)
-            {
-                var loadTimes = (int)Math.Ceiling((viewerFitsBooks - Books.Count) / pageSize);
-
-                for (var i = 0; i < loadTimes; ++i)
-                {
-                    LoadMore();
-                }
-            }
-        }
-
         public BookFilter Filter { get; set; }
 
         public bool IsAscendingSortDirection
@@ -162,9 +145,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         }
 
         public bool IsSelectedBooksViewer => Filter.Selected == true;
-
         public ICommand LoadMoreCommand => new RelayCommand(LoadMore);
-
         public ICommand RefreshCommand => new RelayCommand(Refresh);
 
         public double ScrollVertical
@@ -185,6 +166,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         }
 
         public ICommand SelectAllCommand => new RelayCommand(HandleSelectAllBooksInView);
+        public ICommand SizeChangedCommand => new RelayCommand(HandleSizeChanged);
 
         public IEnumerable<FilterComboBoxOption<BookFilter>> SortComboBoxOptions { get; } = FilterComboBoxOption<BookFilter>.BookSortFilterOptions;
 
@@ -332,6 +314,21 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             foreach (var item in Books)
             {
                 selector.SetMarked(item.Book);
+            }
+        }
+
+        private void HandleSizeChanged()
+        {
+            var viewerSurface = (mainWindow.ActualWidth - windowWidthOffset) * (mainWindow.ActualHeight - windowHeightOffset);
+            var viewerFitsBooks = viewerSurface / tileSurface;
+            if (viewerFitsBooks > Books.Count)
+            {
+                var loadTimes = (int)Math.Ceiling((viewerFitsBooks - Books.Count) / pageSize);
+
+                for (var i = 0; i < loadTimes; ++i)
+                {
+                    LoadMore();
+                }
             }
         }
 

@@ -46,31 +46,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         public ICommand AddFormatCommand => new RelayCommand(HandleAddFormat);
 
-        public ICommand ChooseLibraryCommand => new RelayCommand(HandleChooseLibrary);
-
-        public ICommand ScanLibraryCommand => new RelayCommand(HandleScanLibraryForNewContent);
-
-        private void HandleScanLibraryForNewContent()
-        {
-            _ = Task.Run(async () =>
-            {
-                var importer = new ImportService(uowFactory, properties);
-
-                MessengerInstance.Send(new SetGlobalLoaderMessage(true));
-                var newBookPaths = await importer.GetNotImportedBookPathsAsync(properties.LibraryFolder);
-
-                if (!newBookPaths.Any())
-                {
-                    return;
-                }
-
-                var importFlyout = new AddNewBooksViewModel(newBookPaths, uowFactory);
-                MessengerInstance.Send(new SetGlobalLoaderMessage(false));
-
-                Application.Current.Dispatcher.Invoke(() => MessengerInstance.Send(new OpenFlyoutMessage(importFlyout)));
-            });
-        }
-
         public bool AutomaticallyImportWithFoundISBN
         {
             get => automaticallyImportWithFoundISBN;
@@ -84,6 +59,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         }
 
         public ICommand ChooseExternalReaderCommand => new RelayCommand(HandleChooseExternalReader);
+        public ICommand ChooseLibraryCommand => new RelayCommand(HandleChooseLibrary);
 
         public ICommand ClearExternalReaderCommand => new RelayCommand(() => ExternalReaderPath = null);
 
@@ -94,7 +70,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         }
 
         public ObservableCollection<string> Formats { get; set; }
-
         public string LibraryPath { get => libraryPath; set => Set(() => LibraryPath, ref libraryPath, value); }
         public ICommand RemoveFormatCommand => new RelayCommand(() => Formats.Remove(SelectedFormat));
 
@@ -103,6 +78,8 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             get => scanAtStartup;
             set => Set(() => ScanAtStartup, ref scanAtStartup, value);
         }
+
+        public ICommand ScanLibraryCommand => new RelayCommand(HandleScanLibraryForNewContent);
 
         public string SelectedFormat { get => selectedFormat; set => Set(() => SelectedFormat, ref selectedFormat, value); }
 
@@ -174,6 +151,24 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
                 // TODO: what to do with already imported files if user changes library?
             }
+        }
+
+        private async void HandleScanLibraryForNewContent()
+        {
+            var importer = new ImportService(uowFactory, properties);
+
+            MessengerInstance.Send(new SetGlobalLoaderMessage(true));
+            var newBookPaths = await importer.GetNotImportedBookPathsAsync(properties.LibraryFolder);
+            MessengerInstance.Send(new SetGlobalLoaderMessage(false));
+            if (!newBookPaths.Any())
+            {
+                MessengerInstance.Send(new ShowNotificationMessage("No new books found in the library."));
+                return;
+            }
+
+            var importFlyout = new AddNewBooksViewModel(newBookPaths, uowFactory);
+
+            Application.Current.Dispatcher.Invoke(() => MessengerInstance.Send(new OpenFlyoutMessage(importFlyout)));
         }
 
         private void SaveChanges()
