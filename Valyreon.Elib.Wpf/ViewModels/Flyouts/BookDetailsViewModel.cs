@@ -43,7 +43,16 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
         public ICommand AddCollectionCommand => new RelayCommand<string>(AddCollection);
 
-        public Book Book { get => book; set => Set(() => Book, ref book, value); }
+        public Book Book
+        {
+            get => book;
+            set
+            {
+                Set(() => Book, ref book, value);
+                RaisePropertyChanged(() => IsBookRead);
+                RaisePropertyChanged(() => IsBookFavorite);
+            }
+        }
 
         public bool CanGoNext { get => canGoNext; set => Set(() => CanGoNext, ref canGoNext, value); }
 
