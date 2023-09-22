@@ -28,9 +28,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             this.selector = selector;
             ApplicationProperties = applicationProperties;
             this.uowFactory = uowFactory;
-            IsExternalReaderSpecified = applicationProperties.IsExternalReaderSpecifiedAndValid();
-
-            MessengerInstance.Register<AppSettingsChangedMessage>(this, _ => IsExternalReaderSpecified = applicationProperties.IsExternalReaderSpecifiedAndValid());
         }
 
         public ICommand AddToCollectionCommand => new RelayCommand(HandleAddToCollection);
@@ -46,7 +43,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         public ICommand GoToSeries =>
             new RelayCommand(() => Messenger.Default.Send(new SeriesSelectedMessage(Book.Series)));
 
-        public bool IsExternalReaderSpecified { get => isExternalReaderSpecified; set => Set(() => IsExternalReaderSpecified, ref isExternalReaderSpecified, value); }
         public ICommand OpenFileLocationCommand => new RelayCommand(OpenFileLocation);
         public ICommand OpenInReaderCommand => new RelayCommand(HandleOpenInReader);
         public ICommand ReadMarkCommand => new RelayCommand(HandleMarkRead);
@@ -160,10 +156,14 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
 
         private void HandleOpenInReader()
         {
-            if (ApplicationProperties.IsExternalReaderSpecifiedAndValid())
+            var psi = new ProcessStartInfo
             {
-                Process.Start(ApplicationProperties.ExternalReaderPath, $@"""{Book.Path}""");
-            }
+                FileName = $@"""{Book.Path}""",
+                // UseShellExecute set to true in order to use ShellExecute instead of the default CreateProcess to open a file.
+                UseShellExecute = true
+            };
+
+            Process.Start(psi);
         }
 
         private async void HandleRemove()

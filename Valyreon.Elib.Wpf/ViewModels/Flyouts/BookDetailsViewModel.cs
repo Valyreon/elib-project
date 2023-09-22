@@ -27,7 +27,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
         private bool canGoNext;
         private bool canGoPrevious;
         private ObservableCollection<ObservableEntity> collectionSuggestions;
-        private bool isExternalReaderSpecified;
 
         public BookDetailsViewModel(LinkedListNode<Book> node, ApplicationProperties properties, IUnitOfWorkFactory uowFactory)
         {
@@ -35,9 +34,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             Book = node.Value;
             Properties = properties;
             this.uowFactory = uowFactory;
-            IsExternalReaderSpecified = Properties.IsExternalReaderSpecifiedAndValid();
             UpdateNavigationState();
-            MessengerInstance.Register<AppSettingsChangedMessage>(this, _ => IsExternalReaderSpecified = Properties.IsExternalReaderSpecifiedAndValid());
             MessengerInstance.Register<KeyPressedMessage>(this, HandleKeyMessage);
         }
 
@@ -115,8 +112,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
                 });
             }
         }
-
-        public bool IsExternalReaderSpecified { get => isExternalReaderSpecified; set => Set(() => IsExternalReaderSpecified, ref isExternalReaderSpecified, value); }
 
         public ICommand NextBookCommand => new RelayCommand(HandleNextBook);
 
@@ -232,10 +227,14 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
         private void HandleOpenBook()
         {
-            if (Properties.IsExternalReaderSpecifiedAndValid())
+            var psi = new ProcessStartInfo
             {
-                Process.Start(Properties.ExternalReaderPath, $@"""{Book.Path}""");
-            }
+                FileName = $@"""{Book.Path}""",
+                // UseShellExecute set to true in order to use ShellExecute instead of the default CreateProcess to open a file.
+                UseShellExecute = true
+            };
+
+            Process.Start(psi);
         }
 
         private async void HandlePreviousBook()
