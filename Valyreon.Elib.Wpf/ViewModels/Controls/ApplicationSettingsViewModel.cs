@@ -23,7 +23,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         private readonly IUnitOfWorkFactory uowFactory;
         private bool automaticallyImportWithFoundISBN;
         private string caption = "Settings";
-        private string externalReaderPath;
         private string libraryPath;
         private bool scanAtStartup;
 
@@ -34,7 +33,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             LibraryPath = properties.LibraryFolder;
             ScanAtStartup = properties.ScanAtStartup;
             Formats = new(properties.Formats);
-            ExternalReaderPath = properties.ExternalReaderPath;
             AutomaticallyImportWithFoundISBN = properties.AutomaticallyImportWithFoundISBN;
             this.properties = properties;
             this.uowFactory = uowFactory;
@@ -58,17 +56,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             set => Set(() => Caption, ref caption, value);
         }
 
-        public ICommand ChooseExternalReaderCommand => new RelayCommand(HandleChooseExternalReader);
         public ICommand ChooseLibraryCommand => new RelayCommand(HandleChooseLibrary);
-
-        public ICommand ClearExternalReaderCommand => new RelayCommand(() => ExternalReaderPath = null);
-
-        public string ExternalReaderPath
-        {
-            get => externalReaderPath;
-            set => Set(() => ExternalReaderPath, ref externalReaderPath, value);
-        }
-
         public ObservableCollection<string> Formats { get; set; }
         public string LibraryPath { get => libraryPath; set => Set(() => LibraryPath, ref libraryPath, value); }
         public ICommand RemoveFormatCommand => new RelayCommand(() => Formats.Remove(SelectedFormat));
@@ -114,24 +102,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             });
 
             MessengerInstance.Send(new ShowDialogMessage(dialogViewModel));
-        }
-
-        private void HandleChooseExternalReader()
-        {
-            using var dlg = new System.Windows.Forms.OpenFileDialog
-            {
-                CheckFileExists = true,
-                CheckPathExists = true,
-                FilterIndex = 0,
-                Multiselect = false,
-                InitialDirectory = Environment.ExpandEnvironmentVariables("%ProgramW6432%")
-            };
-
-            var result = dlg.ShowDialog();
-            if (result == System.Windows.Forms.DialogResult.OK && dlg.FileName != null)
-            {
-                ExternalReaderPath = dlg.FileName;
-            }
         }
 
         private void HandleChooseLibrary()
@@ -184,7 +154,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             properties.LibraryFolder = LibraryPath;
             properties.Formats = Formats.ToList();
             properties.AutomaticallyImportWithFoundISBN = AutomaticallyImportWithFoundISBN;
-            properties.ExternalReaderPath = ExternalReaderPath;
         }
     }
 }

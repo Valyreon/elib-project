@@ -20,7 +20,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
         private readonly LinkedListNode<Book> node;
         private readonly Selector selector;
         private readonly IUnitOfWorkFactory uowFactory;
-        private bool isExternalReaderSpecified;
 
         public BookTileViewModel(LinkedListNode<Book> bookNode, Selector selector, ApplicationProperties applicationProperties, IUnitOfWorkFactory uowFactory)
         {
