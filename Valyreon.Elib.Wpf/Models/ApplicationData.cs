@@ -65,15 +65,9 @@ namespace Valyreon.Elib.Wpf.Models
     {
         public bool AutomaticallyImportWithFoundISBN { get; set; }
         public bool AutomaticallyImportBooksWithValidData { get; set; }
-        public string ExternalReaderPath { get; set; }
         public List<string> Formats { get; set; } = new List<string> { ".epub", ".mobi" };
         public string LibraryFolder { get; set; }
         public bool RememberFilterInNextView { get; set; }
         public bool ScanAtStartup { get; set; } = true;
-
-        public bool IsExternalReaderSpecifiedAndValid()
-        {
-            return !string.IsNullOrWhiteSpace(ExternalReaderPath) && File.Exists(ExternalReaderPath);
-        }
     }
 }
