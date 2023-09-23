@@ -24,12 +24,13 @@ namespace Valyreon.Elib.Wpf
 #endif
 
         private static Mutex _mutex = null;
+        private bool _isMutexOwner = false;
 
         private void OnStartup(object sender, StartupEventArgs e)
         {
-            _mutex = new Mutex(true, GetType().Namespace.ToString(), out var appInstance);
+            _mutex = new Mutex(true, GetType().Namespace.ToString(), out _isMutexOwner);
 
-            if (!appInstance)
+            if (!_isMutexOwner)
             {
                 Current.Shutdown();
             }
@@ -57,6 +58,11 @@ namespace Valyreon.Elib.Wpf
                     window.DataContext = null;
                     viewModel.Dispose();
                 }
+            }
+
+            if (_isMutexOwner)
+            {
+                _mutex.ReleaseMutex();
             }
         }
 
