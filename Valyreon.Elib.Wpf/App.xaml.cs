@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using Valyreon.Elib.Wpf.Models;
@@ -22,8 +23,17 @@ namespace Valyreon.Elib.Wpf
         public static extern void FreeConsole();
 #endif
 
+        private static Mutex _mutex = null;
+
         private void OnStartup(object sender, StartupEventArgs e)
         {
+            _mutex = new Mutex(true, GetType().Namespace.ToString(), out var appInstance);
+
+            if (!appInstance)
+            {
+                Current.Shutdown();
+            }
+
             ApplicationData.InitializeAppData();
 
             SetupExceptionHandling();
