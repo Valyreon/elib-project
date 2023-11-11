@@ -15,7 +15,7 @@ Features:
 * Mark books as **Read** or **Favorite**
 * Specify external reader
 
-The project uses **SQLite database** for saving book info and relationships. Access to database is done with a generic repository pattern using **Dapper**. The application features a custom Window header, and the user interface is done with custom WPF user controls, designed to look modern and functional. The app also supports keyboard navigation for the most part.
+The project uses **SQLite database** for saving book info and relationships. Access to database is done with a generic repository pattern using **Dapper**. The application features a custom Window header, and the user interface is done with custom WPF user controls using **Model-View-ViewModel pattern**, designed to look modern and functional. The app also supports keyboard navigation for the most part.
 
 The app development is still in progress but here are some current screenshots:
 
