@@ -1,15 +1,14 @@
-﻿namespace Valyreon.Elib.Wpf.Messages
+using Valyreon.Elib.Wpf.Interfaces;
+
+namespace Valyreon.Elib.Wpf.Messages
 {
-	public class ShowDialogMessage
-	{
-		public ShowDialogMessage(string title, string text)
-		{
-			Title = title;
-			Text = text;
-		}
+    public class ShowDialogMessage
+    {
+        public ShowDialogMessage(DialogViewModel viewModel)
+        {
+            ViewModel = viewModel;
+        }
 
-		public string Text { get; }
-
-		public string Title { get; }
-	}
+        public DialogViewModel ViewModel { get; }
+    }
 }

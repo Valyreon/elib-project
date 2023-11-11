@@ -1,18 +1,13 @@
-﻿using System;
+using System;
 using System.Windows.Input;
 
 namespace Valyreon.Elib.Mvvm
 {
     public class RelayCommand<T> : ICommand
     {
-        public event EventHandler CanExecuteChanged
-        {
-            add { }
-            remove { }
-        }
+        private readonly Func<bool> canExecuteEvaluator;
 
         private readonly Action<T> methodToExecute;
-        private readonly Func<bool> canExecuteEvaluator;
 
         public RelayCommand(Action<T> methodToExecute, Func<bool> canExecuteEvaluator)
         {
@@ -25,17 +20,20 @@ namespace Valyreon.Elib.Mvvm
         {
         }
 
+        public event EventHandler CanExecuteChanged
+        {
+            add { }
+            remove { }
+        }
+
         public bool CanExecute(object parameter)
         {
             if (canExecuteEvaluator == null)
             {
                 return true;
             }
-            else
-            {
-                var result = canExecuteEvaluator.Invoke();
-                return result;
-            }
+
+            return canExecuteEvaluator.Invoke();
         }
 
         public void Execute(object parameter)

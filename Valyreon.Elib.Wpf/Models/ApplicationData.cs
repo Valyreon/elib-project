@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-using Valyreon.Elib.Mvvm;
 
 namespace Valyreon.Elib.Wpf.Models
 {
@@ -15,6 +14,23 @@ namespace Valyreon.Elib.Wpf.Models
         public static string LogFolderPath { get; } = Path.Combine(_elibDataFolder, "Logs");
 
         public static string PropertiesPath { get; } = Path.Combine(_elibDataFolder, "properties.json");
+
+        public static void ClearAppData()
+        {
+            Directory.Delete(_elibDataFolder, true);
+        }
+
+        public static ApplicationProperties GetProperties()
+        {
+            try
+            {
+                return JsonSerializer.Deserialize<ApplicationProperties>(File.ReadAllText(PropertiesPath));
+            }
+            catch (Exception)
+            {
+                return new ApplicationProperties();
+            }
+        }
 
         public static void InitializeAppData()
         {
@@ -39,16 +55,6 @@ namespace Valyreon.Elib.Wpf.Models
             }
         }
 
-        public static void ClearAppData()
-        {
-            Directory.Delete(_elibDataFolder, true);
-        }
-
-        public static ApplicationProperties GetProperties()
-        {
-            return JsonSerializer.Deserialize<ApplicationProperties>(File.ReadAllText(PropertiesPath));
-        }
-
         public static void SaveProperties(ApplicationProperties properties)
         {
             File.WriteAllText(PropertiesPath, JsonSerializer.Serialize(properties, new JsonSerializerOptions { WriteIndented = true }));
@@ -57,26 +63,11 @@ namespace Valyreon.Elib.Wpf.Models
 
     public class ApplicationProperties
     {
-        public List<SourcePath> Sources { get; set; } = new List<SourcePath>();
-        public bool ScanAtStartup { get; set; } = true;
+        public bool AutomaticallyImportWithFoundISBN { get; set; }
+        public bool AutomaticallyImportBooksWithValidData { get; set; }
         public List<string> Formats { get; set; } = new List<string> { ".epub", ".mobi" };
-    }
-
-    public class SourcePath : ObservableObject
-    {
-        private string path;
-        private bool recursiveScan;
-
-        public string Path
-        {
-            get => path;
-            set => Set(() => Path, ref path, value);
-        }
-
-        public bool RecursiveScan
-        {
-            get => recursiveScan;
-            set => Set(() => RecursiveScan, ref recursiveScan, value);
-        }
+        public string LibraryFolder { get; set; }
+        public bool RememberFilterInNextView { get; set; }
+        public bool ScanAtStartup { get; set; } = true;
     }
 }

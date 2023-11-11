@@ -4,18 +4,18 @@ namespace Valyreon.Elib.EBookTools
     {
         public StyleSettings StyleSettings { get; set; }
 
-        public abstract ParsedBook Parse();
-
         public abstract string GenerateHtml();
+
+        public abstract ParsedBook Parse();
 
         /// <summary>
         ///     Generates <head> tag for Html book.
         /// </summary>
+        /// <param name="title">Title of the book.</param>
         /// <returns>String containg header node.</returns>
         protected string GenerateHeader(string title = null)
         {
-            var header =
-                "<head>\n" +
+            return "<head>\n" +
                 "<meta charset=\"utf-8\">\n" +
                 (title == null ? "" : "<title>" + title + "</title>") +
                 "<style>\n" + StyleSettings.GenerateCss() +
@@ -23,8 +23,6 @@ namespace Valyreon.Elib.EBookTools
                 "<script>\n" +
                 "</script>\n" +
                 "</head>\n";
-
-            return header;
         }
     }
 }

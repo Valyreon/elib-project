@@ -27,6 +27,29 @@ namespace Valyreon.Elib.EbookTools.Epub
             this.filePath = filePath;
         }
 
+        public override string GenerateHtml()
+        {
+            using var ms = new MemoryStream(File.ReadAllBytes(filePath));
+            using var zip = new ZipArchive(ms, ZipArchiveMode.Read);
+            var doc = GetRootfileDocument(zip);
+            return FormHtml(doc, zip);
+        }
+
+        public byte[] GetCover(ZipArchive zip)
+        {
+            foreach (var entry in zip.Entries)
+            {
+                if (entry.Name.IndexOf("cover", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    using var ms = new MemoryStream();
+                    entry.Open().CopyTo(ms);
+                    return ms.ToArray();
+                }
+            }
+
+            return null;
+        }
+
         /// <summary>
         ///     Parses the epub file and creates ParsedBook filled with all the retrieved metadata and generated html.
         /// </summary>
@@ -69,27 +92,136 @@ namespace Valyreon.Elib.EbookTools.Epub
             };
         }
 
-        public override string GenerateHtml()
+        private static void EmbedImages(HtmlDocument htmlDoc, ZipArchive zip)
         {
-            using var ms = new MemoryStream(File.ReadAllBytes(filePath));
-            using var zip = new ZipArchive(ms, ZipArchiveMode.Read);
-            var doc = GetRootfileDocument(zip);
-            return FormHtml(doc, zip);
+            var allImages = htmlDoc.DocumentNode.SelectNodes("//img | //image");
+
+            if (allImages == null)
+            {
+                return;
+            }
+
+            foreach (var node in allImages)
+            {
+                if (node.Attributes.Contains("src"))
+                {
+                    ReplaceSourceWithImage(node, "src", zip);
+                }
+                else if (node.Attributes.Contains("xlink:href"))
+                {
+                    ReplaceSourceWithImage(node, "xlink:href", zip);
+                }
+                else
+                {
+                    node.Remove();
+                }
+            }
         }
 
-        public byte[] GetCover(ZipArchive zip)
+        /// <summary>
+        ///     Returns the first XmlNode whose tag matches the string parameter from XmlDocument parameter.
+        /// </summary>
+        /// <param name="doc">Document to search.</param>
+        /// <param name="tag">Tag to find.</param>
+        /// <returns></returns>
+        private static XmlNode GetFirstElementByTagName(XmlDocument doc, string tag)
         {
-            foreach (var entry in zip.Entries)
+            var list = doc?.GetElementsByTagName(tag);
+            var node = list?.Item(0);
+            return node;
+        }
+
+        /// <summary>
+        ///     Gets the XML file containing all metadata and other important things.
+        /// </summary>
+        /// <param name="zip">Opened epub archive.</param>
+        /// <returns>Loaded XmlDocument.</returns>
+        private static XmlDocument GetRootfileDocument(ZipArchive zip)
+        {
+            // Reading container.xml file
+            var containerFile = zip.GetEntry("META-INF/container.xml");
+            if (containerFile != null)
             {
-                if (entry.Name.IndexOf("cover", StringComparison.OrdinalIgnoreCase) >= 0)
+                var reader = new StreamReader(containerFile.Open());
+                var containerText = reader.ReadToEnd();
+                var doc = new XmlDocument();
+                doc.LoadXml(containerText);
+                var xmlAttributeCollection = GetFirstElementByTagName(doc, "rootfile")?.Attributes;
+                if (xmlAttributeCollection != null)
                 {
-                    using var ms = new MemoryStream();
-                    entry.Open().CopyTo(ms);
-                    return ms.ToArray();
+                    var opfFilePath = xmlAttributeCollection["full-path"]?.Value;
+
+                    // Parsing content.opf file
+                    var opfFile = zip.GetEntry(opfFilePath ?? throw new InvalidOperationException());
+                    if (opfFile != null)
+                    {
+                        reader = new StreamReader(opfFile.Open());
+                    }
                 }
+
+                var contentText = reader.ReadToEnd();
+                doc = new XmlDocument();
+                doc.LoadXml(contentText);
+                return doc;
             }
 
             return null;
+        }
+
+        private static string ImageToBase64String(byte[] image)
+        {
+            // Convert byte[] to Base64 String
+            var base64String = Convert.ToBase64String(image);
+            return base64String;
+        }
+
+        private static void ReplaceSourceWithImage(HtmlNode node, string attributeName, ZipArchive zip)
+        {
+            var href = node.Attributes[attributeName].Value;
+            href = href.TrimStart('.', '\\', '/').Trim();
+            foreach (var entry in zip.Entries)
+            {
+                if (entry.FullName.Contains(href))
+                {
+                    using var ms = new MemoryStream();
+                    entry.Open().CopyTo(ms);
+                    var imageString = "data:image/" + Path.GetExtension(entry.Name) + ";base64," +
+                                         ImageToBase64String(ms.GetBuffer());
+                    node.Attributes[attributeName].Value = imageString;
+                    break;
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Updates the links in the new html file so they point to right chapters. If links don't point to anything
+        ///     or the dictionary does not contain that link, it deletes them.
+        /// </summary>
+        /// <param name="httpDoc"></param>
+        /// <param name="dict">Dictionary where Key is file path to chapter, and Value is chapter ID in new HTML document.</param>
+        private static void UpdateLinks(HtmlDocument httpDoc, Dictionary<string, string> dict)
+        {
+            var allLinks = httpDoc.DocumentNode.SelectNodes("//a");
+            if (allLinks != null)
+            {
+                foreach (var link in allLinks)
+                {
+                    if (link.Attributes.Contains("href"))
+                    {
+                        var href = link.Attributes["href"].Value.Trim();
+                        var cleanedHref = Regex.Replace(href, "#\\w*", "");
+                        cleanedHref = Path.GetFileName(cleanedHref);
+                        if (dict.ContainsKey(cleanedHref))
+                        {
+                            link.Attributes["href"].Value = dict[cleanedHref];
+                        }
+                        else if (href.StartsWith(".") || href.StartsWith("/") || href.StartsWith("\\"))
+                        {
+                            link.Name = "p"; // if link doesnt match any chapter, replace tag with p
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -156,138 +288,6 @@ namespace Valyreon.Elib.EbookTools.Epub
             UpdateLinks(finalDoc, linkList);
             EmbedImages(finalDoc, zip);
             return finalDoc.DocumentNode.OuterHtml;
-        }
-
-        /// <summary>
-        ///     Gets the XML file containing all metadata and other important things.
-        /// </summary>
-        /// <param name="zip">Opened epub archive.</param>
-        /// <returns>Loaded XmlDocument.</returns>
-        private static XmlDocument GetRootfileDocument(ZipArchive zip)
-        {
-            // Reading container.xml file
-            var containerFile = zip.GetEntry("META-INF/container.xml");
-            if (containerFile != null)
-            {
-                var reader = new StreamReader(containerFile.Open());
-                var containerText = reader.ReadToEnd();
-                var doc = new XmlDocument();
-                doc.LoadXml(containerText);
-                var xmlAttributeCollection = GetFirstElementByTagName(doc, "rootfile")?.Attributes;
-                if (xmlAttributeCollection != null)
-                {
-                    var opfFilePath = xmlAttributeCollection["full-path"]?.Value;
-
-                    // Parsing content.opf file
-                    var opfFile = zip.GetEntry(opfFilePath ?? throw new InvalidOperationException());
-                    if (opfFile != null)
-                    {
-                        reader = new StreamReader(opfFile.Open());
-                    }
-                }
-
-                var contentText = reader.ReadToEnd();
-                doc = new XmlDocument();
-                doc.LoadXml(contentText);
-                return doc;
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        ///     Returns the first XmlNode whose tag matches the string parameter from XmlDocument parameter.
-        /// </summary>
-        /// <param name="doc">Document to search.</param>
-        /// <param name="tag">Tag to find.</param>
-        /// <returns></returns>
-        private static XmlNode GetFirstElementByTagName(XmlDocument doc, string tag)
-        {
-            var list = doc?.GetElementsByTagName(tag);
-            var node = list?.Item(0);
-            return node;
-        }
-
-        private static void EmbedImages(HtmlDocument htmlDoc, ZipArchive zip)
-        {
-            var allImages = htmlDoc.DocumentNode.SelectNodes("//img | //image");
-
-            if (allImages == null)
-            {
-                return;
-            }
-
-            foreach (var node in allImages)
-            {
-                if (node.Attributes.Contains("src"))
-                {
-                    ReplaceSourceWithImage(node, "src", zip);
-                }
-                else if (node.Attributes.Contains("xlink:href"))
-                {
-                    ReplaceSourceWithImage(node, "xlink:href", zip);
-                }
-                else
-                {
-                    node.Remove();
-                }
-            }
-        }
-
-        private static void ReplaceSourceWithImage(HtmlNode node, string attributeName, ZipArchive zip)
-        {
-            var href = node.Attributes[attributeName].Value;
-            href = href.TrimStart('.', '\\', '/').Trim();
-            foreach (var entry in zip.Entries)
-            {
-                if (entry.FullName.Contains(href))
-                {
-                    using var ms = new MemoryStream();
-                    entry.Open().CopyTo(ms);
-                    var imageString = "data:image/" + Path.GetExtension(entry.Name) + ";base64," +
-                                         ImageToBase64String(ms.GetBuffer());
-                    node.Attributes[attributeName].Value = imageString;
-                    break;
-                }
-            }
-        }
-
-        /// <summary>
-        ///     Updates the links in the new html file so they point to right chapters. If links don't point to anything
-        ///     or the dictionary does not contain that link, it deletes them.
-        /// </summary>
-        /// <param name="httpDoc"></param>
-        /// <param name="dict">Dictionary where Key is file path to chapter, and Value is chapter ID in new HTML document.</param>
-        private static void UpdateLinks(HtmlDocument httpDoc, Dictionary<string, string> dict)
-        {
-            var allLinks = httpDoc.DocumentNode.SelectNodes("//a");
-            if (allLinks != null)
-            {
-                foreach (var link in allLinks)
-                {
-                    if (link.Attributes.Contains("href"))
-                    {
-                        var href = link.Attributes["href"].Value.Trim();
-                        var cleanedHref = Regex.Replace(href, "#\\w*", "");
-                        cleanedHref = Path.GetFileName(cleanedHref);
-                        if (dict.ContainsKey(cleanedHref))
-                        {
-                            link.Attributes["href"].Value = dict[cleanedHref];
-                        }
-                        else if (href.StartsWith(".") || href.StartsWith("/") || href.StartsWith("\\"))
-                        {
-                            link.Name = "p"; // if link doesnt match any chapter, replace tag with p
-                        }
-                    }
-                }
-            }
-        }
-
-        private static string ImageToBase64String(byte[] image)
-        {
-            // Convert byte[] to Base64 String
-            var base64String = Convert.ToBase64String(image);
-            return base64String;
         }
     }
 }

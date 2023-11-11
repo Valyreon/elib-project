@@ -7,8 +7,29 @@ namespace Valyreon.Elib.Wpf.Models
 {
     public static class ImageOptimizer
     {
+        public static byte[] GetBiggerImage(byte[] img1, byte[] img2)
+        {
+            if (img1 == null || img2 == null)
+            {
+                return img1 == null ? img2 : null;
+            }
+
+            var firstImage = Image.Load(img1);
+            var secondImage = Image.Load(img2);
+
+            var sizeOne = firstImage.Width * firstImage.Height;
+            var sizeTwo = secondImage.Width * secondImage.Height;
+
+            return sizeTwo >= sizeOne ? img2 : img1;
+        }
+
         public static byte[] ResizeAndFill(byte[] imgBytes, int width = 200, int height = 300)
         {
+            if (imgBytes == null)
+            {
+                return null;
+            }
+
             using var image = Image.Load(imgBytes);
             using var image2 = Image.Load(imgBytes);
 

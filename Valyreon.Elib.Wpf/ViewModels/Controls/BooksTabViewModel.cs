@@ -1,129 +1,62 @@
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
-using MahApps.Metro.IconPacks;
+using Valyreon.Elib.BookDataAPI.GoogleBooks;
 using Valyreon.Elib.DataLayer;
+using Valyreon.Elib.DataLayer.Filters;
+using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Domain;
+using Valyreon.Elib.EBookTools.Epub;
 using Valyreon.Elib.Mvvm;
 using Valyreon.Elib.Wpf.BindingItems;
 using Valyreon.Elib.Wpf.CustomDataStructures;
+using Valyreon.Elib.Wpf.Extensions;
 using Valyreon.Elib.Wpf.Messages;
 using Valyreon.Elib.Wpf.Models;
+using Valyreon.Elib.Wpf.Services;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Controls
 {
     public class BooksTabViewModel : ViewModelBase, ITabViewModel
     {
+        private readonly ApplicationProperties applicationProperties;
+        private readonly ViewerHistory history = new();
         private readonly PaneMainItem selectedMainItem;
-        private readonly Selector selector;
-        private readonly ViewerHistory history = new ViewerHistory();
+        private readonly Selector selector = new Selector();
+        private readonly IUnitOfWorkFactory unitOfWorkFactory;
         private string caption = "Books";
         private IViewer currentViewer;
-        private bool isInSearchResults;
-        private bool isSelectedMainAdded;
-
-        private SearchParameters searchOptions;
         private UserCollection selectedCollection;
         private PaneMainItem selectedMainPaneItem;
 
-        public BooksTabViewModel()
+        public BooksTabViewModel(ApplicationProperties applicationProperties, IUnitOfWorkFactory unitOfWorkFactory)
         {
-            selector = new Selector();
-            selectedMainItem = new PaneMainItem("Selected", PackIconFontAwesomeKind.CheckDoubleSolid, "Selected Books", new FilterParameters { Selected = true });
+            this.applicationProperties = applicationProperties;
+            this.unitOfWorkFactory = unitOfWorkFactory;
+            selectedMainItem = new PaneMainItem("Selected", "Selected Books", new BookFilter { Selected = true });
 
             MessengerInstance.Register<AuthorSelectedMessage>(this, HandleAuthorSelection);
-            MessengerInstance.Register<BookSelectedMessage>(this, HandleBookChecked);
             MessengerInstance.Register<SeriesSelectedMessage>(this, HandleSeriesSelection);
             MessengerInstance.Register<CollectionSelectedMessage>(this, HandleCollectionSelection);
             MessengerInstance.Register<GoBackMessage>(this, _ => GoToPreviousViewer());
-            MessengerInstance.Register<ResetPaneSelectionMessage>(this, _ =>
-            {
-                SelectedMainPaneItem = MainPaneItems[0];
-                PaneSelectionChanged();
-            });
+            MessengerInstance.Register<ResetPaneSelectionMessage>(this, _ => SelectedMainPaneItem = MainPaneItems[0]);
             MessengerInstance.Register<RefreshSidePaneCollectionsMessage>(this, CollectionsRefreshHandler);
 
             MainPaneItems = new ObservableCollection<PaneMainItem>
             {
-                new PaneMainItem("All", PackIconBoxIconsKind.SolidBook, "All Books", null),
-                new PaneMainItem("Favorite", PackIconFontAwesomeKind.StarSolid, "Favorite Books", new FilterParameters { Favorite = true }),
-                new PaneMainItem("Authors", PackIconFontAwesomeKind.PersonBoothSolid, "Authors", null),
-                new PaneMainItem("Series", PackIconFontAwesomeKind.LinkSolid, "Series", null)
+                new PaneMainItem("All", "All Books", null),
+                new PaneMainItem("Favorite", "Favorite Books", new BookFilter { Favorite = true }),
+                new PaneMainItem("Authors", "Authors", null),
+                new PaneMainItem("Series", "Series", null)
             };
             SelectedMainPaneItem = MainPaneItems[0];
-            PaneSelectionChanged();
-            SearchOptions = new SearchParameters();
-            MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
-        }
+            CollectionsRefreshHandler(null);
 
-        public ObservableCollection<UserCollection> Collections { get; set; }
-
-        public async void CollectionsRefreshHandler(RefreshSidePaneCollectionsMessage msg)
-        {
-            using var uow = await App.UnitOfWorkFactory.CreateAsync();
-            Collections = new ObservableCollection<UserCollection>(await uow.CollectionRepository.GetAllAsync());
-            RaisePropertyChanged(() => Collections);
-        }
-
-        public IViewer CurrentViewer => currentViewer;
-
-        private async void SetCurrentViewer(IViewer value)
-        {
-            Set(() => CurrentViewer, ref currentViewer, value);
-            await Task.Delay(20);
-            CurrentViewer.Refresh();
-        }
-
-        public bool IsBackEnabled => history.Count > 0;
-
-        public ObservableCollection<PaneMainItem> MainPaneItems { get; set; }
-
-        public ICommand PaneSelectionChangedCommand => new RelayCommand(PaneSelectionChanged);
-
-        public ICommand SearchCheckboxChangedCommand => new RelayCommand(ProcessSearchCheckboxChanged);
-
-        public ICommand SearchCommand => new RelayCommand<string>(ProcessSearchInput);
-
-        public SearchParameters SearchOptions
-        {
-            get => searchOptions;
-            set => Set(() => SearchOptions, ref searchOptions, value);
-        }
-
-        public UserCollection SelectedCollection
-        {
-            get => selectedCollection;
-
-            set
-            {
-                Set(() => SelectedCollection, ref selectedCollection, value);
-
-                if (value == null)
-                {
-                    return;
-                }
-
-                history.Clear();
-
-                var filter = new FilterParameters
-                {
-                    CollectionId = selectedCollection.Id
-                };
-
-                var newViewer = new BookViewerViewModel(filter, selector)
-                {
-                    Caption = $"Collection {selectedCollection.Tag}"
-                };
-
-                SetCurrentViewer(newViewer);
-            }
-        }
-
-        public PaneMainItem SelectedMainPaneItem
-        {
-            get => selectedMainPaneItem;
-            set => Set(() => SelectedMainPaneItem, ref selectedMainPaneItem, value);
+            selector.SelectionChanged += HandleSelectionChanged;
         }
 
         public string Caption
@@ -132,61 +65,45 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             set => Set(() => Caption, ref caption, value);
         }
 
-        private void HandleBookChecked(BookSelectedMessage obj)
+        public ObservableCollection<UserCollection> Collections { get; set; }
+
+        public ICommand CollectionSelectionChangedCommand => new RelayCommand(HandleCollectionSelectionChanged);
+
+        public IViewer CurrentViewer => currentViewer;
+
+        public bool IsBackEnabled => history.Count > 0;
+
+        public ICommand LoadedCommand => new RelayCommand(HandleLoaded);
+
+        public ObservableCollection<PaneMainItem> MainPaneItems { get; set; }
+
+        public ICommand PaneSelectionChangedCommand => new RelayCommand(PaneSelectionChanged);
+
+        public UserCollection SelectedCollection
         {
-            if (selector.Count > 0 && !isSelectedMainAdded)
-            {
-                MainPaneItems.Add(selectedMainItem);
-                isSelectedMainAdded = true;
-            }
-            else if (selector.Count == 0)
-            {
-                _ = MainPaneItems.Remove(selectedMainItem);
-                isSelectedMainAdded = false;
-            }
+            get => selectedCollection;
+
+            set => Set(() => SelectedCollection, ref selectedCollection, value);
         }
 
-        private void HandleCollectionSelection(CollectionSelectedMessage message)
+        public PaneMainItem SelectedMainPaneItem
         {
-            SelectedCollection = Collections.FirstOrDefault(c => c.Id == message.CollectionId);
+            get => selectedMainPaneItem;
+            set => Set(() => SelectedMainPaneItem, ref selectedMainPaneItem, value);
         }
 
-        private async void ProcessSearchInput(string token)
+        public async void CollectionsRefreshHandler(RefreshSidePaneCollectionsMessage msg)
         {
-            if (string.IsNullOrWhiteSpace(token))
+            using var uow = await unitOfWorkFactory.CreateAsync();
+            var collections = await uow.CollectionRepository.GetAllAsync(new QueryParameters
             {
-                return;
-            }
-
-            token = token.ToLower();
-            SearchOptions.Token = token;
-
-            var resultViewModel = await CurrentViewer.Search(SearchOptions);
-
-            if (resultViewModel == null)
-            {
-                MessengerInstance.Send(new ShowDialogMessage("No matches", "No books found matching the search conditions."));
-            }
-            else
-            {
-                resultViewModel.Back = GoToPreviousViewer;
-                var temp = currentViewer;
-                SetCurrentViewer(resultViewModel);
-                if (!isInSearchResults)
+                SortBy = new()
                 {
-                    history.Push(temp);
+                    PropertyName = "Tag"
                 }
-
-                isInSearchResults = true;
-            }
-        }
-
-        private void ProcessSearchCheckboxChanged()
-        {
-            if (!SearchOptions.SearchByTitle && !SearchOptions.SearchByAuthor && !SearchOptions.SearchBySeries)
-            {
-                SearchOptions = new SearchParameters();
-            }
+            });
+            Collections = new ObservableCollection<UserCollection>(collections);
+            RaisePropertyChanged(() => Collections);
         }
 
         private void GoToPreviousViewer()
@@ -196,9 +113,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 return;
             }
 
-            isInSearchResults = false;
-            SearchOptions.Token = "";
-            SetCurrentViewer(history.Pop());
+            SetCurrentViewer(history.Pop()());
         }
 
         private void HandleAuthorSelection(AuthorSelectedMessage obj)
@@ -209,21 +124,150 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 return;
             }
 
-            var temp = CurrentViewer;
+            history.Push(CurrentViewer.GetCloneFunction());
 
-            var filter = new FilterParameters
+            BookFilter filter = null;
+
+            if (applicationProperties.RememberFilterInNextView && CurrentViewer.GetFilter() is BookFilter bFilter)
             {
-                AuthorId = obj.Author.Id
-            };
+                filter = bFilter with { AuthorId = obj.Author.Id };
+            }
+            else
+            {
+                filter = new BookFilter { AuthorId = obj.Author.Id };
+            }
 
-            var newViewer = new BookViewerViewModel(filter, selector)
+            var newViewer = new BookViewerViewModel(filter, selector, applicationProperties, unitOfWorkFactory)
             {
                 Caption = viewerCaption,
                 Back = GoToPreviousViewer
             };
-            SetCurrentViewer(newViewer);
 
-            history.Push(temp);
+            SetCurrentViewer(newViewer);
+        }
+
+        private void HandleCollectionSelection(CollectionSelectedMessage message)
+        {
+            SelectedCollection = Collections.FirstOrDefault(c => c.Id == message.CollectionId);
+            HandleCollectionSelectionChanged();
+        }
+
+        private void HandleCollectionSelectionChanged()
+        {
+            if (selectedCollection == null)
+            {
+                return;
+            }
+
+            history.Clear();
+
+            var filter = new BookFilter
+            {
+                CollectionId = selectedCollection.Id
+            };
+
+            var newViewer = new BookViewerViewModel(filter, selector, applicationProperties, unitOfWorkFactory)
+            {
+                Caption = $"Collection {selectedCollection.Tag}"
+            };
+
+            SetCurrentViewer(newViewer);
+        }
+
+        private void HandleLoaded()
+        {
+            PaneSelectionChanged();
+
+            if (!applicationProperties.AutomaticallyImportWithFoundISBN)
+            {
+                return;
+            }
+
+            _ = Task.Run(async () =>
+            {
+                IReadOnlyList<string> foundBooks = null;
+                var importService = new ImportService(unitOfWorkFactory, applicationProperties);
+                foundBooks = await importService.GetNotImportedBookPathsAsync(applicationProperties.LibraryFolder);
+
+                //MessengerInstance.Send(new ShowNotificationMessage($"Found {foundBooks.Count} books to be imported."));
+                var counter = 0;
+                var withISBN = 0;
+                var nullReturned = 0;
+                var excHappened = 0;
+
+                //var epubCount = foundBooks.Count(b => b.EndsWith(".epub", StringComparison.InvariantCultureIgnoreCase));
+                //var mobiCount = foundBooks.Count(b => b.EndsWith(".mobi", StringComparison.InvariantCultureIgnoreCase));
+                //var pdfCount = foundBooks.Count(b => b.EndsWith(".pdf", StringComparison.InvariantCultureIgnoreCase));
+
+                var toProcess = foundBooks.Where(b => b.EndsWith(".epub", StringComparison.InvariantCultureIgnoreCase)).ToList();
+
+                if (toProcess.Any())
+                {
+                    MessengerInstance.Send(new ShowNotificationMessage("Importing books..."));
+                }
+
+                foreach (var book in toProcess)
+                {
+                    await Task.Delay(200);
+                    var parser = new VersOneEpubParser(book);
+                    try
+                    {
+                        var parsedBook = parser.Parse();
+
+                        if (string.IsNullOrWhiteSpace(parsedBook.Isbn))
+                        {
+                            continue;
+                        }
+
+                        withISBN++;
+                        var client = new GoogleBooksClient();
+                        var bData = await client.GetByIsbnAsync(parsedBook.Isbn);
+
+                        if (bData == null)
+                        {
+                            nullReturned++;
+                            continue;
+                        }
+
+                        //File.WriteAllText(@"C:\Users\Luka\Desktop\log.txt", JsonConvert.SerializeObject(result, Formatting.Indented));
+                        //parsedBook.Description = olBook.Data.Description;
+
+                        parsedBook.Title = bData.Title;
+                        parsedBook.Authors = bData.Authors.ToList();
+                        parsedBook.Cover = ImageOptimizer.GetBiggerImage(bData.Cover, parsedBook.Cover);
+                        parsedBook.Description = bData.Description;
+                        parsedBook.Publisher = bData.Publisher;
+
+                        var bookForImport = await parsedBook.ToBookAsync(unitOfWorkFactory);
+
+                        await importService.ImportBookAsync(bookForImport);
+                        Application.Current.Dispatcher.Invoke(() => MessengerInstance.Send(new RefreshCurrentViewMessage()));
+                        counter++;
+                    }
+                    catch (Exception ex)
+                    {
+                        excHappened++;
+                        var m = ex.Message;
+                    }
+                }
+
+                if (counter > 0)
+                {
+                    MessengerInstance.Send(new ShowNotificationMessage($"Successfully imported {counter} books using Google Books."));
+                }
+            });
+        }
+
+        private void HandleSelectionChanged()
+        {
+            if (selector.Count > 0 && !MainPaneItems.Contains(selectedMainItem))
+            {
+                MainPaneItems.Add(selectedMainItem);
+            }
+            else if (selector.Count == 0)
+            {
+                _ = MainPaneItems.Remove(selectedMainItem);
+            }
         }
 
         private void HandleSeriesSelection(SeriesSelectedMessage obj)
@@ -239,42 +283,55 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
                 return;
             }
 
-            var filter = new FilterParameters
+            BookFilter filter = null;
+
+            if (applicationProperties.RememberFilterInNextView && CurrentViewer.GetFilter() is BookFilter bFilter)
             {
-                SeriesId = obj.Series.Id
-            };
+                filter = bFilter with { SeriesId = obj.Series.Id };
+            }
+            else
+            {
+                filter = new BookFilter { SeriesId = obj.Series.Id };
+            }
 
-            var temp = CurrentViewer;
+            history.Push(CurrentViewer.GetCloneFunction());
 
-            SetCurrentViewer(new BookViewerViewModel(filter, selector) { Caption = viewerCaption, Back = GoToPreviousViewer });
-
-            history.Push(temp);
+            SetCurrentViewer(new BookViewerViewModel(filter, selector, applicationProperties, unitOfWorkFactory) { Caption = viewerCaption, Back = GoToPreviousViewer });
         }
 
         private void PaneSelectionChanged()
         {
-            if (SelectedMainPaneItem == null)
+            if (selectedMainPaneItem == null)
             {
                 return;
             }
 
             history.Clear();
 
-            var filter = SelectedMainPaneItem.Filter?.Clone() ?? new FilterParameters();
+            var filter = selectedMainPaneItem.Filter != null
+                ? selectedMainPaneItem.Filter with { }
+                : new BookFilter();
 
-
-            if (SelectedMainPaneItem.PaneCaption == "Authors")
+            if (selectedMainPaneItem.PaneCaption == "Authors")
             {
-                SetCurrentViewer(new AuthorViewerViewModel() { Caption = SelectedMainPaneItem.PaneCaption });
+                SetCurrentViewer(new AuthorViewerViewModel(new Filter(), unitOfWorkFactory) { Caption = selectedMainPaneItem.PaneCaption });
             }
-            else if ( SelectedMainPaneItem.PaneCaption == "Series")
+            else if (selectedMainPaneItem.PaneCaption == "Series")
             {
-                SetCurrentViewer(new SeriesViewerViewModel() { Caption = SelectedMainPaneItem.PaneCaption });
+                SetCurrentViewer(new SeriesViewerViewModel(new Filter(), unitOfWorkFactory) { Caption = selectedMainPaneItem.PaneCaption });
             }
             else
             {
-                SetCurrentViewer(new BookViewerViewModel(filter, selector) { Caption = SelectedMainPaneItem.ViewerCaption });
+                SetCurrentViewer(new BookViewerViewModel(filter, selector, applicationProperties, unitOfWorkFactory) { Caption = selectedMainPaneItem.ViewerCaption });
             }
+        }
+
+        private void SetCurrentViewer(IViewer value)
+        {
+            CurrentViewer?.Dispose();
+            value.Back = history.Count > 0 ? GoToPreviousViewer : null;
+            Set(() => CurrentViewer, ref currentViewer, value);
+            CurrentViewer.Refresh();
         }
     }
 }

@@ -1,0 +1,46 @@
+<UserControl
+    x:Class="Valyreon.Elib.Wpf.Views.Dialogs.SimpleTextInputDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:c="clr-namespace:Valyreon.Elib.Wpf.CustomComponents"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    Initialized="UserControl_Initialized"
+    Loaded="UserControl_Loaded"
+    mc:Ignorable="d">
+    <StackPanel>
+        <TextBlock
+            Margin="0,0,0,15"
+            FontSize="20"
+            Text="{Binding Title}" />
+        <TextBlock
+            Margin="0,0,0,3"
+            FontSize="14"
+            Text="{Binding Text}" />
+        <c:ElibTextBox
+            x:Name="InputTextBox"
+            Grid.Row="4"
+            Height="30"
+            Margin="0,0,0,15"
+            Text="{Binding InputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="15" />
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button
+                Grid.Column="1"
+                Command="{Binding ConfirmCommand}"
+                IsDefault="True">
+                OK
+            </Button>
+            <Button Grid.Column="3" Command="{Binding CancelCommand}">Cancel</Button>
+        </Grid>
+    </StackPanel>
+</UserControl>

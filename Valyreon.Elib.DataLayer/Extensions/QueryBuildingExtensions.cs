@@ -5,6 +5,16 @@ namespace Valyreon.Elib.DataLayer.Extensions
 {
     internal static class QueryBuildingExtensions
     {
+        public static string And(this string query, string condition)
+        {
+            return query + " AND " + condition;
+        }
+
+        public static string And(this string query, IEnumerable<string> conditions)
+        {
+            return query + string.Join(" AND ", conditions);
+        }
+
         public static string Apply(this string query, QueryParameters parameters)
         {
             if (string.IsNullOrWhiteSpace(query))
@@ -31,19 +41,22 @@ namespace Valyreon.Elib.DataLayer.Extensions
             return query;
         }
 
-        public static string Where(this string query, string condition)
+        public static string Apply(this string query, Sort parameters)
         {
-            return query + " WHERE "+ condition;
-        }
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                throw new ArgumentException("Parameter 'query' can't be null or empty.");
+            }
 
-        public static string And(this string query, string condition)
-        {
-            return query + " AND " + condition;
-        }
+            if (parameters == null)
+            {
+                return query;
+            }
 
-        public static string And(this string query, IEnumerable<string> conditions)
-        {
-            return query + string.Join(" AND ", conditions);
+            query += $" ORDER BY {parameters.PropertyName}";
+            query += $" {(parameters.IsAscending ? "ASC" : "DESC")}";
+
+            return query;
         }
 
         public static string Or(this string query, string condition)
@@ -54,6 +67,11 @@ namespace Valyreon.Elib.DataLayer.Extensions
         public static string Or(this string query, IEnumerable<string> conditions)
         {
             return query + string.Join(" OR ", conditions);
+        }
+
+        public static string Where(this string query, string condition)
+        {
+            return query + " WHERE " + condition;
         }
     }
 }

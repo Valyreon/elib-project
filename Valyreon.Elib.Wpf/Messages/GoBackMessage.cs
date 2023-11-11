@@ -1,6 +1,7 @@
-﻿using Valyreon.Elib.Mvvm.Messaging;
+using Valyreon.Elib.Mvvm.Messaging;
 
 namespace Valyreon.Elib.Wpf.Messages
 {
-    public class GoBackMessage : MessageBase { }
+    public class GoBackMessage : MessageBase
+    { }
 }

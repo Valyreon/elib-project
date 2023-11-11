@@ -1,52 +1,69 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Valyreon.Elib.Mvvm;
-using Valyreon.Elib.Mvvm.Messaging;
+using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.EBookTools;
+using Valyreon.Elib.Mvvm;
+using Valyreon.Elib.Mvvm.Messaging;
 using Valyreon.Elib.Wpf.Messages;
 using Valyreon.Elib.Wpf.Models;
-using Valyreon.Elib.Wpf.ViewModels.Windows;
-using Valyreon.Elib.Wpf.Views.Windows;
-using System.IO;
+using Valyreon.Elib.Wpf.ViewModels.Dialogs;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 {
     public class BookDetailsViewModel : ViewModelBase
     {
-        private string addCollectionFieldText = "";
+        private readonly IUnitOfWorkFactory uowFactory;
+        private IEnumerable<UserCollection> allUserCollections;
+        private Book book;
+        private LinkedListNode<Book> bookNode;
+        private bool canGoNext;
+        private bool canGoPrevious;
+        private ObservableCollection<ObservableEntity> collectionSuggestions;
 
-        public BookDetailsViewModel(Book book)
+        public BookDetailsViewModel(LinkedListNode<Book> node, ApplicationProperties properties, IUnitOfWorkFactory uowFactory)
         {
-            Book = book;
-        }
-
-        public ICommand ReadBookCommand => new RelayCommand(HandleRead);
-
-        private void HandleRead()
-        {
-            var win2 = new ReaderWindow
-            {
-                DataContext = new ReaderViewModel(Book)
-            };
-            win2.Show();
+            bookNode = node;
+            Book = node.Value;
+            Properties = properties;
+            this.uowFactory = uowFactory;
+            UpdateNavigationState();
+            MessengerInstance.Register<KeyPressedMessage>(this, HandleKeyMessage);
         }
 
         public ICommand AddCollectionCommand => new RelayCommand<string>(AddCollection);
 
-        public string AddCollectionFieldText
+        public Book Book
         {
-            get => addCollectionFieldText;
-            set => Set(() => AddCollectionFieldText, ref addCollectionFieldText, value);
+            get => book;
+            set
+            {
+                Set(() => Book, ref book, value);
+                RaisePropertyChanged(() => IsBookRead);
+                RaisePropertyChanged(() => IsBookFavorite);
+            }
         }
 
-        public Book Book { get; }
+        public bool CanGoNext { get => canGoNext; set => Set(() => CanGoNext, ref canGoNext, value); }
+
+        public bool CanGoPrevious { get => canGoPrevious; set => Set(() => CanGoPrevious, ref canGoPrevious, value); }
+
+        public ObservableCollection<ObservableEntity> CollectionSuggestions
+        {
+            get => collectionSuggestions;
+            set => Set(() => CollectionSuggestions, ref collectionSuggestions, value);
+        }
 
         public ICommand EditButtonCommand => new RelayCommand(HandleEditButton);
+
+        public ICommand ExportButtonCommand => new RelayCommand(HandleExport);
 
         public ICommand GoToAuthor => new RelayCommand<ICollection<Author>>(a =>
         {
@@ -72,7 +89,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
                 Task.Run(async () =>
                 {
-                    using var uow = await App.UnitOfWorkFactory.CreateAsync();
+                    using var uow = await uowFactory.CreateAsync();
                     await uow.BookRepository.UpdateAsync(Book);
                     uow.Commit();
                 });
@@ -89,44 +106,26 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
 
                 Task.Run(async () =>
                 {
-                    using var uow = await App.UnitOfWorkFactory.CreateAsync();
+                    using var uow = await uowFactory.CreateAsync();
                     await uow.BookRepository.UpdateAsync(Book);
                     uow.Commit();
                 });
             }
         }
 
-        public ICommand RemoveCollectionCommand => new RelayCommand<string>(RemoveCollection);
+        public ICommand NextBookCommand => new RelayCommand(HandleNextBook);
 
-        private void GoToCollection(UserCollection obj)
-        {
-            MessengerInstance.Send(new CollectionSelectedMessage(obj.Id));
-            MessengerInstance.Send(new CloseFlyoutMessage());
-        }
+        public ICommand OpenBookCommand => new RelayCommand(HandleOpenBook);
 
-        private void RemoveCollection(string tag)
-        {
-            var collection = Book.Collections.FirstOrDefault(c => c.Tag == tag);
+        public ICommand PreviousBookCommand => new RelayCommand(HandlePreviousBook);
 
-            if (collection == null)
-            {
-                return;
-            }
+        public ApplicationProperties Properties { get; }
 
-            Book.Collections.Remove(collection);
+        public ICommand RefreshSuggestedCollectionsCommand => new RelayCommand<string>(HandleRefreshSuggestedCollections);
 
-            Task.Run(async () =>
-            {
-                using var uow = await App.UnitOfWorkFactory.CreateAsync();
-                await uow.CollectionRepository.RemoveCollectionForBookAsync(collection, Book.Id);
-                if (await uow.CollectionRepository.CountBooksInUserCollectionAsync(collection.Id) == 0)
-                {
-                    await uow.CollectionRepository.DeleteAsync(collection);
-                    MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
-                }
-                uow.Commit();
-            });
-        }
+        public ICommand RemoveCollectionCommand => new RelayCommand<UserCollection>(RemoveCollection);
+
+        public ICommand ShowFileInfoCommand => new RelayCommand(HandleShowFileInfo);
 
         private void AddCollection(string tag)
         {
@@ -136,7 +135,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             }
 
             tag = tag.Trim();
-            AddCollectionFieldText = "";
             if (Book.Collections.Any(c => c.Tag == tag)) // check if book is already in that collection
             {
                 return;
@@ -146,7 +144,7 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             Book.Collections.Add(newCollection);
             Task.Run(async () =>
             {
-                using var uow = await App.UnitOfWorkFactory.CreateAsync();
+                using var uow = await uowFactory.CreateAsync();
                 var existingCollection = await uow.CollectionRepository.GetByTagAsync(tag);
                 if (existingCollection == null)
                 {
@@ -163,12 +161,16 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             });
         }
 
-        private void HandleEditButton()
+        private void GoToCollection(UserCollection obj)
         {
-            MessengerInstance.Send(new EditBookMessage(Book));
+            MessengerInstance.Send(new CollectionSelectedMessage(obj.Id));
+            MessengerInstance.Send(new CloseFlyoutMessage());
         }
 
-        public ICommand ExportButtonCommand => new RelayCommand(HandleExport);
+        private void HandleEditButton()
+        {
+            MessengerInstance.Send(new OpenFlyoutMessage(new EditBookViewModel(bookNode, uowFactory, Properties)));
+        }
 
         private void HandleExport()
         {
@@ -194,23 +196,118 @@ namespace Valyreon.Elib.Wpf.ViewModels.Flyouts
             }
             catch (Exception)
             {
-                MessengerInstance.Send(new ShowDialogMessage("Error Notification", "Something went wrong while exporting the file."));
+                MessengerInstance.Send(new ShowNotificationMessage("Something went wrong while exporting the file.", NotificationType.Error));
             }
         }
 
-        public ICommand ShowFileInfoCommand => new RelayCommand(HandleShowFileInfo);
+        private void HandleKeyMessage(KeyPressedMessage message)
+        {
+            if (message.Key == Key.Left)
+            {
+                HandlePreviousBook();
+            }
+            else if (message.Key == Key.Right)
+            {
+                HandleNextBook();
+            }
+        }
+
+        private async void HandleNextBook()
+        {
+            if (bookNode.Next == null)
+            {
+                return;
+            }
+
+            bookNode = bookNode.Next;
+            Book = bookNode.Value;
+            await ReloadCollections();
+            UpdateNavigationState();
+        }
+
+        private void HandleOpenBook()
+        {
+            var psi = new ProcessStartInfo
+            {
+                FileName = $@"""{Book.Path}""",
+                // UseShellExecute set to true in order to use ShellExecute instead of the default CreateProcess to open a file.
+                UseShellExecute = true
+            };
+
+            Process.Start(psi);
+        }
+
+        private async void HandlePreviousBook()
+        {
+            if (bookNode.Previous == null)
+            {
+                return;
+            }
+
+            bookNode = bookNode.Previous;
+            Book = bookNode.Value;
+            await ReloadCollections();
+            UpdateNavigationState();
+        }
+
+        private async void HandleRefreshSuggestedCollections(string token)
+        {
+            if (allUserCollections == null)
+            {
+                await ReloadCollections();
+            }
+
+            var suggestions = allUserCollections.Where(c => !Book.Collections.Select(x => x.Tag).Contains(c.Tag) && c.Tag.ToLowerInvariant().Contains(token))
+                .Take(4);
+            CollectionSuggestions = new ObservableCollection<ObservableEntity>(suggestions.Cast<ObservableEntity>());
+        }
 
         private void HandleShowFileInfo()
         {
-            var x = EbookParserFactory.Create(Book.Path).Parse();
-
             var builder = new StringBuilder("");
 
             builder.Append("File path: ").AppendLine(Book.Path);
-            builder.Append("ISBN: ").AppendLine(x.Isbn);
-            builder.Append("Publisher: ").AppendLine(x.Publisher);
 
-            MessengerInstance.Send(new ShowDialogMessage("File Information", builder.ToString()));
+            var strCheck = (string str) => string.IsNullOrWhiteSpace(str) ? "N/A" : str;
+
+            if (File.Exists(Book.Path))
+            {
+                var x = EbookParserFactory.Create(Book.Path).Parse();
+                builder.Append("ISBN: ").AppendLine(strCheck(x.Isbn))
+                    .Append("Publisher: ").AppendLine(strCheck(x.Publisher));
+            }
+
+            var viewModel = new TextMessageDialogViewModel("File Information", builder.ToString());
+            MessengerInstance.Send(new ShowDialogMessage(viewModel));
+        }
+
+        private async Task ReloadCollections()
+        {
+            using var uow = await uowFactory.CreateAsync();
+            allUserCollections = await uow.CollectionRepository.GetAllAsync();
+        }
+
+        private void RemoveCollection(UserCollection collection)
+        {
+            Book.Collections.Remove(collection);
+
+            Task.Run(async () =>
+            {
+                using var uow = await uowFactory.CreateAsync();
+                await uow.CollectionRepository.RemoveCollectionForBookAsync(collection, Book.Id);
+                if (await uow.CollectionRepository.CountBooksInUserCollectionAsync(collection.Id) == 0)
+                {
+                    await uow.CollectionRepository.DeleteAsync(collection);
+                    MessengerInstance.Send(new RefreshSidePaneCollectionsMessage());
+                }
+                uow.Commit();
+            });
+        }
+
+        private void UpdateNavigationState()
+        {
+            CanGoNext = bookNode.Next != null;
+            CanGoPrevious = bookNode.Previous != null;
         }
     }
 }

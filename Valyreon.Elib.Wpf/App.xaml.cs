@@ -1,10 +1,12 @@
-using System.Threading.Tasks;
 using System;
-using System.Windows;
-using Valyreon.Elib.DataLayer;
-using Valyreon.Elib.Wpf.Models;
-using System.Text;
 using System.IO;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using Valyreon.Elib.Wpf.Models;
+using Valyreon.Elib.Wpf.ViewModels.Windows;
+using Valyreon.Elib.Wpf.Views.Windows;
 
 namespace Valyreon.Elib.Wpf
 {
@@ -13,18 +15,55 @@ namespace Valyreon.Elib.Wpf
     /// </summary>
     public partial class App : Application
     {
-        public static UnitOfWorkFactory UnitOfWorkFactory { get; } = new UnitOfWorkFactory(ApplicationData.DatabasePath);
+#if TEST
+        [DllImport("Kernel32")]
+        public static extern void AllocConsole();
+
+        [DllImport("Kernel32", SetLastError = true)]
+        public static extern void FreeConsole();
+#endif
+
+        private static Mutex _mutex = null;
+        private bool _isMutexOwner = false;
 
         private void OnStartup(object sender, StartupEventArgs e)
         {
+            _mutex = new Mutex(true, GetType().Namespace.ToString(), out _isMutexOwner);
+
+            if (!_isMutexOwner)
+            {
+                Current.Shutdown();
+            }
+
             ApplicationData.InitializeAppData();
 
             SetupExceptionHandling();
+
+#if TEST
+            AllocConsole();
+#endif
+            //Current.Resources["AccentColorBrush"] = (SolidColorBrush)new BrushConverter().ConvertFrom("#ffaacc");
         }
 
         private void OnExit(object sender, ExitEventArgs e)
         {
+#if TEST
+            FreeConsole();
+#endif
+            foreach (Window window in Current.Windows)
+            {
+                if (window is TheWindow)
+                {
+                    var viewModel = window.DataContext as TheWindowViewModel;
+                    window.DataContext = null;
+                    viewModel.Dispose();
+                }
+            }
 
+            if (_isMutexOwner)
+            {
+                _mutex.ReleaseMutex();
+            }
         }
 
         private void SetupExceptionHandling()
@@ -68,12 +107,17 @@ namespace Valyreon.Elib.Wpf
             var timestamp = DateTime.UtcNow;
             var stringBuilder = new StringBuilder();
 
-            stringBuilder.AppendLine(message);
-            stringBuilder.AppendLine();
-            stringBuilder.AppendLine(exception.ToString());
+            stringBuilder.AppendLine(message)
+                .AppendLine()
+                .AppendLine(exception.ToString());
 
-            var logPath = Path.Combine(ApplicationData.LogFolderPath, $"{timestamp:s}_{exception.GetType().Name}.txt");
+            var logPath = Path.Combine(ApplicationData.LogFolderPath, $"{timestamp:yyyyMMddTHHmmssfff}_{exception.GetType().Name}.txt");
             File.WriteAllText(logPath, stringBuilder.ToString());
+
+#if TEST
+            Console.WriteLine(exception.ToString());
+            Console.WriteLine("++++++++++++++++++++++++");
+#endif
         }
     }
 }

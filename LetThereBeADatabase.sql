@@ -1,5 +1,5 @@
 --
--- File generated with SQLiteStudio v3.2.1 on Sun Aug 20 03:10:10 2023
+-- File generated with SQLiteStudio v3.2.1 on Mon Sep 11 22:49:12 2023
 --
 -- Text encoding used: System
 --
@@ -35,9 +35,11 @@ CREATE TABLE Books (
                                    DEFAULT (false),
     CoverId        INTEGER         REFERENCES Covers (Id),
     Format         VARCHAR (10)    NOT NULL,
-    Signature      VARCHAR (64)    NOT NULL,
+    Signature      VARCHAR (64)    NOT NULL
+                                   UNIQUE,
     Path           VARCHAR (32767) NOT NULL,
-    Description    VARCHAR (3000) 
+    Description    VARCHAR (3000),
+    ISBN           VARCHAR (13) 
 );
 
 
@@ -86,6 +88,36 @@ CREATE TABLE UserCollections (
 -- Index: Author_Book_BookId_Index
 CREATE INDEX Author_Book_BookId_Index ON AuthorBooks (
     BookId
+);
+
+
+-- Index: IdIndex
+CREATE UNIQUE INDEX IdIndex ON Books (
+    Id
+);
+
+
+-- Index: NameIndex
+CREATE INDEX NameIndex ON Authors (
+    Name
+);
+
+
+-- Index: SeriesNameIndex
+CREATE INDEX SeriesNameIndex ON Series (
+    Name
+);
+
+
+-- Index: TagIndex
+CREATE INDEX TagIndex ON UserCollections (
+    Tag
+);
+
+
+-- Index: TitleIndex
+CREATE INDEX TitleIndex ON Books (
+    Title
 );
 
 
@@ -167,23 +199,46 @@ END;
 
 -- View: AuthorId_Book_View
 CREATE VIEW AuthorId_Book_View AS
-    SELECT *
-      FROM (
-               SELECT AuthorBooks.AuthorId,
-                      Books.Id,
-                      Books.Title,
-                      Books.Description,
-                      Books.IsFavorite,
-                      Books.IsRead,
-                      Books.NumberInSeries,
-                      Books.SeriesId,
-                      Books.Signature,
-                      Books.Format,
-                      Books.Path
-                 FROM Books
-                      INNER JOIN
-                      AuthorBooks ON Books.Id = AuthorBooks.BookId
-           );
+    SELECT AuthorBooks.AuthorId,
+           Books.Id,
+           Books.Title,
+           Books.Description,
+           Books.IsFavorite,
+           Books.IsRead,
+           Books.NumberInSeries,
+           Books.SeriesId,
+           Books.Signature,
+           Books.Format,
+           Books.Path,
+           Books.ISBN
+      FROM Books
+           INNER JOIN
+           AuthorBooks ON Books.Id = AuthorBooks.BookId;
+
+
+-- View: Authors_BookCount_Collections_View
+CREATE VIEW Authors_BookCount_Collections_View AS
+    SELECT DISTINCT a.Id,
+                    a.Name,
+                    a.BookCount,
+                    c.Id AS CollectionId,
+                    c.Tag
+      FROM Authors_BookCount_View a
+           JOIN
+           AuthorBooks b ON a.Id = b.AuthorId
+           JOIN
+           BookId_Collection_View c ON b.BookId = c.BookId;
+
+
+-- View: Authors_BookCount_View
+CREATE VIEW Authors_BookCount_View AS
+    SELECT a.Id,
+           a.Name,
+           COUNT( * ) AS BookCount
+      FROM Authors a
+           JOIN
+           AuthorBooks ba ON a.Id = ba.AuthorId
+     GROUP BY a.Name;
 
 
 -- View: Book_Author_Join
@@ -198,6 +253,7 @@ CREATE VIEW Book_Author_Join AS
            AuthorId_Book_View.Signature,
            AuthorId_Book_View.Format,
            AuthorId_Book_View.Path,
+           AuthorId_Book_View.ISBN,
            Authors.Name AS AuthorName
       FROM AuthorId_Book_View
            INNER JOIN
@@ -217,6 +273,7 @@ CREATE VIEW Book_Series_Join AS
            Books.Signature,
            Books.Format,
            Books.Path,
+           Books.ISBN,
            Series.Name AS SeriesName
       FROM Books
            LEFT JOIN
@@ -225,49 +282,52 @@ CREATE VIEW Book_Series_Join AS
 
 -- View: BookId_Author_View
 CREATE VIEW BookId_Author_View AS
-    SELECT *
-      FROM (
-               SELECT AuthorBooks.BookId,
-                      Authors.Id,
-                      Authors.Name
-                 FROM Authors
-                      INNER JOIN
-                      AuthorBooks ON Authors.Id = AuthorBooks.AuthorId
-           );
+    SELECT AuthorBooks.BookId,
+           Authors.Id,
+           Authors.Name
+      FROM Authors
+           INNER JOIN
+           AuthorBooks ON Authors.Id = AuthorBooks.AuthorId;
 
 
 -- View: BookId_Collection_View
 CREATE VIEW BookId_Collection_View AS
-    SELECT *
-      FROM (
-               SELECT UserCollectionBooks.BookId,
-                      UserCollections.Id,
-                      UserCollections.Tag
-                 FROM UserCollections
-                      INNER JOIN
-                      UserCollectionBooks ON UserCollections.Id = UserCollectionBooks.UserCollectionId
-           );
+    SELECT UserCollectionBooks.BookId,
+           UserCollections.Id,
+           UserCollections.Tag
+      FROM UserCollections
+           INNER JOIN
+           UserCollectionBooks ON UserCollections.Id = UserCollectionBooks.UserCollectionId;
 
 
 -- View: CollectionId_Book_View
 CREATE VIEW CollectionId_Book_View AS
-    SELECT *
-      FROM (
-               SELECT UserCollectionBooks.UserCollectionId AS CollectionId,
-                      Books.Id,
-                      Books.Title,
-                      Books.Description,
-                      Books.IsFavorite,
-                      Books.IsRead,
-                      Books.NumberInSeries,
-                      Books.SeriesId,
-                      Books.Signature,
-                      Books.Format,
-                      Books.Path
-                 FROM Books
-                      INNER JOIN
-                      UserCollectionBooks ON Books.Id = UserCollectionBooks.BookId
-           );
+    SELECT UserCollectionBooks.UserCollectionId AS CollectionId,
+           Books.Id,
+           Books.Title,
+           Books.Description,
+           Books.IsFavorite,
+           Books.IsRead,
+           Books.NumberInSeries,
+           Books.SeriesId,
+           Books.Signature,
+           Books.Format,
+           Books.Path,
+           Books.ISBN
+      FROM Books
+           INNER JOIN
+           UserCollectionBooks ON Books.Id = UserCollectionBooks.BookId;
+
+
+-- View: Collections_BookCount_View
+CREATE VIEW Collections_BookCount_View AS
+    SELECT c.Id,
+           c.Tag,
+           COUNT( * ) AS BookCount
+      FROM UserCollections c
+           JOIN
+           UserCollectionBooks cb ON c.Id = cb.UserCollectionId
+     GROUP BY c.Tag;
 
 
 -- View: Full_Join
@@ -286,6 +346,7 @@ CREATE VIEW Full_Join AS
            X.Signature,
            X.Format,
            X.Path,
+           X.ISBN,
            Tag,
            BookId_Collection_View.Id AS CollectionId
       FROM (
@@ -302,7 +363,8 @@ CREATE VIEW Full_Join AS
                       Name AS AuthorName,
                       Signature,
                       Format,
-                      Path
+                      Path,
+                      ISBN
                  FROM Book_Series_Join
                       INNER JOIN
                       BookId_Author_View ON Book_Series_Join.Id = BookId_Author_View.BookId
@@ -310,6 +372,31 @@ CREATE VIEW Full_Join AS
            AS X
            LEFT JOIN
            BookId_Collection_View ON BookId_Collection_View.BookId = X.Id;
+
+
+-- View: Series_BookCount_Collections_View
+CREATE VIEW Series_BookCount_Collections_View AS
+    SELECT DISTINCT a.Id,
+                    a.Name,
+                    a.BookCount,
+                    c.Id AS CollectionId,
+                    c.Tag
+      FROM Series_BookCount_View a
+           JOIN
+           Books b ON a.Id = b.SeriesId
+           JOIN
+           BookId_Collection_View c ON b.Id = c.BookId;
+
+
+-- View: Series_BookCount_View
+CREATE VIEW Series_BookCount_View AS
+    SELECT c.Id,
+           c.Name,
+           COUNT( * ) AS BookCount
+      FROM Series c
+           JOIN
+           Books b ON c.Id = b.SeriesId
+     GROUP BY c.Name;
 
 
 COMMIT TRANSACTION;

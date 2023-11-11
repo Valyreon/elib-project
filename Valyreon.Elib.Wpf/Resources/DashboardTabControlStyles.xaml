@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:Components="clr-namespace:Valyreon.Elib.Wpf.CustomComponents">
     <Style x:Key="DashboardTabItemStyle" TargetType="{x:Type TabItem}">
-        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Background" Value="#222" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Margin" Value="0" />
         <Setter Property="MinWidth" Value="100" />
@@ -14,58 +14,60 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TabItem}">
+
                     <Grid
-                        x:Name="PART_Ripple"
-                        Margin="0"
-                        Background="{TemplateBinding Background}"
-                        SnapsToDevicePixels="True">
-                        <Grid
-                            x:Name="PART_Grid"
+                        x:Name="PART_Grid"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        Background="{TemplateBinding Background}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="7" />
+                        </Grid.RowDefinitions>
+                        <ContentPresenter
+                            x:Name="PART_HeaderContent"
+                            Grid.Row="0"
+                            Margin="0"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            ContentSource="Header"
+                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                        <Rectangle
+                            x:Name="PART_Selector"
+                            Grid.Row="1"
                             HorizontalAlignment="Stretch"
-                            VerticalAlignment="Stretch">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*" />
-                                <RowDefinition Height="4" />
-                            </Grid.RowDefinitions>
-                            <ContentPresenter
-                                x:Name="PART_HeaderContent"
-                                Grid.Row="0"
-                                Margin="{TemplateBinding Padding}"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                ContentSource="Header"
-                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
-                            <Rectangle
-                                x:Name="PART_Selector"
-                                Grid.Row="1"
-                                HorizontalAlignment="Stretch"
-                                Fill="{StaticResource AccentColorBrush}"
-                                Visibility="Collapsed" />
-                        </Grid>
+                            Fill="{StaticResource AccentColorBrush}"
+                            Visibility="Collapsed" />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsSelected" Value="True">
                             <Trigger.Setters>
                                 <Setter TargetName="PART_Selector" Property="Visibility" Value="Visible" />
-                                <Setter Property="Background" Value="#252525" />
+                                <Setter Property="Background" Value="#333" />
                             </Trigger.Setters>
                         </Trigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
-                                <Condition SourceName="PART_Ripple" Property="IsMouseOver" Value="True" />
                                 <Condition Property="IsSelected" Value="False" />
                             </MultiTrigger.Conditions>
                             <MultiTrigger.Setters>
-                                <Setter Property="Background" Value="#252525" />
+                                <Setter Property="Background" Value="#222" />
                                 <Setter TargetName="PART_Selector" Property="Visibility" Value="Visible" />
                                 <Setter TargetName="PART_Selector" Property="Fill" Value="#222222" />
                             </MultiTrigger.Setters>
                         </MultiTrigger>
-                        <Trigger SourceName="PART_Ripple" Property="IsMouseOver" Value="True">
-                            <Trigger.Setters>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsSelected" Value="False" />
+                                <Condition Property="IsMouseOver" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <MultiTrigger.Setters>
                                 <Setter Property="Cursor" Value="Hand" />
-                            </Trigger.Setters>
-                        </Trigger>
+                                <Setter Property="Background" Value="#2e2e2e" />
+                                <Setter TargetName="PART_Selector" Property="Visibility" Value="Visible" />
+                                <Setter TargetName="PART_Selector" Property="Fill" Value="#999" />
+                            </MultiTrigger.Setters>
+                        </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

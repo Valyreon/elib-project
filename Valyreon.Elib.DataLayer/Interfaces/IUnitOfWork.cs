@@ -4,16 +4,16 @@ namespace Valyreon.Elib.DataLayer.Interfaces
 {
     public interface IUnitOfWork : IDisposable
     {
-        IBookRepository BookRepository { get; }
-        ISeriesRepository SeriesRepository { get; }
-        ICollectionRepository CollectionRepository { get; }
         IAuthorRepository AuthorRepository { get; }
+        IBookRepository BookRepository { get; }
+        ICollectionRepository CollectionRepository { get; }
         ICoverRepository CoverRepository { get; }
         IQuoteRepository QuoteRepository { get; }
-
-        void Truncate();
+        ISeriesRepository SeriesRepository { get; }
 
         void Commit();
+
+        void Truncate();
 
         void Vacuum();
     }

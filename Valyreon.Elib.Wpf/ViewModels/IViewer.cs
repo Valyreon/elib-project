@@ -1,21 +1,18 @@
 using System;
-using System.Threading.Tasks;
-using Valyreon.Elib.DataLayer;
+using Valyreon.Elib.DataLayer.Filters;
 
 namespace Valyreon.Elib.Wpf.ViewModels
 {
-    public interface IViewer
+    public interface IViewer : IDisposable
     {
-        public abstract string Caption { get; set; }
+        Action Back { get; set; }
 
-        public abstract FilterParameters Filter { get; }
+        string Caption { get; set; }
 
-        public abstract void Refresh();
+        Func<IViewer> GetCloneFunction();
 
-        public abstract Task<IViewer> Search(SearchParameters searchOptions);
+        IFilterParameters GetFilter();
 
-        public abstract Action Back { get; set; }
-
-        public abstract void Clear();
+        void Refresh();
     }
 }

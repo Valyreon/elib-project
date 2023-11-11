@@ -1,108 +1,52 @@
-<MetroControls:MetroWindow
+<Window
     x:Class="Valyreon.Elib.Wpf.Views.Windows.TheWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:Components="clr-namespace:Valyreon.Elib.Wpf.CustomComponents"
     xmlns:ControlViewModels="clr-namespace:Valyreon.Elib.Wpf.ViewModels.Controls"
     xmlns:ControlViews="clr-namespace:Valyreon.Elib.Wpf.Views.Controls"
-    xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
-    xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
-    xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-    Title="ELib"
-    MinWidth="1100"
-    MinHeight="800"
-    Dialog:DialogParticipation.Register="{Binding}"
+    Title="Elib"
+    MinWidth="1170"
+    MinHeight="650"
     BorderBrush="{StaticResource AccentColorBrush}"
     FontFamily="Segoe UI Semibold"
-    IconBitmapScalingMode="HighQuality"
-    IconEdgeMode="Aliased"
-    KeepBorderOnMaximize="True"
     Left="0"
-    NonActiveBorderBrush="{StaticResource AccentColorBrush}"
-    NonActiveGlowBrush="{StaticResource AccentColorBrush}"
     ResizeMode="CanResize"
-    ShowIconOnTitleBar="True"
-    ShowTitleBar="True"
+    SnapsToDevicePixels="True"
+    Style="{StaticResource ElibWindowStyle}"
     TextOptions.TextFormattingMode="Ideal"
-    TextOptions.TextHintingMode="Auto"
-    TextOptions.TextRenderingMode="ClearType"
-    TitleAlignment="Center"
+    TextOptions.TextHintingMode="Fixed"
+    TextOptions.TextRenderingMode="Auto"
     Top="0"
     WindowStartupLocation="CenterScreen"
-    WindowTitleBrush="#222222"
-    mc:Ignorable="d"
-    >
+    mc:Ignorable="d">
     <Window.InputBindings>
         <KeyBinding Key="Esc" Command="{Binding EscKeyCommand}" />
         <KeyBinding Key="F5" Command="{Binding RefreshViewCommand}" />
         <KeyBinding Key="Backspace" Command="{Binding EscKeyCommand}" />
         <KeyBinding Key="BrowserBack" Command="{Binding EscKeyCommand}" />
+        <KeyBinding Key="Left" Command="{Binding LeftKeyCommand}" />
+        <KeyBinding Key="Right" Command="{Binding RightKeyCommand}" />
     </Window.InputBindings>
 
     <Window.Resources>
         <ResourceDictionary Source="WindowResources.xaml" />
     </Window.Resources>
 
-    <MetroControls:MetroWindow.Flyouts>
-        <MetroControls:FlyoutsControl>
-            <MetroControls:Flyout
-                Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MetroWindow}, Path=ActualWidth, Mode=OneWay}"
-                Margin="0.01,0,0,0"
-                AnimateOpacity="True"
-                CloseCommand="{Binding CloseDetailsCommand}"
-                Focusable="True"
-                IsOpen="{Binding IsBookDetailsFlyoutOpen}"
-                Position="Right">
-                <MetroControls:Flyout.Background>
-                    <SolidColorBrush Opacity="0.97" Color="#222222" />
-                </MetroControls:Flyout.Background>
-                <ContentControl Content="{Binding FlyoutControl}" />
-            </MetroControls:Flyout>
-        </MetroControls:FlyoutsControl>
-    </MetroControls:MetroWindow.Flyouts>
-
-
-    <Grid Background="#222222">
+    <Grid Background="#222">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        <Grid HorizontalAlignment="Right"
-              VerticalAlignment="Top"
-              Panel.ZIndex="10000"
-              Margin="10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="200" />
-                <ColumnDefinition Width="5" />
-                <ColumnDefinition Width="42" />
-            </Grid.ColumnDefinitions>
-            <Button
-                Grid.Column="0"
-                Height="30"
-                Command="{Binding ScanForNewContentCommand}"
-                Content="SCAN FOR NEW CONTENT"
-                Focusable="False"
-                FontSize="12"
-                Style="{StaticResource MahApps.Styles.Button}"
-                ToolTip="Scan for new books in folders specified in Settings."
-             />
-            <Components:SymbolButton Icon="{x:Static iconPacks:PackIconFontAwesomeKind.CogSolid}"
-                                     Grid.Column="2"
-                                     IconSize="26" 
-                                     Foreground="White"
-                         Command="{Binding OpenSettingsCommand}"></Components:SymbolButton>
-        </Grid>
-        
+
         <Components:TabControlWithCache
             Grid.Row="0"
             Grid.Column="0"
             Margin="0"
-            MetroControls:TabControlHelper.Transition="Normal"
             DisplayMemberPath="Caption"
             ItemsSource="{Binding Tabs, UpdateSourceTrigger=PropertyChanged}"
             SelectedItem="{Binding SelectedTab, UpdateSourceTrigger=PropertyChanged}"
@@ -114,10 +58,87 @@
                 <DataTemplate DataType="{x:Type ControlViewModels:QuotesTabViewModel}">
                     <ControlViews:QuotesTabControl />
                 </DataTemplate>
-                <!--<DataTemplate DataType="{x:Type ControlViewModels:SettingsTabViewModel}">
+                <DataTemplate DataType="{x:Type ControlViewModels:SettingsTabViewModel}">
                     <ControlViews:SettingsTabControl />
-                </DataTemplate>-->
+                </DataTemplate>
             </TabControl.Resources>
         </Components:TabControlWithCache>
+
+        <ContentControl
+            x:Name="FlyoutContentControl"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            Panel.ZIndex="80000"
+            Content="{Binding FlyoutControl}" />
+
+        <Grid
+            x:Name="DialogGrid"
+            Panel.ZIndex="90000"
+            IsEnabled="{Binding IsDialogOpen}"
+            IsEnabledChanged="DialogGrid_IsEnabledChanged"
+            Opacity="0"
+            Visibility="Collapsed">
+            <Grid.Background>
+                <SolidColorBrush Opacity="0.8" Color="#222" />
+            </Grid.Background>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <Grid
+                Grid.Row="1"
+                Grid.ColumnSpan="3"
+                Background="White">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition
+                        Width="Auto"
+                        MinWidth="500"
+                        MaxWidth="600" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <ContentControl
+                    x:Name="DialogContentControl"
+                    Grid.Column="1"
+                    Margin="0,20"
+                    Content="{Binding DialogControl, Mode=TwoWay}" />
+            </Grid>
+        </Grid>
+
+        <Grid Panel.ZIndex="9000000" Visibility="{Binding IsGlobalLoaderOpen, Converter={StaticResource BoolToVisibilityConverter}}">
+            <Components:Spinner Width="150" Height="150" />
+            <Grid.Background>
+                <SolidColorBrush Opacity="0.8" Color="#222222" />
+            </Grid.Background>
+        </Grid>
+
+        <Grid
+            x:Name="NotificationGrid"
+            Height="35"
+            Margin="0,0,0,-36"
+            VerticalAlignment="Bottom"
+            Panel.ZIndex="100000"
+            Background="{Binding Type, Converter={StaticResource NotificationTypeToBrushConverter}}"
+            DataContext="{Binding CurrentNotificationMessage, UpdateSourceTrigger=PropertyChanged}"
+            DataContextChanged="NotificationGrid_DataContextChanged"
+            Focusable="False">
+            <TextBlock
+                x:Name="NotificationText"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                FontSize="14"
+                Foreground="White"
+                Text="{Binding Text}" />
+            <Grid.RenderTransform>
+                <TranslateTransform X="0" Y="0" />
+            </Grid.RenderTransform>
+        </Grid>
     </Grid>
-</MetroControls:MetroWindow>
+</Window>

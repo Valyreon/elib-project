@@ -1,14 +1,3 @@
-using System;
-using System.IO;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Valyreon.Elib.DataLayer;
-using Valyreon.Elib.Domain;
-using Valyreon.Elib.EBookTools;
-using Valyreon.Elib.Wpf.Extensions;
-using Valyreon.Elib.Wpf.Models;
-using Valyreon.Elib.Wpf.Models.Options;
-
 namespace Valyreon.Elib.Tests
 {
     /*[TestClass]

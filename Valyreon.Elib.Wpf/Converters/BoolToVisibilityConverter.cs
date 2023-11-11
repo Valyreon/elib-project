@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
@@ -21,9 +21,18 @@ namespace Valyreon.Elib.Wpf.Converters
         public object Convert(object value, Type targetType, object parameter,
             CultureInfo culture)
         {
-            return targetType != typeof(Visibility)
-                ? throw new InvalidOperationException("The target must be a VisibilityProperty")
-                : (bool)value ? Visibility.Visible : (object)Visibility.Collapsed;
+            if (targetType != typeof(Visibility))
+            {
+                throw new InvalidOperationException("The target must be a VisibilityProperty");
+            }
+            else if ((bool)value)
+            {
+                return Visibility.Visible;
+            }
+            else
+            {
+                return (object)Visibility.Collapsed;
+            }
         }
 
         /// <summary>

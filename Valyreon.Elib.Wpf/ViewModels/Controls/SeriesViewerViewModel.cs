@@ -1,34 +1,49 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Valyreon.Elib.DataLayer;
+using Valyreon.Elib.DataLayer.Filters;
+using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.Mvvm;
 using Valyreon.Elib.Mvvm.Messaging;
+using Valyreon.Elib.Wpf.BindingItems;
 using Valyreon.Elib.Wpf.Messages;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Controls
 {
     public class SeriesViewerViewModel : ViewModelBase, IViewer
     {
+        private readonly IUnitOfWorkFactory uowFactory;
+        private Action backAction;
+        private string caption = "Series";
+        private int collectionComboBoxSelectedIndex;
+        private bool isAscendingSortDirection;
+        private volatile bool isLoading;
         private bool isResultEmpty;
-        private string caption;
+        private string searchText;
+        private ObservableCollection<BookSeries> series;
+        private int sortComboBoxSelectedIndex;
 
-        public ObservableCollection<BookSeries> Series { get; set; } = new ObservableCollection<BookSeries>();
-
-        public ICommand LoadCommand => new RelayCommand(LoadMore);
-        public ICommand BackCommand => new RelayCommand(Back);
-
-        public string Caption
+        public SeriesViewerViewModel(Filter filter, IUnitOfWorkFactory uowFactory)
         {
-            get => caption;
-            set => Set(() => Caption, ref caption, value);
+            Filter = filter;
+            this.uowFactory = uowFactory;
+            MessengerInstance.Register<RefreshCurrentViewMessage>(this, _ =>
+            {
+                if (!isLoading)
+                {
+                    Refresh();
+                }
+            });
+
+            sortComboBoxSelectedIndex = Filter.SortByName ? 0 : 1;
+            isAscendingSortDirection = Filter.Ascending;
+            searchText = Filter.SearchText;
         }
 
-        public FilterParameters Filter => null;
-        private Action backAction;
         public Action Back
         {
             get => backAction;
@@ -39,6 +54,29 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             }
         }
 
+        public ICommand BackCommand => new RelayCommand(Back);
+
+        public string Caption
+        {
+            get => caption;
+            set => Set(() => Caption, ref caption, value);
+        }
+
+        public IEnumerable<FilterComboBoxOption<Filter>> CollectionComboBoxOptions { set; get; }
+
+        public int CollectionComboBoxSelectedIndex
+        {
+            get => collectionComboBoxSelectedIndex;
+            set
+            {
+                Set(() => CollectionComboBoxSelectedIndex, ref collectionComboBoxSelectedIndex, value);
+                Filter = CollectionComboBoxOptions.ElementAt(value).TransformFilter(Filter);
+            }
+        }
+
+        public Filter Filter { get; set; }
+        public ICommand GoToSeries => new RelayCommand<BookSeries>(a => Messenger.Default.Send(new SeriesSelectedMessage(a)));
+        public bool IsAscendingSortDirection { get => isAscendingSortDirection; set => Set(() => IsAscendingSortDirection, ref isAscendingSortDirection, value); }
         public bool IsBackEnabled => Back != null;
 
         public bool IsResultEmpty
@@ -47,45 +85,104 @@ namespace Valyreon.Elib.Wpf.ViewModels.Controls
             set => Set(() => IsResultEmpty, ref isResultEmpty, value);
         }
 
-        public SeriesViewerViewModel()
+        public ICommand RefreshCommand => new RelayCommand(Refresh);
+
+        public string SearchText
         {
-            MessengerInstance.Register<RefreshCurrentViewMessage>(this, _ => Refresh());
+            get => searchText;
+            set
+            {
+                Set(() => SearchText, ref searchText, value);
+                Filter = Filter with { SearchText = value };
+                Refresh();
+            }
         }
+
+        public ObservableCollection<BookSeries> Series { get => series; set => Set(() => Series, ref series, value); }
+        public IEnumerable<FilterComboBoxOption<Filter>> SortComboBoxOptions { get; } = FilterComboBoxOption<Filter>.AuthorSortFilterOptions;
+
+        public int SortComboBoxSelectedIndex
+        {
+            get => sortComboBoxSelectedIndex;
+            set
+            {
+                Set(() => SortComboBoxSelectedIndex, ref sortComboBoxSelectedIndex, value);
+                Filter = SortComboBoxOptions.ElementAt(value).TransformFilter(Filter);
+            }
+        }
+
+        public ICommand SortDirectionChangedCommand => new RelayCommand<bool>(HandleSortDirectionChange);
 
         public void Clear()
         {
             Series.Clear();
         }
 
+        public void Dispose()
+        {
+            MessengerInstance.Unregister(this);
+        }
+
+        public Func<IViewer> GetCloneFunction()
+        {
+            var f = Filter with { };
+            return () => new SeriesViewerViewModel(f, uowFactory);
+        }
+
+        public IFilterParameters GetFilter()
+        {
+            return Filter;
+        }
+
         public void Refresh()
         {
-            Series.Clear();
-            LoadMore();
+            isLoading = true;
+            LoadSeries();
         }
 
-        public Task<IViewer> Search(SearchParameters searchOptions)
+        private void HandleSortDirectionChange(bool isAscending)
         {
-            throw new NotImplementedException();
+            Filter = Filter with { Ascending = isAscending };
+            Refresh();
         }
 
-        public ICommand GoToSeries => new RelayCommand<BookSeries>(a => Messenger.Default.Send(new SeriesSelectedMessage(a)));
-
-        private async void LoadMore()
+        private async void LoadSeries()
         {
-            using var uow = await App.UnitOfWorkFactory.CreateAsync();
-            var x = await uow.SeriesRepository.GetAllAsync();
+            using var uow = await uowFactory.CreateAsync();
 
-            if (!x.Any())
+            await SetupCollectionOptions(uow);
+
+            var result = await uow.SeriesRepository.GetSeriesWithNumberOfBooks(Filter);
+
+            if (!result.Any())
             {
+                Series = new ObservableCollection<BookSeries>();
                 IsResultEmpty = true;
                 return;
             }
 
-            foreach (var item in x)
+            Series = new ObservableCollection<BookSeries>(result);
+            isLoading = false;
+        }
+
+        private async Task SetupCollectionOptions(IUnitOfWork uow)
+        {
+            var collections = await uow.CollectionRepository.GetAllAsync();
+            var collectionOptions = collections.OrderBy(c => c.Tag).Select(c => new FilterComboBoxOption<Filter>
             {
-                item.NumberOfBooks = await uow.SeriesRepository.CountBooksInSeriesAsync(item.Id);
-                Series.Add(item);
-                await Task.Delay(6);
+                Name = c.Tag,
+                TransformFilter = f => f with { CollectionId = c.Id },
+            }).ToList();
+
+            collectionOptions = collectionOptions.Prepend(new FilterComboBoxOption<Filter> { Name = "ALL", TransformFilter = f => f with { CollectionId = null } }).ToList();
+
+            CollectionComboBoxOptions = collectionOptions;
+
+            if (Filter.CollectionId.HasValue && Filter.CollectionId.Value > 0 && collectionComboBoxSelectedIndex == 0)
+            {
+                var selectedCollection = collections.Single(c => c.Id == Filter.CollectionId.Value);
+                var option = collectionOptions.Single(o => o.Name == selectedCollection.Tag);
+                collectionComboBoxSelectedIndex = collectionOptions.IndexOf(option);
             }
         }
     }

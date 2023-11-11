@@ -6,10 +6,8 @@
     xmlns:Behaviors="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:Components="clr-namespace:Valyreon.Elib.Wpf.CustomComponents"
     xmlns:Converters="clr-namespace:Valyreon.Elib.Wpf.Converters"
-    xmlns:MetroControls="http://metro.mahapps.com/winfx/xaml/controls"
-    xmlns:TileComponents="clr-namespace:Valyreon.Elib.Wpf.Themes.CustomComponents.Controls"
+    xmlns:TileComponents1="clr-namespace:Valyreon.Elib.Wpf.Views.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -17,11 +15,6 @@
 
     <UserControl.Resources>
         <ResourceDictionary>
-            <Style x:Key="LargeTileStyle" TargetType="MetroControls:Tile">
-                <Setter Property="TitleFontSize" Value="14" />
-                <Setter Property="Width" Value="164" />
-                <Setter Property="Height" Value="262" />
-            </Style>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../../Resources/BooksTabStyles.xaml" />
                 <ResourceDictionary>
@@ -32,15 +25,15 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
+    <Grid Background="White">
         <Grid>
             <TextBlock
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 FontSize="16"
                 Foreground="Gray"
-                Text="No books matching current conditions."
-                Visibility="{Binding IsResultEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                Text="No books found."
+                Visibility="{Binding IsResultEmpty, Converter={StaticResource BooleanToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}" />
         </Grid>
         <Grid>
             <Grid.RowDefinitions>
@@ -58,120 +51,149 @@
                         Direction="270"
                         Opacity="0.3" />
                 </Border.Effect>
-                <Grid VerticalAlignment="Center">
+
+                <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="60" />
-                        <ColumnDefinition Width="15" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="10" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="10" />
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" MaxWidth="350" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <Border
-                        Grid.Column="0"
-                        BorderBrush="LightGray"
-                        BorderThickness="0,0,1,0">
-                        <Components:SymbolButton
+
+                    <StackPanel Orientation="Horizontal">
+                        <Border
                             Grid.Column="0"
-                            Width="60"
-                            Height="60"
-                            Background="GhostWhite"
-                            Command="{Binding BackCommand}"
+                            BorderBrush="LightGray"
+                            BorderThickness="0,0,1,0"
+                            Visibility="{Binding IsBackEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Components:SymbolButton
+                                Grid.Column="0"
+                                Width="60"
+                                Height="60"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Background="GhostWhite"
+                                Command="{Binding BackCommand}"
+                                Foreground="#484b4e"
+                                IconSize="25"
+                                Image="{StaticResource DarkChevronLeft}"
+                                IsEnabled="{Binding IsBackEnabled}">
+                                <Components:ConditionalEventTrigger.Triggers>
+                                    <Components:ConditionalEventTriggerCollection>
+                                        <Components:ConditionalEventTrigger Condition="{Binding IsBackEnabled}" RoutedEvent="MouseEnter">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <ColorAnimation
+                                                        Storyboard.TargetProperty="Foreground.Color"
+                                                        To="CornflowerBlue"
+                                                        Duration="0:0:0.3" />
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </Components:ConditionalEventTrigger>
+                                        <Components:ConditionalEventTrigger Condition="{Binding IsBackEnabled}" RoutedEvent="MouseLeave">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <ColorAnimation
+                                                        Storyboard.TargetProperty="Foreground.Color"
+                                                        To="#484b4e"
+                                                        Duration="0:0:0.3" />
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </Components:ConditionalEventTrigger>
+                                    </Components:ConditionalEventTriggerCollection>
+                                </Components:ConditionalEventTrigger.Triggers>
+                            </Components:SymbolButton>
+                        </Border>
+
+                        <TextBlock
+                            Grid.Column="2"
+                            Margin="15,0,10,0"
+                            VerticalAlignment="Center"
+                            FontSize="24"
                             Foreground="#484b4e"
-                            Icon="{x:Static iconPacks:PackIconFontAwesomeKind.ChevronLeftSolid}"
-                            IconSize="20"
-                            IsEnabled="{Binding IsBackEnabled}">
-                            <Components:ConditionalEventTrigger.Triggers>
-                                <Components:ConditionalEventTriggerCollection>
-                                    <Components:ConditionalEventTrigger Condition="{Binding IsBackEnabled}" RoutedEvent="MouseEnter">
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <ColorAnimation
-                                                    Storyboard.TargetProperty="Foreground.Color"
-                                                    To="CornflowerBlue"
-                                                    Duration="0:0:0.3" />
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </Components:ConditionalEventTrigger>
-                                    <Components:ConditionalEventTrigger Condition="{Binding IsBackEnabled}" RoutedEvent="MouseLeave">
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <ColorAnimation
-                                                    Storyboard.TargetProperty="Foreground.Color"
-                                                    To="#484b4e"
-                                                    Duration="0:0:0.3" />
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </Components:ConditionalEventTrigger>
-                                </Components:ConditionalEventTriggerCollection>
-                            </Components:ConditionalEventTrigger.Triggers>
-                        </Components:SymbolButton>
-                    </Border>
+                            Text="{Binding Caption}" />
+                        <TextBlock
+                            Grid.Column="4"
+                            Margin="0,7,0,0"
+                            VerticalAlignment="Center"
+                            FontSize="14"
+                            FontStyle="Italic"
+                            Foreground="#484b4e"
+                            Text="{Binding SubCaption}" />
+                    </StackPanel>
 
-                    <TextBlock
+                    <Components:ElibTextBox
                         Grid.Column="2"
-                        VerticalAlignment="Center"
-                        FontSize="24"
-                        Foreground="#484b4e"
-                        Text="{Binding Caption}" />
-                    <TextBlock
-                        Grid.Column="4"
-                        Margin="0,7,0,0"
-                        VerticalAlignment="Center"
-                        FontSize="14"
-                        FontStyle="Italic"
-                        Foreground="#484b4e"
-                        Text="{Binding SubCaption}" />
+                        Height="30"
+                        Margin="15,0"
+                        HorizontalAlignment="Stretch"
+                        Placeholder="Search"
+                        Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Delay=300}" />
 
-                    <Grid Grid.Column="8" HorizontalAlignment="Right">
-                        <Grid.CacheMode>
-                            <BitmapCache
-                                EnableClearType="True"
-                                RenderAtScale="1"
-                                SnapsToDevicePixels="False" />
-                        </Grid.CacheMode>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="20" />
-                            <ColumnDefinition Width="auto" />
-                            <ColumnDefinition Width="5" />
-                            <ColumnDefinition Width="auto" />
-                            <ColumnDefinition Width="5" />
-                            <ColumnDefinition Width="auto" />
-                            <ColumnDefinition Width="15" />
-                        </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="3" Orientation="Horizontal">
+                        <TextBlock
+                            Margin="0,0,5,0"
+                            VerticalAlignment="Center"
+                            FontSize="13"
+                            Visibility="{Binding IsSelectedBooksViewer, Converter={StaticResource BooleanToInverseVisibilityConverter}}">
+                            STATUS:
+                        </TextBlock>
+                        <ComboBox
+                            Grid.Column="6"
+                            Width="90"
+                            Margin="0,0,10,0"
+                            DisplayMemberPath="Name"
+                            ItemsSource="{Binding StatusComboBoxOptions}"
+                            SelectedIndex="{Binding StatusComboBoxSelectedIndex, Mode=TwoWay}"
+                            Visibility="{Binding IsSelectedBooksViewer, Converter={StaticResource BooleanToInverseVisibilityConverter}}">
+                            <Behaviors:Interaction.Triggers>
+                                <Behaviors:EventTrigger EventName="SelectionChanged">
+                                    <Behaviors:InvokeCommandAction Command="{Binding RefreshCommand}" />
+                                </Behaviors:EventTrigger>
+                            </Behaviors:Interaction.Triggers>
+                        </ComboBox>
+
+                        <TextBlock
+                            Margin="0,0,5,0"
+                            VerticalAlignment="Center"
+                            FontSize="13">
+                            SORT BY:
+                        </TextBlock>
+                        <ComboBox
+                            MinWidth="120"
+                            Margin="0,0,5,0"
+                            VerticalAlignment="Center"
+                            DisplayMemberPath="Name"
+                            ItemsSource="{Binding SortComboBoxOptions}"
+                            SelectedIndex="{Binding SortComboBoxSelectedIndex, Mode=TwoWay}">
+                            <Behaviors:Interaction.Triggers>
+                                <Behaviors:EventTrigger EventName="SelectionChanged">
+                                    <Behaviors:InvokeCommandAction Command="{Binding RefreshCommand}" />
+                                </Behaviors:EventTrigger>
+                            </Behaviors:Interaction.Triggers>
+                        </ComboBox>
+
+                        <CheckBox
+                            x:Name="sortingDirectionCheckBox"
+                            Margin="0,0,15,0"
+                            Command="{Binding RefreshCommand}"
+                            IsChecked="{Binding IsAscendingSortDirection, Mode=TwoWay}"
+                            Style="{StaticResource SortingCheckbox}" />
 
                         <Button
                             Grid.Column="3"
-                            Height="30"
+                            Width="100"
+                            Margin="0,0,15,0"
                             Command="{Binding RefreshCommand}"
                             Content="REFRESH"
-                            Style="{StaticResource ViewerHeaderButton}"
                             Visibility="{Binding IsSelectedBooksViewer, Converter={StaticResource BooleanToInverseVisibilityConverter}}" />
-
-                        <Grid Grid.Column="1">
-                            <Button
-                                Height="30"
-                                Command="{Binding FilterBooksCommand}"
-                                Content="FILTER"
-                                Style="{StaticResource ViewerHeaderButton}"
-                                Visibility="{Binding IsSelectedBooksViewer, Converter={StaticResource BooleanToInverseVisibilityConverter}}">
-                                <Button.ToolTip>
-                                    <ToolTip>
-                                        Change sort and filter options
-                                    </ToolTip>
-                                </Button.ToolTip>
-                            </Button>
-                        </Grid>
 
                         <Button
                             Grid.Column="3"
-                            Height="30"
+                            Width="100"
+                            Margin="0,0,10,0"
                             Command="{Binding ClearSelectedBooksCommand}"
                             Content="CLEAR"
-                            Style="{StaticResource ViewerHeaderButton}"
                             Visibility="{Binding IsSelectedBooksViewer, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <Button.ToolTip>
                                 <ToolTip>
@@ -182,10 +204,10 @@
 
                         <Button
                             Grid.Column="1"
-                            Height="30"
+                            Width="100"
+                            Margin="0,0,15,0"
                             Command="{Binding ExportSelectedBooksCommand}"
                             Content="EXPORT"
-                            Style="{StaticResource ViewerHeaderButton}"
                             Visibility="{Binding IsSelectedBooksViewer, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <Button.ToolTip>
                                 <ToolTip>
@@ -193,7 +215,7 @@
                                 </ToolTip>
                             </Button.ToolTip>
                         </Button>
-                    </Grid>
+                    </StackPanel>
                 </Grid>
             </Border>
             <ItemsControl
@@ -201,36 +223,33 @@
                 Margin="0,0,0,0"
                 Padding="0,0,0,0"
                 VerticalAlignment="Stretch"
-                ItemsSource="{Binding Books, Mode=OneWay, IsAsync=True}"
+                ItemsSource="{Binding Books, Mode=TwoWay, IsAsync=True}"
                 ScrollViewer.CanContentScroll="True"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                 VirtualizingStackPanel.IsVirtualizing="True"
                 VirtualizingStackPanel.VirtualizationMode="Recycling">
+                <Behaviors:Interaction.Triggers>
+                    <Behaviors:EventTrigger EventName="SizeChanged">
+                        <Behaviors:InvokeCommandAction Command="{Binding SizeChangedCommand}" />
+                    </Behaviors:EventTrigger>
+                </Behaviors:Interaction.Triggers>
                 <ItemsControl.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Export selected" />
-                        <MenuItem Header="Remove selected" />
-                        <Separator />
-                        <MenuItem Header="Select all" />
-                        <MenuItem Header="Unselect all" />
+                        <MenuItem Command="{Binding SelectAllCommand}">
+                            <MenuItem.Header>
+                                <TextBlock Style="{StaticResource MenuHeader}" Text="SELECT ALL" />
+                            </MenuItem.Header>
+                        </MenuItem>
+                        <MenuItem Command="{Binding ClearSelectionCommand}">
+                            <MenuItem.Header>
+                                <TextBlock Style="{StaticResource MenuHeader}" Text="CLEAR SELECTION" />
+                            </MenuItem.Header>
+                        </MenuItem>
                     </ContextMenu>
                 </ItemsControl.ContextMenu>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <TileComponents:BookTileControl
-                            x:Name="bookTile"
-                            Title="{Binding Title}"
-                            AuthorCommand="{Binding DataContext.GoToAuthor, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                            AuthorParameter="{Binding Authors}"
-                            Authors="{Binding AuthorsInfo}"
-                            Cover="{Binding Cover}"
-                            IsSelected="{Binding IsMarked, UpdateSourceTrigger=PropertyChanged}"
-                            SelectCommand="{Binding DataContext.SelectBookCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                            SeriesCommand="{Binding DataContext.GoToSeries, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                            SeriesInfo="{Binding SeriesInfo}"
-                            SeriesParameter="{Binding Series}"
-                            TileCommand="{Binding DataContext.OpenBookDetails, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                            TileParameter="{Binding}" />
+                        <TileComponents1:BookTileControl Margin="5" DataContext="{Binding .}" />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
                 <ItemsControl.Template>
@@ -247,7 +266,7 @@
                                 AttachedProperties:ScrollViewerExtensions.ScrollToBottom="{Binding LoadMoreCommand}"
                                 AttachedProperties:ScrollViewerExtensions.VerticalOffset="{Binding ScrollVertical}"
                                 FocusVisualStyle="{x:Null}"
-                                Focusable="False"
+                                Focusable="True"
                                 VerticalScrollBarVisibility="Auto">
                                 <ItemsPresenter SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
                             </ScrollViewer>

@@ -1,11 +1,11 @@
-using MahApps.Metro.Controls;
+using System.Windows;
 
 namespace Valyreon.Elib.Wpf.Views.Windows
 {
     /// <summary>
     /// Interaction logic for ReaderWindow.xaml
     /// </summary>
-    public partial class ReaderWindow : MetroWindow
+    public partial class ReaderWindow : Window
     {
         public ReaderWindow()
         {
@@ -20,14 +20,14 @@ namespace Valyreon.Elib.Wpf.Views.Windows
             //Browser.Focus();
         }
 
-        private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            //Cef.Shutdown();
-        }
-
         private void Browser_LostFocus(object sender, System.Windows.RoutedEventArgs e)
         {
             //Browser.Focus();
+        }
+
+        private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            //Cef.Shutdown();
         }
     }
 }

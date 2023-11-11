@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.Wpf.Models.Options;
 
@@ -11,13 +10,6 @@ namespace Valyreon.Elib.Wpf.Models
 {
     public class Exporter
     {
-        private readonly IUnitOfWork _uow;
-
-        public Exporter(IUnitOfWork uow)
-        {
-            _uow = uow;
-        }
-
         public static string GenerateName(Book book)
         {
             var fileNameBuilder = new StringBuilder();
@@ -40,14 +32,10 @@ namespace Valyreon.Elib.Wpf.Models
             return Path.GetInvalidFileNameChars().Aggregate(fileName, (current, invalid) => current.Replace(char.ToString(invalid), ""));
         }
 
-        private void ExportBookToFolder(Book book, string destinationFolder)
-        {
-            var fileName = GenerateName(book);
-            File.Copy(book.Path, Path.Combine(destinationFolder, fileName));
-        }
-
         public void ExportBooks(IEnumerable<Book> books, ExporterOptions options, Action<string> progressSet = null)
         {
+            books = books.Where(b => File.Exists(b.Path));
+
             void ExportAllInList(IEnumerable<Book> list, string outPath)
             {
                 foreach (var book in list)
@@ -128,6 +116,12 @@ namespace Valyreon.Elib.Wpf.Models
                     ProcessBySeries(authorGroup, thisAuthorsDestPath);
                 }
             }
+        }
+
+        private void ExportBookToFolder(Book book, string destinationFolder)
+        {
+            var fileName = GenerateName(book);
+            File.Copy(book.Path, Path.Combine(destinationFolder, fileName), true);
         }
     }
 }

@@ -1,11 +1,11 @@
-﻿using MahApps.Metro.Controls.Dialogs;
+using System.Windows.Controls;
 
 namespace Valyreon.Elib.Wpf.Views.Dialogs
 {
     /// <summary>
     /// Interaction logic for FilterOptionsDialog.xaml
     /// </summary>
-    public partial class FilterOptionsDialog : BaseMetroDialog
+    public partial class FilterOptionsDialog : UserControl
     {
         public FilterOptionsDialog()
         {

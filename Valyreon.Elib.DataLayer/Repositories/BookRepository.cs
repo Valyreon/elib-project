@@ -4,7 +4,7 @@ using System.Data;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
-using Valyreon.Elib.DataLayer.Extensions;
+using Valyreon.Elib.DataLayer.Filters;
 using Valyreon.Elib.DataLayer.Interfaces;
 using Valyreon.Elib.Domain;
 
@@ -16,7 +16,68 @@ namespace Valyreon.Elib.DataLayer.Repositories
         {
         }
 
-        private static Tuple<string, DynamicParameters> CreateQueryFromFilter(FilterParameters filter, int? offset, int? pageSize)
+        public Task<int> CountAsync(BookFilter filter)
+        {
+            var queryTuple = CreateQueryFromFilter(filter, null, null);
+
+            var query = $"SELECT COUNT(*) FROM ({queryTuple.Item1});";
+
+            return Connection.QueryFirstAsync<int>(query, queryTuple.Item2, Transaction);
+        }
+
+        public Task<IEnumerable<Book>> FindByAuthorIdAsync(int authorId)
+        {
+            return Connection.QueryAsync<Book>("SELECT * FROM AuthorId_Book_View WHERE AuthorId = @AuthorId", new { AuthorId = authorId }, Transaction);
+        }
+
+        public Task<IEnumerable<Book>> FindByCollectionIdAsync(int collectionId)
+        {
+            return Connection.QueryAsync<Book>(
+                "SELECT * FROM CollectionId_Book_View WHERE CollectionId = @CollectionId",
+                new { CollectionId = collectionId },
+                Transaction);
+        }
+
+        public Task<IEnumerable<Book>> FindBySeriesIdAsync(int seriesId)
+        {
+            return Connection.QueryAsync<Book>("SELECT * FROM Books WHERE SeriesId = @SeriesId", new { SeriesId = seriesId }, Transaction);
+        }
+
+        public Task<IEnumerable<Book>> GetByFilterAsync(BookFilter filter, int? offset = null, int? pageSize = null)
+        {
+            var queryTuple = CreateQueryFromFilter(filter, offset, pageSize);
+            return Connection.QueryAsync<Book>(queryTuple.Item1, queryTuple.Item2, Transaction);
+        }
+
+        public Task<Book> GetByPathAsync(string path)
+        {
+            return Connection.QuerySingleOrDefaultAsync<Book>("SELECT * FROM Books WHERE Path = @Path", new { Path = path }, Transaction);
+        }
+
+        public Task<Book> GetBySignatureAsync(string signature)
+        {
+            return Connection.QuerySingleOrDefaultAsync<Book>("SELECT * FROM Books WHERE Signature = @Signature", new { Signature = signature }, Transaction);
+        }
+
+        public Task<IEnumerable<int>> GetIdsByFilterAsync(BookFilter filter)
+        {
+            var queryTuple = CreateQueryFromFilter(filter, null, null);
+            return Connection.QueryAsync<int>(queryTuple.Item1, queryTuple.Item2, Transaction);
+        }
+
+        public async Task<bool> PathExistsAsync(string path)
+        {
+            var count = await Connection.QueryFirstAsync<int>("SELECT COUNT(*) FROM Books WHERE Path = @Path", new { Path = path }, Transaction);
+            return count > 0;
+        }
+
+        public async Task<bool> SignatureExistsAsync(string signature)
+        {
+            var count = await Connection.QueryFirstAsync<int>("SELECT COUNT(*) FROM Books WHERE Signature = @Signature", new { Signature = signature }, Transaction);
+            return count > 0;
+        }
+
+        private static Tuple<string, DynamicParameters> CreateQueryFromFilter(BookFilter filter, int? offset = null, int? pageSize = null, bool onlyIds = false)
         {
             if (filter == null)
             {
@@ -32,7 +93,7 @@ namespace Valyreon.Elib.DataLayer.Repositories
 
             var parameters = new DynamicParameters();
 
-            var queryBuilder = new StringBuilder(@$"SELECT MIN(Id) AS Id, * FROM Full_Join {(conditionSet ? " WHERE (" : " ")}");
+            var queryBuilder = new StringBuilder(@$"SELECT MIN(Id) AS Id{(onlyIds ? string.Empty : ", *")} FROM Full_Join {(conditionSet ? " WHERE (" : " ")}");
 
             var conditionsAdded = false;
 
@@ -71,27 +132,11 @@ namespace Valyreon.Elib.DataLayer.Repositories
                 queryBuilder.Append(')');
             }
 
-            if (filter.SearchParameters != null && !string.IsNullOrWhiteSpace(filter.SearchParameters.Token))
+            if (!string.IsNullOrWhiteSpace(filter.SearchText))
             {
                 queryBuilder.Append(' ').Append(conditionSet ? " AND " : " WHERE ").Append(" (");
-                var searchAdded = false;
-                parameters.Add("@Token", $"%{filter.SearchParameters.Token}%");
-                if (filter.SearchParameters.SearchByTitle)
-                {
-                    queryBuilder.Append("Title LIKE @Token");
-                    searchAdded = true;
-                }
-
-                if (filter.SearchParameters.SearchByAuthor)
-                {
-                    queryBuilder.Append(searchAdded ? " OR " : "").Append("AuthorName LIKE @Token");
-                    searchAdded = true;
-                }
-
-                if (filter.SearchParameters.SearchBySeries)
-                {
-                    queryBuilder.Append(searchAdded ? " OR " : "").Append("SeriesName LIKE @Token");
-                }
+                parameters.Add("@Token", $"%{filter.SearchText}%");
+                queryBuilder.Append("Title LIKE @Token OR AuthorName LIKE @Token OR SeriesName LIKE @Token");
                 queryBuilder.Append(')');
             }
 
@@ -128,67 +173,6 @@ namespace Valyreon.Elib.DataLayer.Repositories
             }
 
             return new Tuple<string, DynamicParameters>(queryBuilder.ToString(), parameters);
-        }
-
-        public int Count(FilterParameters filter)
-        {
-            var queryTuple = CreateQueryFromFilter(filter, null, null);
-
-            var query = $"SELECT COUNT(*) FROM ({queryTuple.Item1});";
-
-            return Connection.QueryFirst<int>(query, queryTuple.Item2, Transaction);
-        }
-
-        public async Task<IEnumerable<Book>> FindBySeriesIdAsync(int seriesId)
-        {
-            var result = await Connection.QueryAsync<Book>("SELECT * FROM Books WHERE SeriesId = @SeriesId", new { SeriesId = seriesId }, Transaction);
-
-            return Cache.FilterAndUpdateCache(result);
-        }
-
-        public async Task<IEnumerable<Book>> FindByCollectionIdAsync(int collectionId)
-        {
-            var result = await Connection.QueryAsync<Book>(
-                "SELECT * FROM CollectionId_Book_View WHERE CollectionId = @CollectionId",
-                new { CollectionId = collectionId },
-                Transaction);
-
-            return Cache.FilterAndUpdateCache(result);
-        }
-
-        public async Task<IEnumerable<Book>> FindByAuthorIdAsync(int authorId)
-        {
-            var result = await Connection.QueryAsync<Book>("SELECT * FROM AuthorId_Book_View WHERE AuthorId = @AuthorId", new { AuthorId = authorId }, Transaction);
-            return Cache.FilterAndUpdateCache(result);
-        }
-
-        public async Task<IEnumerable<Book>> FindPageByFilterAsync(FilterParameters filter, int offset, int pageSize)
-        {
-            var queryTuple = CreateQueryFromFilter(filter, offset, pageSize);
-            var result = await Connection.QueryAsync<Book>(queryTuple.Item1, queryTuple.Item2, Transaction);
-
-            return Cache.FilterAndUpdateCache(result);
-        }
-
-        public async Task<int> CountAsync(FilterParameters filter)
-        {
-            var queryTuple = CreateQueryFromFilter(filter, null, null);
-
-            var query = $"SELECT COUNT(*) FROM ({queryTuple.Item1});";
-
-            return await Connection.QueryFirstAsync<int>(query, queryTuple.Item2, Transaction);
-        }
-
-        public async Task<bool> SignatureExistsAsync(string signature)
-        {
-            var count = await Connection.QueryFirstAsync<int>("SELECT COUNT(*) FROM Books WHERE Signature = @Signature", new { Signature = signature }, Transaction);
-            return count > 0;
-        }
-
-        public async Task<bool> PathExistsAsync(string path)
-        {
-            var count = await Connection.QueryFirstAsync<int>("SELECT COUNT(*) FROM Books WHERE Path = @Path", new { Path = path }, Transaction);
-            return count > 0;
         }
     }
 }

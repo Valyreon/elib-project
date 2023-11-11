@@ -1,0 +1,36 @@
+<UserControl
+    x:Class="Valyreon.Elib.Wpf.Views.Dialogs.ProgressBarWithMessageDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:b="clr-namespace:Valyreon.Elib.Wpf.AttachedProperties"
+    xmlns:Converters="clr-namespace:Valyreon.Elib.Wpf.Converters"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <Converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+    </UserControl.Resources>
+    <StackPanel MaxWidth="500" Orientation="Vertical">
+        <TextBlock
+            Margin="0,0,0,10"
+            FontSize="16"
+            Text="{Binding Title}" />
+        <ProgressBar
+            Height="30"
+            Margin="0,0,0,15"
+            Maximum="{Binding BarMaximum, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            Minimum="{Binding BarMinimum, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            Value="{Binding CurrentBarValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            <i:Interaction.Behaviors>
+                <b:ProgresBarAnimateBehavior />
+            </i:Interaction.Behaviors>
+        </ProgressBar>
+        <TextBlock
+            FontSize="14"
+            Text="{Binding CurrentMessage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            Visibility="{Binding CurrentMessage, Converter={StaticResource StringToVisibilityConverter}}" />
+    </StackPanel>
+</UserControl>

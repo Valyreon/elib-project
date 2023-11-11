@@ -4,25 +4,27 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using MahApps.Metro.Controls.Dialogs;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.Mvvm;
+using Valyreon.Elib.Wpf.Interfaces;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
 {
-    public class ChooseAuthorDialogViewModel : ViewModelBase
+    public class ChooseAuthorDialogViewModel : DialogViewModel
     {
+        private readonly IEnumerable<Author> allAuthors;
         private readonly Action<Author> onConfirm;
         private string filterText;
         private Author selectedItem;
 
-        public ChooseAuthorDialogViewModel(IEnumerable<int> addedAuthors, Action<Author> onConfirm)
+        public ChooseAuthorDialogViewModel(IEnumerable<Author> authors, Action<Author> onConfirm)
         {
-            AddedAuthors = addedAuthors;
+            allAuthors = authors;
+            ShownAuthors = new ObservableCollection<Author>(authors);
             this.onConfirm = onConfirm;
         }
 
-        public ICommand CancelCommand => new RelayCommand(Cancel);
+        public ICommand CancelCommand => new RelayCommand(Close);
 
         public ICommand DoneCommand => new RelayCommand(Done);
 
@@ -34,57 +36,30 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
             set => Set(() => FilterText, ref filterText, value);
         }
 
-        public ICommand LoadAuthorsCommand => new RelayCommand(LoadAuthors);
-
         public Author SelectedItem
         {
             get => selectedItem;
             set => Set(() => SelectedItem, ref selectedItem, value);
         }
 
-        public ObservableCollection<Author> ShownAuthors { get; set; } = new ObservableCollection<Author>();
-        private IEnumerable<int> AddedAuthors { get; }
+        public ObservableCollection<Author> ShownAuthors { get; set; }
 
-        private List<Author> AllAuthors { get; } = new List<Author>();
+        private void Done()
+        {
+            onConfirm(SelectedItem);
+            Close();
+        }
 
         private void FilterAuthors()
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
                 ShownAuthors.Clear();
-                foreach (var a in AllAuthors.Where(a => a.Name.IndexOf(FilterText, StringComparison.OrdinalIgnoreCase) >= 0))
+                foreach (var a in allAuthors.Where(a => string.IsNullOrWhiteSpace(FilterText) || a.Name.IndexOf(FilterText, StringComparison.OrdinalIgnoreCase) >= 0))
                 {
                     ShownAuthors.Add(a);
                 }
             });
-        }
-
-        private async void LoadAuthors()
-        {
-            IEnumerable<Author> list = null;
-            using (var uow = await App.UnitOfWorkFactory.CreateAsync())
-            {
-                list = await uow.AuthorRepository.GetAllAsync();
-            }
-
-            foreach (var author in list.Where(a => !AddedAuthors.Contains(a.Id)))
-            {
-                AllAuthors.Add(author);
-                ShownAuthors.Add(author);
-            }
-        }
-
-        private async void Cancel()
-        {
-            await DialogCoordinator.Instance.HideMetroDialogAsync(Application.Current.MainWindow.DataContext,
-                await DialogCoordinator.Instance.GetCurrentDialogAsync<BaseMetroDialog>(Application.Current.MainWindow
-                    .DataContext));
-        }
-
-        private void Done()
-        {
-            onConfirm(SelectedItem);
-            Cancel();
         }
     }
 }

@@ -1,21 +1,24 @@
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using Valyreon.Elib.Mvvm;using Valyreon.Elib.Domain;
-using Valyreon.Elib.EBookTools;
-using Valyreon.Elib.Wpf.BindingItems;
+using Valyreon.Elib.Domain;
+using Valyreon.Elib.Mvvm;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Windows
 {
     public class ReaderViewModel : ViewModelBase
     {
-        private Book Book { get; }
+        private string bookHtml;
 
         public ReaderViewModel(Book book)
         {
             Book = book;
         }
 
+        public string BookHtml
+        {
+            get => bookHtml;
+            set => Set(() => BookHtml, ref bookHtml, value);
+        }
+
+        private Book Book { get; }
         // public ICommand LoadCommand => new RelayCommand<ChromiumWebBrowser>(HandleLoad);
 
         // public ICommand UnloadCommand => new RelayCommand<ChromiumWebBrowser>(HandleUnload);
@@ -36,15 +39,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Windows
             uow.BookRepository.Update(toUpdate);
             uow.Commit();
         }*/
-
-        private string bookHtml;
-
-        public string BookHtml
-        {
-            get => bookHtml;
-            set => Set(() => BookHtml, ref bookHtml, value);
-        }
-
         /*private async void HandleLoad(ChromiumWebBrowser obj)
         {
             obj.JavascriptObjectRepository.Register("QuoteHelper", new QuoteJsHelper(Book), true);

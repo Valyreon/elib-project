@@ -20,5 +20,23 @@ namespace Valyreon.Elib.DataLayer.Extensions
                 }
             }
         }
+
+        internal static V FilterAndUpdateCache<V>(this IDictionary<int, V> dictionary, V dbResult) where V : ObservableEntity
+        {
+            if (dbResult == null)
+            {
+                return null;
+            }
+
+            if (dictionary.TryGetValue(dbResult.Id, out var bookFromCache))
+            {
+                return bookFromCache;
+            }
+            else
+            {
+                dictionary.Add(dbResult.Id, dbResult);
+                return dbResult;
+            }
+        }
     }
 }

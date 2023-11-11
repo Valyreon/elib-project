@@ -1,0 +1,333 @@
+<UserControl
+    x:Class="Valyreon.Elib.Wpf.Views.Controls.EditBookFormControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:BindingItems="clr-namespace:Valyreon.Elib.Wpf.BindingItems"
+    xmlns:Components="clr-namespace:Valyreon.Elib.Wpf.CustomComponents"
+    xmlns:Converters="clr-namespace:Valyreon.Elib.Wpf.Converters"
+    xmlns:cc="clr-namespace:Valyreon.Elib.Wpf.Themes.CustomComponents.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    Validation.ErrorTemplate="{x:Null}"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <Converters:ImageConverter x:Key="ImageConverter" />
+        <Converters:StringToInverseVisibilityConverter x:Key="StringToVisibilityConverter" />
+        <Converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <Converters:BoolToInverseVisibilityConverter x:Key="BoolToInverseVisibilityConverter" />
+        <Converters:BoolToInverseBoolConverter x:Key="BoolToInverseBoolConverter" />
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="210" />
+            <ColumnDefinition Width="15" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="15" />
+            <ColumnDefinition Width="200" />
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="300" />
+                <RowDefinition Height="5" />
+                <RowDefinition Height="25" />
+                <RowDefinition Height="15" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Border
+                Margin="0"
+                HorizontalAlignment="Left"
+                BorderBrush="LightGray"
+                BorderThickness="1">
+                <Image Margin="0" Source="{Binding Cover, Converter={StaticResource ImageConverter}, UpdateSourceTrigger=PropertyChanged}" />
+            </Border>
+            <Grid Grid.Row="4" Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30px" />
+                    <RowDefinition Height="30px" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="26" />
+                    <ColumnDefinition Width="*" MaxWidth="210px" />
+                </Grid.ColumnDefinitions>
+
+                <CheckBox
+                    Focusable="True"
+                    IsChecked="{Binding IsReadCheck, UpdateSourceTrigger=PropertyChanged}"
+                    Style="{StaticResource DarkCheckBox}" />
+                <Label
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    FontSize="14"
+                    Foreground="WhiteSmoke">
+                    Read
+                </Label>
+
+                <CheckBox
+                    Grid.Row="1"
+                    Focusable="True"
+                    IsChecked="{Binding IsFavoriteCheck, UpdateSourceTrigger=PropertyChanged}"
+                    Style="{StaticResource DarkCheckBox}" />
+                <Label
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    FontSize="14"
+                    Foreground="WhiteSmoke">
+                    Favorite
+                </Label>
+            </Grid>
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="5" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Button
+                    Grid.Column="0"
+                    Height="25"
+                    Command="{Binding ChangeCoverButtonCommand}"
+                    FontSize="12"
+                    Style="{StaticResource FlyoutButton}">
+                    CHANGE
+                </Button>
+                <Button
+                    Grid.Column="2"
+                    Height="25"
+                    Command="{Binding RemoveCoverButtonCommand}"
+                    FontSize="12"
+                    Style="{StaticResource FlyoutButton}">
+                    CLEAR
+                </Button>
+            </Grid>
+        </Grid>
+
+        <StackPanel Grid.Column="2">
+            <StackPanel.Resources>
+                <BindingItems:BindingProxy x:Key="Proxy" Data="{Binding}" />
+            </StackPanel.Resources>
+            <Components:ElibTextBox
+                Grid.Row="0"
+                Height="35"
+                Margin="0,0,0,10"
+                VerticalContentAlignment="Center"
+                Placeholder="Enter title"
+                Style="{StaticResource FlyoutElibTextBox}"
+                Text="{Binding TitleFieldText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+            <StackPanel
+                Grid.Row="1"
+                Margin="0,0,0,10"
+                Orientation="Horizontal">
+                <Components:ElibTextBox
+                    Grid.Row="0"
+                    Width="350"
+                    Height="35"
+                    Margin="0,0,10,0"
+                    Cursor="Arrow"
+                    Focusable="True"
+                    IsReadOnly="True"
+                    Placeholder="No series selected."
+                    Style="{StaticResource FlyoutElibTextBox}"
+                    Text="{Binding Series.Name}" />
+                <Button
+                    x:Name="SeriesOptionsButton"
+                    Grid.Column="2"
+                    Width="50"
+                    Height="25"
+                    Margin="0,0,5,0"
+                    Focusable="True"
+                    FontSize="12"
+                    Style="{StaticResource FlyoutButton}">
+                    ADD
+                    <Button.ContextMenu>
+                        <ContextMenu x:Name="SeriesContextMenu">
+                            <MenuItem Command="{Binding Source={StaticResource Proxy}, Path=Data.CreateNewSeriesCommand}" Header="NEW" />
+                            <MenuItem Command="{Binding Source={StaticResource Proxy}, Path=Data.ChooseExistingSeriesCommand}" Header="EXISTING" />
+                        </ContextMenu>
+                    </Button.ContextMenu>
+                    <Button.Triggers>
+                        <EventTrigger RoutedEvent="Button.Click" SourceName="SeriesOptionsButton">
+                            <EventTrigger.Actions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="SeriesContextMenu" Storyboard.TargetProperty="(ContextMenu.IsOpen)">
+                                            <DiscreteObjectKeyFrame KeyTime="0:0:0">
+                                                <DiscreteObjectKeyFrame.Value>
+                                                    <sys:Boolean>True</sys:Boolean>
+                                                </DiscreteObjectKeyFrame.Value>
+                                            </DiscreteObjectKeyFrame>
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger.Actions>
+                        </EventTrigger>
+                    </Button.Triggers>
+                </Button>
+                <Button
+                    Grid.Column="4"
+                    Width="50"
+                    Height="25"
+                    Margin="0,0,10,0"
+                    Command="{Binding ClearSeriesCommand}"
+                    Focusable="True"
+                    FontSize="12"
+                    IsEnabled="{Binding IsSeriesSelected}"
+                    Style="{StaticResource FlyoutButton}">
+                    CLEAR
+                </Button>
+                <Components:ElibTextBox
+                    Grid.Column="6"
+                    Height="35"
+                    MinWidth="30"
+                    Focusable="{Binding IsSeriesSelected}"
+                    FontFamily="Segoe UI Semibold"
+                    IsEnabled="{Binding IsSeriesSelected}"
+                    Placeholder="##"
+                    PreviewTextInput="SeriesNumberField_PreviewTextInput"
+                    Style="{StaticResource FlyoutElibTextBox}"
+                    Text="{Binding SeriesNumberFieldText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                    Visibility="{Binding IsSeriesSelected, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            </StackPanel>
+
+            <StackPanel Margin="0,0,0,10" Orientation="Horizontal">
+                <Components:ElibTextBox
+                    Width="350"
+                    Height="35"
+                    Margin="0,0,10,0"
+                    HorizontalAlignment="Left"
+                    VerticalContentAlignment="Center"
+                    Placeholder="ISBN"
+                    PreviewTextInput="ISBNTextField_PreviewTextInput"
+                    Style="{StaticResource FlyoutElibTextBox}"
+                    Text="{Binding IsbnText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                <Button
+                    x:Name="GetBookDataWithISBN"
+                    Grid.Column="2"
+                    Width="100"
+                    Height="25"
+                    Command="{Binding GetDataWithISBNCommand}"
+                    Content="GET DATA"
+                    FontSize="12"
+                    IsEnabled="{Binding IsIsbnValid}"
+                    Style="{StaticResource FlyoutButton}"
+                    ToolTip="Uses Google Books API to fetch book data by ISBN." />
+            </StackPanel>
+
+            <StackPanel
+                x:Name="AuthorsPart"
+                Grid.Row="2"
+                MaxWidth="410"
+                Margin="0,0,0,10"
+                HorizontalAlignment="Left">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock
+                        Grid.Column="0"
+                        MinWidth="360"
+                        FontSize="16"
+                        Text="Authors:" />
+                    <Button
+                        x:Name="AuthorsOptionsButton"
+                        Grid.Column="2"
+                        Width="50"
+                        Height="25"
+                        FontSize="12"
+                        Style="{StaticResource FlyoutButton}">
+                        ADD
+                        <Button.ContextMenu>
+                            <ContextMenu x:Name="AuthorsContextMenu">
+                                <MenuItem Command="{Binding Source={StaticResource Proxy}, Path=Data.AddNewAuthorButtonCommand}" Header="NEW" />
+                                <MenuItem Command="{Binding Source={StaticResource Proxy}, Path=Data.AddExistingAuthorButtonCommand}" Header="EXISTING" />
+                            </ContextMenu>
+                        </Button.ContextMenu>
+                        <Button.Triggers>
+                            <EventTrigger RoutedEvent="Button.Click" SourceName="AuthorsOptionsButton">
+                                <EventTrigger.Actions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="AuthorsContextMenu" Storyboard.TargetProperty="(ContextMenu.IsOpen)">
+                                                <DiscreteObjectKeyFrame KeyTime="0:0:0">
+                                                    <DiscreteObjectKeyFrame.Value>
+                                                        <sys:Boolean>True</sys:Boolean>
+                                                    </DiscreteObjectKeyFrame.Value>
+                                                </DiscreteObjectKeyFrame>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger.Actions>
+                            </EventTrigger>
+                        </Button.Triggers>
+                    </Button>
+                </StackPanel>
+                <ItemsControl ItemsSource="{Binding AuthorsCollection}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <cc:ChipControl
+                                Margin="0,3,5,3"
+                                MarkNewObjects="True"
+                                Object="{Binding .}"
+                                RemoveCommand="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.RemoveAuthorCommand}"
+                                Text="{Binding Name}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </StackPanel>
+            <StackPanel Grid.Row="4" Margin="0,0,0,10">
+                <TextBlock
+                    Grid.Column="1"
+                    Margin="0,0,0,5"
+                    FontSize="16"
+                    Text="Description:" />
+                <Components:ElibTextBox
+                    Grid.Row="1"
+                    Height="180"
+                    Padding="2"
+                    VerticalContentAlignment="Top"
+                    AcceptsReturn="True"
+                    HorizontalScrollBarVisibility="Disabled"
+                    Style="{StaticResource FlyoutElibTextBox}"
+                    Text="{Binding DescriptionFieldText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    TextWrapping="Wrap"
+                    VerticalScrollBarVisibility="Auto" />
+            </StackPanel>
+        </StackPanel>
+
+        <StackPanel Grid.Column="4">
+            <TextBlock FontSize="16" Text="Collections:" />
+            <ItemsControl Margin="0,0,0,5" ItemsSource="{Binding UserCollections}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <cc:ChipControl
+                            Margin="0,3,5,3"
+                            MarkNewObjects="True"
+                            Object="{Binding .}"
+                            RemoveCommand="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.RemoveCollectionCommand}"
+                            Text="{Binding Tag}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+            <cc:SuggestionTextBox
+                Placeholder="Add to collection"
+                SubmitCommand="{Binding AddCollectionCommand}"
+                Suggestions="{Binding CollectionSuggestions}"
+                TextChangedCommand="{Binding RefreshSuggestedCollectionsCommand}" />
+        </StackPanel>
+    </Grid>
+</UserControl>

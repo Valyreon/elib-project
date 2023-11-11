@@ -1,111 +1,20 @@
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:Components="clr-namespace:Valyreon.Elib.Wpf.CustomComponents"
-    xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls">
-    <Style
-        x:Key="CustomDarkCheckbox"
-        BasedOn="{StaticResource MahApps.Styles.CheckBox}"
-        TargetType="{x:Type CheckBox}">
-        <Setter Property="Controls:CheckBoxHelper.CheckGlyphForegroundChecked" Value="{DynamicResource AccentColorBrush}" />
-        <Setter Property="Controls:CheckBoxHelper.CheckGlyphForegroundCheckedMouseOver" Value="{DynamicResource AccentColorBrush}" />
-        <Setter Property="Controls:CheckBoxHelper.CheckGlyphForegroundCheckedPressed" Value="{DynamicResource AccentColorBrush}" />
-    </Style>
+    xmlns:Components="clr-namespace:Valyreon.Elib.Wpf.CustomComponents">
 
-    <Style
-        x:Key="CustomLightCheckBox"
-        BasedOn="{StaticResource MahApps.Styles.CheckBox}"
-        TargetType="{x:Type CheckBox}">
-        <Setter Property="Controls:CheckBoxHelper.CheckGlyphForegroundChecked" Value="#444" />
-        <Setter Property="Controls:CheckBoxHelper.CheckGlyphForegroundCheckedMouseOver" Value="#444" />
-        <Setter Property="Controls:CheckBoxHelper.CheckGlyphForegroundCheckedPressed" Value="#444" />
-        <Setter Property="Controls:CheckBoxHelper.ForegroundChecked" Value="#f1f1f1" />
-        <Setter Property="Controls:CheckBoxHelper.ForegroundCheckedPressed" Value="#f1f1f1" />
-        <Setter Property="Controls:CheckBoxHelper.ForegroundCheckedMouseOver" Value="#f1f1f1" />
-        <Setter Property="Controls:CheckBoxHelper.ForegroundUnchecked" Value="#f1f1f1" />
-        <Setter Property="Controls:CheckBoxHelper.ForegroundUncheckedPressed" Value="#f1f1f1" />
-        <Setter Property="Controls:CheckBoxHelper.ForegroundUncheckedMouseOver" Value="#f1f1f1" />
-    </Style>
-
-    <Style
-        x:Key="LightDataGridCellModified"
-        BasedOn="{StaticResource MahApps.Styles.DataGridCell}"
-        TargetType="{x:Type DataGridCell}">
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Foreground" Value="#222" />
-            </Trigger>
-            <MultiTrigger>
-                <MultiTrigger.Conditions>
-                    <Condition Property="IsMouseOver" Value="True" />
-                    <Condition Property="IsSelected" Value="True" />
-                </MultiTrigger.Conditions>
-                <MultiTrigger.Setters>
-                    <Setter Property="Foreground" Value="White" />
-                </MultiTrigger.Setters>
-            </MultiTrigger>
-        </Style.Triggers>
-    </Style>
-
-    <Style
-        x:Key="LightDataGridRowModified"
-        BasedOn="{StaticResource MahApps.Styles.DataGridRow}"
-        TargetType="{x:Type DataGridRow}">
-        <Style.Triggers>
-            <Trigger Property="AlternationIndex" Value="0">
-                <Setter Property="Background" Value="White" />
-            </Trigger>
-            <Trigger Property="AlternationIndex" Value="1">
-                <Setter Property="Background" Value="#f9f9f9" />
-            </Trigger>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="LightGray" />
-            </Trigger>
-            <Trigger Property="IsSelected" Value="True">
-                <Trigger.Setters>
-                    <Setter Property="Background" Value="{DynamicResource AccentColorBrush}" />
-                    <Setter Property="Foreground" Value="WhiteSmoke" />
-                </Trigger.Setters>
-            </Trigger>
-        </Style.Triggers>
-    </Style>
-
-    <Style x:Key="BlueHoverStyle" TargetType="Components:SymbolButton">
-        <Style.Triggers>
-            <EventTrigger RoutedEvent="MouseEnter">
-                <BeginStoryboard>
-                    <Storyboard>
-                        <ColorAnimation
-                            Storyboard.TargetProperty="Foreground.Color"
-                            To="CornflowerBlue"
-                            Duration="0:0:0.3" />
-                    </Storyboard>
-                </BeginStoryboard>
-            </EventTrigger>
-            <EventTrigger RoutedEvent="MouseLeave">
-                <BeginStoryboard>
-                    <Storyboard>
-                        <ColorAnimation
-                            Storyboard.TargetProperty="Foreground.Color"
-                            To="#484b4e"
-                            Duration="0:0:0.3" />
-                    </Storyboard>
-                </BeginStoryboard>
-            </EventTrigger>
-        </Style.Triggers>
-    </Style>
-
-    <Style x:Key="ViewerHeaderButton" TargetType="{x:Type Button}">
+    <Style TargetType="{x:Type Button}">
+        <Setter Property="Height" Value="30" />
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="Width" Value="100" />
+        <Setter Property="FontWeight" Value="Bold" />
         <Setter Property="Focusable" Value="False" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
                     <Border
                         x:Name="border"
-                        Background="Transparent"
-                        BorderBrush="#ccc"
+                        Background="White"
+                        BorderBrush="#aaa"
                         BorderThickness="1"
                         CornerRadius="2">
                         <Grid x:Name="theGrid">
@@ -113,18 +22,61 @@
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
+                        <Trigger Property="IsDefault" Value="True">
+                            <Setter Property="Foreground" Value="{StaticResource AccentColorBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="#aaa" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="border" Property="BorderThickness" Value="2" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="border" Property="Background" Value="{StaticResource AccentColorVeryLightBrush}" />
+                            <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource AccentColorBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="FlyoutButton" TargetType="{x:Type Button}">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Background" Value="#222" />
+        <Setter Property="Foreground" Value="WhiteSmoke" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border
+                        x:Name="border"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="#aaa"
+                        BorderThickness="1"
+                        CornerRadius="1">
+                        <Grid x:Name="theGrid">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="border" Property="Background" Value="#111" />
+                        </Trigger>
+                        <Trigger Property="IsDefault" Value="True">
+                            <Setter Property="Foreground" Value="{StaticResource AccentColorBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="border" Property="BorderBrush" Value="#666" />
+                            <Setter Property="Foreground" Value="Gray" />
+                        </Trigger>
                         <EventTrigger RoutedEvent="MouseEnter">
                             <BeginStoryboard>
                                 <Storyboard>
                                     <ColorAnimation
                                         Storyboard.TargetName="border"
-                                        Storyboard.TargetProperty="Background.Color"
-                                        To="#ddd"
-                                        Duration="0:0:0.24" />
-                                    <ColorAnimation
-                                        Storyboard.TargetName="border"
                                         Storyboard.TargetProperty="BorderBrush.Color"
-                                        To="#aaa"
+                                        To="CornflowerBlue"
                                         Duration="0:0:0.24" />
                                 </Storyboard>
                             </BeginStoryboard>
@@ -132,11 +84,6 @@
                         <EventTrigger RoutedEvent="MouseLeave">
                             <BeginStoryboard>
                                 <Storyboard>
-                                    <ColorAnimation
-                                        Storyboard.TargetName="border"
-                                        Storyboard.TargetProperty="Background.Color"
-                                        To="Transparent"
-                                        Duration="0:0:0.24" />
                                     <ColorAnimation
                                         Storyboard.TargetName="border"
                                         Storyboard.TargetProperty="BorderBrush.Color"
@@ -151,6 +98,171 @@
         </Setter>
     </Style>
 
+    <Style TargetType="{x:Type CheckBox}">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Background" Value="White" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type CheckBox}">
+                    <StackPanel Orientation="Horizontal">
+                        <Border
+                            x:Name="border"
+                            Width="18"
+                            Height="18"
+                            Margin="3,3,8,3"
+                            VerticalAlignment="Center"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="#ccc"
+                            BorderThickness="1"
+                            CornerRadius="1">
+                            <Image
+                                x:Name="img"
+                                Width="14"
+                                Height="14"
+                                RenderTransformOrigin="0.5,0.5"
+                                Source="{StaticResource CheckboxCheck}"
+                                Stretch="Uniform">
+                                <Image.RenderTransform>
+                                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                                </Image.RenderTransform>
+                            </Image>
+                        </Border>
+                        <ContentPresenter
+                            x:Name="content"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center" />
+                    </StackPanel>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="False">
+                            <Trigger.Setters>
+                                <Setter TargetName="img" Property="Visibility" Value="Collapsed" />
+                            </Trigger.Setters>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Trigger.Setters>
+                                <Setter TargetName="border" Property="Background" Value="#ccc" />
+                            </Trigger.Setters>
+                        </Trigger>
+                        <EventTrigger RoutedEvent="MouseEnter">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation
+                                        Storyboard.TargetName="border"
+                                        Storyboard.TargetProperty="Background.Color"
+                                        To="#eee"
+                                        Duration="0:0:0.24" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="MouseLeave">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation
+                                        Storyboard.TargetName="border"
+                                        Storyboard.TargetProperty="Background.Color"
+                                        To="White"
+                                        Duration="0:0:0.24" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="SortingCheckbox" TargetType="{x:Type CheckBox}">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Background" Value="White" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type CheckBox}">
+                    <StackPanel
+                        x:Name="rootStack"
+                        Background="Transparent"
+                        Orientation="Horizontal"
+                        ToolTip="Descending">
+                        <Image
+                            x:Name="ascendImage"
+                            Width="12"
+                            Height="12"
+                            Source="{StaticResource ArrowDownAltGray}" />
+                        <Image
+                            x:Name="descendImage"
+                            Width="12"
+                            Height="12"
+                            Source="{StaticResource ArrowUpAltBlack}" />
+                    </StackPanel>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Trigger.Setters>
+                                <Setter TargetName="ascendImage" Property="Source" Value="{StaticResource ArrowDownAltBlack}" />
+                                <Setter TargetName="descendImage" Property="Source" Value="{StaticResource ArrowUpAltGray}" />
+                                <Setter TargetName="rootStack" Property="ToolTip" Value="Ascending" />
+                            </Trigger.Setters>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="DarkCheckBox" TargetType="{x:Type CheckBox}">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="WhiteSmoke" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type CheckBox}">
+                    <StackPanel Orientation="Horizontal">
+                        <Border
+                            x:Name="border"
+                            Width="18"
+                            Height="18"
+                            Margin="3,3,8,3"
+                            VerticalAlignment="Center"
+                            Background="#222"
+                            BorderBrush="#888"
+                            BorderThickness="1"
+                            CornerRadius="1">
+                            <Image
+                                x:Name="img"
+                                Width="14"
+                                Height="14"
+                                RenderTransformOrigin="0.5,0.5"
+                                Source="{StaticResource CheckboxCheck}"
+                                Stretch="Uniform">
+                                <Image.RenderTransform>
+                                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                                </Image.RenderTransform>
+                            </Image>
+                        </Border>
+                        <ContentPresenter
+                            x:Name="content"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center" />
+                    </StackPanel>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="False">
+                            <Trigger.Setters>
+                                <Setter TargetName="img" Property="Visibility" Value="Collapsed" />
+                            </Trigger.Setters>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Trigger.Setters>
+                                <Setter TargetName="border" Property="Background" Value="#222" />
+                            </Trigger.Setters>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 
     <Style x:Key="{x:Type RadioButton}" TargetType="{x:Type RadioButton}">
         <Setter Property="SnapsToDevicePixels" Value="true" />
@@ -200,5 +312,215 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <Style x:Key="{x:Type ContextMenu}" TargetType="{x:Type ContextMenu}">
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Grid.IsSharedSizeScope" Value="true" />
+        <Setter Property="HasDropShadow" Value="True" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontFamily" Value="Segoe UI" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ContextMenu}">
+                    <Border
+                        x:Name="Border"
+                        Background="White"
+                        BorderThickness="1"
+                        CornerRadius="0">
+                        <Border.BorderBrush>
+                            <SolidColorBrush Color="CornflowerBlue" />
+                        </Border.BorderBrush>
+                        <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="HasDropShadow" Value="true">
+                            <Setter TargetName="Border" Property="Padding" Value="0,3,0,3" />
+                            <Setter TargetName="Border" Property="CornerRadius" Value="2" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="MenuHeader" TargetType="{x:Type TextBlock}">
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="FlyoutElibTextBox" TargetType="{x:Type Components:ElibTextBox}">
+        <Setter Property="Background" Value="#222" />
+        <Setter Property="PlaceholderForeground" Value="#777" />
+        <Setter Property="PlaceholderForegroundFocused" Value="#444" />
+        <Setter Property="BorderBrush" Value="#888" />
+    </Style>
+
+    <Style TargetType="{x:Type MenuItem}">
+        <Setter Property="FontFamily" Value="Segoe UI" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type MenuItem}">
+                    <Border Background="{TemplateBinding Background}">
+                        <ContentPresenter Margin="10,5" Content="{TemplateBinding Header}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsHighlighted" Value="True">
+                            <Setter Property="Background" Value="CornflowerBlue" />
+                            <Setter Property="Foreground" Value="White" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type ListBox}">
+        <Setter Property="ItemContainerStyle">
+            <Setter.Value>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Template">
+                        <!--  Revert the Template in Windows 10 to match the Windows 7 template that used "SystemColors.HighlightBrushKey" and such  -->
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                <Border
+                                    x:Name="Bd"
+                                    Padding="{TemplateBinding Padding}"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    SnapsToDevicePixels="true">
+                                    <ContentPresenter
+                                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                        SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="true">
+                                        <Setter TargetName="Bd" Property="Background" Value="{StaticResource AccentColorBrush}" />
+                                        <Setter Property="Foreground" Value="White" />
+                                    </Trigger>
+                                    <MultiTrigger>
+                                        <MultiTrigger.Conditions>
+                                            <Condition Property="IsSelected" Value="true" />
+                                            <Condition Property="Selector.IsSelectionActive" Value="false" />
+                                        </MultiTrigger.Conditions>
+                                        <Setter TargetName="Bd" Property="Background" Value="Gray" />
+                                        <Setter Property="Foreground" Value="White" />
+                                    </MultiTrigger>
+                                    <Trigger Property="IsEnabled" Value="false">
+                                        <Setter Property="Foreground" Value="Gray" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                            <Setter Property="Control.Background" Value="White" />
+                        </Trigger>
+                        <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                            <Setter Property="Control.Background" Value="#efefef" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="DarkListBox" TargetType="{x:Type ListBox}">
+        <Setter Property="Background" Value="#222" />
+        <Setter Property="BorderBrush" Value="#888" />
+        <Setter Property="ItemContainerStyle">
+            <Setter.Value>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Background" Value="#222" />
+                    <Setter Property="Foreground" Value="White" />
+                    <Setter Property="BorderThickness" Value="0" />
+                    <Setter Property="FontSize" Value="13" />
+                    <Setter Property="Template">
+                        <!--  Revert the Template in Windows 10 to match the Windows 7 template that used "SystemColors.HighlightBrushKey" and such  -->
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                <Border
+                                    x:Name="Bd"
+                                    Padding="{TemplateBinding Padding}"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    SnapsToDevicePixels="true">
+                                    <ContentPresenter
+                                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                        SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="true">
+                                        <Setter TargetName="Bd" Property="Background" Value="{StaticResource AccentColorBrush}" />
+                                        <Setter Property="Foreground" Value="White" />
+                                    </Trigger>
+                                    <MultiTrigger>
+                                        <MultiTrigger.Conditions>
+                                            <Condition Property="IsSelected" Value="true" />
+                                            <Condition Property="Selector.IsSelectionActive" Value="false" />
+                                        </MultiTrigger.Conditions>
+                                        <Setter TargetName="Bd" Property="Background" Value="Gray" />
+                                        <Setter Property="Foreground" Value="White" />
+                                    </MultiTrigger>
+                                    <Trigger Property="IsEnabled" Value="false">
+                                        <Setter Property="Foreground" Value="Gray" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                            <Setter Property="Control.Background" Value="#222" />
+                        </Trigger>
+                        <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                            <Setter Property="Control.Background" Value="#262626" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="{x:Type ProgressBar}" TargetType="{x:Type ProgressBar}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ProgressBar}">
+                    <Grid MinWidth="200" MinHeight="14">
+                        <Border
+                            Name="PART_Track"
+                            Background="Transparent"
+                            BorderBrush="#aaa"
+                            BorderThickness="1"
+                            CornerRadius="2" />
+                        <Border
+                            Name="PART_Indicator"
+                            Margin="2"
+                            HorizontalAlignment="Left"
+                            BorderBrush="#aaa"
+                            BorderThickness="0"
+                            CornerRadius="2">
+                            <Border.Background>
+                                <LinearGradientBrush MappingMode="Absolute" SpreadMethod="Repeat" StartPoint="8,8" EndPoint="0,0">
+                                    <GradientStop Offset="0" Color="CornflowerBlue" />
+                                    <GradientStop Offset="0.5" Color="CornflowerBlue" />
+                                    <GradientStop Offset="0.5" Color="#5f92ec" />
+                                    <GradientStop Offset="1" Color="#5f92ec" />
+                                </LinearGradientBrush>
+                            </Border.Background>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="{x:Type TextBlock}" TargetType="{x:Type TextBlock}">
     </Style>
 </ResourceDictionary>

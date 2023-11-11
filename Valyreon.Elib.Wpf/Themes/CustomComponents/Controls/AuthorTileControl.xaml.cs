@@ -7,8 +7,8 @@ namespace Valyreon.Elib.Wpf.Themes.CustomComponents.Controls
 {
     public partial class AuthorTileControl : UserControl
     {
-        public static DependencyProperty AuthorNameProperty;
         public static DependencyProperty AuthorBookCountProperty;
+        public static DependencyProperty AuthorNameProperty;
         public static DependencyProperty CommandProperty;
         public static DependencyProperty ParameterProperty;
 
@@ -25,16 +25,16 @@ namespace Valyreon.Elib.Wpf.Themes.CustomComponents.Controls
             InitializeComponent();
         }
 
-        public string AuthorName
-        {
-            get => (string)GetValue(AuthorNameProperty);
-            set => SetValue(AuthorNameProperty, value);
-        }
-
         public string AuthorBookCount
         {
             get => (string)GetValue(AuthorBookCountProperty);
             set => SetValue(AuthorBookCountProperty, value);
+        }
+
+        public string AuthorName
+        {
+            get => (string)GetValue(AuthorNameProperty);
+            set => SetValue(AuthorNameProperty, value);
         }
 
         public ICommand Command
@@ -47,6 +47,11 @@ namespace Valyreon.Elib.Wpf.Themes.CustomComponents.Controls
         {
             get => (Author)GetValue(ParameterProperty);
             set => SetValue(ParameterProperty, value);
+        }
+
+        private void TileBorder_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            Command?.Execute(Parameter);
         }
     }
 }

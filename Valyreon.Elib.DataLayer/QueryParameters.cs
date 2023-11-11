@@ -4,12 +4,13 @@ namespace Valyreon.Elib.DataLayer
     /// Defines sort property and direction, used for building queries.
     /// NOTE: Container must be indexed by that property otherwise ORDER BY will fail.
     /// </summary>
-    public class Sort
+    public record Sort
     {
         public string PropertyName { get; set; }
         public bool IsAscending { get; set; } = true;
 
-        public Sort() { }
+        public Sort()
+        { }
 
         public Sort(string propertyName, bool isAscending)
         {
@@ -21,7 +22,7 @@ namespace Valyreon.Elib.DataLayer
     /// <summary>
     /// Defines paging and sorting, used for building queries.
     /// </summary>
-    public class QueryParameters
+    public record QueryParameters
     {
         public int PageSize { get; set; }
 

@@ -8,7 +8,7 @@ namespace Valyreon.Elib.EBookTools
 {
     public static class EbookParserFactory
     {
-        public static IEnumerable<string> SupportedExtensions { get; } = new[] { ".epub", ".mobi" };
+        public static IEnumerable<string> SupportedExtensions { get; } = new[] { ".epub", ".mobi", ".pdf" };
 
         public static EbookParser Create(string path)
         {
@@ -16,6 +16,7 @@ namespace Valyreon.Elib.EBookTools
             {
                 ".epub" => new VersOneEpubParser(path),
                 ".mobi" => new MobiParser(path),
+                ".pdf" => new PdfParser(path),
                 _ => throw new ArgumentException($"{path} has an unkown extension.")
             };
         }

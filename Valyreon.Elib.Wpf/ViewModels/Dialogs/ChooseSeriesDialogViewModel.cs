@@ -4,25 +4,27 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using MahApps.Metro.Controls.Dialogs;
 using Valyreon.Elib.Domain;
 using Valyreon.Elib.Mvvm;
+using Valyreon.Elib.Wpf.Interfaces;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
 {
-    public class ChooseSeriesDialogViewModel : ViewModelBase
+    public class ChooseSeriesDialogViewModel : DialogViewModel
     {
         private readonly Action<BookSeries> onConfirm;
+        private readonly IEnumerable<BookSeries> series;
         private string filterText;
-
         private BookSeries selectedItem;
 
-        public ChooseSeriesDialogViewModel(Action<BookSeries> onConfirm)
+        public ChooseSeriesDialogViewModel(IEnumerable<BookSeries> series, Action<BookSeries> onConfirm)
         {
+            this.series = series;
+            ShownSeries = new ObservableCollection<BookSeries>(series);
             this.onConfirm = onConfirm;
         }
 
-        public ICommand CancelCommand => new RelayCommand(Cancel);
+        public ICommand CancelCommand => new RelayCommand(Close);
 
         public ICommand DoneCommand => new RelayCommand(Done);
 
@@ -34,17 +36,25 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
             set => Set(() => FilterText, ref filterText, value);
         }
 
-        public ICommand LoadSeriesCommand => new RelayCommand(LoadSeries);
-
         public BookSeries SelectedItem
         {
             get => selectedItem;
             set => Set(() => SelectedItem, ref selectedItem, value);
         }
 
-        public ObservableCollection<BookSeries> ShownSeries { get; set; } = new ObservableCollection<BookSeries>();
+        public ObservableCollection<BookSeries> ShownSeries { get; set; }
 
         private List<BookSeries> AllSeries { get; } = new List<BookSeries>();
+
+        private void Done()
+        {
+            if (SelectedItem != null)
+            {
+                onConfirm(SelectedItem);
+            }
+
+            Close();
+        }
 
         private void FilterSeries()
         {
@@ -56,39 +66,6 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
                     ShownSeries.Add(a);
                 }
             });
-        }
-
-        private async void LoadSeries()
-        {
-            IEnumerable<BookSeries> list = null;
-
-            using (var uow = await App.UnitOfWorkFactory.CreateAsync())
-            {
-                list = await uow.SeriesRepository.GetAllAsync();
-            }
-
-            foreach (var series in list)
-            {
-                AllSeries.Add(series);
-                ShownSeries.Add(series);
-            }
-        }
-
-        private async void Cancel()
-        {
-            await DialogCoordinator.Instance.HideMetroDialogAsync(Application.Current.MainWindow.DataContext,
-                await DialogCoordinator.Instance.GetCurrentDialogAsync<BaseMetroDialog>(Application.Current.MainWindow
-                    .DataContext));
-        }
-
-        private void Done()
-        {
-            if (SelectedItem != null)
-            {
-                onConfirm(SelectedItem);
-            }
-
-            Cancel();
         }
     }
 }

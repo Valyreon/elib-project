@@ -1,9 +1,4 @@
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Valyreon.Elib.DataLayer;
-using Valyreon.Elib.Domain;
-using Valyreon.Elib.Wpf.Models;
 
 namespace Valyreon.Elib.Tests.RepositoryTests
 {

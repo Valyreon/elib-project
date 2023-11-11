@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Valyreon.Elib.Wpf.Models;
+using Valyreon.Elib.Domain;
 
 namespace Valyreon.Elib.Wpf.Services
 {
     public interface IImportService
     {
-        Task<IEnumerable<string>> ImportAsync();
-        Task<IEnumerable<string>> ImportAsync(SourcePath sourcePath);
+        Task<IReadOnlyList<string>> GetNotImportedBookPathsAsync(string path);
+
+        Task ImportBookAsync(Book book);
     }
 }

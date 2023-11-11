@@ -1,18 +1,26 @@
 using System;
-using System.Windows;
 using System.Windows.Input;
-using MahApps.Metro.Controls.Dialogs;
 using Valyreon.Elib.Mvvm;
 using Valyreon.Elib.Wpf.BindingItems;
+using Valyreon.Elib.Wpf.Interfaces;
 
 namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
 {
-    public class FilterOptionsDialogViewModel : ViewModelBase
+    public class FilterOptionsDialogViewModel : DialogViewModel
     {
-        public FilterOptions Options { get; }
-
-        private int orderSelectedIndex;
         private readonly Action<FilterOptions> onConfirm;
+        private int orderSelectedIndex;
+
+        public FilterOptionsDialogViewModel(FilterOptions options, Action<FilterOptions> onConfirm)
+        {
+            Options = (FilterOptions)options.Clone();
+            this.onConfirm = onConfirm;
+            OrderSelectedIndex = Options.Ascending ? 1 : 0;
+        }
+
+        public ICommand ApplyCommand => new RelayCommand(Apply);
+        public ICommand CancelCommand => new RelayCommand(Close);
+        public FilterOptions Options { get; }
 
         public int OrderSelectedIndex
         {
@@ -24,30 +32,10 @@ namespace Valyreon.Elib.Wpf.ViewModels.Dialogs
             }
         }
 
-        public FilterOptionsDialogViewModel(FilterOptions options, Action<FilterOptions> onConfirm)
+        private void Apply()
         {
-            Options = (FilterOptions)options.Clone();
-            this.onConfirm = onConfirm;
-            OrderSelectedIndex = Options.Ascending ? 1 : 0;
-        }
-
-        public ICommand CancelCommand => new RelayCommand(Cancel);
-
-        public ICommand ApplyCommand => new RelayCommand(Apply);
-
-        private async void Apply()
-        {
-            await DialogCoordinator.Instance.HideMetroDialogAsync(Application.Current.MainWindow.DataContext,
-                await DialogCoordinator.Instance.GetCurrentDialogAsync<BaseMetroDialog>(Application.Current.MainWindow
-                    .DataContext));
+            Close();
             onConfirm(Options);
-        }
-
-        private async void Cancel()
-        {
-            await DialogCoordinator.Instance.HideMetroDialogAsync(Application.Current.MainWindow.DataContext,
-                await DialogCoordinator.Instance.GetCurrentDialogAsync<BaseMetroDialog>(Application.Current.MainWindow
-                    .DataContext));
         }
     }
 }
