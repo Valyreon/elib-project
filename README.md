@@ -19,5 +19,6 @@ The project uses **SQLite database** for saving book info and relationships. Acc
 
 The app development is still in progress but here are some current screenshots:
 
+
 <p align="center"><img src="./Screenshots/MainScreenshot.png?raw=true" title="file sharing" align="center" hspace="5" vspace="5">
 <p align="center"><img src="./Screenshots/BookView.png?raw=true" title="file sharing" align="center" hspace="5" vspace="5">
